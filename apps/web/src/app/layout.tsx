@@ -1,22 +1,11 @@
-import type { Metadata } from 'next';
-import { Inter } from 'next/font/google';
-import './globals.css';
+import type { ReactNode } from 'react';
 
-const inter = Inter({ subsets: ['latin'] });
-
-export const metadata: Metadata = {
-  title: 'Real Estate Platform',
-  description: 'Find your perfect property in Uzbekistan',
+type Props = {
+  children: ReactNode;
 };
 
-export default function RootLayout({
-  children,
-}: {
-  children: React.ReactNode;
-}) {
-  return (
-    <html lang="en">
-      <body className={inter.className}>{children}</body>
-    </html>
-  );
+// This layout only exists to satisfy Next.js requirement for a root layout.
+// The actual layout with html/body tags is in [locale]/layout.tsx
+export default function RootLayout({ children }: Props) {
+  return children;
 }

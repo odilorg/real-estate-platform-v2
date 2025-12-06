@@ -1,12 +1,24 @@
 'use client';
 
 import { useState } from 'react';
-import { useRouter } from 'next/navigation';
-import Link from 'next/link';
-import { Button, Input, Label, Card, CardHeader, CardTitle, CardDescription, CardContent, CardFooter } from '@repo/ui';
+import { useTranslations } from 'next-intl';
+import { Link, useRouter } from '@/i18n/routing';
+import {
+  Button,
+  Input,
+  Label,
+  Card,
+  CardHeader,
+  CardTitle,
+  CardDescription,
+  CardContent,
+  CardFooter,
+} from '@repo/ui';
 import { register } from '@/lib/auth';
 
 export default function RegisterPage() {
+  const t = useTranslations('auth.register');
+  const tCommon = useTranslations('common');
   const router = useRouter();
   const [formData, setFormData] = useState({
     email: '',
@@ -27,12 +39,12 @@ export default function RegisterPage() {
     setError('');
 
     if (formData.password !== formData.confirmPassword) {
-      setError('Passwords do not match');
+      setError(t('passwordMismatch'));
       return;
     }
 
     if (formData.password.length < 8) {
-      setError('Password must be at least 8 characters');
+      setError(t('passwordTooShort'));
       return;
     }
 
@@ -47,7 +59,7 @@ export default function RegisterPage() {
       });
       router.push('/');
     } catch (err) {
-      setError(err instanceof Error ? err.message : 'Registration failed');
+      setError(err instanceof Error ? err.message : t('registrationFailed'));
     } finally {
       setLoading(false);
     }
@@ -57,8 +69,8 @@ export default function RegisterPage() {
     <div className="min-h-screen flex items-center justify-center p-4">
       <Card className="w-full max-w-md">
         <CardHeader className="text-center">
-          <CardTitle className="text-2xl">Create an account</CardTitle>
-          <CardDescription>Enter your details to get started</CardDescription>
+          <CardTitle className="text-2xl">{t('title')}</CardTitle>
+          <CardDescription>{t('description')}</CardDescription>
         </CardHeader>
         <CardContent>
           <form onSubmit={handleSubmit} className="space-y-4">
@@ -69,22 +81,22 @@ export default function RegisterPage() {
             )}
             <div className="grid grid-cols-2 gap-4">
               <div className="space-y-2">
-                <Label htmlFor="firstName">First Name</Label>
+                <Label htmlFor="firstName">{tCommon('firstName')}</Label>
                 <Input
                   id="firstName"
                   name="firstName"
-                  placeholder="John"
+                  placeholder={t('firstNamePlaceholder')}
                   value={formData.firstName}
                   onChange={handleChange}
                   required
                 />
               </div>
               <div className="space-y-2">
-                <Label htmlFor="lastName">Last Name</Label>
+                <Label htmlFor="lastName">{tCommon('lastName')}</Label>
                 <Input
                   id="lastName"
                   name="lastName"
-                  placeholder="Doe"
+                  placeholder={t('lastNamePlaceholder')}
                   value={formData.lastName}
                   onChange={handleChange}
                   required
@@ -92,51 +104,51 @@ export default function RegisterPage() {
               </div>
             </div>
             <div className="space-y-2">
-              <Label htmlFor="email">Email</Label>
+              <Label htmlFor="email">{tCommon('email')}</Label>
               <Input
                 id="email"
                 name="email"
                 type="email"
-                placeholder="you@example.com"
+                placeholder={t('emailPlaceholder')}
                 value={formData.email}
                 onChange={handleChange}
                 required
               />
             </div>
             <div className="space-y-2">
-              <Label htmlFor="password">Password</Label>
+              <Label htmlFor="password">{tCommon('password')}</Label>
               <Input
                 id="password"
                 name="password"
                 type="password"
-                placeholder="At least 8 characters"
+                placeholder={t('passwordPlaceholder')}
                 value={formData.password}
                 onChange={handleChange}
                 required
               />
             </div>
             <div className="space-y-2">
-              <Label htmlFor="confirmPassword">Confirm Password</Label>
+              <Label htmlFor="confirmPassword">{tCommon('confirmPassword')}</Label>
               <Input
                 id="confirmPassword"
                 name="confirmPassword"
                 type="password"
-                placeholder="Confirm your password"
+                placeholder={t('confirmPasswordPlaceholder')}
                 value={formData.confirmPassword}
                 onChange={handleChange}
                 required
               />
             </div>
             <Button type="submit" className="w-full" disabled={loading}>
-              {loading ? 'Creating account...' : 'Create Account'}
+              {loading ? t('submitting') : t('submitButton')}
             </Button>
           </form>
         </CardContent>
         <CardFooter className="justify-center">
           <p className="text-sm text-muted-foreground">
-            Already have an account?{' '}
+            {t('hasAccount')}{' '}
             <Link href="/auth/login" className="text-primary hover:underline">
-              Sign in
+              {t('signInLink')}
             </Link>
           </p>
         </CardFooter>

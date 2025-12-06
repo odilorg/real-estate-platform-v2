@@ -1,7 +1,9 @@
 'use client';
 
 import { Suspense, useEffect } from 'react';
-import { useRouter, useSearchParams } from 'next/navigation';
+import { useSearchParams } from 'next/navigation';
+import { useTranslations } from 'next-intl';
+import { useRouter } from '@/i18n/routing';
 
 function CallbackHandler() {
   const router = useRouter();
@@ -22,11 +24,13 @@ function CallbackHandler() {
 }
 
 export default function AuthCallbackPage() {
+  const t = useTranslations('auth.callback');
+
   return (
     <div className="min-h-screen flex items-center justify-center">
       <div className="text-center">
         <div className="animate-spin rounded-full h-8 w-8 border-b-2 border-primary mx-auto mb-4" />
-        <p className="text-muted-foreground">Completing sign in...</p>
+        <p className="text-muted-foreground">{t('completing')}</p>
       </div>
       <Suspense fallback={null}>
         <CallbackHandler />

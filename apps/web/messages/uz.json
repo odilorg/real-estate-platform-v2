@@ -1,0 +1,92 @@
+{
+  "common": {
+    "signIn": "Kirish",
+    "signUp": "Ro'yxatdan o'tish",
+    "signOut": "Chiqish",
+    "email": "Email",
+    "password": "Parol",
+    "confirmPassword": "Parolni tasdiqlang",
+    "firstName": "Ism",
+    "lastName": "Familiya",
+    "loading": "Yuklanmoqda...",
+    "error": "Xato",
+    "success": "Muvaffaqiyatli",
+    "cancel": "Bekor qilish",
+    "save": "Saqlash",
+    "delete": "O'chirish",
+    "edit": "Tahrirlash",
+    "search": "Qidirish",
+    "filter": "Filtr",
+    "sort": "Saralash",
+    "view": "Ko'rish",
+    "back": "Orqaga",
+    "next": "Keyingi",
+    "previous": "Oldingi",
+    "submit": "Yuborish"
+  },
+  "home": {
+    "title": "O'zbekiston Ko'chmas Mulki",
+    "description": "O'zbekistonda ideal mulkingizni toping",
+    "signInButton": "Kirish",
+    "createAccountButton": "Hisob yaratish"
+  },
+  "auth": {
+    "login": {
+      "title": "Xush kelibsiz",
+      "description": "Hisobingizga kiring",
+      "emailPlaceholder": "you@example.com",
+      "passwordPlaceholder": "Parolingizni kiriting",
+      "submitButton": "Kirish",
+      "submitting": "Kirilmoqda...",
+      "orContinueWith": "Yoki davom eting",
+      "continueWithGoogle": "Google orqali davom eting",
+      "noAccount": "Hisobingiz yo'qmi?",
+      "signUpLink": "Ro'yxatdan o'ting",
+      "loginFailed": "Kirishda xatolik"
+    },
+    "register": {
+      "title": "Hisob yaratish",
+      "description": "Ro'yxatdan o'tish uchun ma'lumotlarni kiriting",
+      "firstNamePlaceholder": "Ism",
+      "lastNamePlaceholder": "Familiya",
+      "emailPlaceholder": "you@example.com",
+      "passwordPlaceholder": "Kamida 8 belgi",
+      "confirmPasswordPlaceholder": "Parolni tasdiqlang",
+      "submitButton": "Hisob yaratish",
+      "submitting": "Hisob yaratilmoqda...",
+      "hasAccount": "Hisobingiz bormi?",
+      "signInLink": "Kirish",
+      "passwordMismatch": "Parollar mos kelmaydi",
+      "passwordTooShort": "Parol kamida 8 belgi bo'lishi kerak",
+      "registrationFailed": "Ro'yxatdan o'tishda xatolik"
+    },
+    "callback": {
+      "completing": "Kirish yakunlanmoqda..."
+    }
+  },
+  "property": {
+    "types": {
+      "APARTMENT": "Kvartira",
+      "HOUSE": "Uy",
+      "COMMERCIAL": "Tijorat"
+    },
+    "listingTypes": {
+      "SALE": "Sotish",
+      "RENT_LONG": "Uzoq muddatli ijara",
+      "RENT_DAILY": "Kunlik ijara"
+    },
+    "renovation": {
+      "EURO": "Yevrota'mir",
+      "NORMAL": "Oddiy ta'mir",
+      "NEEDS_REPAIR": "Ta'mir talab qiladi"
+    },
+    "rooms": "xona",
+    "area": "m²",
+    "floor": "qavat",
+    "price": "Narx"
+  },
+  "currency": {
+    "YE": "y.e.",
+    "UZS": "so'm"
+  }
+}
