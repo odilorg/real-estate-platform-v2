@@ -68,7 +68,10 @@
   - [x] Geo-location "near me" search
   - [x] Sorting options
   - [x] Pagination
-- [ ] Map integration (NEXT)
+- [x] Map integration
+  - [x] PropertyMap component (Leaflet/OpenStreetMap)
+  - [x] View mode toggle (Grid/Split/Map)
+  - [x] Property markers with popups
 
 ## Phase 6: Admin & Polish ✅
 - [x] Admin dashboard
@@ -95,12 +98,14 @@
 ---
 
 ## Current Session Focus
-**Search & Filters Enhancement** ✅ COMPLETE
+**Search & Filters + Map Integration** ✅ COMPLETE
 - Added advanced PropertyFilterDto with 30+ filter options
 - Implemented full-text search
 - Implemented geo-location (Haversine distance) search
 - Added search suggestions API with autocomplete
 - Added filter options API
 - Updated frontend with sorting, pagination, and geo-search
+- Added map integration with Leaflet/OpenStreetMap
+- View mode toggle: Grid | Split | Map
 
-**Next up:** Map integration for property visualization
+**Next up:** Saved searches feature

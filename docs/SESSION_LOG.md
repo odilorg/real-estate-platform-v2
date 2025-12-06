@@ -40,8 +40,17 @@
    - Pagination with page numbers
    - Full integration with all 30+ filter parameters
 
+6. **Map Integration** - `apps/web/src/components/property-map.tsx`
+   - PropertyMap component using Leaflet/OpenStreetMap
+   - View mode toggle (Grid | Split | Map)
+   - Property markers with popups
+   - Split view: list + map side-by-side
+   - Auto-center on property locations
+
 ### Commits Made This Session
 ```
+30d1cb8 feat(web): add map integration with view mode toggle
+50b3aa7 docs: mark advanced search feature as complete
 1ed665a feat(web): enhance properties page with advanced search UI
 ece57be docs: update SESSION_LOG.md with session 5 progress
 23b1c62 docs: update TASKS.md and AI_INSTRUCTIONS.md with current progress
@@ -50,13 +59,13 @@ ece57be docs: update SESSION_LOG.md with session 5 progress
 
 ### Current State
 - **Branch:** `feature/auth-ui`
-- **Last commit:** `1ed665a`
+- **Last commit:** `30d1cb8`
 - **Working tree:** Clean
 
 ### 🎯 NEXT STEPS
-1. Add map integration
-2. Implement saved searches feature
-3. Add notifications system
+1. Implement saved searches feature
+2. Add notifications system
+3. Add more property map features (clusters, custom markers)
 
 ---
 
