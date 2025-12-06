@@ -37,17 +37,97 @@ export class PropertiesController {
   @Get()
   @Public()
   async findAll(@Query() query: any) {
+    // Parse all filter parameters
     const filters = PropertyFilterDto.parse({
-      ...query,
-      page: query.page ? parseInt(query.page) : 1,
-      limit: query.limit ? parseInt(query.limit) : 20,
+      // Full-text search
+      search: query.search || undefined,
+
+      // Location
+      city: query.city || undefined,
+      district: query.district || undefined,
+      nearestMetro: query.nearestMetro || undefined,
+
+      // Geo-location
+      latitude: query.latitude ? parseFloat(query.latitude) : undefined,
+      longitude: query.longitude ? parseFloat(query.longitude) : undefined,
+      radius: query.radius ? parseFloat(query.radius) : undefined,
+
+      // Property type
+      propertyType: query.propertyType || undefined,
+      listingType: query.listingType || undefined,
+      status: query.status || undefined,
+
+      // Price range
       minPrice: query.minPrice ? parseFloat(query.minPrice) : undefined,
       maxPrice: query.maxPrice ? parseFloat(query.maxPrice) : undefined,
+
+      // Area range
       minArea: query.minArea ? parseFloat(query.minArea) : undefined,
       maxArea: query.maxArea ? parseFloat(query.maxArea) : undefined,
+
+      // Rooms
       bedrooms: query.bedrooms ? parseInt(query.bedrooms) : undefined,
+      minBedrooms: query.minBedrooms ? parseInt(query.minBedrooms) : undefined,
+      maxBedrooms: query.maxBedrooms ? parseInt(query.maxBedrooms) : undefined,
+      rooms: query.rooms ? parseInt(query.rooms) : undefined,
+      minRooms: query.minRooms ? parseInt(query.minRooms) : undefined,
+      maxRooms: query.maxRooms ? parseInt(query.maxRooms) : undefined,
+
+      // Floor
+      floor: query.floor ? parseInt(query.floor) : undefined,
+      minFloor: query.minFloor ? parseInt(query.minFloor) : undefined,
+      maxFloor: query.maxFloor ? parseInt(query.maxFloor) : undefined,
+      notFirstFloor: query.notFirstFloor === 'true' || undefined,
+      notLastFloor: query.notLastFloor === 'true' || undefined,
+
+      // Building
+      buildingClass: query.buildingClass || undefined,
+      buildingType: query.buildingType || undefined,
+      renovation: query.renovation || undefined,
+      parkingType: query.parkingType || undefined,
+
+      // Year
+      minYearBuilt: query.minYearBuilt ? parseInt(query.minYearBuilt) : undefined,
+      maxYearBuilt: query.maxYearBuilt ? parseInt(query.maxYearBuilt) : undefined,
+
+      // Amenities (comma-separated string)
+      amenities: query.amenities ? query.amenities.split(',') : undefined,
+
+      // Boolean features
+      hasBalcony: query.hasBalcony === 'true' || undefined,
+      hasConcierge: query.hasConcierge === 'true' || undefined,
+      hasGatedArea: query.hasGatedArea === 'true' || undefined,
+
+      // Listing options
+      featured: query.featured === 'true' ? true : query.featured === 'false' ? false : undefined,
+      verified: query.verified === 'true' ? true : query.verified === 'false' ? false : undefined,
+
+      // Pagination & sorting
+      page: query.page ? parseInt(query.page) : 1,
+      limit: query.limit ? parseInt(query.limit) : 20,
+      sortBy: query.sortBy || 'createdAt',
+      sortOrder: query.sortOrder || 'desc',
     });
+
     return this.propertiesService.findAll(filters);
+  }
+
+  @Get('suggestions')
+  @Public()
+  async getSearchSuggestions(
+    @Query('q') query: string,
+    @Query('limit') limit?: string,
+  ) {
+    return this.propertiesService.getSearchSuggestions(
+      query,
+      limit ? parseInt(limit) : 10,
+    );
+  }
+
+  @Get('filters')
+  @Public()
+  async getFilterOptions() {
+    return this.propertiesService.getFilterOptions();
   }
 
   @Get('featured')

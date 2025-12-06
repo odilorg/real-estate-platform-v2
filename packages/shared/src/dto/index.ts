@@ -100,20 +100,73 @@ export const UpdatePropertyDto = CreatePropertyDto.partial();
 export type UpdatePropertyDto = z.infer<typeof UpdatePropertyDto>;
 
 export const PropertyFilterDto = z.object({
+  // Full-text search
+  search: z.string().optional(),
+
+  // Location filters
   city: z.string().optional(),
+  district: z.string().optional(),
+  nearestMetro: z.string().optional(),
+
+  // Geo-location search
+  latitude: z.number().optional(),
+  longitude: z.number().optional(),
+  radius: z.number().min(0.1).max(50).optional(), // km
+
+  // Property type filters
   propertyType: z.nativeEnum(PropertyType).optional(),
   listingType: z.nativeEnum(ListingType).optional(),
   status: z.nativeEnum(PropertyStatus).optional(),
+
+  // Price range
   minPrice: z.number().optional(),
   maxPrice: z.number().optional(),
+
+  // Area range
   minArea: z.number().optional(),
   maxArea: z.number().optional(),
+
+  // Rooms
   bedrooms: z.number().optional(),
+  minBedrooms: z.number().optional(),
+  maxBedrooms: z.number().optional(),
+  rooms: z.number().optional(),
+  minRooms: z.number().optional(),
+  maxRooms: z.number().optional(),
+
+  // Floor
+  floor: z.number().optional(),
+  minFloor: z.number().optional(),
+  maxFloor: z.number().optional(),
+  notFirstFloor: z.boolean().optional(),
+  notLastFloor: z.boolean().optional(),
+
+  // Building filters
   buildingClass: z.nativeEnum(BuildingClass).optional(),
+  buildingType: z.nativeEnum(BuildingType).optional(),
   renovation: z.nativeEnum(RenovationType).optional(),
+  parkingType: z.nativeEnum(ParkingType).optional(),
+
+  // Year built range
+  minYearBuilt: z.number().optional(),
+  maxYearBuilt: z.number().optional(),
+
+  // Amenities
+  amenities: z.array(z.string()).optional(),
+
+  // Boolean features
+  hasBalcony: z.boolean().optional(),
+  hasConcierge: z.boolean().optional(),
+  hasGatedArea: z.boolean().optional(),
+
+  // Listing options
+  featured: z.boolean().optional(),
+  verified: z.boolean().optional(),
+
+  // Pagination & sorting
   page: z.number().int().min(1).default(1),
   limit: z.number().int().min(1).max(100).default(20),
-  sortBy: z.enum(['price', 'createdAt', 'area']).default('createdAt'),
+  sortBy: z.enum(['price', 'createdAt', 'area', 'views', 'rating']).default('createdAt'),
   sortOrder: z.enum(['asc', 'desc']).default('desc'),
 });
 export type PropertyFilterDto = z.infer<typeof PropertyFilterDto>;
