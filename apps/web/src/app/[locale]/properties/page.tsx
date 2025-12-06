@@ -2,9 +2,10 @@
 
 import { useState, useEffect, useRef, useCallback } from 'react';
 import Link from 'next/link';
+import { useRouter } from 'next/navigation';
 import { PropertyCard, Button, Select, SelectContent, SelectItem, SelectTrigger, SelectValue } from '@repo/ui';
-import { AdvancedFilters, type AdvancedFilterValues } from '@/components';
-import { Search, Plus, Loader2, User, LogOut, MapPin, ArrowUpDown } from 'lucide-react';
+import { AdvancedFilters, type AdvancedFilterValues, PropertyMap, type PropertyMapMarker } from '@/components';
+import { Search, Plus, Loader2, User, LogOut, MapPin, ArrowUpDown, Grid3X3, Map as MapIcon } from 'lucide-react';
 import { useAuth } from '@/context/AuthContext';
 
 interface PropertyImage {
@@ -25,12 +26,16 @@ interface Property {
   area: number;
   address: string;
   city: string;
+  latitude?: number | null;
+  longitude?: number | null;
   images: PropertyImage[];
   createdAt: string;
   averageRating?: number | null;
   reviewCount?: number;
   distance?: number;
 }
+
+type ViewMode = 'grid' | 'map' | 'split';
 
 interface SearchSuggestion {
   type: 'city' | 'district' | 'metro' | 'property';
@@ -79,8 +84,11 @@ export default function PropertiesPage() {
   const [currentPage, setCurrentPage] = useState(1);
   const [userLocation, setUserLocation] = useState<{ lat: number; lng: number } | null>(null);
   const [searchRadius, setSearchRadius] = useState<number | null>(null);
+  const [viewMode, setViewMode] = useState<ViewMode>('grid');
+  const [selectedPropertyId, setSelectedPropertyId] = useState<string | null>(null);
   const searchInputRef = useRef<HTMLInputElement>(null);
   const suggestionsRef = useRef<HTMLDivElement>(null);
+  const router = useRouter();
 
   const apiUrl = process.env.NEXT_PUBLIC_API_URL || 'http://localhost:3001/api';
 
@@ -442,7 +450,7 @@ export default function PropertiesPage() {
           />
         </div>
 
-        {/* Results Header with Sorting */}
+        {/* Results Header with Sorting and View Mode */}
         <div className="mb-4 flex flex-col sm:flex-row sm:items-center sm:justify-between gap-4">
           <h1 className="text-2xl font-bold">
             Недвижимость{' '}
@@ -453,20 +461,55 @@ export default function PropertiesPage() {
             )}
           </h1>
 
-          <div className="flex items-center gap-2">
-            <ArrowUpDown className="h-4 w-4 text-gray-500" />
-            <Select value={sortBy} onValueChange={setSortBy}>
-              <SelectTrigger className="w-48">
-                <SelectValue placeholder="Сортировка" />
-              </SelectTrigger>
-              <SelectContent>
-                {SORT_OPTIONS.map((option) => (
-                  <SelectItem key={option.value} value={option.value}>
-                    {option.label}
-                  </SelectItem>
-                ))}
-              </SelectContent>
-            </Select>
+          <div className="flex items-center gap-4">
+            {/* View Mode Toggle */}
+            <div className="flex items-center border rounded-lg overflow-hidden">
+              <Button
+                variant={viewMode === 'grid' ? 'default' : 'ghost'}
+                size="sm"
+                onClick={() => setViewMode('grid')}
+                className="rounded-none"
+                title="Сетка"
+              >
+                <Grid3X3 className="h-4 w-4" />
+              </Button>
+              <Button
+                variant={viewMode === 'split' ? 'default' : 'ghost'}
+                size="sm"
+                onClick={() => setViewMode('split')}
+                className="rounded-none border-x"
+                title="Список + Карта"
+              >
+                <Grid3X3 className="h-4 w-4 mr-1" />
+                <MapIcon className="h-4 w-4" />
+              </Button>
+              <Button
+                variant={viewMode === 'map' ? 'default' : 'ghost'}
+                size="sm"
+                onClick={() => setViewMode('map')}
+                className="rounded-none"
+                title="Карта"
+              >
+                <MapIcon className="h-4 w-4" />
+              </Button>
+            </div>
+
+            {/* Sorting */}
+            <div className="flex items-center gap-2">
+              <ArrowUpDown className="h-4 w-4 text-gray-500" />
+              <Select value={sortBy} onValueChange={setSortBy}>
+                <SelectTrigger className="w-48">
+                  <SelectValue placeholder="Сортировка" />
+                </SelectTrigger>
+                <SelectContent>
+                  {SORT_OPTIONS.map((option) => (
+                    <SelectItem key={option.value} value={option.value}>
+                      {option.label}
+                    </SelectItem>
+                  ))}
+                </SelectContent>
+              </Select>
+            </div>
           </div>
         </div>
 
@@ -498,30 +541,112 @@ export default function PropertiesPage() {
           </div>
         )}
 
-        {/* Property Grid */}
+        {/* Property Results - View Mode Aware */}
         {!loading && !error && properties.length > 0 && (
           <>
-            <div className="grid grid-cols-1 md:grid-cols-2 lg:grid-cols-3 gap-6">
-              {properties.map((property) => (
-                <Link key={property.id} href={`/properties/${property.id}`}>
-                  <PropertyCard
-                    title={property.title}
-                    price={property.price}
-                    listingType={property.listingType}
-                    address={`${property.address}, ${property.city}`}
-                    bedrooms={property.bedrooms ?? undefined}
-                    bathrooms={property.bathrooms ?? undefined}
-                    area={property.area}
-                    imageUrl={property.images?.[0]?.url}
-                    rating={property.averageRating ?? undefined}
-                    reviewCount={property.reviewCount}
-                  />
-                </Link>
-              ))}
-            </div>
+            {/* Map View */}
+            {viewMode === 'map' && (
+              <div className="h-[calc(100vh-300px)] min-h-[500px] rounded-lg overflow-hidden">
+                <PropertyMap
+                  properties={properties
+                    .filter((p) => p.latitude && p.longitude)
+                    .map((p) => ({
+                      id: p.id,
+                      title: p.title,
+                      price: p.price,
+                      listingType: p.listingType,
+                      latitude: p.latitude!,
+                      longitude: p.longitude!,
+                      imageUrl: p.images?.[0]?.url,
+                    }))}
+                  onMarkerClick={(id) => router.push(`/properties/${id}`)}
+                  selectedPropertyId={selectedPropertyId || undefined}
+                />
+              </div>
+            )}
 
-            {/* Pagination */}
-            {pagination && pagination.pages > 1 && (
+            {/* Split View (Grid + Map) */}
+            {viewMode === 'split' && (
+              <div className="flex gap-6 h-[calc(100vh-300px)] min-h-[500px]">
+                {/* Property List */}
+                <div className="w-1/2 overflow-y-auto pr-4">
+                  <div className="grid grid-cols-1 gap-4">
+                    {properties.map((property) => (
+                      <div
+                        key={property.id}
+                        className={`cursor-pointer transition-all ${
+                          selectedPropertyId === property.id
+                            ? 'ring-2 ring-blue-500 rounded-lg'
+                            : ''
+                        }`}
+                        onMouseEnter={() => setSelectedPropertyId(property.id)}
+                        onMouseLeave={() => setSelectedPropertyId(null)}
+                      >
+                        <Link href={`/properties/${property.id}`}>
+                          <PropertyCard
+                            title={property.title}
+                            price={property.price}
+                            listingType={property.listingType}
+                            address={`${property.address}, ${property.city}`}
+                            bedrooms={property.bedrooms ?? undefined}
+                            bathrooms={property.bathrooms ?? undefined}
+                            area={property.area}
+                            imageUrl={property.images?.[0]?.url}
+                            rating={property.averageRating ?? undefined}
+                            reviewCount={property.reviewCount}
+                          />
+                        </Link>
+                      </div>
+                    ))}
+                  </div>
+                </div>
+
+                {/* Map */}
+                <div className="w-1/2 rounded-lg overflow-hidden sticky top-0">
+                  <PropertyMap
+                    properties={properties
+                      .filter((p) => p.latitude && p.longitude)
+                      .map((p) => ({
+                        id: p.id,
+                        title: p.title,
+                        price: p.price,
+                        listingType: p.listingType,
+                        latitude: p.latitude!,
+                        longitude: p.longitude!,
+                        imageUrl: p.images?.[0]?.url,
+                      }))}
+                    onMarkerClick={(id) => router.push(`/properties/${id}`)}
+                    selectedPropertyId={selectedPropertyId || undefined}
+                    className="h-full"
+                  />
+                </div>
+              </div>
+            )}
+
+            {/* Grid View (default) */}
+            {viewMode === 'grid' && (
+              <div className="grid grid-cols-1 md:grid-cols-2 lg:grid-cols-3 gap-6">
+                {properties.map((property) => (
+                  <Link key={property.id} href={`/properties/${property.id}`}>
+                    <PropertyCard
+                      title={property.title}
+                      price={property.price}
+                      listingType={property.listingType}
+                      address={`${property.address}, ${property.city}`}
+                      bedrooms={property.bedrooms ?? undefined}
+                      bathrooms={property.bathrooms ?? undefined}
+                      area={property.area}
+                      imageUrl={property.images?.[0]?.url}
+                      rating={property.averageRating ?? undefined}
+                      reviewCount={property.reviewCount}
+                    />
+                  </Link>
+                ))}
+              </div>
+            )}
+
+            {/* Pagination (only for grid view) */}
+            {viewMode === 'grid' && pagination && pagination.pages > 1 && (
               <div className="mt-8 flex justify-center">
                 <div className="flex items-center gap-2">
                   <Button

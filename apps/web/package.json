@@ -12,12 +12,15 @@
   "dependencies": {
     "@repo/shared": "workspace:*",
     "@repo/ui": "workspace:*",
+    "@types/leaflet": "^1.9.21",
+    "leaflet": "^1.9.4",
     "lucide-react": "^0.468.0",
     "next": "^15.0.0",
     "next-intl": "^4.5.8",
     "react": "^19.0.0",
     "react-dom": "^19.0.0",
-    "react-dropzone": "^14.3.8"
+    "react-dropzone": "^14.3.8",
+    "react-leaflet": "^5.0.0"
   },
   "devDependencies": {
     "@eslint/eslintrc": "^3.2.0",
