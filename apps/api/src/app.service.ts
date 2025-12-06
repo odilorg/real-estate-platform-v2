@@ -16,7 +16,8 @@ export class AppService {
       await this.prisma.$queryRaw`SELECT 1`;
       dbStatus = 'connected';
     } catch (error) {
-      dbStatus = 'error: ' + (error instanceof Error ? error.message : 'unknown');
+      dbStatus =
+        'error: ' + (error instanceof Error ? error.message : 'unknown');
     }
 
     return {
