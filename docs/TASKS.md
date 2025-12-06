@@ -56,15 +56,19 @@
 - [x] Viewing scheduling (API + UI)
 - [ ] Saved searches (API + UI)
 
-## Phase 5: Search & Filters (CURRENT)
+## Phase 5: Search & Filters ✅
 - [x] Enhanced PropertyFilterDto
 - [x] Full-text search on title, description, address
 - [x] Geo-location search (distance-based)
 - [x] Advanced filters (floor, rooms, amenities, etc.)
 - [x] Search suggestions endpoint
 - [x] Filter options endpoint
-- [ ] Frontend search UI update
-- [ ] Map integration
+- [x] Frontend search UI update
+  - [x] Search autocomplete
+  - [x] Geo-location "near me" search
+  - [x] Sorting options
+  - [x] Pagination
+- [ ] Map integration (NEXT)
 
 ## Phase 6: Admin & Polish ✅
 - [x] Admin dashboard
@@ -91,10 +95,12 @@
 ---
 
 ## Current Session Focus
-**Search & Filters Enhancement**
+**Search & Filters Enhancement** ✅ COMPLETE
 - Added advanced PropertyFilterDto with 30+ filter options
 - Implemented full-text search
 - Implemented geo-location (Haversine distance) search
-- Added search suggestions API
+- Added search suggestions API with autocomplete
 - Added filter options API
-- **Next:** Update frontend to use new filters
+- Updated frontend with sorting, pagination, and geo-search
+
+**Next up:** Map integration for property visualization

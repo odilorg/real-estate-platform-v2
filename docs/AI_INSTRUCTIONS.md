@@ -55,7 +55,8 @@ Slice 3: Messaging (BE + WS + FE conversation UI + shared types)
 - [x] Slice 5: Reviews (BE + FE complete)
 - [x] Slice 6: Viewings (BE + FE complete)
 - [x] Slice 7: Admin (BE + FE complete)
-- [ ] Slice 8: Advanced Search (BE done, FE in progress)
+- [x] Slice 8: Advanced Search (BE + FE complete)
+- [ ] Slice 9: Map Integration (next)
 
 ---
 
