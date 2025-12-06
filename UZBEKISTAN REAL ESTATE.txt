@@ -1,0 +1,118 @@
+UZBEKISTAN REAL ESTATE PLATFORM – MVP FEATURE PLAN
+(Tailored for Tashkent Market / Cian-style)
+
+==============================================================================
+1. MARKET SPECIFICS & STRATEGY
+==============================================================================
+
+Goal: "Supply First" Strategy. Build inventory immediately to attract buyers.
+Target Geography: Tashkent (primary), expanding to other regions.
+
+Local Requirements:
+- Currency: Interface must handle USD (common for pricing) and UZS (common for payment).
+- Location: Deep hierarchy support: City -> District (Tuman) -> Neighborhood (Mahalla).
+- Communication: Heavy reliance on Telegram integration (future phase) and Phone calls.
+- Language: Multilingual support (Russian/Uzbek) is mandatory from Day 1.
+
+==============================================================================
+2. PHASE 1: THE INVENTORY ENGINE (Weeks 1-2)
+==============================================================================
+Focus: Enable Agents and Owners to post listings easily.
+
+2.1. Authentication (Simplified)
+- Methods: Email/Password (MVP), Google Auth.
+- Profile:
+  - Name, Profile Photo.
+  - "Agency Name" field (crucial for agents).
+  - Phone number verification (essential for trust).
+
+2.2. "Add Property" Wizard (Structured Data)
+- Step 1: Location
+  - Dropdowns: City, District, Street.
+  - Map Pin: User drags pin to set exact Lat/Lng.
+- Step 2: Specs
+  - Type: Apartment, House, Commercial.
+  - Deal: Sale, Long-term Rent, Daily Rent.
+  - Details: Floor/Total Floors, Rooms, Area (m2), Repair State (Euro, State, etc.).
+- Step 3: Visuals
+  - Image Upload: Drag & Drop (Direct to S3/R2).
+  - Validation: Max 10MB, Max 15 photos.
+- Step 4: Pricing
+  - Input: Amount + Currency Toggle (USD/UZS).
+  - Logic: Store as entered, but backend handles conversion rates for search.
+
+2.3. Image Handling
+- Resize and compress on upload to save bandwidth/storage.
+- Generate thumbnail and full-screen versions.
+
+==============================================================================
+3. PHASE 2: SEARCH & DISCOVERY (Weeks 3-4)
+==============================================================================
+Focus: Buyers finding properties.
+
+3.1. Advanced Search Bar
+- Filters:
+  - Buy vs. Rent.
+  - Location (District/Mahalla).
+  - Price Range (Min/Max in USD or UZS).
+  - Room Count (1, 2, 3, 4, 5+).
+- Sorting: Newest, Price Low-High, Price High-Low.
+
+3.2. Listing Card (UI)
+- Visual: Large image carousel directly on the card.
+- Data: Price (Bold), Address, Area/Floor.
+- Badges: "New", "Owner" (vs Agent).
+
+3.3. Property Detail Page
+- Photo Gallery: Swipeable, high-res.
+- Key Info: Table view of specs (Floor, Material, Year Built).
+- Map View: Static map showing general location.
+- Sticky Footer (Mobile): "Call" and "Message" buttons always visible.
+
+==============================================================================
+4. PHASE 3: ENGAGEMENT & LEADS (Week 5)
+==============================================================================
+Focus: Connecting the two sides.
+
+4.1. Lead Generation
+- "Show Phone Number": User must click to reveal the agent's number.
+  - Purpose: Tracks "Leads" analytics. Prevents scraping bots.
+- In-App Messaging: Simple "Is this available?" chat flow.
+
+4.2. Favorites
+- Save properties to "My Favorites" list.
+- Cookie-based for guests, DB-based for logged-in users.
+
+==============================================================================
+5. TECHNICAL GUIDELINES FOR AI CODER
+==============================================================================
+
+5.1. Prompting Strategy
+- Always define the Shared Type (DTO) first.
+- Example Prompt: 
+  "Create a `CreateListingDto` in `packages/shared`. Include fields for title, 
+  price (number), currency (enum USD/UZS), districtId, and imageKeys. 
+  Then build the NestJS endpoint `POST /properties`."
+
+5.2. Localization (I18n)
+- Do not hardcode strings.
+- Use `next-intl` or `react-i18next`.
+- Instruction: "Wrap all UI text in `t('key')`. Create `locales/ru.json` and 
+  `locales/uz.json`."
+
+5.3. Vertical Slicing
+- Build feature-by-feature (BE + FE together) rather than layers.
+- Order: Auth -> Listings Write -> Listings Read -> Search -> Favorites.
+
+==============================================================================
+6. SUMMARY CHECKLIST FOR GO-LIVE
+==============================================================================
+
+[ ] Auth (Email + Google)
+[ ] Database Schema (Users, Properties, Locations)
+[ ] S3/R2 Image Upload Setup
+[ ] "Add Property" Form (Multi-step)
+[ ] Homepage Search Filters
+[ ] Property Detail Page
+[ ] Localization Setup (RU/UZ/EN)
+[ ] CI/CD Pipeline (Build/Lint/Typecheck)
