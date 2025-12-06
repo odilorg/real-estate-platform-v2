@@ -8,61 +8,93 @@
 - [x] packages/config (ESLint, TS config)
 - [x] Documentation files
 
-## Phase 2: Backend Core
-- [ ] NestJS app setup (apps/api)
-- [ ] Prisma connection
-- [ ] Auth module (JWT)
-  - [ ] Register endpoint
-  - [ ] Login endpoint
-  - [ ] JWT guard
-  - [ ] Current user decorator
-- [ ] Users module
-  - [ ] Get profile
-  - [ ] Update profile
-- [ ] Properties module
-  - [ ] Create property
-  - [ ] List properties (with filters)
-  - [ ] Get property by ID
-  - [ ] Update property
-  - [ ] Delete property
-  - [ ] Search endpoint
+## Phase 2: Backend Core ✅
+- [x] NestJS app setup (apps/api)
+- [x] Prisma connection
+- [x] Auth module (JWT + Google OAuth)
+  - [x] Register endpoint
+  - [x] Login endpoint
+  - [x] JWT guard
+  - [x] Current user decorator
+  - [x] Google OAuth strategy
+- [x] Users module
+  - [x] Get profile (/auth/me)
+  - [x] Update profile
+- [x] Properties module
+  - [x] Create property
+  - [x] List properties (with filters)
+  - [x] Get property by ID
+  - [x] Update property
+  - [x] Delete property
+  - [ ] Advanced search endpoint (IN PROGRESS)
+- [x] Upload module (R2/S3)
 
-## Phase 3: Frontend Core
-- [ ] Next.js app setup (apps/web)
-- [ ] Layout and navigation
-- [ ] Auth pages
-  - [ ] Login page
-  - [ ] Register page
-  - [ ] Auth context
-- [ ] Property pages
-  - [ ] Listing page with filters
-  - [ ] Property detail page
-  - [ ] Create property form
-  - [ ] Edit property form
-- [ ] User dashboard
-  - [ ] My properties
-  - [ ] My favorites
-  - [ ] My viewings
+## Phase 3: Frontend Core ✅
+- [x] Next.js app setup (apps/web)
+- [x] Layout and navigation
+- [x] i18n support (RU/UZ)
+- [x] Auth pages
+  - [x] Login page
+  - [x] Register page
+  - [x] Auth context (global state)
+  - [x] OAuth callback
+- [x] Property pages
+  - [x] Listing page with filters
+  - [x] Property detail page
+  - [x] Create property form
+  - [x] Edit property form
+- [x] User dashboard
+  - [x] Dashboard overview
+  - [x] My favorites
+  - [x] My messages
+  - [x] Profile settings
 
-## Phase 4: Features
-- [ ] Favorites module (API + UI)
-- [ ] Messaging system (API + UI)
-- [ ] Reviews system (API + UI)
+## Phase 4: Features ✅
+- [x] Favorites module (API + UI)
+- [x] Messaging system (API + UI)
+- [x] Reviews system (API + UI)
+- [x] Viewing scheduling (API + UI)
 - [ ] Saved searches (API + UI)
-- [ ] Viewing scheduling (API + UI)
 
-## Phase 5: Workers & Notifications
+## Phase 5: Search & Filters (CURRENT)
+- [x] Enhanced PropertyFilterDto
+- [x] Full-text search on title, description, address
+- [x] Geo-location search (distance-based)
+- [x] Advanced filters (floor, rooms, amenities, etc.)
+- [x] Search suggestions endpoint
+- [x] Filter options endpoint
+- [ ] Frontend search UI update
+- [ ] Map integration
+
+## Phase 6: Admin & Polish ✅
+- [x] Admin dashboard
+  - [x] Users management
+  - [x] Properties moderation
+  - [x] Admin logs
+- [ ] Reviews moderation UI
+- [ ] Analytics dashboard
+- [x] i18n (ru, uz)
+- [ ] SEO optimization
+
+## Phase 7: Workers & Notifications
 - [ ] BullMQ setup (apps/worker)
 - [ ] Email notifications
 - [ ] In-app notifications
-- [ ] WebSocket gateway
+- [ ] WebSocket gateway (real-time messages)
 
-## Phase 6: Admin & Polish
-- [ ] Admin dashboard
-  - [ ] Users management
-  - [ ] Properties moderation
-  - [ ] Reviews moderation
-  - [ ] Analytics
-- [ ] i18n (en, ru, uz)
-- [ ] SEO optimization
+## Phase 8: Mobile & Polish
 - [ ] Mobile app start (apps/mobile)
+- [ ] PWA support
+- [ ] Performance optimization
+- [ ] Testing
+
+---
+
+## Current Session Focus
+**Search & Filters Enhancement**
+- Added advanced PropertyFilterDto with 30+ filter options
+- Implemented full-text search
+- Implemented geo-location (Haversine distance) search
+- Added search suggestions API
+- Added filter options API
+- **Next:** Update frontend to use new filters

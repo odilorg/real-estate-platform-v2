@@ -48,10 +48,14 @@ Slice 3: Messaging (BE + WS + FE conversation UI + shared types)
 
 ### Current Vertical Slices Status
 
-- [x] Slice 1: Auth (BE done, FE next)
-- [ ] Slice 2: Properties Search
-- [ ] Slice 3: Messaging
-- [ ] Slice 4: Reviews
+- [x] Slice 1: Auth (BE + FE complete)
+- [x] Slice 2: Properties CRUD (BE + FE complete)
+- [x] Slice 3: Favorites (BE + FE complete)
+- [x] Slice 4: Messaging (BE + FE complete)
+- [x] Slice 5: Reviews (BE + FE complete)
+- [x] Slice 6: Viewings (BE + FE complete)
+- [x] Slice 7: Admin (BE + FE complete)
+- [ ] Slice 8: Advanced Search (BE done, FE in progress)
 
 ---
 
