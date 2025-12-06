@@ -142,4 +142,56 @@ export class AuthService {
       },
     };
   }
+
+  async updateProfile(
+    userId: string,
+    data: { firstName?: string; lastName?: string; phone?: string },
+  ) {
+    const user = await this.prisma.user.update({
+      where: { id: userId },
+      data: {
+        firstName: data.firstName,
+        lastName: data.lastName,
+      },
+    });
+
+    return {
+      id: user.id,
+      email: user.email,
+      firstName: user.firstName,
+      lastName: user.lastName,
+      role: user.role,
+      createdAt: user.createdAt,
+    };
+  }
+
+  async changePassword(
+    userId: string,
+    currentPassword: string,
+    newPassword: string,
+  ): Promise<boolean> {
+    const user = await this.prisma.user.findUnique({
+      where: { id: userId },
+    });
+
+    if (!user) {
+      return false;
+    }
+
+    // For OAuth users, they may not have a password
+    if (user.passwordHash) {
+      const isValid = await bcrypt.compare(currentPassword, user.passwordHash);
+      if (!isValid) {
+        return false;
+      }
+    }
+
+    const newPasswordHash = await bcrypt.hash(newPassword, 10);
+    await this.prisma.user.update({
+      where: { id: userId },
+      data: { passwordHash: newPasswordHash },
+    });
+
+    return true;
+  }
 }

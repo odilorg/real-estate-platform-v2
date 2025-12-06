@@ -2,12 +2,14 @@ import {
   Controller,
   Post,
   Get,
+  Put,
   Body,
   UseGuards,
   Req,
   Res,
   HttpCode,
   HttpStatus,
+  BadRequestException,
 } from '@nestjs/common';
 import { AuthGuard } from '@nestjs/passport';
 import { Request, Response } from 'express';
@@ -16,6 +18,18 @@ import { RegisterDto, LoginDto } from '@repo/shared';
 import { JwtAuthGuard } from '../../common/guards/jwt-auth.guard';
 import { CurrentUser } from '../../common/decorators/current-user.decorator';
 import { User } from '@repo/database';
+import { z } from 'zod';
+
+const UpdateProfileDto = z.object({
+  firstName: z.string().min(1).optional(),
+  lastName: z.string().min(1).optional(),
+  phone: z.string().optional(),
+});
+
+const ChangePasswordDto = z.object({
+  currentPassword: z.string().min(1),
+  newPassword: z.string().min(8),
+});
 
 @Controller('auth')
 export class AuthController {
@@ -61,5 +75,28 @@ export class AuthController {
     const user = req.user as { accessToken: string };
     const frontendUrl = process.env.FRONTEND_URL || 'http://localhost:3000';
     res.redirect(`${frontendUrl}/auth/callback?token=${user.accessToken}`);
+  }
+
+  @Put('profile')
+  @UseGuards(JwtAuthGuard)
+  async updateProfile(@CurrentUser() user: User, @Body() dto: any) {
+    const validated = UpdateProfileDto.parse(dto);
+    return this.authService.updateProfile(user.id, validated);
+  }
+
+  @Post('change-password')
+  @UseGuards(JwtAuthGuard)
+  @HttpCode(HttpStatus.OK)
+  async changePassword(@CurrentUser() user: User, @Body() dto: any) {
+    const validated = ChangePasswordDto.parse(dto);
+    const success = await this.authService.changePassword(
+      user.id,
+      validated.currentPassword,
+      validated.newPassword,
+    );
+    if (!success) {
+      throw new BadRequestException('Current password is incorrect');
+    }
+    return { success: true };
   }
 }
