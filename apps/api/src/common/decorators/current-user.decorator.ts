@@ -3,7 +3,7 @@ import { User } from '@repo/database';
 
 export const CurrentUser = createParamDecorator(
   (_data: unknown, ctx: ExecutionContext): User => {
-    const request = ctx.switchToHttp().getRequest();
+    const request = ctx.switchToHttp().getRequest<{ user: User }>();
     return request.user;
   },
 );
