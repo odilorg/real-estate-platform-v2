@@ -123,6 +123,15 @@ model Property {
   @@index([status])
   @@index([price])
   @@index([buildingClass])
+  // Composite indexes for common search patterns (performance optimization)
+  @@index([status, city, propertyType])
+  @@index([status, city, listingType, price])
+  @@index([status, propertyType, listingType, price])
+  @@index([status, city, bedrooms, price])
+  @@index([latitude, longitude, status])
+  @@index([status, createdAt])
+  @@index([status, featured, createdAt])
+  @@index([userId, status, createdAt])
 }
 
 enum PropertyType {
@@ -221,6 +230,8 @@ model Favorite {
 
   @@unique([userId, propertyId])
   @@index([userId])
+  // Composite index for performance
+  @@index([userId, createdAt])
 }
 
 // Conversation model for messaging
@@ -254,6 +265,9 @@ model Message {
   @@index([conversationId])
   @@index([senderId])
   @@index([createdAt])
+  // Composite indexes for performance
+  @@index([conversationId, createdAt])
+  @@index([conversationId, read, senderId])
 }
 
 // Reviews and ratings
@@ -273,6 +287,8 @@ model Review {
   @@unique([propertyId, userId])
   @@index([propertyId])
   @@index([userId])
+  // Composite index for performance
+  @@index([propertyId, approved, createdAt])
 }
 
 // Saved searches

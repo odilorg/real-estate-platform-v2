@@ -11,6 +11,7 @@ import {
 import { ReviewsService } from './reviews.service';
 import { JwtAuthGuard } from '../../common/guards/jwt-auth.guard';
 import { CurrentUser } from '../../common/decorators/current-user.decorator';
+import { Public } from '../../common/decorators/public.decorator';
 import { User } from '@repo/database';
 import { z } from 'zod';
 
@@ -28,11 +29,13 @@ const UpdateReviewDto = z.object({
 export class ReviewsController {
   constructor(private readonly reviewsService: ReviewsService) {}
 
+  @Public()
   @Get('property/:propertyId')
   getPropertyReviews(@Param('propertyId') propertyId: string) {
     return this.reviewsService.getPropertyReviews(propertyId);
   }
 
+  @Public()
   @Get('property/:propertyId/stats')
   getPropertyReviewStats(@Param('propertyId') propertyId: string) {
     return this.reviewsService.getPropertyReviewStats(propertyId);
@@ -52,7 +55,7 @@ export class ReviewsController {
   createReview(
     @Param('propertyId') propertyId: string,
     @CurrentUser() user: User,
-    @Body() dto: any,
+    @Body() dto: z.infer<typeof CreateReviewDto>,
   ) {
     const validated = CreateReviewDto.parse(dto);
     return this.reviewsService.createReview(user.id, propertyId, validated);
@@ -63,7 +66,7 @@ export class ReviewsController {
   updateReview(
     @Param('id') id: string,
     @CurrentUser() user: User,
-    @Body() dto: any,
+    @Body() dto: z.infer<typeof UpdateReviewDto>,
   ) {
     const validated = UpdateReviewDto.parse(dto);
     return this.reviewsService.updateReview(id, user.id, validated);
