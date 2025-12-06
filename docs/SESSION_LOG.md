@@ -5,69 +5,62 @@
 ### Completed
 - [x] Created new repo: real-estate-platform-v2
 - [x] Initialized Turborepo monorepo with pnpm
-- [x] Created folder structure (apps/, packages/, docs/)
-- [x] Set up packages/shared with types, DTOs, constants
-- [x] Set up packages/database with Prisma schema (PostgreSQL)
+- [x] Created folder structure (apps/, packages/, docs/, templates/, scripts/)
+- [x] Set up packages/shared with types, DTOs, constants (Zod validation)
+- [x] Set up packages/database with Prisma schema (PostgreSQL, 17 models)
 - [x] Set up packages/ui with base components (Button, Card, Input, Label)
 - [x] Set up packages/config with ESLint config
-- [x] Created documentation files
+- [x] Created documentation (TASKS.md, CONVENTIONS.md, AI_INSTRUCTIONS.md)
+- [x] Added AI safety mitigations:
+  - scripts/pre-commit.sh (build check, TODO detection)
+  - templates/ folder (NestJS, React, API patterns)
+  - Seed script for test data
+  - Scope rules and KISS principle documented
+  - AI_PROBLEMS_AND_MITIGATIONS.md (8/10 fully mitigated)
 
 ### Current State
-- Branch: `main`
-- Last commit: Initial monorepo setup
-- All packages created but dependencies not installed yet
+- **Branch:** `develop`
+- **Last commit:** `bf164d3` - "chore: add AI safety mitigations"
+- **Dependencies:** NOT installed yet (need `pnpm install`)
+- **Database:** NOT set up yet (need PostgreSQL + migrate)
 
-### Next Steps
-1. Install dependencies with `pnpm install`
-2. Set up NestJS app in apps/api
-3. Create auth module with JWT
-4. Create properties CRUD endpoints
-
-### Files Created This Session
+### Project Location
 ```
-/
-├── package.json
-├── pnpm-workspace.yaml
-├── turbo.json
-├── tsconfig.json
-├── .gitignore
-├── packages/
-│   ├── shared/
-│   │   ├── package.json
-│   │   ├── tsconfig.json
-│   │   └── src/
-│   │       ├── index.ts
-│   │       ├── types/index.ts
-│   │       ├── dto/index.ts
-│   │       └── constants/index.ts
-│   ├── database/
-│   │   ├── package.json
-│   │   ├── tsconfig.json
-│   │   ├── prisma/schema.prisma
-│   │   └── src/index.ts
-│   ├── ui/
-│   │   ├── package.json
-│   │   ├── tsconfig.json
-│   │   └── src/
-│   │       ├── index.ts
-│   │       ├── utils/cn.ts
-│   │       └── primitives/
-│   │           ├── button.tsx
-│   │           ├── card.tsx
-│   │           ├── input.tsx
-│   │           └── label.tsx
-│   └── config/
-│       ├── package.json
-│       └── eslint.config.js
-└── docs/
-    ├── TASKS.md
-    ├── SESSION_LOG.md
-    ├── CONVENTIONS.md
-    └── AI_INSTRUCTIONS.md
+/home/odil/projects/real-estate-platform-v2
 ```
 
-### Notes
-- Using PostgreSQL instead of SQLite (production ready)
-- Prisma schema copied and adapted from old repo (17 models)
-- JWT auth instead of Clerk (self-hosted, simpler for AI)
-- All types defined in packages/shared for consistency
+### Next Steps (Phase 2: Backend Core)
+1. Install dependencies: `pnpm install`
+2. Set up PostgreSQL database
+3. Create NestJS app in apps/api:
+   - Auth module (JWT register/login)
+   - Properties module (CRUD)
+   - Users module
+4. Run migrations and seed data
+5. Test endpoints manually
+
+### Quick Start Commands
+```bash
+cd /home/odil/projects/real-estate-platform-v2
+git pull origin develop
+pnpm install
+# Set up .env with DATABASE_URL
+pnpm --filter @repo/database db:migrate
+pnpm --filter @repo/database db:seed
+pnpm dev
+```
+
+### Important Files
+- `docs/TASKS.md` - Full task checklist
+- `docs/AI_INSTRUCTIONS.md` - How to work (read first!)
+- `docs/CONVENTIONS.md` - Coding standards
+- `templates/` - Code patterns to copy
+- `scripts/pre-commit.sh` - Run before commits
+
+### Test Accounts (after seeding)
+```
+admin@example.com / password123
+agent@example.com / password123
+user1@example.com / password123
+user2@example.com / password123
+```
