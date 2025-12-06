@@ -139,3 +139,68 @@ import { AuthService } from '../auth/auth.service';
 
 import type { Property } from '@repo/shared';
 ```
+
+## KISS Principle (Keep It Simple)
+
+### Do the simplest thing that works
+
+```
+❌ Over-engineered:
+   - Abstract factory for creating one type of object
+   - Event bus for two components that talk once
+   - Microservices for a small app
+
+✅ Simple:
+   - Direct function call
+   - Props passed between components
+   - Monolith that can be split later
+```
+
+### Signs you're over-engineering:
+- "We might need this later"
+- "This makes it more flexible"
+- "Other projects do it this way"
+- Creating a file for < 20 lines of code
+- More than 2 levels of abstraction
+
+### Rules:
+1. **No premature abstraction** - Wait until you have 3 similar things before abstracting
+2. **No unused code** - Delete it, don't comment it out
+3. **No "just in case" features** - Build what's requested
+4. **No complex patterns for simple problems** - If/else is fine
+
+### File size guidelines:
+- Component: 50-200 lines ideal, 300 max
+- Service: 100-300 lines ideal, 500 max
+- If bigger, consider splitting by feature (not by layer)
+
+## Code Quality Rules
+
+### Complete, not perfect
+- Finish features end-to-end
+- Don't leave half-done code
+- Working > elegant
+
+### Explicit over implicit
+- Name things clearly
+- Avoid magic numbers/strings
+- Type everything
+
+### Fail fast
+- Validate inputs early
+- Throw errors, don't return null
+- Log errors with context
+
+## Dangerous Files (Modify with Caution)
+
+These files affect the entire system:
+- `packages/shared/src/types/index.ts` - Breaking changes affect all apps
+- `packages/shared/src/dto/index.ts` - API contract changes
+- `packages/database/prisma/schema.prisma` - Database schema
+- `turbo.json` - Build system
+- `tsconfig.json` - TypeScript config
+
+Before modifying:
+1. Understand all consumers
+2. Make backwards-compatible changes
+3. Test all apps after changes

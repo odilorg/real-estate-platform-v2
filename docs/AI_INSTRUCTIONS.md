@@ -152,6 +152,35 @@ Before committing, verify:
 - [ ] Error cases are handled
 - [ ] Types are properly defined
 
+## Scope Rules (CRITICAL)
+
+### ONLY modify files related to your current task
+```
+Task: "Add favorites endpoint"
+✅ Can modify:
+   - apps/api/src/modules/favorites/*
+   - packages/shared/src/dto/index.ts (add FavoriteDto)
+   - packages/shared/src/types/index.ts (add Favorite type)
+
+❌ Cannot modify:
+   - apps/api/src/modules/properties/* (not related)
+   - apps/web/* (frontend is separate task)
+   - Any "improvements" to existing code
+```
+
+### Before modifying ANY file, ask:
+1. Is this file directly required for my task?
+2. Am I adding new code or changing existing code?
+3. If changing existing code - was I asked to?
+
+### Forbidden without explicit request:
+- Refactoring existing working code
+- Adding "nice to have" features
+- Updating dependencies
+- Changing code style/formatting
+- Adding comments to code you didn't write
+- Creating abstractions for "future use"
+
 ## Don't Do
 
 - Don't modify files outside your current task scope
@@ -159,3 +188,56 @@ Before committing, verify:
 - Don't skip type definitions
 - Don't create files without exporting them
 - Don't forget to update SESSION_LOG.md
+- Don't leave TODO/FIXME comments (finish or don't start)
+- Don't add new dependencies without documenting why
+- Don't refactor unless explicitly asked
+
+## Pre-Commit Checklist
+
+Run before EVERY commit:
+```bash
+./scripts/pre-commit.sh
+```
+
+This checks:
+- TypeScript compilation
+- No console.log statements
+- No TODO comments
+- Reminder to update SESSION_LOG.md
+
+## Using Templates
+
+Before writing new code, check `templates/` folder:
+- `nest-module.template.ts` - NestJS controller/service
+- `react-component.template.tsx` - React components
+- `api-route.template.ts` - Next.js API routes
+
+Copy and adapt - don't write from scratch.
+
+## Manual Testing Checklist
+
+After implementing a feature:
+- [ ] Start the app: `pnpm dev`
+- [ ] Test the happy path (feature works)
+- [ ] Test error cases (proper error messages)
+- [ ] Check browser console (no errors)
+- [ ] Check API logs (no errors)
+
+## Rollback Instructions
+
+If something breaks:
+```bash
+# See recent commits
+git log --oneline -10
+
+# Undo last commit (keep changes)
+git reset --soft HEAD~1
+
+# Undo last commit (discard changes)
+git reset --hard HEAD~1
+
+# Revert a specific commit
+git revert <commit-hash>
+```
+
+Document what went wrong in SESSION_LOG.md.
