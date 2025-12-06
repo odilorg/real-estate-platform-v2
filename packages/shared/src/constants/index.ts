@@ -17,11 +17,11 @@ export const PropertyType = {
 } as const;
 export type PropertyType = (typeof PropertyType)[keyof typeof PropertyType];
 
-// Listing Types
+// Listing Types (must match Prisma enum)
 export const ListingType = {
   SALE: 'SALE',
-  RENT: 'RENT',
-  DAILY_RENT: 'DAILY_RENT',
+  RENT_LONG: 'RENT_LONG',
+  RENT_DAILY: 'RENT_DAILY',
 } as const;
 export type ListingType = (typeof ListingType)[keyof typeof ListingType];
 

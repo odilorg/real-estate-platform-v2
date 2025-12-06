@@ -29,6 +29,8 @@ export const AuthResponseDto = z.object({
   user: z.object({
     id: z.string(),
     email: z.string(),
+    firstName: z.string(),
+    lastName: z.string(),
     role: z.enum(['USER', 'AGENT', 'ADMIN']),
   }),
 });
