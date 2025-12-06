@@ -22,7 +22,9 @@ pnpm dlx @nestjs/cli new api --package-manager pnpm --skip-git
 ```bash
 cd apps/api
 pnpm add @nestjs/config @nestjs/jwt @nestjs/passport passport passport-jwt bcrypt class-validator class-transformer
-pnpm add -D @types/passport-jwt @types/bcrypt
+pnpm add @nestjs/platform-socket.io @nestjs/websockets socket.io  # WebSockets
+pnpm add @aws-sdk/client-s3 @aws-sdk/lib-storage multer            # File upload (R2/S3)
+pnpm add -D @types/passport-jwt @types/bcrypt @types/multer
 ```
 
 ### 1.3 Configure Workspace
@@ -62,6 +64,67 @@ apps/api/
 
 ---
 
+## Step 1.5: Upload Module (Cloudflare R2)
+
+### Why Early?
+Real estate is images. Building with dummy URLs then refactoring to R2 later will break frontend components and image pipelines. Set it up now.
+
+### 1.5.1 Files to Create
+```
+modules/upload/
+├── upload.module.ts
+├── upload.controller.ts
+├── upload.service.ts
+└── r2.config.ts
+```
+
+### 1.5.2 Endpoints
+| Method | Endpoint | Description | Auth |
+|--------|----------|-------------|------|
+| POST | `/api/upload` | Upload single file | Yes |
+| POST | `/api/upload/multiple` | Upload multiple files | Yes |
+| DELETE | `/api/upload/:key` | Delete file by key | Yes |
+
+### 1.5.3 Implementation Details
+
+**Upload Flow:**
+1. Receive file via Multer (memory storage)
+2. Generate unique key: `properties/{userId}/{uuid}.{ext}`
+3. Stream directly to R2 using AWS SDK
+4. Return public URL
+
+**R2 Configuration:**
+```typescript
+// r2.config.ts
+import { S3Client } from '@aws-sdk/client-s3';
+
+export const r2Client = new S3Client({
+  region: 'auto',
+  endpoint: process.env.R2_ENDPOINT,
+  credentials: {
+    accessKeyId: process.env.R2_ACCESS_KEY_ID,
+    secretAccessKey: process.env.R2_SECRET_ACCESS_KEY,
+  },
+});
+```
+
+**Response Format:**
+```json
+{
+  "url": "https://pub-xxx.r2.dev/properties/user123/abc.jpg",
+  "key": "properties/user123/abc.jpg"
+}
+```
+
+**Deliverables:**
+- [ ] R2 bucket created and configured
+- [ ] Single file upload working
+- [ ] Multiple file upload working
+- [ ] Delete file working
+- [ ] Returns public URLs
+
+---
+
 ## Step 2: Auth Module
 
 ### 2.1 Files to Create
@@ -71,7 +134,8 @@ modules/auth/
 ├── auth.controller.ts
 ├── auth.service.ts
 ├── strategies/
-│   └── jwt.strategy.ts
+│   ├── jwt.strategy.ts
+│   └── google.strategy.ts
 └── dto/
     └── (use @repo/shared DTOs)
 ```
@@ -83,6 +147,8 @@ modules/auth/
 | POST | `/api/auth/login` | Login, get JWT token | No |
 | GET | `/api/auth/me` | Get current user | Yes |
 | POST | `/api/auth/refresh` | Refresh token | Yes |
+| GET | `/api/auth/google` | Redirect to Google OAuth | No |
+| GET | `/api/auth/google/callback` | Google OAuth callback | No |
 
 ### 2.3 Implementation Details
 
@@ -100,6 +166,14 @@ modules/auth/
 4. Generate JWT token (7 day expiry)
 5. Return { accessToken, user }
 
+**Google OAuth Flow:**
+1. User clicks "Login with Google" → redirects to `/api/auth/google`
+2. Google authenticates user → redirects to `/api/auth/google/callback`
+3. Extract email, firstName, lastName from Google profile
+4. Find or create user (password = null for OAuth users)
+5. Generate JWT token
+6. Redirect to frontend with token (e.g., `/auth/callback?token=xxx`)
+
 **JWT Payload:**
 ```typescript
 {
@@ -112,6 +186,7 @@ modules/auth/
 **Deliverables:**
 - [ ] Register endpoint working
 - [ ] Login endpoint returns JWT
+- [ ] Google OAuth login working
 - [ ] JWT guard protects routes
 - [ ] CurrentUser decorator extracts user
 
@@ -155,6 +230,9 @@ modules/properties/
 ├── properties.module.ts
 ├── properties.controller.ts
 ├── properties.service.ts
+├── search/
+│   ├── search-provider.interface.ts   # Abstract search interface
+│   └── postgres-search.provider.ts    # Default Postgres implementation
 └── dto/
     └── (use @repo/shared DTOs)
 ```
@@ -169,6 +247,7 @@ modules/properties/
 | DELETE | `/api/properties/:id` | Delete property | Yes (owner) |
 | GET | `/api/properties/my` | Get my listings | Yes |
 | POST | `/api/properties/:id/view` | Increment view count | No |
+| GET | `/api/properties/clusters` | Get clustered pins for map | No |
 
 ### 4.3 Query Parameters for List
 ```
@@ -189,9 +268,24 @@ GET /api/properties?
   buildingClass=BUSINESS
   renovation=EURO
   featured=true
+  # Geo search (PostGIS)
+  lat=41.2995
+  lng=69.2401
+  radius=5          # km
+  bounds=SW_lat,SW_lng,NE_lat,NE_lng  # viewport bounds
 ```
 
 ### 4.4 Implementation Details
+
+**Search Provider Abstraction:**
+```typescript
+// search-provider.interface.ts
+interface SearchProvider {
+  search(filters: PropertyFilterDto): Promise<SearchResult>;
+  cluster(bounds: Bounds, zoom: number): Promise<Cluster[]>;
+}
+```
+Start with Postgres + PostGIS. Can swap for Meilisearch/Elasticsearch later without changing controller.
 
 **Create Property:**
 1. Validate with CreatePropertyDto
@@ -201,10 +295,67 @@ GET /api/properties?
 
 **List Properties:**
 1. Parse query params with PropertyFilterDto
-2. Build Prisma where clause
+2. Call SearchProvider.search() (abstracts DB vs search engine)
 3. Apply pagination (skip/take)
 4. Include images (primary only for list)
 5. Return { items, total, page, limit, totalPages }
+
+**Map Clustering (Important for performance):**
+- At low zoom: Return clusters (count + center point)
+- At high zoom: Return individual properties
+- Use PostGIS ST_ClusterKMeans or Supercluster algorithm
+
+**Geo Search with Haversine (until PostGIS):**
+```typescript
+// Simple distance filter without PostGIS extension
+const result = await prisma.$queryRaw`
+  SELECT *,
+    ( 6371 * acos(
+      cos( radians(${lat}) ) * cos( radians( lat ) ) *
+      cos( radians( lng ) - radians(${lng}) ) +
+      sin( radians(${lat}) ) * sin( radians( lat ) )
+    )) AS distance
+  FROM "Property"
+  WHERE "deletedAt" IS NULL
+  HAVING distance < ${radius}
+  ORDER BY distance;
+`;
+```
+
+**View Count - Avoid Row Locking:**
+Don't write to Property table directly (causes row locks under load).
+Use separate `PropertyAnalytics` table:
+```typescript
+// In Prisma schema (add this)
+model PropertyAnalytics {
+  id          String   @id @default(cuid())
+  propertyId  String   @unique
+  viewCount   Int      @default(0)
+  property    Property @relation(fields: [propertyId], references: [id])
+}
+
+// In service
+await prisma.propertyAnalytics.upsert({
+  where: { propertyId },
+  update: { viewCount: { increment: 1 } },
+  create: { propertyId, viewCount: 1 },
+});
+```
+
+**Soft Deletes:**
+Never actually delete properties. Use `deletedAt` field:
+```typescript
+// Add to Property model
+deletedAt DateTime?
+
+// Prisma middleware to auto-filter
+prisma.$use(async (params, next) => {
+  if (params.model === 'Property' && params.action === 'findMany') {
+    params.args.where = { ...params.args.where, deletedAt: null };
+  }
+  return next(params);
+});
+```
 
 **Authorization:**
 - Create: Any authenticated user
@@ -213,11 +364,12 @@ GET /api/properties?
 
 **Deliverables:**
 - [ ] List with all filters working
+- [ ] Geo search with Haversine formula
 - [ ] Create with images and amenities
 - [ ] Update (owner only)
-- [ ] Delete (owner only)
+- [ ] Soft delete (owner only)
 - [ ] My listings endpoint
-- [ ] View count increment
+- [ ] View count via PropertyAnalytics table
 
 ---
 
@@ -268,7 +420,16 @@ GET /api/properties?
 
 ## Step 7: Messages Module
 
-### 7.1 Endpoints
+### 7.1 Files to Create
+```
+modules/messages/
+├── messages.module.ts
+├── messages.controller.ts      # REST endpoints
+├── messages.service.ts
+└── messages.gateway.ts         # WebSocket gateway
+```
+
+### 7.2 REST Endpoints
 | Method | Endpoint | Description | Auth |
 |--------|----------|-------------|------|
 | GET | `/api/messages/conversations` | My conversations | Yes |
@@ -277,7 +438,54 @@ GET /api/properties?
 | POST | `/api/messages/conversations/:id` | Send message | Yes |
 | PATCH | `/api/messages/:id/read` | Mark as read | Yes |
 
-### 7.2 Implementation Details
+### 7.3 WebSocket Events (Socket.io)
+```typescript
+// Client → Server
+'join_conversation'    // Join room for real-time updates
+'leave_conversation'   // Leave room
+'typing'               // User is typing indicator
+
+// Server → Client
+'new_message'          // New message received
+'message_read'         // Message marked as read
+'user_typing'          // Other user is typing
+```
+
+### 7.4 Implementation Details (Hybrid Approach)
+
+**Why Hybrid?**
+- REST for saving (reliable, transactional)
+- WebSocket for notifications (instant, real-time)
+
+**Send Message Flow:**
+```
+1. Sender calls REST: POST /api/messages/conversations/:id
+2. Server saves to database
+3. Server emits WebSocket event to recipient's room
+4. Recipient UI updates instantly (no refresh needed)
+```
+
+**WebSocket Gateway:**
+```typescript
+@WebSocketGateway({ cors: true })
+export class MessagesGateway {
+  @WebSocketServer()
+  server: Server;
+
+  @SubscribeMessage('join_conversation')
+  handleJoin(client: Socket, conversationId: string) {
+    client.join(`conversation:${conversationId}`);
+  }
+
+  // Called by MessagesService after saving message
+  notifyNewMessage(conversationId: string, message: Message) {
+    this.server
+      .to(`conversation:${conversationId}`)
+      .emit('new_message', message);
+  }
+}
+```
+
 - Conversation between 2 users about a property
 - Check participant before allowing access
 - Return unread count per conversation
@@ -289,6 +497,7 @@ GET /api/properties?
 - [ ] Start new conversation
 - [ ] Send message
 - [ ] Mark as read
+- [ ] WebSocket gateway for real-time notifications
 
 ---
 
@@ -324,6 +533,7 @@ GET /api/properties?
 | GET | `/api/admin/users` | List all users |
 | PATCH | `/api/admin/users/:id/role` | Change user role |
 | PATCH | `/api/admin/users/:id/ban` | Ban/unban user |
+| POST | `/api/admin/users/:id/impersonate` | Get JWT as user (for debugging) |
 | GET | `/api/admin/properties` | List all properties |
 | PATCH | `/api/admin/properties/:id/verify` | Verify property |
 | PATCH | `/api/admin/properties/:id/feature` | Feature property |
@@ -337,9 +547,26 @@ GET /api/properties?
 - Log all admin actions to AdminLog
 - Stats: user count, property count, etc.
 
+**Admin Impersonation (Debugging):**
+```typescript
+// POST /api/admin/users/:id/impersonate
+// Returns JWT token as if admin were that user
+// Crucial for debugging: "I can't see my property"
+@Post('users/:id/impersonate')
+@UseGuards(AdminGuard)
+async impersonate(@Param('id') userId: string, @CurrentUser() admin: User) {
+  // Log this action!
+  await this.adminLogService.log(admin.id, 'IMPERSONATE', { targetUserId: userId });
+
+  const user = await this.usersService.findById(userId);
+  return { accessToken: this.authService.generateToken(user) };
+}
+```
+
 **Deliverables:**
 - [ ] Admin guard
 - [ ] User management
+- [ ] User impersonation (with logging)
 - [ ] Property moderation
 - [ ] Review moderation
 - [ ] Dashboard stats
@@ -351,20 +578,21 @@ GET /api/properties?
 
 ### Phase 2A: Core (Do First)
 1. Project Setup
-2. Auth Module
-3. Properties Module (CRUD + filters)
+2. Upload Module (Cloudflare R2)
+3. Auth Module
+4. Properties Module (CRUD + filters + soft delete)
 
 ### Phase 2B: Features
-4. Users Module
-5. Favorites Module
-6. Reviews Module
+5. Users Module
+6. Favorites Module
+7. Reviews Module
 
 ### Phase 2C: Communication
-7. Messages Module
-8. Viewings Module
+8. Messages Module (REST + WebSocket)
+9. Viewings Module
 
 ### Phase 2D: Admin
-9. Admin Endpoints
+10. Admin Endpoints
 
 ---
 
@@ -410,6 +638,21 @@ DATABASE_URL="postgresql://postgres:password@localhost:5432/realestate_dev"
 JWT_SECRET="your-super-secret-key-min-32-chars"
 JWT_EXPIRES_IN="7d"
 
+# Google OAuth
+GOOGLE_CLIENT_ID="your-google-client-id"
+GOOGLE_CLIENT_SECRET="your-google-client-secret"
+GOOGLE_CALLBACK_URL="http://localhost:3001/api/auth/google/callback"
+
+# Cloudflare R2 (S3-compatible)
+R2_ENDPOINT="https://<account-id>.r2.cloudflarestorage.com"
+R2_ACCESS_KEY_ID="your-r2-access-key"
+R2_SECRET_ACCESS_KEY="your-r2-secret-key"
+R2_BUCKET_NAME="realestate-uploads"
+R2_PUBLIC_URL="https://pub-xxx.r2.dev"
+
+# Frontend URL (for OAuth redirect)
+FRONTEND_URL="http://localhost:3000"
+
 # App
 PORT=3001
 NODE_ENV=development
@@ -425,3 +668,29 @@ Backend is complete when:
 - [ ] Seed data works
 - [ ] No TypeScript errors
 - [ ] Documented in this file
+
+---
+
+## Pre-Launch Tasks (Before Production)
+
+These are deferred until MVP is working:
+
+### Search Performance (if needed)
+- [ ] Evaluate if Postgres + Haversine is fast enough
+- [ ] If not: Add Meilisearch/Elasticsearch
+- [ ] Swap `PostgresSearchProvider` → `MeilisearchProvider`
+
+### PostGIS Upgrade (if needed)
+- [ ] Enable PostGIS extension in production database
+- [ ] Replace Haversine with PostGIS ST_Distance
+- [ ] Add geometry column to Property table
+- [ ] Implement server-side clustering with ST_ClusterKMeans
+
+---
+
+## Frontend Notes
+
+When building frontend (Phase 3):
+- Use **MapLibre GL** instead of Mapbox (free, same API)
+- Use **Lucide React** for icons (shadcn standard)
+- Use **Day.js** for date handling (lightweight)
