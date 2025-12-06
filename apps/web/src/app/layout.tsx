@@ -1,11 +1,17 @@
 import type { ReactNode } from 'react';
+import { Inter } from 'next/font/google';
+import './globals.css';
+
+const inter = Inter({ subsets: ['latin', 'cyrillic'] });
 
 type Props = {
   children: ReactNode;
 };
 
-// This layout only exists to satisfy Next.js requirement for a root layout.
-// The actual layout with html/body tags is in [locale]/layout.tsx
 export default function RootLayout({ children }: Props) {
-  return children;
+  return (
+    <html lang="ru" suppressHydrationWarning>
+      <body className={inter.className}>{children}</body>
+    </html>
+  );
 }

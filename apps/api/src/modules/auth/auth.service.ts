@@ -5,9 +5,10 @@ import {
   ForbiddenException,
 } from '@nestjs/common';
 import { JwtService } from '@nestjs/jwt';
-import { PrismaClient, User } from '@repo/database';
+import { User } from '@repo/database';
 import * as bcrypt from 'bcrypt';
 import { RegisterDto, LoginDto } from '@repo/shared';
+import { PrismaService } from '../../common/prisma';
 
 export interface JwtPayload {
   sub: string;
@@ -28,11 +29,10 @@ export interface AuthResponse {
 
 @Injectable()
 export class AuthService {
-  private prisma: PrismaClient;
-
-  constructor(private jwtService: JwtService) {
-    this.prisma = new PrismaClient();
-  }
+  constructor(
+    private jwtService: JwtService,
+    private prisma: PrismaService,
+  ) {}
 
   async register(dto: RegisterDto): Promise<AuthResponse> {
     const existingUser = await this.prisma.user.findUnique({

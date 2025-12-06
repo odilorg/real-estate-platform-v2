@@ -136,8 +136,13 @@ enum PropertyType {
 
 enum ListingType {
   SALE
-  RENT
-  DAILY_RENT
+  RENT_LONG
+  RENT_DAILY
+}
+
+enum Currency {
+  YE    // у.е. (conditional units - standard in Uzbekistan)
+  UZS   // Uzbek Som
 }
 
 enum PropertyStatus {
