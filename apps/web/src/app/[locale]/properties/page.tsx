@@ -4,7 +4,8 @@ import { useState, useEffect } from 'react';
 import Link from 'next/link';
 import { PropertyCard, Button } from '@repo/ui';
 import { AdvancedFilters, type AdvancedFilterValues } from '@/components';
-import { Search, Plus, Loader2 } from 'lucide-react';
+import { Search, Plus, Loader2, User, LogOut } from 'lucide-react';
+import { useAuth } from '@/context/AuthContext';
 
 interface PropertyImage {
   id: string;
@@ -17,7 +18,7 @@ interface Property {
   title: string;
   description: string;
   price: number;
-  listingType: 'SALE' | 'RENT';
+  listingType: 'SALE' | 'RENT_LONG' | 'RENT_DAILY';
   propertyType: string;
   bedrooms: number | null;
   bathrooms: number | null;
@@ -26,6 +27,8 @@ interface Property {
   city: string;
   images: PropertyImage[];
   createdAt: string;
+  averageRating?: number | null;
+  reviewCount?: number;
 }
 
 const defaultFilters: AdvancedFilterValues = {
@@ -38,6 +41,7 @@ const defaultFilters: AdvancedFilterValues = {
 };
 
 export default function PropertiesPage() {
+  const { user, isAuthenticated, logout } = useAuth();
   const [properties, setProperties] = useState<Property[]>([]);
   const [loading, setLoading] = useState(true);
   const [error, setError] = useState<string | null>(null);
@@ -106,15 +110,34 @@ export default function PropertiesPage() {
               RealEstate
             </Link>
             <div className="flex items-center gap-4">
-              <Link href="/auth/login">
-                <Button variant="ghost">Войти</Button>
-              </Link>
-              <Link href="/properties/new">
-                <Button>
-                  <Plus className="h-4 w-4 mr-2" />
-                  Разместить
-                </Button>
-              </Link>
+              {isAuthenticated ? (
+                <>
+                  <Link href="/dashboard">
+                    <Button variant="ghost">
+                      <User className="h-4 w-4 mr-2" />
+                      {user?.firstName}
+                    </Button>
+                  </Link>
+                  <Link href="/properties/new">
+                    <Button>
+                      <Plus className="h-4 w-4 mr-2" />
+                      Разместить
+                    </Button>
+                  </Link>
+                  <Button variant="ghost" onClick={logout}>
+                    <LogOut className="h-4 w-4" />
+                  </Button>
+                </>
+              ) : (
+                <>
+                  <Link href="/auth/login">
+                    <Button variant="ghost">Войти</Button>
+                  </Link>
+                  <Link href="/auth/register">
+                    <Button>Регистрация</Button>
+                  </Link>
+                </>
+              )}
             </div>
           </div>
         </div>
@@ -205,6 +228,8 @@ export default function PropertiesPage() {
                   bathrooms={property.bathrooms ?? undefined}
                   area={property.area}
                   imageUrl={property.images?.[0]?.url}
+                  rating={property.averageRating ?? undefined}
+                  reviewCount={property.reviewCount}
                 />
               </Link>
             ))}

@@ -5,21 +5,26 @@ import { cn } from '../utils/cn';
 import { Card, CardContent } from '../primitives/card';
 
 export interface PropertyCardProps {
-  id: string;
+  id?: string;
   title: string;
   price: number;
   priceLabel?: string;
-  propertyType: string;
+  propertyType?: string;
   listingType: string;
-  city: string;
+  city?: string;
   district?: string;
+  address?: string;
   area?: number;
   rooms?: number;
+  bedrooms?: number;
+  bathrooms?: number;
   floor?: number;
   totalFloors?: number;
   imageUrl?: string;
   featured?: boolean;
   verified?: boolean;
+  rating?: number;
+  reviewCount?: number;
   href?: string;
   onClick?: () => void;
   className?: string;
@@ -75,17 +80,24 @@ export function PropertyCard({
   listingType,
   city,
   district,
+  address,
   area,
   rooms,
+  bedrooms,
+  bathrooms,
   floor,
   totalFloors,
   imageUrl,
   featured,
   verified,
+  rating,
+  reviewCount,
   href,
   onClick,
   className,
 }: PropertyCardProps) {
+  const displayRooms = rooms || bedrooms;
+  const displayLocation = address || (city ? (district ? `${city}, ${district}` : city) : '');
   const CardWrapper = href ? 'a' : 'div';
   const wrapperProps = href ? { href } : { onClick };
 
@@ -142,10 +154,20 @@ export function PropertyCard({
             )}
           </div>
 
-          <div className="absolute bottom-2 right-2">
-            <span className="px-2 py-1 text-xs font-medium bg-black/70 text-white rounded">
-              {getPropertyTypeLabel(propertyType)}
-            </span>
+          <div className="absolute bottom-2 right-2 flex gap-1">
+            {rating !== undefined && rating > 0 && (
+              <span className="px-2 py-1 text-xs font-medium bg-yellow-400 text-yellow-900 rounded flex items-center gap-1">
+                <svg className="w-3 h-3 fill-current" viewBox="0 0 20 20">
+                  <path d="M9.049 2.927c.3-.921 1.603-.921 1.902 0l1.07 3.292a1 1 0 00.95.69h3.462c.969 0 1.371 1.24.588 1.81l-2.8 2.034a1 1 0 00-.364 1.118l1.07 3.292c.3.921-.755 1.688-1.54 1.118l-2.8-2.034a1 1 0 00-1.175 0l-2.8 2.034c-.784.57-1.838-.197-1.539-1.118l1.07-3.292a1 1 0 00-.364-1.118L2.98 8.72c-.783-.57-.38-1.81.588-1.81h3.461a1 1 0 00.951-.69l1.07-3.292z" />
+                </svg>
+                {rating.toFixed(1)}
+              </span>
+            )}
+            {propertyType && (
+              <span className="px-2 py-1 text-xs font-medium bg-black/70 text-white rounded">
+                {getPropertyTypeLabel(propertyType)}
+              </span>
+            )}
           </div>
         </div>
 
@@ -161,18 +183,19 @@ export function PropertyCard({
 
           <h3 className="font-medium text-sm line-clamp-1 mb-2">{title}</h3>
 
-          <div className="text-sm text-muted-foreground mb-3">
-            {city}
-            {district && `, ${district}`}
-          </div>
+          {displayLocation && (
+            <div className="text-sm text-muted-foreground mb-3">
+              {displayLocation}
+            </div>
+          )}
 
           <div className="flex gap-4 text-sm text-muted-foreground">
-            {rooms && (
+            {displayRooms && (
               <div className="flex items-center gap-1">
                 <svg className="w-4 h-4" fill="none" stroke="currentColor" viewBox="0 0 24 24">
                   <path strokeLinecap="round" strokeLinejoin="round" strokeWidth={2} d="M19 21V5a2 2 0 00-2-2H7a2 2 0 00-2 2v16m14 0h2m-2 0h-5m-9 0H3m2 0h5M9 7h1m-1 4h1m4-4h1m-1 4h1m-5 10v-5a1 1 0 011-1h2a1 1 0 011 1v5m-4 0h4" />
                 </svg>
-                <span>{rooms} комн.</span>
+                <span>{displayRooms} комн.</span>
               </div>
             )}
             {area && (

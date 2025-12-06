@@ -95,7 +95,7 @@ export class PropertiesService {
       ...(renovation && { renovation }),
     };
 
-    const [items, total] = await Promise.all([
+    const [properties, total] = await Promise.all([
       this.prisma.property.findMany({
         where,
         skip: (page - 1) * limit,
@@ -110,10 +110,27 @@ export class PropertiesService {
               lastName: true,
             },
           },
+          reviews: {
+            where: { approved: true },
+            select: { rating: true },
+          },
         },
       }),
       this.prisma.property.count({ where }),
     ]);
+
+    // Calculate average rating for each property
+    const items = properties.map((property) => {
+      const { reviews, ...rest } = property;
+      const reviewCount = reviews.length;
+      const averageRating =
+        reviewCount > 0
+          ? Math.round(
+              (reviews.reduce((sum, r) => sum + r.rating, 0) / reviewCount) * 10,
+            ) / 10
+          : null;
+      return { ...rest, averageRating, reviewCount };
+    });
 
     return {
       items,
