@@ -3,40 +3,149 @@
 ## Session 4 - 2025-12-06 (CURRENT)
 
 ### ✅ COMPLETED THIS SESSION
+
+#### API Modules Created
 1. **Favorites Module** - `apps/api/src/modules/favorites/`
-   - Add/remove favorites endpoints
-   - Get user favorites list
+   - `POST /api/favorites/:propertyId` - Add to favorites
+   - `DELETE /api/favorites/:propertyId` - Remove from favorites
+   - `GET /api/favorites` - Get user favorites
 
 2. **Messages Module** - `apps/api/src/modules/messages/`
-   - Conversations between users
-   - Send/receive messages
+   - `POST /api/messages/conversations` - Start conversation
+   - `GET /api/messages/conversations` - List conversations
+   - `GET /api/messages/conversations/:id` - Get conversation
+   - `POST /api/messages/conversations/:id/messages` - Send message
+   - `PATCH /api/messages/:id/read` - Mark as read
 
 3. **Viewings Module** - `apps/api/src/modules/viewings/`
-   - Schedule property viewings
-   - Accept/reject requests
+   - `POST /api/viewings` - Request viewing
+   - `GET /api/viewings` - List viewings
+   - `PATCH /api/viewings/:id/status` - Accept/reject
 
 4. **Admin Module** - `apps/api/src/modules/admin/`
-   - User management (list, ban, role change)
-   - Property management (approve, feature)
-   - Admin logs
-   - Roles guard and decorator
+   - `GET /api/admin/users` - List users
+   - `PATCH /api/admin/users/:id/role` - Change role
+   - `PATCH /api/admin/users/:id/ban` - Ban user
+   - `GET /api/admin/properties` - List properties
+   - `PATCH /api/admin/properties/:id/status` - Approve/reject
+   - `PATCH /api/admin/properties/:id/feature` - Feature property
+   - `GET /api/admin/logs` - Admin activity logs
 
 5. **Reviews Module** - `apps/api/src/modules/reviews/`
-   - Property reviews with ratings (1-5)
-   - Average rating calculation
-   - Admin approval workflow
+   - `POST /api/reviews` - Create review
+   - `GET /api/reviews/property/:id` - Get property reviews
+   - `GET /api/reviews/property/:id/stats` - Get rating stats
+   - `DELETE /api/reviews/:id` - Delete review
+   - `PATCH /api/admin/reviews/:id/approve` - Approve review
 
-6. **Frontend Features**:
-   - AuthContext for global auth state
-   - Dashboard pages (overview, favorites, messages, profile)
-   - Admin dashboard page
-   - Property create/edit forms with image upload
-   - Reviews section on property detail page
-   - Rating display on property cards
-   - Updated PropertyCard component
+#### Frontend Pages Created
+- `/admin` - Admin dashboard
+- `/dashboard` - User dashboard overview
+- `/dashboard/favorites` - Saved properties
+- `/dashboard/messages` - Conversations
+- `/dashboard/profile` - User profile settings
+- `/properties/new` - Create property form
+- `/properties/[id]/edit` - Edit property form
+- Updated `/properties/[id]` - Added reviews section
+- Updated `/properties` - Added rating display on cards
 
-### Commits Made
+#### Shared Code
+- `AuthContext` - Global auth state management
+- `PropertyCard` - Updated with rating badge
+- DTOs and constants for all modules
+
+### Current Codebase Structure
+
 ```
+apps/
+├── api/src/
+│   ├── app.module.ts
+│   ├── common/
+│   │   ├── decorators/
+│   │   │   ├── current-user.decorator.ts
+│   │   │   └── roles.decorator.ts
+│   │   ├── guards/
+│   │   │   ├── jwt-auth.guard.ts
+│   │   │   └── roles.guard.ts
+│   │   └── prisma/
+│   └── modules/
+│       ├── admin/
+│       │   ├── admin.controller.ts
+│       │   ├── admin.module.ts
+│       │   └── admin.service.ts
+│       ├── auth/
+│       │   ├── auth.controller.ts
+│       │   ├── auth.module.ts
+│       │   ├── auth.service.ts
+│       │   ├── decorators/
+│       │   ├── guards/
+│       │   └── strategies/
+│       │       ├── google.strategy.ts
+│       │       └── jwt.strategy.ts
+│       ├── favorites/
+│       │   ├── favorites.controller.ts
+│       │   ├── favorites.module.ts
+│       │   └── favorites.service.ts
+│       ├── messages/
+│       │   ├── messages.controller.ts
+│       │   ├── messages.module.ts
+│       │   └── messages.service.ts
+│       ├── properties/
+│       │   ├── properties.controller.ts
+│       │   ├── properties.module.ts
+│       │   └── properties.service.ts
+│       ├── reviews/
+│       │   ├── reviews.controller.ts
+│       │   ├── reviews.module.ts
+│       │   └── reviews.service.ts
+│       ├── upload/
+│       │   ├── upload.controller.ts
+│       │   ├── upload.module.ts
+│       │   └── upload.service.ts
+│       └── viewings/
+│           ├── viewings.controller.ts
+│           ├── viewings.module.ts
+│           └── viewings.service.ts
+│
+└── web/src/
+    ├── app/[locale]/
+    │   ├── admin/page.tsx
+    │   ├── auth/
+    │   │   ├── callback/page.tsx
+    │   │   ├── login/page.tsx
+    │   │   └── register/page.tsx
+    │   ├── dashboard/
+    │   │   ├── favorites/page.tsx
+    │   │   ├── messages/page.tsx
+    │   │   ├── page.tsx
+    │   │   └── profile/page.tsx
+    │   ├── page.tsx
+    │   ├── properties/
+    │   │   ├── [id]/
+    │   │   │   ├── edit/page.tsx
+    │   │   │   └── page.tsx
+    │   │   ├── new/page.tsx
+    │   │   └── page.tsx
+    │   └── layout.tsx
+    ├── components/
+    │   └── AdvancedFilters.tsx
+    └── context/
+        ├── AuthContext.tsx
+        ├── Providers.tsx
+        └── index.ts
+
+packages/
+├── database/         # Prisma schema & client
+├── shared/           # DTOs, types, constants
+├── ui/               # React components
+│   └── src/composites/
+│       └── property-card.tsx
+└── config/           # ESLint, TSConfig
+```
+
+### Commits Made This Session
+```
+d7431a3 docs: update SESSION_LOG.md with session 4 progress
 af135b3 feat(web): update auth pages and layout with providers
 a79cdbe feat(shared): add DTOs and constants for new modules
 82f8894 feat(api): register new modules and update auth endpoints
@@ -55,21 +164,11 @@ dd0bbd4 feat(api): add reviews module with ratings and comments
 
 ### Current State
 - **Branch:** `feature/auth-ui`
-- **Last commit:** `af135b3`
+- **Last commit:** `d7431a3`
 - **Working tree:** Clean
 
-### API Modules Now Available
-- `/api/auth/*` - Authentication
-- `/api/properties/*` - Property CRUD
-- `/api/favorites/*` - User favorites
-- `/api/messages/*` - Conversations
-- `/api/viewings/*` - Property viewings
-- `/api/reviews/*` - Property reviews
-- `/api/admin/*` - Admin operations
-- `/api/upload/*` - File uploads (R2)
-
 ### 🎯 NEXT STEPS
-Possible features to implement next:
+Possible features to implement:
 1. **Search & Filters** - Advanced property search with geo
 2. **Saved Searches** - Save and notify on new matches
 3. **Recently Viewed** - Track user browsing history
@@ -82,7 +181,6 @@ Possible features to implement next:
 ```bash
 cd /home/odil/projects/real-estate-platform-v2
 git checkout feature/auth-ui
-git pull origin feature/auth-ui
 
 # Start API
 cd apps/api
@@ -97,92 +195,29 @@ pnpm dev
 
 ## Session 3 - 2025-12-06
 
-### ✅ COMPLETED THIS SESSION
-1. **Auth Module Implemented** - `feature/auth` branch
-   - Register endpoint (`POST /api/auth/register`)
-   - Login endpoint (`POST /api/auth/login`)
-   - /me endpoint (`GET /api/auth/me`)
-   - Google OAuth (`GET /api/auth/google`, `/callback`)
-   - JWT strategy with passport-jwt
-   - Google strategy with passport-google-oauth20
-   - JwtAuthGuard and CurrentUser decorator
-
-2. **Fixed shared package** - Now builds to CommonJS for NestJS compatibility
-   - Updated tsconfig.json to emit CommonJS
-   - Updated package.json exports
-
-3. **Added tsconfig.base.json** to packages/config
-
-### Current State
-- **Branch:** `feature/auth`
-- **Last commit:** `73b26c7`
-- **API running:** http://localhost:3001/api
-- **Database:** PostgreSQL connected
-
-### Tested Endpoints
-```bash
-# Health check
-curl http://localhost:3001/api/health
-# {"status":"ok","timestamp":"...","database":"connected"}
-
-# Register
-curl -X POST http://localhost:3001/api/auth/register \
-  -H "Content-Type: application/json" \
-  -d '{"email":"test@test.com","password":"password123","firstName":"Test","lastName":"User"}'
-
-# Login
-curl -X POST http://localhost:3001/api/auth/login \
-  -H "Content-Type: application/json" \
-  -d '{"email":"test@test.com","password":"password123"}'
-
-# Get current user (protected)
-curl http://localhost:3001/api/auth/me \
-  -H "Authorization: Bearer <token>"
-```
-
-### Auth Files Created
-```
-apps/api/src/
-├── common/
-│   ├── decorators/current-user.decorator.ts
-│   └── guards/jwt-auth.guard.ts
-└── modules/auth/
-    ├── auth.module.ts
-    ├── auth.controller.ts
-    ├── auth.service.ts
-    └── strategies/
-        ├── jwt.strategy.ts
-        └── google.strategy.ts
-```
+### ✅ COMPLETED
+1. **Auth Module** - JWT + Google OAuth
+2. **Fixed shared package** - CommonJS for NestJS
+3. **Added tsconfig.base.json**
 
 ---
 
 ## Session 2 - 2025-12-06
 
 ### Completed
-1. Dependencies installed - `pnpm install` working
-2. PostgreSQL database - `realestate_dev` created, running
-3. Migrations - `20251206110545_init` applied
-4. Seed data - 4 users, 4 properties, conversations, reviews loaded
-5. NestJS API created - `apps/api/`
-   - Health check: `GET /api/health`
-   - Connected to `@repo/database` and `@repo/shared`
-   - Module folders created
-6. BACKEND_PLAN.md updated with refinements
-7. CI/CD - GitHub Actions workflow
-8. Git workflow documented
+1. Dependencies installed
+2. PostgreSQL database setup
+3. Migrations applied
+4. Seed data loaded
+5. NestJS API created
+6. CI/CD workflow
 
 ---
 
 ## Session 1 - 2025-12-06
 
 ### Completed
-- Created repo: real-estate-platform-v2
 - Turborepo + pnpm monorepo
-- packages/shared (types, DTOs, Zod)
-- packages/database (Prisma, 17 models)
-- packages/ui (Button, Card, Input, Label)
-- packages/config (ESLint)
+- packages/shared, database, ui, config
 - Documentation files
-- AI safety mitigations
-- BACKEND_PLAN.md created
+- BACKEND_PLAN.md
