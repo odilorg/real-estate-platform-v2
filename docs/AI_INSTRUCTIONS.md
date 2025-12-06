@@ -1,5 +1,60 @@
 # AI Coding Instructions
 
+## Feature Development Strategy: Vertical Slicing
+
+**CRITICAL:** Build features as complete vertical slices, not horizontal layers.
+
+### What is Vertical Slicing?
+
+Instead of building all Backend features first, then all Frontend features:
+
+```
+❌ WRONG (Horizontal):
+1. Build ALL API endpoints (Auth, Properties, Messaging, Reviews)
+2. Then build ALL Frontend pages
+3. Discover contracts don't match, waste time refactoring
+```
+
+Build complete features end-to-end:
+
+```
+✅ CORRECT (Vertical Slices):
+Slice 1: Auth (BE endpoints + FE login/register + shared types)
+Slice 2: Properties (BE search API + FE search page + shared types)
+Slice 3: Messaging (BE + WS + FE conversation UI + shared types)
+```
+
+### Development Order for Each Feature
+
+1. **Shared Types First** - Define DTOs in `packages/shared`
+2. **Backend Foundation** - Build core API endpoints
+3. **Frontend Consumption** - Build UI that consumes the API
+4. **Iterate** - Add complexity (WebSockets, edge cases)
+
+### Iteration Example (Messaging Feature)
+
+| Iteration | Focus | Action |
+|-----------|-------|--------|
+| 1 | Core (REST) | BE: GET/POST endpoints, FE: static UI |
+| 2 | Real-time (BE) | BE: WebSocket implementation |
+| 3 | Real-time (FE) | FE: Connect to WebSocket, live updates |
+| 4 | Polish | Read receipts, unread counts |
+
+### Why Not Build Everything Backend First?
+
+- **Stale Contracts** - FE may need different data structure
+- **No Feedback** - Can't validate UX until API is done
+- **Wasted Work** - Building features nobody will use
+
+### Current Vertical Slices Status
+
+- [x] Slice 1: Auth (BE done, FE next)
+- [ ] Slice 2: Properties Search
+- [ ] Slice 3: Messaging
+- [ ] Slice 4: Reviews
+
+---
+
 ## Before Starting Any Session
 
 1. **Read SESSION_LOG.md** - Understand what was done before

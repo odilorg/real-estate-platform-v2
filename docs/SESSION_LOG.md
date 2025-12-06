@@ -1,92 +1,120 @@
 # Session Log
 
-## Session 2 - 2025-12-06 (Continued)
+## Session 3 - 2025-12-06 (CURRENT)
 
-### Completed
-- [x] Dependencies installed (`pnpm install`)
-- [x] PostgreSQL database set up (realestate_dev)
-- [x] Database migrations run
-- [x] Seed data loaded (4 users, 4 properties)
-- [x] Created NestJS app in apps/api:
-  - Health check endpoint: `GET /api/health`
-  - Connected to @repo/database
-  - Project structure created (modules folders)
-- [x] Updated BACKEND_PLAN.md with refinements:
-  - Step 1.5: Upload Module (Cloudflare R2)
-  - PropertyAnalytics for view counts (avoid row locking)
-  - WebSocket gateway for messages
-  - Soft delete pattern
-  - Haversine geo queries
-  - Admin impersonate endpoint
-- [x] Added GitHub Actions CI workflow:
-  - `pnpm turbo run lint typecheck build`
-  - Runs on push to develop/main
+### ✅ COMPLETED THIS SESSION
+1. **Auth Module Implemented** - `feature/auth` branch
+   - Register endpoint (`POST /api/auth/register`)
+   - Login endpoint (`POST /api/auth/login`)
+   - /me endpoint (`GET /api/auth/me`)
+   - Google OAuth (`GET /api/auth/google`, `/callback`)
+   - JWT strategy with passport-jwt
+   - Google strategy with passport-google-oauth20
+   - JwtAuthGuard and CurrentUser decorator
+
+2. **Fixed shared package** - Now builds to CommonJS for NestJS compatibility
+   - Updated tsconfig.json to emit CommonJS
+   - Updated package.json exports
+
+3. **Added tsconfig.base.json** to packages/config
 
 ### Current State
-- **Branch:** `develop`
-- **Last commit:** `a9116ce` - "chore(infra): improve CI workflow"
-- **API:** Running on http://localhost:3001/api
-- **Database:** Connected, seeded
+- **Branch:** `feature/auth`
+- **Last commit:** `73b26c7`
+- **API running:** http://localhost:3001/api
+- **Database:** PostgreSQL connected
 
-### Git Workflow (Feature Branching)
+### Tested Endpoints
+```bash
+# Health check
+curl http://localhost:3001/api/health
+# {"status":"ok","timestamp":"...","database":"connected"}
+
+# Register
+curl -X POST http://localhost:3001/api/auth/register \
+  -H "Content-Type: application/json" \
+  -d '{"email":"test@test.com","password":"password123","firstName":"Test","lastName":"User"}'
+
+# Login
+curl -X POST http://localhost:3001/api/auth/login \
+  -H "Content-Type: application/json" \
+  -d '{"email":"test@test.com","password":"password123"}'
+
+# Get current user (protected)
+curl http://localhost:3001/api/auth/me \
+  -H "Authorization: Bearer <token>"
 ```
-main           ← production (protected)
-develop        ← integration branch
-  └── feature/auth         ← Step 2: Auth module
-  └── feature/upload       ← Step 1.5: Upload module
-  └── feature/properties   ← Step 4: Properties module
-```
 
-**Rules:**
-- One feature = one branch = one PR
-- ALL changes (API + shared types + web) in same branch
-- CI must pass before merge
-- Branch off `develop`, merge back to `develop`
+### 🎯 NEXT STEP
+According to BACKEND_PLAN.md Phase 2A order:
+1. ~~Project Setup~~ ✅
+2. **Upload Module (R2)** - Next
+3. ~~Auth Module~~ ✅
+4. Properties Module
 
-### Next Steps
-1. Create `feature/auth` branch
-2. Implement Auth module:
-   - Register endpoint
-   - Login endpoint (JWT)
-   - Google OAuth
-   - JWT guard
-   - CurrentUser decorator
-3. Test endpoints
-4. Merge to develop
+Or merge `feature/auth` to `develop` first, then create `feature/upload`.
 
-### Quick Start Commands
+### Git Commands to Resume
 ```bash
 cd /home/odil/projects/real-estate-platform-v2
+git checkout feature/auth
+# or
 git checkout develop
-git pull origin develop
+git merge feature/auth
 
 # Start API
-DATABASE_URL="postgresql://postgres:password@localhost:5432/realestate_dev" pnpm --filter @repo/api dev
-
-# Test health
-curl http://localhost:3001/api/health
+cd apps/api
+DATABASE_URL="postgresql://postgres:password@localhost:5432/realestate_dev" pnpm dev
 ```
 
-### Test Accounts
+### Important Files
+- `docs/BACKEND_PLAN.md` - Full implementation plan
+- `docs/GIT_WORKFLOW.md` - Git branching rules
+- `docs/AI_INSTRUCTIONS.md` - Coding rules
+
+### Auth Files Created
 ```
-admin@example.com / password123
-agent@example.com / password123
-user1@example.com / password123
-user2@example.com / password123
+apps/api/src/
+├── common/
+│   ├── decorators/current-user.decorator.ts
+│   └── guards/jwt-auth.guard.ts
+└── modules/auth/
+    ├── auth.module.ts
+    ├── auth.controller.ts
+    ├── auth.service.ts
+    └── strategies/
+        ├── jwt.strategy.ts
+        └── google.strategy.ts
 ```
+
+---
+
+## Session 2 - 2025-12-06
+
+### Completed
+1. Dependencies installed - `pnpm install` working
+2. PostgreSQL database - `realestate_dev` created, running
+3. Migrations - `20251206110545_init` applied
+4. Seed data - 4 users, 4 properties, conversations, reviews loaded
+5. NestJS API created - `apps/api/`
+   - Health check: `GET /api/health`
+   - Connected to `@repo/database` and `@repo/shared`
+   - Module folders created
+6. BACKEND_PLAN.md updated with refinements
+7. CI/CD - GitHub Actions workflow
+8. Git workflow documented
 
 ---
 
 ## Session 1 - 2025-12-06
 
 ### Completed
-- [x] Created new repo: real-estate-platform-v2
-- [x] Initialized Turborepo monorepo with pnpm
-- [x] Created folder structure (apps/, packages/, docs/, templates/, scripts/)
-- [x] Set up packages/shared with types, DTOs, constants (Zod validation)
-- [x] Set up packages/database with Prisma schema (PostgreSQL, 17 models)
-- [x] Set up packages/ui with base components (Button, Card, Input, Label)
-- [x] Set up packages/config with ESLint config
-- [x] Created documentation (TASKS.md, CONVENTIONS.md, AI_INSTRUCTIONS.md)
-- [x] Added AI safety mitigations
-- [x] Created BACKEND_PLAN.md (detailed 9-step plan)
+- Created repo: real-estate-platform-v2
+- Turborepo + pnpm monorepo
+- packages/shared (types, DTOs, Zod)
+- packages/database (Prisma, 17 models)
+- packages/ui (Button, Card, Input, Label)
+- packages/config (ESLint)
+- Documentation files
+- AI safety mitigations
+- BACKEND_PLAN.md created
