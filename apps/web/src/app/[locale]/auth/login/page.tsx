@@ -15,11 +15,13 @@ import {
   CardFooter,
 } from '@repo/ui';
 import { login } from '@/lib/auth';
+import { useAuth } from '@/context/AuthContext';
 
 export default function LoginPage() {
   const t = useTranslations('auth.login');
   const tCommon = useTranslations('common');
   const router = useRouter();
+  const { refreshUser } = useAuth();
   const [mounted, setMounted] = useState(false);
   const [email, setEmail] = useState('');
   const [password, setPassword] = useState('');
@@ -30,25 +32,24 @@ export default function LoginPage() {
     setMounted(true);
   }, []);
 
-  if (!mounted) {
-    return (
-      <div className="min-h-screen flex items-center justify-center p-4">
-        <div className="animate-spin rounded-full h-8 w-8 border-b-2 border-primary" />
-      </div>
-    );
-  }
-
   const handleSubmit = async (e: React.FormEvent) => {
     e.preventDefault();
     setError('');
     setLoading(true);
 
     try {
-      await login({ email, password });
-      router.push('/');
+      console.log('Attempting login with:', email);
+      const result = await login({ email, password });
+      console.log('Login result:', result);
+      console.log('Login successful, refreshing user...');
+      await refreshUser();
+      console.log('User refreshed, redirecting now...');
+      // Force redirect to properties page
+      window.location.assign('/properties');
+      return; // Don't execute finally
     } catch (err) {
+      console.error('Login error:', err);
       setError(err instanceof Error ? err.message : t('loginFailed'));
-    } finally {
       setLoading(false);
     }
   };
@@ -56,6 +57,14 @@ export default function LoginPage() {
   const handleGoogleLogin = () => {
     window.location.href = `${process.env.NEXT_PUBLIC_API_URL || 'http://localhost:3001/api'}/auth/google`;
   };
+
+  if (!mounted) {
+    return (
+      <div className="min-h-screen flex items-center justify-center p-4">
+        <div className="animate-spin rounded-full h-8 w-8 border-b-2 border-primary" />
+      </div>
+    );
+  }
 
   return (
     <div className="min-h-screen flex items-center justify-center p-4">

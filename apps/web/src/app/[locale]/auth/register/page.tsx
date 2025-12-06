@@ -15,11 +15,13 @@ import {
   CardFooter,
 } from '@repo/ui';
 import { register } from '@/lib/auth';
+import { useAuth } from '@/context/AuthContext';
 
 export default function RegisterPage() {
   const t = useTranslations('auth.register');
   const tCommon = useTranslations('common');
   const router = useRouter();
+  const { refreshUser } = useAuth();
   const [mounted, setMounted] = useState(false);
   const [formData, setFormData] = useState({
     email: '',
@@ -57,14 +59,19 @@ export default function RegisterPage() {
     setLoading(true);
 
     try {
+      console.log('Attempting registration...');
       await register({
         email: formData.email,
         password: formData.password,
         firstName: formData.firstName,
         lastName: formData.lastName,
       });
-      router.push('/');
+      console.log('Registration successful, refreshing user...');
+      await refreshUser();
+      console.log('User refreshed, redirecting...');
+      window.location.assign('/properties');
     } catch (err) {
+      console.error('Registration error:', err);
       setError(err instanceof Error ? err.message : t('registrationFailed'));
     } finally {
       setLoading(false);
