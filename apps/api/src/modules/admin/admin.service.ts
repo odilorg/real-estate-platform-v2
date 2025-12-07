@@ -153,7 +153,7 @@ export class AdminService {
 
   async getProperties(page = 1, limit = 20, status?: string) {
     const skip = (page - 1) * limit;
-    const where = status ? { status: status as any } : {};
+    const where = status ? { status: status as 'ACTIVE' | 'PENDING' | 'SOLD' | 'RENTED' } : {};
 
     const [properties, total] = await Promise.all([
       this.prisma.property.findMany({
@@ -264,7 +264,7 @@ export class AdminService {
   }
 
   async getAdminLogs(page = 1, limit = 50): Promise<{
-    items: any[];
+    items: Array<Record<string, unknown>>;
     total: number;
     page: number;
     limit: number;
@@ -305,7 +305,7 @@ export class AdminService {
     action: string,
     targetType: string,
     targetId: string,
-    details: Record<string, any>,
+    details: Record<string, unknown>,
   ) {
     await this.prisma.adminLog.create({
       data: {
@@ -313,7 +313,7 @@ export class AdminService {
         action,
         targetType,
         targetId,
-        details,
+        details: details as Record<string, never>,
       },
     });
   }

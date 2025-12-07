@@ -4,6 +4,7 @@ import { getMessages } from 'next-intl/server';
 import { notFound } from 'next/navigation';
 import { locales, type Locale } from '@/i18n/config';
 import { Providers } from '@/context/Providers';
+import { ErrorBoundary } from '@/components/ErrorBoundary';
 
 export const metadata: Metadata = {
   title: 'Real Estate Platform',
@@ -30,7 +31,9 @@ export default async function LocaleLayout({ children, params }: Props) {
 
   return (
     <NextIntlClientProvider messages={messages}>
-      <Providers>{children}</Providers>
+      <ErrorBoundary>
+        <Providers>{children}</Providers>
+      </ErrorBoundary>
     </NextIntlClientProvider>
   );
 }

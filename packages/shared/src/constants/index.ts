@@ -81,3 +81,13 @@ export const ViewingStatus = {
   COMPLETED: 'COMPLETED',
 } as const;
 export type ViewingStatus = (typeof ViewingStatus)[keyof typeof ViewingStatus];
+
+// Currency (Uzbekistan market: у.е. is standard, UZS is local)
+export const Currency = {
+  YE: 'YE',     // у.е. (conditional units - standard in Uzbekistan real estate)
+  UZS: 'UZS',   // Uzbek Som
+} as const;
+export type Currency = (typeof Currency)[keyof typeof Currency];
+
+// Exchange Rate MVP (Static)
+export const EXCHANGE_RATE_UZS_TO_USD = 12850;

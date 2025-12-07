@@ -14,7 +14,9 @@ model User {
   passwordHash  String
   firstName     String
   lastName      String
+  phone         String?
   role          UserRole  @default(USER)
+  isOAuthUser   Boolean   @default(false)
   banned        Boolean   @default(false)
   banReason     String?
   createdAt     DateTime  @default(now())
@@ -30,6 +32,8 @@ model User {
   recentlyViewed RecentlyViewed[]
   agent         Agent?
   adminLogs     AdminLog[]
+  propertyViews PropertyView[]
+  priceChanges  PriceHistory[]
 
   @@index([email])
   @@index([role])
@@ -48,6 +52,8 @@ model Property {
   title       String
   description String
   price       Float
+  priceUsd    Float?         // Normalized price in USD for search
+  currency    Currency      @default(YE)
   propertyType PropertyType
   listingType ListingType
   status      PropertyStatus @default(ACTIVE)
@@ -61,6 +67,7 @@ model Property {
   latitude    Float?
   longitude   Float?
   district    String?
+  mahalla     String?
   nearestMetro String?
   metroDistance Int?
 
@@ -115,6 +122,9 @@ model Property {
   reviews     Review[]
   viewings    Viewing[]
   conversations Conversation[]
+  analytics   PropertyAnalytics[]
+  propertyViews PropertyView[]
+  priceHistory PriceHistory[]
 
   @@index([userId])
   @@index([city])
@@ -451,4 +461,98 @@ model AdminLog {
   @@index([adminId])
   @@index([action])
   @@index([createdAt])
+}
+
+// Property Analytics tracking
+model PropertyAnalytics {
+  id          String    @id @default(cuid())
+  propertyId  String
+  date        DateTime  @default(now())
+
+  // Daily metrics
+  views       Int       @default(0)
+  favorites   Int       @default(0)
+  unfavorites Int       @default(0)
+  contacts    Int       @default(0)
+
+  // Price tracking
+  price       Float?
+  priceUsd    Float?
+
+  property    Property  @relation(fields: [propertyId], references: [id], onDelete: Cascade)
+
+  @@unique([propertyId, date])
+  @@index([propertyId])
+  @@index([date])
+}
+
+// Property view tracking (individual views)
+model PropertyView {
+  id          String    @id @default(cuid())
+  propertyId  String
+  userId      String?
+  ipAddress   String?
+  userAgent   String?
+  referrer    String?
+  createdAt   DateTime  @default(now())
+
+  property    Property  @relation(fields: [propertyId], references: [id], onDelete: Cascade)
+  user        User?     @relation(fields: [userId], references: [id], onDelete: SetNull)
+
+  @@index([propertyId])
+  @@index([userId])
+  @@index([createdAt])
+  @@index([propertyId, createdAt])
+}
+
+// Nearby amenities for properties
+model NearbyAmenity {
+  id          String       @id @default(cuid())
+  name        String
+  type        AmenityType
+  latitude    Float
+  longitude   Float
+  address     String?
+  city        String
+  createdAt   DateTime     @default(now())
+  updatedAt   DateTime     @updatedAt
+
+  @@index([type])
+  @@index([city])
+  @@index([latitude, longitude])
+}
+
+enum AmenityType {
+  METRO
+  BUS_STOP
+  SCHOOL
+  KINDERGARTEN
+  HOSPITAL
+  PHARMACY
+  SUPERMARKET
+  SHOPPING_MALL
+  RESTAURANT
+  CAFE
+  PARK
+  GYM
+  BANK
+}
+
+// Price history tracking for properties
+model PriceHistory {
+  id          String    @id @default(cuid())
+  propertyId  String
+  oldPrice    Float
+  newPrice    Float
+  currency    Currency
+  changedBy   String?
+  createdAt   DateTime  @default(now())
+
+  property    Property  @relation(fields: [propertyId], references: [id], onDelete: Cascade)
+  user        User?     @relation(fields: [changedBy], references: [id], onDelete: SetNull)
+
+  @@index([propertyId])
+  @@index([createdAt])
+  @@index([propertyId, createdAt])
+  @@map("price_history")
 }

@@ -7,6 +7,7 @@ import {
   BuildingClass,
   RenovationType,
   ParkingType,
+  Currency,
 } from '../constants';
 
 // Auth DTOs
@@ -41,6 +42,7 @@ export const CreatePropertyDto = z.object({
   title: z.string().min(5).max(200),
   description: z.string().min(20),
   price: z.number().positive(),
+  currency: z.nativeEnum(Currency).default(Currency.YE),
   propertyType: z.nativeEnum(PropertyType),
   listingType: z.nativeEnum(ListingType),
 
@@ -53,6 +55,7 @@ export const CreatePropertyDto = z.object({
   latitude: z.number().optional(),
   longitude: z.number().optional(),
   district: z.string().optional(),
+  mahalla: z.string().optional(),
   nearestMetro: z.string().optional(),
   metroDistance: z.number().optional(),
 
@@ -106,6 +109,7 @@ export const PropertyFilterDto = z.object({
   // Location filters
   city: z.string().optional(),
   district: z.string().optional(),
+  mahalla: z.string().optional(),
   nearestMetro: z.string().optional(),
 
   // Geo-location search
@@ -196,6 +200,98 @@ export const CreateViewingDto = z.object({
   message: z.string().max(500).optional(),
 });
 export type CreateViewingDto = z.infer<typeof CreateViewingDto>;
+
+// Saved Search DTOs
+export const CreateSavedSearchDto = z.object({
+  name: z.string().min(1).max(100),
+  filters: z.object({
+    // Location filters
+    city: z.string().optional(),
+    district: z.string().optional(),
+    mahalla: z.string().optional(),
+
+    // Property type filters
+    propertyType: z.nativeEnum(PropertyType).optional(),
+    listingType: z.nativeEnum(ListingType).optional(),
+
+    // Price range
+    minPrice: z.number().optional(),
+    maxPrice: z.number().optional(),
+
+    // Area range
+    minArea: z.number().optional(),
+    maxArea: z.number().optional(),
+
+    // Rooms
+    minBedrooms: z.number().optional(),
+    maxBedrooms: z.number().optional(),
+
+    // Building filters
+    buildingClass: z.nativeEnum(BuildingClass).optional(),
+    buildingType: z.nativeEnum(BuildingType).optional(),
+    renovation: z.nativeEnum(RenovationType).optional(),
+  }),
+  notificationsEnabled: z.boolean().default(false),
+});
+export type CreateSavedSearchDto = z.infer<typeof CreateSavedSearchDto>;
+
+export const UpdateSavedSearchDto = CreateSavedSearchDto.partial();
+export type UpdateSavedSearchDto = z.infer<typeof UpdateSavedSearchDto>;
+
+// Agent DTOs
+export const RegisterAgentDto = z.object({
+  firstName: z.string().min(1).max(100),
+  lastName: z.string().min(1).max(100),
+  phone: z.string().min(5).max(20),
+  email: z.string().email(),
+  bio: z.string().min(20).max(1000).optional(),
+  photo: z.string().url().optional(),
+  whatsapp: z.string().optional(),
+  telegram: z.string().optional(),
+  licenseNumber: z.string().optional(),
+  specializations: z.array(z.string()).default([]),
+  languages: z.array(z.string()).default([]),
+  areasServed: z.array(z.string()).default([]),
+  yearsExperience: z.number().int().min(0).default(0),
+  agencyId: z.string().optional(),
+});
+export type RegisterAgentDto = z.infer<typeof RegisterAgentDto>;
+
+export const UpdateAgentDto = z.object({
+  firstName: z.string().min(1).max(100).optional(),
+  lastName: z.string().min(1).max(100).optional(),
+  phone: z.string().min(5).max(20).optional(),
+  email: z.string().email().optional(),
+  bio: z.string().min(20).max(1000).optional(),
+  photo: z.string().url().optional(),
+  whatsapp: z.string().optional(),
+  telegram: z.string().optional(),
+  licenseNumber: z.string().optional(),
+  specializations: z.array(z.string()).optional(),
+  languages: z.array(z.string()).optional(),
+  areasServed: z.array(z.string()).optional(),
+  yearsExperience: z.number().int().min(0).optional(),
+  showPhone: z.boolean().optional(),
+  showEmail: z.boolean().optional(),
+});
+export type UpdateAgentDto = z.infer<typeof UpdateAgentDto>;
+
+// Agency DTOs
+export const CreateAgencyDto = z.object({
+  name: z.string().min(2).max(200),
+  slug: z.string().min(2).max(200).regex(/^[a-z0-9-]+$/),
+  logo: z.string().url().optional(),
+  description: z.string().max(2000).optional(),
+  website: z.string().url().optional(),
+  email: z.string().email().optional(),
+  phone: z.string().optional(),
+  address: z.string().optional(),
+  city: z.string().optional(),
+});
+export type CreateAgencyDto = z.infer<typeof CreateAgencyDto>;
+
+export const UpdateAgencyDto = CreateAgencyDto.partial().omit({ slug: true });
+export type UpdateAgencyDto = z.infer<typeof UpdateAgencyDto>;
 
 // Pagination Response
 export const PaginatedResponseDto = <T extends z.ZodTypeAny>(itemSchema: T) =>

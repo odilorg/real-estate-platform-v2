@@ -2,7 +2,7 @@
 
 import { useState, useEffect, useRef } from 'react';
 import Link from 'next/link';
-import { useRouter } from 'next/navigation';
+import { useRouter, useSearchParams } from 'next/navigation';
 import {
   Button,
   Card,
@@ -18,6 +18,7 @@ import {
   User,
   Building2,
 } from 'lucide-react';
+import { io, Socket } from 'socket.io-client';
 
 interface Conversation {
   id: string;
@@ -39,6 +40,7 @@ interface Conversation {
 
 interface Message {
   id: string;
+  conversationId: string;
   senderId: string;
   content: string;
   createdAt: string;
@@ -47,6 +49,7 @@ interface Message {
 
 export default function MessagesPage() {
   const router = useRouter();
+  const searchParams = useSearchParams();
   const { user, isAuthenticated, loading: authLoading } = useAuth();
   const [conversations, setConversations] = useState<Conversation[]>([]);
   const [selectedConversation, setSelectedConversation] = useState<Conversation | null>(null);
@@ -56,8 +59,11 @@ export default function MessagesPage() {
   const [messagesLoading, setMessagesLoading] = useState(false);
   const [sending, setSending] = useState(false);
   const messagesEndRef = useRef<HTMLDivElement>(null);
+  const socketRef = useRef<Socket | null>(null);
 
   const apiUrl = process.env.NEXT_PUBLIC_API_URL || 'http://localhost:3001/api';
+  const wsUrl = process.env.NEXT_PUBLIC_WS_URL || 'http://localhost:3001';
+  const conversationId = searchParams.get('conversationId');
 
   useEffect(() => {
     if (!authLoading && !isAuthenticated) {
@@ -74,6 +80,111 @@ export default function MessagesPage() {
   useEffect(() => {
     scrollToBottom();
   }, [messages]);
+
+  // WebSocket connection
+  useEffect(() => {
+    if (!isAuthenticated || !user) return;
+
+    const token = localStorage.getItem('token');
+    if (!token) return;
+
+    // Initialize Socket.IO connection to /messages namespace
+    const socket = io(`${wsUrl}/messages`, {
+      auth: { token },
+      transports: ['websocket', 'polling'],
+    });
+
+    socketRef.current = socket;
+
+    socket.on('connect', () => {
+      console.log('WebSocket connected');
+    });
+
+    socket.on('disconnect', () => {
+      console.log('WebSocket disconnected');
+    });
+
+    // Listen for new messages
+    socket.on('new_message', (message: Message) => {
+      console.log('Received new message:', message);
+
+      // Add message to the list if we're viewing this conversation
+      if (selectedConversation && message.conversationId === selectedConversation.id) {
+        setMessages((prev) => [...prev, message]);
+      }
+
+      // Update last message in conversations list and re-sort
+      setConversations((prev) => {
+        const updated = prev.map((conv) =>
+          conv.id === message.conversationId
+            ? {
+                ...conv,
+                messages: [{ content: message.content, createdAt: message.createdAt }],
+                lastMessageAt: message.createdAt,
+                // Increment unread count if message is from other user
+                unreadCount: message.senderId !== user.id ? conv.unreadCount + 1 : conv.unreadCount,
+              }
+            : conv
+        );
+        // Sort by lastMessageAt to move updated conversation to top
+        return updated.sort((a, b) =>
+          new Date(b.lastMessageAt).getTime() - new Date(a.lastMessageAt).getTime()
+        );
+      });
+    });
+
+    // Listen for new conversations
+    socket.on('new_conversation', (conversation: Conversation) => {
+      console.log('Received new conversation:', conversation);
+      setConversations((prev) => [conversation, ...prev]);
+    });
+
+    return () => {
+      socket.disconnect();
+      socketRef.current = null;
+    };
+  }, [isAuthenticated, user, wsUrl]);
+
+  // Auto-select conversation from URL parameter
+  useEffect(() => {
+    if (conversationId && conversations.length > 0 && !selectedConversation) {
+      const conv = conversations.find(c => c.id === conversationId);
+      if (conv) {
+        setSelectedConversation(conv);
+        fetchMessages(conv.id);
+
+        // Join conversation room
+        if (socketRef.current) {
+          socketRef.current.emit('join_conversation', conv.id);
+        }
+
+        // Update unread count locally
+        setConversations((prev) =>
+          prev.map((c) =>
+            c.id === conv.id ? { ...c, unreadCount: 0 } : c
+          )
+        );
+      }
+    }
+    // eslint-disable-next-line react-hooks/exhaustive-deps
+  }, [conversationId, conversations.length, selectedConversation]);
+
+  // If conversation not found but we have conversationId, refetch after delay
+  useEffect(() => {
+    if (conversationId && !loading && !selectedConversation) {
+      // Wait a bit for the conversation to be created on backend
+      const timer = setTimeout(() => {
+        const conv = conversations.find(c => c.id === conversationId);
+        if (!conv) {
+          // Conversation not in list yet, refetch
+          fetchConversations();
+        }
+      }, 500);
+
+      return () => clearTimeout(timer);
+    }
+    // eslint-disable-next-line react-hooks/exhaustive-deps
+  }, [conversationId, loading, selectedConversation]);
 
   const scrollToBottom = () => {
     messagesEndRef.current?.scrollIntoView({ behavior: 'smooth' });
@@ -118,8 +229,19 @@ export default function MessagesPage() {
   };
 
   const selectConversation = (conversation: Conversation) => {
+    // Leave previous conversation room
+    if (selectedConversation && socketRef.current) {
+      socketRef.current.emit('leave_conversation', selectedConversation.id);
+    }
+
     setSelectedConversation(conversation);
     fetchMessages(conversation.id);
+
+    // Join new conversation room
+    if (socketRef.current) {
+      socketRef.current.emit('join_conversation', conversation.id);
+    }
+
     // Update unread count locally
     setConversations((prev) =>
       prev.map((c) =>

@@ -4,8 +4,8 @@ import { useState, useEffect, useRef, useCallback } from 'react';
 import Link from 'next/link';
 import { useRouter, useSearchParams } from 'next/navigation';
 import { PropertyCard, Button, Select, SelectContent, SelectItem, SelectTrigger, SelectValue } from '@repo/ui';
-import { AdvancedFilters, type AdvancedFilterValues, PropertyMap, type PropertyMapMarker } from '@/components';
-import { Search, Plus, Loader2, User, LogOut, MapPin, ArrowUpDown, Grid3X3, Map as MapIcon } from 'lucide-react';
+import { AdvancedFilters, type AdvancedFilterValues, PropertyMap, type PropertyMapMarker, PropertyListItem } from '@/components';
+import { Search, Plus, Loader2, User, LogOut, MapPin, ArrowUpDown, Grid3X3, Map as MapIcon, List } from 'lucide-react';
 import { useAuth } from '@/context/AuthContext';
 
 interface PropertyImage {
@@ -33,9 +33,21 @@ interface Property {
   averageRating?: number | null;
   reviewCount?: number;
   distance?: number;
+  user?: {
+    id: string;
+    firstName: string;
+    lastName: string;
+    email: string;
+    phone?: string;
+    role: 'USER' | 'AGENT' | 'ADMIN';
+    agent?: {
+      phone: string;
+      photo?: string;
+    };
+  };
 }
 
-type ViewMode = 'grid' | 'map' | 'split';
+type ViewMode = 'grid' | 'list' | 'map' | 'split';
 
 interface SearchSuggestion {
   type: 'city' | 'district' | 'metro' | 'property';
@@ -130,10 +142,17 @@ export default function PropertiesPage() {
     if (maxPrice) initialFilters.maxPrice = Number(maxPrice);
 
     // Parse bedrooms
+    const bedrooms = searchParams.get('bedrooms');
     const minBedrooms = searchParams.get('minBedrooms');
     const maxBedrooms = searchParams.get('maxBedrooms');
-    if (minBedrooms) initialFilters.minBedrooms = Number(minBedrooms);
-    if (maxBedrooms) initialFilters.maxBedrooms = Number(maxBedrooms);
+    if (bedrooms) {
+      // Exact bedroom count
+      initialFilters.minBedrooms = Number(bedrooms);
+      initialFilters.maxBedrooms = Number(bedrooms);
+    } else {
+      if (minBedrooms) initialFilters.minBedrooms = Number(minBedrooms);
+      if (maxBedrooms) initialFilters.maxBedrooms = Number(maxBedrooms);
+    }
 
     // Parse area
     const minArea = searchParams.get('minArea');
@@ -199,6 +218,17 @@ export default function PropertiesPage() {
 
     setFilters(initialFilters);
     setFiltersInitialized(true);
+
+    // Auto-switch to list view when filters are applied from navbar
+    const hasActiveFilters =
+      initialFilters.propertyTypes.length > 0 ||
+      initialFilters.listingTypes.length > 0 ||
+      searchParams.get('minYearBuilt') ||
+      searchParams.get('search');
+
+    if (hasActiveFilters && viewMode === 'grid') {
+      setViewMode('list');
+    }
   }, [searchParams]);
 
   const fetchProperties = useCallback(async (page = currentPage) => {
@@ -513,6 +543,39 @@ export default function PropertiesPage() {
           )}
         </div>
 
+        {/* Quick Filter Links - Recommended */}
+        <div className="mb-6">
+          <h3 className="text-sm font-semibold text-gray-700 mb-3">Рекомендуем посмотреть</h3>
+          <div className="flex flex-wrap gap-x-6 gap-y-2 text-sm">
+            <Link href="/properties?propertyType=APARTMENT&minYearBuilt=2020" className="text-blue-600 hover:underline">
+              квартиры в новостройке <span className="text-gray-400">62 423</span>
+            </Link>
+            <Link href="/properties?listingType=SALE&propertyType=APARTMENT&bedrooms=2" className="text-blue-600 hover:underline">
+              2 комнатные <span className="text-gray-400">29 145</span>
+            </Link>
+            <Link href="/properties?listingType=SALE&propertyType=APARTMENT&bedrooms=3" className="text-blue-600 hover:underline">
+              3 комнатные <span className="text-gray-400">22 073</span>
+            </Link>
+            <Link href="/properties?listingType=SALE&propertyType=APARTMENT&bedrooms=4" className="text-blue-600 hover:underline">
+              4 комнатные <span className="text-gray-400">6 304</span>
+            </Link>
+          </div>
+          <div className="flex flex-wrap gap-x-6 gap-y-2 text-sm mt-2">
+            <Link href="/properties?buildingType=MONOLITHIC" className="text-blue-600 hover:underline">
+              квартиры во вторичке <span className="text-gray-400">42 076</span>
+            </Link>
+            <Link href="/properties?listingType=SALE&propertyType=APARTMENT&bedrooms=1" className="text-blue-600 hover:underline">
+              1 комнатные <span className="text-gray-400">22 432</span>
+            </Link>
+            <Link href="/properties?propertyType=APARTMENT&minArea=20&maxArea=35" className="text-blue-600 hover:underline">
+              студия <span className="text-gray-400">7 362</span>
+            </Link>
+            <Link href="/properties?listingType=SALE&propertyType=APARTMENT&bedrooms=5" className="text-blue-600 hover:underline">
+              5 комнатные <span className="text-gray-400">1 655</span>
+            </Link>
+          </div>
+        </div>
+
         {/* Filters */}
         <div className="mb-8">
           <AdvancedFilters
@@ -545,6 +608,15 @@ export default function PropertiesPage() {
                 title="Сетка"
               >
                 <Grid3X3 className="h-4 w-4" />
+              </Button>
+              <Button
+                variant={viewMode === 'list' ? 'default' : 'ghost'}
+                size="sm"
+                onClick={() => setViewMode('list')}
+                className="rounded-none border-x"
+                title="Список"
+              >
+                <List className="h-4 w-4" />
               </Button>
               <Button
                 variant={viewMode === 'split' ? 'default' : 'ghost'}
@@ -696,6 +768,38 @@ export default function PropertiesPage() {
               </div>
             )}
 
+            {/* List View */}
+            {viewMode === 'list' && (
+              <div className="space-y-4">
+                {properties.map((property) => (
+                  <PropertyListItem
+                    key={property.id}
+                    id={property.id}
+                    title={property.title}
+                    price={property.price}
+                    listingType={property.listingType}
+                    address={property.address}
+                    city={property.city}
+                    bedrooms={property.bedrooms ?? undefined}
+                    bathrooms={property.bathrooms ?? undefined}
+                    area={property.area}
+                    imageUrl={property.images?.[0]?.url}
+                    images={property.images}
+                    description={property.description}
+                    propertyType={property.propertyType}
+                    owner={property.user ? {
+                      id: property.user.id,
+                      name: `${property.user.firstName} ${property.user.lastName}`,
+                      type: property.user.role === 'AGENT' ? 'AGENT' : 'OWNER',
+                      phone: property.user.agent?.phone || property.user.phone,
+                      email: property.user.email,
+                      avatar: property.user.agent?.photo,
+                    } : undefined}
+                  />
+                ))}
+              </div>
+            )}
+
             {/* Grid View (default) */}
             {viewMode === 'grid' && (
               <div className="grid grid-cols-1 md:grid-cols-2 lg:grid-cols-3 gap-6">
@@ -718,8 +822,8 @@ export default function PropertiesPage() {
               </div>
             )}
 
-            {/* Pagination (only for grid view) */}
-            {viewMode === 'grid' && pagination && pagination.pages > 1 && (
+            {/* Pagination (for grid and list views) */}
+            {(viewMode === 'grid' || viewMode === 'list') && pagination && pagination.pages > 1 && (
               <div className="mt-8 flex justify-center">
                 <div className="flex items-center gap-2">
                   <Button

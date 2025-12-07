@@ -1,9 +1,14 @@
-import { Injectable, NotFoundException, ForbiddenException } from '@nestjs/common';
+import { Injectable, NotFoundException, ForbiddenException, Inject, forwardRef } from '@nestjs/common';
 import { PrismaService } from '../../common/prisma';
+import { MessagesGateway } from './messages.gateway';
 
 @Injectable()
 export class MessagesService {
-  constructor(private prisma: PrismaService) {}
+  constructor(
+    private prisma: PrismaService,
+    @Inject(forwardRef(() => MessagesGateway))
+    private messagesGateway: MessagesGateway,
+  ) {}
 
   async getConversations(userId: string) {
     const conversations = await this.prisma.conversation.findMany({
@@ -205,7 +210,31 @@ export class MessagesService {
       },
       include: {
         messages: true,
+        property: {
+          select: {
+            id: true,
+            title: true,
+            images: { take: 1, where: { isPrimary: true } },
+          },
+        },
       },
+    });
+
+    // Get the sender's info for the notification
+    const sender = await this.prisma.user.findUnique({
+      where: { id: userId },
+      select: { id: true, firstName: true, lastName: true },
+    });
+
+    // Emit real-time notification to property owner
+    this.messagesGateway.emitNewConversation(property.userId, {
+      id: conversation.id,
+      propertyId: conversation.propertyId,
+      property: conversation.property,
+      messages: [{ content: message, createdAt: conversation.messages[0].createdAt }],
+      lastMessageAt: conversation.lastMessageAt,
+      unreadCount: 1,
+      otherParticipant: sender,
     });
 
     return { conversation, message: conversation.messages[0] };
@@ -237,6 +266,9 @@ export class MessagesService {
       where: { id: conversationId },
       data: { lastMessageAt: new Date() },
     });
+
+    // Emit real-time event via WebSocket
+    this.messagesGateway.emitNewMessage(conversationId, message);
 
     return message;
   }

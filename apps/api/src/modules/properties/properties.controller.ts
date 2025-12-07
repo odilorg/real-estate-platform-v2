@@ -8,8 +8,11 @@ import {
   Param,
   Query,
   UseGuards,
+  NotFoundException,
 } from '@nestjs/common';
 import { PropertiesService } from './properties.service';
+import { LocationService } from './location.service';
+import { PriceHistoryService } from './price-history.service';
 import {
   CreatePropertyDto,
   UpdatePropertyDto,
@@ -23,7 +26,11 @@ import { ZodValidationPipe } from '../../common/pipes/zod-validation.pipe';
 
 @Controller('properties')
 export class PropertiesController {
-  constructor(private propertiesService: PropertiesService) {}
+  constructor(
+    private propertiesService: PropertiesService,
+    private locationService: LocationService,
+    private priceHistoryService: PriceHistoryService,
+  ) {}
 
   @Post()
   @UseGuards(JwtAuthGuard)
@@ -36,7 +43,7 @@ export class PropertiesController {
 
   @Get()
   @Public()
-  async findAll(@Query() query: any) {
+  async findAll(@Query() query: Record<string, string | undefined>) {
     // Parse all filter parameters
     const filters = PropertyFilterDto.parse({
       // Full-text search
@@ -154,6 +161,43 @@ export class PropertiesController {
       page ? parseInt(page) : 1,
       limit ? parseInt(limit) : 20,
     );
+  }
+
+  @Get(':id/location-data')
+  @Public()
+  async getLocationData(@Param('id') id: string) {
+    const property = await this.propertiesService.findOne(id);
+
+    if (!property) {
+      throw new NotFoundException(`Property with ID ${id} not found`);
+    }
+
+    if (!property.latitude || !property.longitude) {
+      throw new NotFoundException('Property does not have location coordinates');
+    }
+
+    return this.locationService.getPropertyLocationData(
+      property.latitude,
+      property.longitude,
+    );
+  }
+
+  @Get(':id/price-history')
+  @Public()
+  async getPriceHistory(@Param('id') id: string) {
+    const property = await this.propertiesService.findOne(id);
+
+    if (!property) {
+      throw new NotFoundException(`Property with ID ${id} not found`);
+    }
+
+    const history = await this.priceHistoryService.getPriceHistory(id);
+    const stats = await this.priceHistoryService.getPriceStats(id);
+
+    return {
+      history,
+      stats,
+    };
   }
 
   @Get(':id')

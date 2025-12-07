@@ -383,8 +383,8 @@ export default function ProfilePage() {
                 <div className="flex justify-between py-2">
                   <span className="text-gray-500">Дата регистрации</span>
                   <span className="text-gray-700">
-                    {user?.createdAt
-                      ? new Date(user.createdAt).toLocaleDateString('ru-RU')
+                    {user && 'createdAt' in user && user.createdAt
+                      ? new Date(user.createdAt as string).toLocaleDateString('ru-RU')
                       : '-'}
                   </span>
                 </div>

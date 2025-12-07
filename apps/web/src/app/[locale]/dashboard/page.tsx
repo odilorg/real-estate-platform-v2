@@ -62,6 +62,7 @@ export default function DashboardPage() {
   const [loading, setLoading] = useState(true);
   const [error, setError] = useState<string | null>(null);
   const [deletingId, setDeletingId] = useState<string | null>(null);
+  const [unreadCount, setUnreadCount] = useState(0);
 
   const apiUrl = process.env.NEXT_PUBLIC_API_URL || 'http://localhost:3001/api';
 
@@ -74,8 +75,29 @@ export default function DashboardPage() {
   useEffect(() => {
     if (isAuthenticated) {
       fetchMyProperties();
+      fetchUnreadCount();
     }
   }, [isAuthenticated]);
+
+  const fetchUnreadCount = async () => {
+    try {
+      const token = localStorage.getItem('token');
+      if (!token) return;
+
+      const response = await fetch(`${apiUrl}/messages/unread`, {
+        headers: {
+          Authorization: `Bearer ${token}`,
+        },
+      });
+
+      if (response.ok) {
+        const data = await response.json();
+        setUnreadCount(data.unreadCount || 0);
+      }
+    } catch (error) {
+      console.error('Failed to fetch unread count:', error);
+    }
+  };
 
   const fetchMyProperties = async () => {
     setLoading(true);
@@ -156,9 +178,14 @@ export default function DashboardPage() {
               </Button>
             </Link>
             <Link href="/dashboard/messages">
-              <Button variant="ghost" size="sm">
+              <Button variant="ghost" size="sm" className="relative">
                 <MessageSquare className="h-4 w-4 mr-2" />
                 Сообщения
+                {unreadCount > 0 && (
+                  <span className="absolute -top-1 -right-1 bg-red-500 text-white text-xs rounded-full h-5 w-5 flex items-center justify-center font-semibold">
+                    {unreadCount > 9 ? '9+' : unreadCount}
+                  </span>
+                )}
               </Button>
             </Link>
             <Link href="/dashboard/profile">

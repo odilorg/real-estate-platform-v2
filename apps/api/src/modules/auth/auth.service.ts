@@ -101,12 +101,18 @@ export class AuthService {
 
     if (!user) {
       // Create new user with OAuth (no password)
+      // Use a random unguessable hash to prevent password login
+      const randomHash = await bcrypt.hash(
+        Math.random().toString(36) + Date.now().toString(36),
+        10,
+      );
       user = await this.prisma.user.create({
         data: {
           email: profile.email,
-          passwordHash: '', // OAuth users have no password
+          passwordHash: randomHash, // OAuth users get random hash to prevent password login
           firstName: profile.firstName,
           lastName: profile.lastName,
+          isOAuthUser: true,
         },
       });
     }
@@ -178,8 +184,9 @@ export class AuthService {
       return false;
     }
 
-    // For OAuth users, they may not have a password
-    if (user.passwordHash) {
+    // For OAuth users setting their first password, skip current password verification
+    // Otherwise, verify the current password
+    if (!user.isOAuthUser) {
       const isValid = await bcrypt.compare(currentPassword, user.passwordHash);
       if (!isValid) {
         return false;
@@ -189,7 +196,10 @@ export class AuthService {
     const newPasswordHash = await bcrypt.hash(newPassword, 10);
     await this.prisma.user.update({
       where: { id: userId },
-      data: { passwordHash: newPasswordHash },
+      data: {
+        passwordHash: newPasswordHash,
+        isOAuthUser: false, // Once password is set, they're no longer OAuth-only
+      },
     });
 
     return true;

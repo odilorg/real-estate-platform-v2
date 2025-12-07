@@ -32,6 +32,7 @@ export interface AdvancedFilterValues {
   amenities: string[];
   city?: string;
   district?: string;
+  mahalla?: string;
   // Enhanced CIAN-style filters
   buildingClasses: string[];
   renovationTypes: string[];
@@ -176,7 +177,8 @@ export function AdvancedFilters({
       values.hasConcierge !== undefined ||
       values.hasGatedArea !== undefined ||
       values.city ||
-      values.district
+      values.district ||
+      values.mahalla
     );
   };
 
@@ -720,6 +722,19 @@ export function AdvancedFilters({
                   value={values.district || ''}
                   onChange={(e) =>
                     updateValue('district', e.target.value || undefined)
+                  }
+                />
+              </div>
+              <div className="col-span-2">
+                <Label htmlFor="mahalla" className="text-xs text-gray-600">
+                  Махалля
+                </Label>
+                <Input
+                  id="mahalla"
+                  placeholder="Введите махаллю"
+                  value={values.mahalla || ''}
+                  onChange={(e) =>
+                    updateValue('mahalla', e.target.value || undefined)
                   }
                 />
               </div>

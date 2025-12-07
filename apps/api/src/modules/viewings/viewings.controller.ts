@@ -7,12 +7,14 @@ import {
   Body,
   Param,
   UseGuards,
+  UsePipes,
 } from '@nestjs/common';
 import { ViewingsService } from './viewings.service';
 import { JwtAuthGuard } from '../../common/guards/jwt-auth.guard';
 import { CurrentUser } from '../../common/decorators/current-user.decorator';
 import { User } from '@repo/database';
 import { z } from 'zod';
+import { ZodValidationPipe } from '../../common/pipes/zod-validation.pipe';
 
 const RequestViewingDto = z.object({
   propertyId: z.string(),
@@ -20,11 +22,13 @@ const RequestViewingDto = z.object({
   time: z.string(),
   message: z.string().optional(),
 });
+type RequestViewingDto = z.infer<typeof RequestViewingDto>;
 
 const RespondViewingDto = z.object({
   status: z.enum(['CONFIRMED', 'CANCELLED']),
   notes: z.string().optional(),
 });
+type RespondViewingDto = z.infer<typeof RespondViewingDto>;
 
 @Controller('viewings')
 @UseGuards(JwtAuthGuard)
@@ -32,12 +36,12 @@ export class ViewingsController {
   constructor(private readonly viewingsService: ViewingsService) {}
 
   @Post()
-  requestViewing(@CurrentUser() user: User, @Body() dto: any) {
-    const validated = RequestViewingDto.parse(dto);
-    return this.viewingsService.requestViewing(user.id, validated.propertyId, {
-      date: validated.date,
-      time: validated.time,
-      message: validated.message,
+  @UsePipes(new ZodValidationPipe(RequestViewingDto))
+  requestViewing(@CurrentUser() user: User, @Body() dto: RequestViewingDto) {
+    return this.viewingsService.requestViewing(user.id, dto.propertyId, {
+      date: dto.date,
+      time: dto.time,
+      message: dto.message,
     });
   }
 
@@ -52,17 +56,17 @@ export class ViewingsController {
   }
 
   @Put(':id/respond')
+  @UsePipes(new ZodValidationPipe(RespondViewingDto))
   respondToViewing(
     @Param('id') id: string,
     @CurrentUser() user: User,
-    @Body() dto: any,
+    @Body() dto: RespondViewingDto,
   ) {
-    const validated = RespondViewingDto.parse(dto);
     return this.viewingsService.respondToViewing(
       id,
       user.id,
-      validated.status,
-      validated.notes,
+      dto.status,
+      dto.notes,
     );
   }
 

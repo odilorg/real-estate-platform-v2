@@ -8,6 +8,7 @@ import {
   Param,
   Query,
   UseGuards,
+  UsePipes,
 } from '@nestjs/common';
 import { AdminService } from './admin.service';
 import { JwtAuthGuard } from '../../common/guards/jwt-auth.guard';
@@ -16,22 +17,27 @@ import { Roles } from '../../common/decorators/roles.decorator';
 import { CurrentUser } from '../../common/decorators/current-user.decorator';
 import { User } from '@repo/database';
 import { z } from 'zod';
+import { ZodValidationPipe } from '../../common/pipes/zod-validation.pipe';
 
 const BanUserDto = z.object({
   reason: z.string().min(1),
 });
+type BanUserDto = z.infer<typeof BanUserDto>;
 
 const UpdateRoleDto = z.object({
   role: z.enum(['USER', 'AGENT', 'ADMIN']),
 });
+type UpdateRoleDto = z.infer<typeof UpdateRoleDto>;
 
 const RejectPropertyDto = z.object({
   reason: z.string().min(1),
 });
+type RejectPropertyDto = z.infer<typeof RejectPropertyDto>;
 
 const FeaturePropertyDto = z.object({
   featured: z.boolean(),
 });
+type FeaturePropertyDto = z.infer<typeof FeaturePropertyDto>;
 
 @Controller('admin')
 @UseGuards(JwtAuthGuard, RolesGuard)
@@ -58,13 +64,13 @@ export class AdminController {
   }
 
   @Post('users/:id/ban')
+  @UsePipes(new ZodValidationPipe(BanUserDto))
   banUser(
     @Param('id') id: string,
     @CurrentUser() admin: User,
-    @Body() dto: any,
+    @Body() dto: BanUserDto,
   ) {
-    const validated = BanUserDto.parse(dto);
-    return this.adminService.banUser(admin.id, id, validated.reason);
+    return this.adminService.banUser(admin.id, id, dto.reason);
   }
 
   @Post('users/:id/unban')
@@ -73,13 +79,13 @@ export class AdminController {
   }
 
   @Put('users/:id/role')
+  @UsePipes(new ZodValidationPipe(UpdateRoleDto))
   updateUserRole(
     @Param('id') id: string,
     @CurrentUser() admin: User,
-    @Body() dto: any,
+    @Body() dto: UpdateRoleDto,
   ) {
-    const validated = UpdateRoleDto.parse(dto);
-    return this.adminService.updateUserRole(admin.id, id, validated.role);
+    return this.adminService.updateUserRole(admin.id, id, dto.role);
   }
 
   @Get('properties')
@@ -101,23 +107,23 @@ export class AdminController {
   }
 
   @Post('properties/:id/reject')
+  @UsePipes(new ZodValidationPipe(RejectPropertyDto))
   rejectProperty(
     @Param('id') id: string,
     @CurrentUser() admin: User,
-    @Body() dto: any,
+    @Body() dto: RejectPropertyDto,
   ) {
-    const validated = RejectPropertyDto.parse(dto);
-    return this.adminService.rejectProperty(admin.id, id, validated.reason);
+    return this.adminService.rejectProperty(admin.id, id, dto.reason);
   }
 
   @Put('properties/:id/feature')
+  @UsePipes(new ZodValidationPipe(FeaturePropertyDto))
   featureProperty(
     @Param('id') id: string,
     @CurrentUser() admin: User,
-    @Body() dto: any,
+    @Body() dto: FeaturePropertyDto,
   ) {
-    const validated = FeaturePropertyDto.parse(dto);
-    return this.adminService.featureProperty(admin.id, id, validated.featured);
+    return this.adminService.featureProperty(admin.id, id, dto.featured);
   }
 
   @Delete('properties/:id')

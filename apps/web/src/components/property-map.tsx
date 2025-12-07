@@ -2,7 +2,7 @@
 
 import { useEffect, useState } from 'react';
 import dynamic from 'next/dynamic';
-import type { LatLngExpression, LatLngBoundsExpression } from 'leaflet';
+import type { LatLngExpression, LatLngBoundsExpression, Map as LeafletMap } from 'leaflet';
 import 'leaflet/dist/leaflet.css';
 
 interface PropertyMapMarker {
@@ -75,7 +75,7 @@ export function PropertyMap({
     );
   }
 
-  // Calculate center from properties if available
+  // Calculate center and bounds from properties if available
   const mapCenter: [number, number] = properties.length > 0
     ? [
         properties.reduce((sum, p) => sum + p.latitude, 0) / properties.length,
@@ -83,10 +83,35 @@ export function PropertyMap({
       ]
     : center;
 
+  // Calculate appropriate zoom level based on property spread
+  let mapZoom = zoom;
+  if (properties.length > 1) {
+    const lats = properties.map(p => p.latitude);
+    const lngs = properties.map(p => p.longitude);
+    const latDiff = Math.max(...lats) - Math.min(...lats);
+    const lngDiff = Math.max(...lngs) - Math.min(...lngs);
+    const maxDiff = Math.max(latDiff, lngDiff);
+
+    // Adjust zoom based on spread
+    if (maxDiff > 0.5) mapZoom = 10;
+    else if (maxDiff > 0.2) mapZoom = 11;
+    else if (maxDiff > 0.1) mapZoom = 12;
+    else if (maxDiff > 0.05) mapZoom = 13;
+    else mapZoom = 14;
+  } else if (properties.length === 1) {
+    mapZoom = 15; // Single property - zoom in close
+  }
+
+  console.log('PropertyMap: Rendering', properties.length, 'properties with coordinates, zoom:', mapZoom);
+
+  // Use a key to force remount when properties change significantly
+  const mapKey = properties.length > 0 ? `${properties.length}-${mapCenter[0].toFixed(2)}-${mapCenter[1].toFixed(2)}` : 'empty';
+
   return (
     <MapContainer
+      key={mapKey}
       center={mapCenter as LatLngExpression}
-      zoom={zoom}
+      zoom={mapZoom}
       className={`rounded-lg ${className}`}
       style={{ height: '100%', width: '100%', minHeight: '400px' }}
     >
@@ -95,35 +120,39 @@ export function PropertyMap({
         url="https://{s}.tile.openstreetmap.org/{z}/{x}/{y}.png"
       />
 
-      {properties.map((property) => {
-        return (
-          <Marker
-            key={property.id}
-            position={[property.latitude, property.longitude] as LatLngExpression}
-            eventHandlers={{
-              click: () => onMarkerClick?.(property.id),
-            }}
-          >
-            <Popup>
-              <div className="min-w-[200px]">
-                {property.imageUrl && (
-                  <img
-                    src={property.imageUrl}
-                    alt={property.title}
-                    className="w-full h-24 object-cover rounded mb-2"
-                  />
-                )}
-                <h3 className="font-semibold text-sm mb-1 line-clamp-2">
-                  {property.title}
-                </h3>
-                <p className="text-blue-600 font-bold">
-                  {formatPrice(property.price, property.listingType)}
-                </p>
-              </div>
-            </Popup>
-          </Marker>
-        );
-      })}
+      {properties.map((property) => (
+        <Marker
+          key={property.id}
+          position={[property.latitude, property.longitude] as LatLngExpression}
+          eventHandlers={{
+            click: () => onMarkerClick?.(property.id),
+            mouseover: (e) => {
+              e.target.openPopup();
+            },
+            mouseout: (e) => {
+              e.target.closePopup();
+            },
+          }}
+        >
+          <Popup closeButton={false} autoClose={false}>
+            <div className="min-w-[200px]">
+              {property.imageUrl && (
+                <img
+                  src={property.imageUrl}
+                  alt={property.title}
+                  className="w-full h-24 object-cover rounded mb-2"
+                />
+              )}
+              <h3 className="font-semibold text-sm mb-1 line-clamp-2">
+                {property.title}
+              </h3>
+              <p className="text-blue-600 font-bold">
+                {formatPrice(property.price, property.listingType)}
+              </p>
+            </div>
+          </Popup>
+        </Marker>
+      ))}
     </MapContainer>
   );
 }

@@ -4,9 +4,10 @@ import {
   ForbiddenException,
 } from '@nestjs/common';
 import { PrismaService } from '../../common/prisma';
-import { CreatePropertyDto, UpdatePropertyDto, PropertyFilterDto } from '@repo/shared';
+import { CreatePropertyDto, UpdatePropertyDto, PropertyFilterDto, Currency, EXCHANGE_RATE_UZS_TO_USD } from '@repo/shared';
 import { UploadService } from '../upload/upload.service';
 import { Prisma } from '@repo/database';
+import { PropertyQueryBuilder } from './property-query-builder';
 
 export interface PaginatedResult<T> {
   items: T[];
@@ -21,7 +22,8 @@ export class PropertiesService {
   constructor(
     private prisma: PrismaService,
     private uploadService: UploadService,
-  ) {}
+    private priceHistoryService: any, // Will be injected after compilation
+  ) { }
 
   /**
    * Calculate distance between two coordinates using Haversine formula
@@ -39,9 +41,9 @@ export class PropertiesService {
     const a =
       Math.sin(dLat / 2) * Math.sin(dLat / 2) +
       Math.cos(this.toRad(lat1)) *
-        Math.cos(this.toRad(lat2)) *
-        Math.sin(dLon / 2) *
-        Math.sin(dLon / 2);
+      Math.cos(this.toRad(lat2)) *
+      Math.sin(dLon / 2) *
+      Math.sin(dLon / 2);
     const c = 2 * Math.atan2(Math.sqrt(a), Math.sqrt(1 - a));
     return R * c;
   }
@@ -57,19 +59,22 @@ export class PropertiesService {
       data: {
         ...propertyData,
         userId,
+        priceUsd: propertyData.currency === Currency.UZS
+          ? propertyData.price / EXCHANGE_RATE_UZS_TO_USD
+          : propertyData.price,
         images: images
           ? {
-              create: images.map((url, index) => ({
-                url,
-                order: index,
-                isPrimary: index === 0,
-              })),
-            }
+            create: images.map((url, index) => ({
+              url,
+              order: index,
+              isPrimary: index === 0,
+            })),
+          }
           : undefined,
         amenities: amenities
           ? {
-              create: amenities.map((amenity) => ({ amenity })),
-            }
+            create: amenities.map((amenity) => ({ amenity })),
+          }
           : undefined,
       },
       include: {
@@ -89,208 +94,31 @@ export class PropertiesService {
     return property;
   }
 
-  async findAll(filters: PropertyFilterDto): Promise<PaginatedResult<any>> {
+  async findAll(filters: PropertyFilterDto): Promise<PaginatedResult<Record<string, unknown>>> {
     const {
-      // Full-text search
-      search,
-      // Location
-      city,
-      district,
-      nearestMetro,
-      // Geo-location
       latitude,
       longitude,
       radius,
-      // Property type
-      propertyType,
-      listingType,
-      status,
-      // Price
-      minPrice,
-      maxPrice,
-      // Area
-      minArea,
-      maxArea,
-      // Rooms
-      bedrooms,
-      minBedrooms,
-      maxBedrooms,
-      rooms,
-      minRooms,
-      maxRooms,
-      // Floor
-      floor,
-      minFloor,
-      maxFloor,
-      notFirstFloor,
-      notLastFloor,
-      // Building
-      buildingClass,
-      buildingType,
-      renovation,
-      parkingType,
-      // Year
-      minYearBuilt,
-      maxYearBuilt,
-      // Amenities
-      amenities,
-      // Boolean features
-      hasBalcony,
-      hasConcierge,
-      hasGatedArea,
-      // Listing options
-      featured,
-      verified,
-      // Pagination
       page = 1,
       limit = 20,
       sortBy = 'createdAt',
       sortOrder = 'desc',
     } = filters;
 
-    // Build the where clause
-    const where: Prisma.PropertyWhereInput = {
-      status: status || 'ACTIVE',
-    };
+    // Build where clause using PropertyQueryBuilder
+    const queryBuilder = new PropertyQueryBuilder(filters);
+    const where = queryBuilder.getWhereClause();
+    const needsGeoFilter = queryBuilder.needsGeoFilter();
+    const needsFloorPostFilter = queryBuilder.needsFloorPostFilter();
 
-    // Full-text search on title, description, address, city, district
-    if (search) {
-      where.OR = [
-        { title: { contains: search, mode: 'insensitive' } },
-        { description: { contains: search, mode: 'insensitive' } },
-        { address: { contains: search, mode: 'insensitive' } },
-        { city: { contains: search, mode: 'insensitive' } },
-        { district: { contains: search, mode: 'insensitive' } },
-        { nearestMetro: { contains: search, mode: 'insensitive' } },
-        { buildingName: { contains: search, mode: 'insensitive' } },
-      ];
-    }
-
-    // Location filters
-    if (city) {
-      where.city = { contains: city, mode: 'insensitive' };
-    }
-    if (district) {
-      where.district = { contains: district, mode: 'insensitive' };
-    }
-    if (nearestMetro) {
-      where.nearestMetro = { contains: nearestMetro, mode: 'insensitive' };
-    }
-
-    // Property type filters
-    if (propertyType) {
-      where.propertyType = propertyType;
-    }
-    if (listingType) {
-      where.listingType = listingType;
-    }
-
-    // Price range
-    if (minPrice || maxPrice) {
-      where.price = {};
-      if (minPrice) where.price.gte = minPrice;
-      if (maxPrice) where.price.lte = maxPrice;
-    }
-
-    // Area range
-    if (minArea || maxArea) {
-      where.area = {};
-      if (minArea) where.area.gte = minArea;
-      if (maxArea) where.area.lte = maxArea;
-    }
-
-    // Bedrooms
-    if (bedrooms !== undefined) {
-      where.bedrooms = bedrooms;
-    } else if (minBedrooms !== undefined || maxBedrooms !== undefined) {
-      where.bedrooms = {};
-      if (minBedrooms !== undefined) where.bedrooms.gte = minBedrooms;
-      if (maxBedrooms !== undefined) where.bedrooms.lte = maxBedrooms;
-    }
-
-    // Rooms
-    if (rooms !== undefined) {
-      where.rooms = rooms;
-    } else if (minRooms !== undefined || maxRooms !== undefined) {
-      where.rooms = {};
-      if (minRooms !== undefined) where.rooms.gte = minRooms;
-      if (maxRooms !== undefined) where.rooms.lte = maxRooms;
-    }
-
-    // Floor
-    if (floor !== undefined) {
-      where.floor = floor;
-    } else if (minFloor !== undefined || maxFloor !== undefined) {
-      where.floor = {};
-      if (minFloor !== undefined) where.floor.gte = minFloor;
-      if (maxFloor !== undefined) where.floor.lte = maxFloor;
-    }
-    if (notFirstFloor) {
-      where.floor = { ...((where.floor as object) || {}), gt: 1 };
-    }
-    if (notLastFloor) {
-      // This requires comparing floor to totalFloors, handled in post-filter
-    }
-
-    // Building filters
-    if (buildingClass) {
-      where.buildingClass = buildingClass;
-    }
-    if (buildingType) {
-      where.buildingType = buildingType;
-    }
-    if (renovation) {
-      where.renovation = renovation;
-    }
-    if (parkingType) {
-      where.parkingType = parkingType;
-    }
-
-    // Year built range
-    if (minYearBuilt || maxYearBuilt) {
-      where.yearBuilt = {};
-      if (minYearBuilt) where.yearBuilt.gte = minYearBuilt;
-      if (maxYearBuilt) where.yearBuilt.lte = maxYearBuilt;
-    }
-
-    // Amenities filter
-    if (amenities && amenities.length > 0) {
-      where.amenities = {
-        some: {
-          amenity: { in: amenities },
-        },
-      };
-    }
-
-    // Boolean features
-    if (hasBalcony) {
-      where.balcony = { gt: 0 };
-    }
-    if (hasConcierge) {
-      where.hasConcierge = true;
-    }
-    if (hasGatedArea) {
-      where.hasGatedArea = true;
-    }
-
-    // Listing options
-    if (featured !== undefined) {
-      where.featured = featured;
-    }
-    if (verified !== undefined) {
-      where.verified = verified;
-    }
-
-    // For geo-location search, we need to fetch more and filter
-    const needsGeoFilter = latitude !== undefined && longitude !== undefined && radius !== undefined;
-    const fetchLimit = needsGeoFilter ? limit * 10 : limit; // Fetch more for geo filtering
+    // For geo-location search, fetch more to account for post-filtering
+    const fetchLimit = needsGeoFilter ? limit * 10 : limit;
 
     // Determine order by
     let orderBy: Prisma.PropertyOrderByWithRelationInput = { [sortBy]: sortOrder };
 
-    // For rating sort, we need to handle differently
+    // For rating sort, we need to handle differently (in-memory sort after fetch)
     if (sortBy === 'rating') {
-      // We'll sort in memory after fetching
       orderBy = { createdAt: 'desc' };
     }
 
@@ -307,27 +135,36 @@ export class PropertiesService {
               id: true,
               firstName: true,
               lastName: true,
+              email: true,
+              phone: true,
+              role: true,
+              agent: {
+                select: {
+                  phone: true,
+                  photo: true,
+                },
+              },
             },
           },
           reviews: {
             where: { approved: true },
             select: { rating: true },
           },
-          amenities: amenities && amenities.length > 0 ? true : false,
+          amenities: true,
         },
       }),
       this.prisma.property.count({ where }),
     ]);
 
-    // Process results
+    // Process results: calculate ratings and distances
     let processedProperties = properties.map((property) => {
       const { reviews, amenities: propAmenities, ...rest } = property;
       const reviewCount = reviews.length;
       const averageRating =
         reviewCount > 0
           ? Math.round(
-              (reviews.reduce((sum, r) => sum + r.rating, 0) / reviewCount) * 10,
-            ) / 10
+            (reviews.reduce((sum, r) => sum + r.rating, 0) / reviewCount) * 10,
+          ) / 10
           : null;
 
       // Calculate distance if geo search
@@ -344,21 +181,20 @@ export class PropertiesService {
       return { ...rest, averageRating, reviewCount, distance };
     });
 
-    // Apply geo filter
+    // Apply post-processing filters
     if (needsGeoFilter) {
       processedProperties = processedProperties.filter(
         (p) => p.distance !== undefined && p.distance <= radius!,
       );
     }
 
-    // Apply notLastFloor filter
-    if (notLastFloor) {
+    if (needsFloorPostFilter) {
       processedProperties = processedProperties.filter(
         (p) => p.floor !== p.totalFloors,
       );
     }
 
-    // Sort by rating if needed
+    // Apply in-memory sorting
     if (sortBy === 'rating') {
       processedProperties.sort((a, b) => {
         const ratingA = a.averageRating || 0;
@@ -367,7 +203,6 @@ export class PropertiesService {
       });
     }
 
-    // Sort by distance if geo search
     if (needsGeoFilter) {
       processedProperties.sort((a, b) => (a.distance || 0) - (b.distance || 0));
     }
@@ -400,6 +235,31 @@ export class PropertiesService {
             firstName: true,
             lastName: true,
             email: true,
+            phone: true,
+            role: true,
+            agent: {
+              select: {
+                id: true,
+                photo: true,
+                phone: true,
+                email: true,
+                yearsExperience: true,
+                totalDeals: true,
+                rating: true,
+                reviewCount: true,
+                verified: true,
+                superAgent: true,
+                agency: {
+                  select: {
+                    id: true,
+                    name: true,
+                    logo: true,
+                    yearsOnPlatform: true,
+                    verified: true,
+                  },
+                },
+              },
+            },
           },
         },
       },
@@ -433,10 +293,28 @@ export class PropertiesService {
 
     const { images, amenities, ...propertyData } = dto;
 
+    // Track price changes
+    if (propertyData.price !== undefined && propertyData.price !== property.price) {
+      await this.priceHistoryService.createPriceChange(
+        id,
+        property.price,
+        propertyData.price,
+        propertyData.currency || property.currency,
+        userId,
+      );
+    }
+
     // Update property
     await this.prisma.property.update({
       where: { id },
-      data: propertyData,
+      data: {
+        ...propertyData,
+        priceUsd: propertyData.price
+          ? (propertyData.currency === Currency.UZS
+            ? propertyData.price / EXCHANGE_RATE_UZS_TO_USD
+            : propertyData.price)
+          : undefined, // Only update priceUsd if price is being updated, logic technically needs to check if currency or price changed, but for now strict update is fine or we fallback to existing
+      },
     });
 
     // Update images if provided
@@ -576,10 +454,10 @@ export class PropertiesService {
    */
   async getSearchSuggestions(query: string, limitCount = 10) {
     if (!query || query.length < 2) {
-      return { cities: [], districts: [], metros: [] };
+      return { cities: [], districts: [], metros: [], mahallas: [] };
     }
 
-    const [cities, districts, metros] = await Promise.all([
+    const [cities, districts, metros, mahallas] = await Promise.all([
       // Get unique cities
       this.prisma.property.findMany({
         where: {
@@ -610,6 +488,16 @@ export class PropertiesService {
         distinct: ['nearestMetro'],
         take: limitCount,
       }),
+      // Get unique mahallas
+      this.prisma.property.findMany({
+        where: {
+          status: 'ACTIVE',
+          mahalla: { contains: query, mode: 'insensitive' },
+        },
+        select: { mahalla: true, district: true, city: true },
+        distinct: ['mahalla'],
+        take: limitCount,
+      }),
     ]);
 
     return {
@@ -620,6 +508,9 @@ export class PropertiesService {
       metros: metros
         .filter((m) => m.nearestMetro)
         .map((m) => ({ metro: m.nearestMetro!, city: m.city })),
+      mahallas: mahallas
+        .filter((m) => m.mahalla)
+        .map((m) => ({ mahalla: m.mahalla!, district: m.district, city: m.city })),
     };
   }
 

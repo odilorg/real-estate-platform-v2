@@ -1,0 +1,76 @@
+import {
+  Controller,
+  Get,
+  Post,
+  Put,
+  Delete,
+  Body,
+  Param,
+  UseGuards,
+  UsePipes,
+  Patch,
+} from '@nestjs/common';
+import { SavedSearchesService } from './saved-searches.service';
+import { JwtAuthGuard } from '../../common/guards/jwt-auth.guard';
+import { CurrentUser } from '../../common/decorators/current-user.decorator';
+import { User, SavedSearch } from '@repo/database';
+import { CreateSavedSearchDto, UpdateSavedSearchDto } from '@repo/shared';
+import { ZodValidationPipe } from '../../common/pipes/zod-validation.pipe';
+import { z } from 'zod';
+
+const ToggleNotificationsDto = z.object({
+  enabled: z.boolean(),
+});
+type ToggleNotificationsDto = z.infer<typeof ToggleNotificationsDto>;
+
+@Controller('saved-searches')
+@UseGuards(JwtAuthGuard)
+export class SavedSearchesController {
+  constructor(private readonly savedSearchesService: SavedSearchesService) {}
+
+  @Post()
+  @UsePipes(new ZodValidationPipe(CreateSavedSearchDto))
+  create(@CurrentUser() user: User, @Body() dto: CreateSavedSearchDto): Promise<SavedSearch> {
+    return this.savedSearchesService.create(user.id, dto);
+  }
+
+  @Get()
+  findAll(@CurrentUser() user: User): Promise<SavedSearch[]> {
+    return this.savedSearchesService.findAllByUser(user.id);
+  }
+
+  @Get(':id')
+  findOne(@Param('id') id: string, @CurrentUser() user: User): Promise<SavedSearch> {
+    return this.savedSearchesService.findOne(id, user.id);
+  }
+
+  @Put(':id')
+  @UsePipes(new ZodValidationPipe(UpdateSavedSearchDto))
+  update(
+    @Param('id') id: string,
+    @CurrentUser() user: User,
+    @Body() dto: UpdateSavedSearchDto,
+  ): Promise<SavedSearch> {
+    return this.savedSearchesService.update(id, user.id, dto);
+  }
+
+  @Delete(':id')
+  delete(@Param('id') id: string, @CurrentUser() user: User): Promise<{ message: string }> {
+    return this.savedSearchesService.delete(id, user.id);
+  }
+
+  @Patch(':id/notifications')
+  @UsePipes(new ZodValidationPipe(ToggleNotificationsDto))
+  toggleNotifications(
+    @Param('id') id: string,
+    @CurrentUser() user: User,
+    @Body() dto: ToggleNotificationsDto,
+  ): Promise<SavedSearch> {
+    return this.savedSearchesService.toggleNotifications(id, user.id, dto.enabled);
+  }
+
+  @Get('stats/count')
+  getCount(@CurrentUser() user: User): Promise<number> {
+    return this.savedSearchesService.getCount(user.id);
+  }
+}

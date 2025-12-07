@@ -12,15 +12,18 @@ import { JwtAuthGuard } from '../../common/guards/jwt-auth.guard';
 import { CurrentUser } from '../../common/decorators/current-user.decorator';
 import { User } from '@repo/database';
 import { z } from 'zod';
+import { ZodValidationPipe } from '../../common/pipes/zod-validation.pipe';
 
 const StartConversationDto = z.object({
   propertyId: z.string(),
   message: z.string().min(1),
 });
+type StartConversationDto = z.infer<typeof StartConversationDto>;
 
 const SendMessageDto = z.object({
   content: z.string().min(1),
 });
+type SendMessageDto = z.infer<typeof SendMessageDto>;
 
 @Controller('messages')
 @UseGuards(JwtAuthGuard)
@@ -53,12 +56,14 @@ export class MessagesController {
   }
 
   @Post('start')
-  startConversation(@CurrentUser() user: User, @Body() dto: any) {
-    const validated = StartConversationDto.parse(dto);
+  startConversation(
+    @CurrentUser() user: User,
+    @Body(new ZodValidationPipe(StartConversationDto)) dto: StartConversationDto,
+  ) {
     return this.messagesService.startConversation(
       user.id,
-      validated.propertyId,
-      validated.message,
+      dto.propertyId,
+      dto.message,
     );
   }
 
@@ -66,10 +71,9 @@ export class MessagesController {
   sendMessage(
     @Param('id') id: string,
     @CurrentUser() user: User,
-    @Body() dto: any,
+    @Body(new ZodValidationPipe(SendMessageDto)) dto: SendMessageDto,
   ) {
-    const validated = SendMessageDto.parse(dto);
-    return this.messagesService.sendMessage(id, user.id, validated.content);
+    return this.messagesService.sendMessage(id, user.id, dto.content);
   }
 
   @Get('unread')

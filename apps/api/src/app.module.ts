@@ -1,4 +1,4 @@
-import { Module } from '@nestjs/common';
+import { Module, MiddlewareConsumer, NestModule } from '@nestjs/common';
 import { ConfigModule } from '@nestjs/config';
 import { APP_GUARD } from '@nestjs/core';
 import { ThrottlerModule, ThrottlerGuard } from '@nestjs/throttler';
@@ -13,7 +13,13 @@ import { MessagesModule } from './modules/messages/messages.module';
 import { ViewingsModule } from './modules/viewings/viewings.module';
 import { AdminModule } from './modules/admin/admin.module';
 import { ReviewsModule } from './modules/reviews/reviews.module';
+import { SavedSearchesModule } from './modules/saved-searches/saved-searches.module';
+import { AgentsModule } from './modules/agents/agents.module';
+import { AgenciesModule } from './modules/agencies/agencies.module';
+import { EmailModule } from './modules/email/email.module';
+import { SearchModule } from './modules/search/search.module';
 import { JwtAuthGuard } from './common/guards/jwt-auth.guard';
+import { RequestIdMiddleware } from './common/middleware/request-id.middleware';
 
 @Module({
   imports: [
@@ -37,6 +43,11 @@ import { JwtAuthGuard } from './common/guards/jwt-auth.guard';
     ViewingsModule,
     AdminModule,
     ReviewsModule,
+    SavedSearchesModule,
+    AgentsModule,
+    AgenciesModule,
+    EmailModule,
+    SearchModule,
   ],
   controllers: [AppController],
   providers: [
@@ -53,4 +64,9 @@ import { JwtAuthGuard } from './common/guards/jwt-auth.guard';
     },
   ],
 })
-export class AppModule {}
+export class AppModule implements NestModule {
+  configure(consumer: MiddlewareConsumer) {
+    // Apply request ID middleware to all routes
+    consumer.apply(RequestIdMiddleware).forRoutes('*');
+  }
+}

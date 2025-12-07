@@ -65,6 +65,11 @@ const PARKING_TYPES = [
   { value: 'MULTI_LEVEL', label: 'Многоуровневая' },
 ];
 
+const CURRENCIES = [
+  { value: 'YE', label: 'у.е.' },
+  { value: 'UZS', label: 'сум' },
+];
+
 const CITIES = [
   'Ташкент',
   'Самарканд',
@@ -82,11 +87,13 @@ interface FormData {
   title: string;
   description: string;
   price: string;
+  currency: string;
   propertyType: string;
   listingType: string;
   address: string;
   city: string;
   district: string;
+  mahalla: string;
   bedrooms: string;
   bathrooms: string;
   area: string;
@@ -114,11 +121,13 @@ const initialFormData: FormData = {
   title: '',
   description: '',
   price: '',
+  currency: 'YE',
   propertyType: '',
   listingType: 'SALE',
   address: '',
   city: 'Ташкент',
   district: '',
+  mahalla: '',
   bedrooms: '',
   bathrooms: '',
   area: '',
@@ -179,11 +188,13 @@ export default function NewPropertyPage() {
       title: formData.title,
       description: formData.description,
       price: parseFloat(formData.price),
+      currency: formData.currency,
       propertyType: formData.propertyType,
       listingType: formData.listingType,
       address: formData.address,
       city: formData.city,
       district: formData.district || undefined,
+      mahalla: formData.mahalla || undefined,
       bedrooms: formData.bedrooms ? parseInt(formData.bedrooms) : undefined,
       bathrooms: formData.bathrooms ? parseFloat(formData.bathrooms) : undefined,
       area: formData.area ? parseFloat(formData.area) : undefined,
@@ -347,15 +358,34 @@ export default function NewPropertyPage() {
                 </div>
 
                 <div className="space-y-2">
-                  <Label htmlFor="price">Цена (у.е.) *</Label>
-                  <Input
-                    id="price"
-                    type="number"
-                    value={formData.price}
-                    onChange={(e) => handleChange('price', e.target.value)}
-                    placeholder="100000"
-                    required
-                  />
+                  <Label htmlFor="price">Цена *</Label>
+                  <div className="flex gap-2">
+                    <Input
+                      id="price"
+                      type="number"
+                      value={formData.price}
+                      onChange={(e) => handleChange('price', e.target.value)}
+                      placeholder="100000"
+                      required
+                      className="flex-1"
+                    />
+                    <div className="flex rounded-lg border overflow-hidden">
+                      {CURRENCIES.map((curr) => (
+                        <button
+                          key={curr.value}
+                          type="button"
+                          onClick={() => handleChange('currency', curr.value)}
+                          className={`px-3 py-2 text-sm font-medium transition-colors ${
+                            formData.currency === curr.value
+                              ? 'bg-blue-600 text-white'
+                              : 'bg-white text-gray-700 hover:bg-gray-100'
+                          }`}
+                        >
+                          {curr.label}
+                        </button>
+                      ))}
+                    </div>
+                  </div>
                   <p className="text-xs text-gray-500">
                     {formData.listingType === 'SALE'
                       ? 'Стоимость объекта'
@@ -400,6 +430,17 @@ export default function NewPropertyPage() {
                       placeholder="Например: Мирзо-Улугбекский"
                     />
                   </div>
+                </div>
+
+                <div className="space-y-2">
+                  <Label htmlFor="mahalla">Махалля</Label>
+                  <Input
+                    id="mahalla"
+                    value={formData.mahalla}
+                    onChange={(e) => handleChange('mahalla', e.target.value)}
+                    placeholder="Название махалли"
+                  />
+                  <p className="text-xs text-gray-500">Укажите название махалли для более точного расположения</p>
                 </div>
 
                 <div className="space-y-2">

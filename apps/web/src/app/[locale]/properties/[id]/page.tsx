@@ -4,7 +4,7 @@ import { useState, useEffect, use } from 'react';
 import Link from 'next/link';
 import { useRouter } from 'next/navigation';
 import { Button, Badge, Card, CardContent } from '@repo/ui';
-import { ImageGallery } from '@/components';
+import { ImageGallery, MortgageCalculator, PropertyKeyFacts, PropertyDetailedInfo, PropertyLocationMap, PropertyAmenities, PriceHistoryChart } from '@/components';
 import { useAuth } from '@/context/AuthContext';
 import {
   ArrowLeft,
@@ -31,12 +31,36 @@ interface PropertyImage {
   isPrimary: boolean;
 }
 
+interface Agency {
+  id: string;
+  name: string;
+  logo?: string | null;
+  yearsOnPlatform: number;
+  verified: boolean;
+}
+
+interface Agent {
+  id: string;
+  photo?: string | null;
+  phone?: string | null;
+  email?: string | null;
+  yearsExperience: number;
+  totalDeals: number;
+  rating: number;
+  reviewCount: number;
+  verified: boolean;
+  superAgent: boolean;
+  agency?: Agency | null;
+}
+
 interface PropertyUser {
   id: string;
   firstName: string;
   lastName: string;
   phone?: string;
   email: string;
+  role: string;
+  agent?: Agent | null;
 }
 
 interface Property {
@@ -52,6 +76,7 @@ interface Property {
   area: number;
   livingArea: number | null;
   kitchenArea: number | null;
+  ceilingHeight: number | null;
   address: string;
   city: string;
   district: string | null;
@@ -63,6 +88,14 @@ interface Property {
   renovation: string | null;
   parking: number | null;
   parkingType: string | null;
+  furnished: string | null;
+  windowView: string | null;
+  bathroomType: string | null;
+  elevatorPassenger: number | null;
+  elevatorCargo: number | null;
+  hasGarbageChute: boolean;
+  balcony: number | null;
+  loggia: number | null;
   images: PropertyImage[];
   user: PropertyUser;
   views: number;
@@ -142,6 +175,10 @@ export default function PropertyDetailPage({
   const [reviewComment, setReviewComment] = useState('');
   const [hoverRating, setHoverRating] = useState(0);
   const [submittingReview, setSubmittingReview] = useState(false);
+
+  // Price history state
+  const [priceHistory, setPriceHistory] = useState<any[]>([]);
+  const [priceStats, setPriceStats] = useState<any>(null);
 
   const apiUrl = process.env.NEXT_PUBLIC_API_URL || 'http://localhost:3001/api';
 
@@ -235,6 +272,24 @@ export default function PropertyDetailPage({
     fetchReviews();
     fetchUserReview();
   }, [id, apiUrl, isAuthenticated]);
+
+  // Fetch price history
+  useEffect(() => {
+    const fetchPriceHistory = async () => {
+      try {
+        const response = await fetch(`${apiUrl}/properties/${id}/price-history`);
+        if (response.ok) {
+          const data = await response.json();
+          setPriceHistory(data.history || []);
+          setPriceStats(data.stats || null);
+        }
+      } catch {
+        // Ignore errors
+      }
+    };
+
+    fetchPriceHistory();
+  }, [id, apiUrl]);
 
   const handleToggleFavorite = async () => {
     if (!isAuthenticated) {
@@ -547,6 +602,16 @@ export default function PropertyDetailPage({
               </div>
             </div>
 
+            {/* Key Facts */}
+            <PropertyKeyFacts
+              area={property.area}
+              floor={property.floor}
+              totalFloors={property.totalFloors}
+              yearBuilt={property.yearBuilt}
+              buildingType={property.buildingType}
+              renovation={property.renovation}
+            />
+
             {/* Description */}
             <Card>
               <CardContent className="p-6">
@@ -555,85 +620,50 @@ export default function PropertyDetailPage({
               </CardContent>
             </Card>
 
-            {/* Details */}
-            <Card>
-              <CardContent className="p-6">
-                <h2 className="text-xl font-semibold mb-4">Характеристики</h2>
-                <div className="grid grid-cols-2 md:grid-cols-3 gap-4">
-                  <div>
-                    <div className="text-sm text-gray-500">Тип</div>
-                    <div className="font-medium">
-                      {PROPERTY_TYPE_LABELS[property.propertyType] || property.propertyType}
-                    </div>
-                  </div>
-                  <div>
-                    <div className="text-sm text-gray-500">Площадь</div>
-                    <div className="font-medium">{property.area} м²</div>
-                  </div>
-                  {property.livingArea && (
-                    <div>
-                      <div className="text-sm text-gray-500">Жилая площадь</div>
-                      <div className="font-medium">{property.livingArea} м²</div>
-                    </div>
-                  )}
-                  {property.kitchenArea && (
-                    <div>
-                      <div className="text-sm text-gray-500">Кухня</div>
-                      <div className="font-medium">{property.kitchenArea} м²</div>
-                    </div>
-                  )}
-                  {property.bedrooms !== null && (
-                    <div>
-                      <div className="text-sm text-gray-500">Комнат</div>
-                      <div className="font-medium">{property.bedrooms}</div>
-                    </div>
-                  )}
-                  {property.bathrooms !== null && (
-                    <div>
-                      <div className="text-sm text-gray-500">Санузлов</div>
-                      <div className="font-medium">{property.bathrooms}</div>
-                    </div>
-                  )}
-                  {property.floor && (
-                    <div>
-                      <div className="text-sm text-gray-500">Этаж</div>
-                      <div className="font-medium">
-                        {property.floor}
-                        {property.totalFloors && ` из ${property.totalFloors}`}
-                      </div>
-                    </div>
-                  )}
-                  {property.yearBuilt && (
-                    <div>
-                      <div className="text-sm text-gray-500">Год постройки</div>
-                      <div className="font-medium">{property.yearBuilt}</div>
-                    </div>
-                  )}
-                  {property.buildingClass && (
-                    <div>
-                      <div className="text-sm text-gray-500">Класс</div>
-                      <div className="font-medium">
-                        {BUILDING_CLASS_LABELS[property.buildingClass] || property.buildingClass}
-                      </div>
-                    </div>
-                  )}
-                  {property.renovation && (
-                    <div>
-                      <div className="text-sm text-gray-500">Ремонт</div>
-                      <div className="font-medium">
-                        {RENOVATION_LABELS[property.renovation] || property.renovation}
-                      </div>
-                    </div>
-                  )}
-                  {property.parking !== null && property.parking > 0 && (
-                    <div>
-                      <div className="text-sm text-gray-500">Парковка</div>
-                      <div className="font-medium">{property.parking} мест</div>
-                    </div>
-                  )}
-                </div>
-              </CardContent>
-            </Card>
+            {/* Detailed Information */}
+            <PropertyDetailedInfo
+              propertyType={property.propertyType}
+              area={property.area}
+              livingArea={property.livingArea}
+              kitchenArea={property.kitchenArea}
+              ceilingHeight={property.ceilingHeight}
+              bathrooms={property.bathrooms}
+              renovation={property.renovation}
+              furnished={property.furnished}
+              yearBuilt={property.yearBuilt}
+              buildingType={property.buildingType}
+              buildingClass={property.buildingClass}
+              elevatorPassenger={property.elevatorPassenger}
+              elevatorCargo={property.elevatorCargo}
+              parking={property.parking}
+              parkingType={property.parkingType}
+              windowView={property.windowView}
+              bathroomType={property.bathroomType}
+              hasGarbageChute={property.hasGarbageChute}
+              balcony={property.balcony}
+              loggia={property.loggia}
+            />
+
+            {/* Location Map */}
+            <PropertyLocationMap
+              address={property.address}
+              city={property.city}
+              district={property.district}
+              latitude={property.latitude}
+              longitude={property.longitude}
+              nearestMetro={property.nearestMetro}
+              metroDistance={property.metroDistance}
+            />
+
+            {/* Walking Score & Nearby Amenities */}
+            {property.latitude && property.longitude && (
+              <PropertyAmenities propertyId={property.id} />
+            )}
+
+            {/* Price History Chart */}
+            {priceHistory.length > 0 && priceStats && (
+              <PriceHistoryChart history={priceHistory} stats={priceStats} />
+            )}
 
             {/* Reviews Section */}
             <Card>
@@ -758,89 +788,95 @@ export default function PropertyDetailPage({
 
           {/* Sidebar */}
           <div className="space-y-6">
-            {/* Contact Card */}
-            <Card className="sticky top-24">
-              <CardContent className="p-6">
-                <h3 className="text-lg font-semibold mb-4">Контакт</h3>
-                <div className="mb-4">
-                  <div className="font-medium">
-                    {property.user.firstName} {property.user.lastName}
+            {/* Sticky Container */}
+            <div className="sticky top-24 space-y-6">
+              {/* Contact Card */}
+              <Card>
+                <CardContent className="p-6">
+                  <h3 className="text-lg font-semibold mb-4">Контакт</h3>
+                  <div className="mb-4">
+                    <div className="font-medium">
+                      {property.user.firstName} {property.user.lastName}
+                    </div>
+                    <div className="text-sm text-gray-500">Продавец</div>
                   </div>
-                  <div className="text-sm text-gray-500">Продавец</div>
-                </div>
-                <div className="space-y-3">
-                  {property.user.phone && (
-                    <Button className="w-full" size="lg">
-                      <Phone className="h-4 w-4 mr-2" />
-                      {property.user.phone}
-                    </Button>
-                  )}
-                  {!isOwner && (
-                    <>
-                      {showMessageForm ? (
-                        <div className="space-y-3">
-                          {messageSent ? (
-                            <div className="p-3 text-sm text-green-600 bg-green-50 rounded-md text-center">
-                              Сообщение отправлено!
-                            </div>
-                          ) : (
-                            <>
-                              <textarea
-                                value={message}
-                                onChange={(e) => setMessage(e.target.value)}
-                                placeholder="Введите ваше сообщение..."
-                                className="w-full p-3 border rounded-md resize-none h-24 text-sm focus:outline-none focus:ring-2 focus:ring-blue-500"
-                                disabled={sendingMessage}
-                              />
-                              <div className="flex gap-2">
-                                <Button
-                                  variant="outline"
-                                  className="flex-1"
-                                  onClick={() => setShowMessageForm(false)}
-                                  disabled={sendingMessage}
-                                >
-                                  Отмена
-                                </Button>
-                                <Button
-                                  className="flex-1"
-                                  onClick={handleSendMessage}
-                                  disabled={sendingMessage || !message.trim()}
-                                >
-                                  {sendingMessage ? (
-                                    <Loader2 className="h-4 w-4 animate-spin" />
-                                  ) : (
-                                    <>
-                                      <Send className="h-4 w-4 mr-2" />
-                                      Отправить
-                                    </>
-                                  )}
-                                </Button>
+                  <div className="space-y-3">
+                    {property.user.phone && (
+                      <Button className="w-full" size="lg">
+                        <Phone className="h-4 w-4 mr-2" />
+                        {property.user.phone}
+                      </Button>
+                    )}
+                    {!isOwner && (
+                      <>
+                        {showMessageForm ? (
+                          <div className="space-y-3">
+                            {messageSent ? (
+                              <div className="p-3 text-sm text-green-600 bg-green-50 rounded-md text-center">
+                                Сообщение отправлено!
                               </div>
-                            </>
-                          )}
-                        </div>
-                      ) : (
-                        <Button
-                          variant="outline"
-                          className="w-full"
-                          size="lg"
-                          onClick={() => {
-                            if (!isAuthenticated) {
-                              router.push('/auth/login');
-                            } else {
-                              setShowMessageForm(true);
-                            }
-                          }}
-                        >
-                          <MessageSquare className="h-4 w-4 mr-2" />
-                          Написать продавцу
-                        </Button>
-                      )}
-                    </>
-                  )}
-                </div>
-              </CardContent>
-            </Card>
+                            ) : (
+                              <>
+                                <textarea
+                                  value={message}
+                                  onChange={(e) => setMessage(e.target.value)}
+                                  placeholder="Введите ваше сообщение..."
+                                  className="w-full p-3 border rounded-md resize-none h-24 text-sm focus:outline-none focus:ring-2 focus:ring-blue-500"
+                                  disabled={sendingMessage}
+                                />
+                                <div className="flex gap-2">
+                                  <Button
+                                    variant="outline"
+                                    className="flex-1"
+                                    onClick={() => setShowMessageForm(false)}
+                                    disabled={sendingMessage}
+                                  >
+                                    Отмена
+                                  </Button>
+                                  <Button
+                                    className="flex-1"
+                                    onClick={handleSendMessage}
+                                    disabled={sendingMessage || !message.trim()}
+                                  >
+                                    {sendingMessage ? (
+                                      <Loader2 className="h-4 w-4 animate-spin" />
+                                    ) : (
+                                      <>
+                                        <Send className="h-4 w-4 mr-2" />
+                                        Отправить
+                                      </>
+                                    )}
+                                  </Button>
+                                </div>
+                              </>
+                            )}
+                          </div>
+                        ) : (
+                          <Button
+                            variant="outline"
+                            className="w-full"
+                            size="lg"
+                            onClick={() => {
+                              if (!isAuthenticated) {
+                                router.push('/auth/login');
+                              } else {
+                                setShowMessageForm(true);
+                              }
+                            }}
+                          >
+                            <MessageSquare className="h-4 w-4 mr-2" />
+                            Написать продавцу
+                          </Button>
+                        )}
+                      </>
+                    )}
+                  </div>
+                </CardContent>
+              </Card>
+
+              {/* Mortgage Calculator */}
+              <MortgageCalculator propertyPrice={property.price} />
+            </div>
 
             {/* Stats */}
             <Card>

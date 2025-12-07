@@ -1,0 +1,486 @@
+
+REAL ESTATE PLATFORM – FULL JAVASCRIPT/TYPESCRIPT IMPLEMENTATION PLAN
+(ALL-IN-ONE TYPESCRIPT MONOREPO)
+
+============================================================
+1. HIGH-LEVEL GOAL
+============================================================
+
+Build a scalable real estate platform (Cian-style, but smaller scope) using a FULL TypeScript stack where:
+- 100% of backend, frontend, mobile, jobs, and notifications are in TypeScript
+- All code can be safely delegated to AI
+- One monorepo manages all apps (API, web, mobile, workers)
+- Types are shared across the whole system to minimize bugs
+
+Domain features (same as Laravel plan, but in TS world):
+- Property listings with images, geo-location, filters, and map view
+- Users (buyers, sellers, agents, admins)
+- Agencies and agents
+- Favorites, inquiries, and messaging
+- Reviews for properties and agents
+- Notifications (email + in-app + optional push)
+- Admin/Operator dashboard (React-based)
+
+============================================================
+2. TECH STACK OVERVIEW
+============================================================
+
+Language: TypeScript (strict mode)
+
+Monorepo:
+- Tool: Turborepo (or Nx; here we assume Turborepo)
+- Package manager: pnpm
+
+Backend:
+- NestJS (REST API, WebSockets, scheduling)
+- Prisma ORM (PostgreSQL)
+- PostgreSQL 16 (with PostGIS if geo queries are needed later)
+- BullMQ + Redis (queues and background jobs)
+- JWT-based auth (or cookie-session based) for SPA/mobile
+
+Frontend Web:
+- Next.js 14 (App Router, TypeScript)
+- React + Tailwind CSS
+- Map library: React Leaflet or Mapbox GL
+- shadcn/ui or similar component library
+
+Mobile:
+- React Native (Expo)
+- Uses same backend API and shared types
+
+Shared:
+- packages/shared – shared types, DTOs, zod schemas, constants
+- packages/ui – shared UI components (for web/admin)
+- packages/config – shared ESLint/Prettier/TS configs
+- packages/worker – background workers (BullMQ consumers)
+
+Infrastructure:
+- Docker / docker-compose (Postgres, Redis)
+- Environment config via .env + typed config module
+- GitHub / GitLab CI for lint, test, build
+
+============================================================
+3. MONOREPO STRUCTURE
+============================================================
+
+Root folder (example):
+
+  real-estate-ts-monorepo/
+  ├── apps/
+  │   ├── api/          # NestJS backend
+  │   ├── web/          # Next.js web app (public + dashboard/admin)
+  │   └── mobile/       # React Native (Expo) app
+  ├── packages/
+  │   ├── shared/       # Shared types, DTOs, schemas
+  │   ├── ui/           # Shared React UI components
+  │   ├── worker/       # BullMQ worker (can also be an app)
+  │   └── config/       # Shared config (ESLint, TS)
+  ├── turbo.json
+  ├── pnpm-workspace.yaml
+  ├── package.json
+  └── .env / .env.local / .env.development
+
+Example pnpm-workspace.yaml:
+
+  packages:
+    - "apps/*"
+    - "packages/*"
+
+
+============================================================
+4. ARCHITECTURE OVERVIEW (LOGICAL)
+============================================================
+
+             ┌───────────────────────────────────────────┐
+             │                 CLIENTS                   │
+             │ ┌─────────────┐ ┌───────────────┐        │
+             │ │   Web App   │ │  Mobile App   │        │
+             │ │ (Next.js)   │ │ (React Native)│        │
+             │ └─────────────┘ └───────────────┘        │
+             └───────────────────────────────────────────┘
+                           │           │
+                           │  HTTPS    │
+                           ▼           ▼
+             ┌───────────────────────────────────────────┐
+             │                 API (NestJS)              │
+             │  REST (JSON) + WebSockets + Auth         │
+             └───────────────────────────────────────────┘
+                           │
+                           │ Prisma
+                           ▼
+             ┌───────────────────────────────────────────┐
+             │                PostgreSQL                 │
+             │   Users, Properties, Agents, etc.        │
+             └───────────────────────────────────────────┘
+                           │
+                           │ BullMQ (Redis)
+                           ▼
+             ┌───────────────────────────────────────────┐
+             │           BACKGROUND WORKERS              │
+             │   Email, notifications, reports, etc.     │
+             └───────────────────────────────────────────┘
+
+
+============================================================
+5. DATA MODEL (PRISMA – HIGH LEVEL)
+============================================================
+
+Core tables/entities (similar to Laravel plan):
+
+- User             – buyers, sellers, agents, admins
+- Profile          – optional extended user info
+- Agent            – agent-specific data (license, rating, etc.)
+- Agency           – real estate agencies
+- Property         – main listing data
+- PropertyImage    – multiple images per property
+- Region / City / District – location hierarchy
+- Favorite         – user favorites for properties
+- Inquiry          – "Contact agent/owner" entries
+- Message          – chat between user and agent/owner
+- Review           – property & agent reviews
+- Notification     – in-app notifications
+- Session/Auth     – handled by JWT or token tables if needed
+
+Example Prisma schema snippet (simplified):
+
+  model User {
+    id          String   @id @default(cuid())
+    email       String   @unique
+    password    String
+    role        UserRole
+    createdAt   DateTime @default(now())
+    updatedAt   DateTime @updatedAt
+
+    properties  Property[] @relation("OwnerProperties")
+    favorites   Favorite[]
+    reviews     Review[]
+    notifications Notification[]
+  }
+
+  model Property {
+    id          String   @id @default(cuid())
+    title       String
+    description String
+    price       Int
+    currency    String
+    type        PropertyType
+    status      PropertyStatus
+    ownerId     String
+    owner       User       @relation("OwnerProperties", fields: [ownerId], references: [id])
+    regionId    String
+    cityId      String
+    districtId  String?
+    address     String
+    lat         Float?
+    lng         Float?
+    createdAt   DateTime @default(now())
+    updatedAt   DateTime @updatedAt
+
+    images      PropertyImage[]
+    favorites   Favorite[]
+    inquiries   Inquiry[]
+    reviews     Review[]
+  }
+
+(Complete schema to be defined by AI later; this file just sets direction.)
+
+
+============================================================
+6. IMPLEMENTATION PHASES (6-WEEK PLAN)
+============================================================
+
+### PHASE 1 (Week 1): Monorepo & Backend Skeleton
+
+Goals:
+- Setup monorepo (Turborepo + pnpm)
+- Create NestJS API app
+- Add Prisma + initial schema
+- Add Auth skeleton
+
+Steps:
+
+1. Initialize repo:
+
+  mkdir real-estate-ts-monorepo
+  cd real-estate-ts-monorepo
+  pnpm init -y
+  pnpm add -D typescript turbo eslint prettier
+
+2. Create `pnpm-workspace.yaml` and `turbo.json`.
+
+3. Create NestJS app in `apps/api`:
+
+  pnpm dlx @nestjs/cli new api
+  # Move it into apps/api and adjust paths
+
+4. Install Prisma + PostgreSQL client in `apps/api`:
+
+  cd apps/api
+  pnpm add @prisma/client
+  pnpm add -D prisma
+
+  npx prisma init
+
+5. Define initial Prisma schema (User, Property, Location basics).
+
+6. Create basic NestJS modules:
+   - AuthModule (JWT-based)
+   - UsersModule
+   - PropertiesModule
+   - LocationsModule
+
+7. Connect NestJS to Prisma via PrismaService.
+
+Deliverables:
+- Running NestJS API with `/health` endpoint
+- DB migration with basic tables
+- Basic `POST /auth/register` and `POST /auth/login`
+
+
+### PHASE 2 (Week 2): Core Backend Domain – Properties, Locations, Agents
+
+Goals:
+- Full CRUD for properties (API)
+- Location hierarchy endpoints
+- Agent & Agency models
+
+Steps:
+
+1. Expand Prisma schema with:
+   - Agent, Agency, PropertyImage, Region, City, District
+
+2. Generate and run Prisma migrations.
+
+3. Create NestJS modules/services/controllers:
+   - AgentsModule, AgenciesModule
+   - PropertiesModule (list/search, detail, create, update, delete)
+   - LocationsModule (regions, cities, districts)
+
+4. Implement filtering logic in `GET /properties`:
+   - region, city, district
+   - type, price range
+   - rooms, area, etc.
+
+Deliverables:
+- Fully working property listing API
+- Locations API for frontend filters
+- Seed script for sample data (e.g. a few regions, cities, properties)
+
+
+### PHASE 3 (Week 3): Frontend Web (Next.js 14) + Shared Types
+
+Goals:
+- Setup Next.js 14 app (App Router)
+- Connect to NestJS API
+- Define shared types in `packages/shared`
+- Create basic listing pages
+
+Steps:
+
+1. Create Next.js app in `apps/web`:
+
+  pnpm dlx create-next-app@latest web --ts --tailwind --app
+
+2. Setup base layout + Tailwind config.
+
+3. Create `packages/shared`:
+
+  packages/shared/src/types.ts
+  - Property
+  - User
+  - Location
+  - DTOs and enums
+
+4. Make Next.js use these shared types for API responses.
+
+5. Implement basic pages in `apps/web`:
+   - `/` – Home, featured properties
+   - `/properties` – property search + filters
+   - `/properties/[id]` – property detail page
+
+6. Add shared HTTP client (fetch wrapper + error handling).
+
+Deliverables:
+- Web app can display properties from API
+- Shared type definitions are used in both API and frontend
+
+
+### PHASE 4 (Week 4): Favorites, Inquiries, Messaging, Auth in Web
+
+Goals:
+- User registration/login from web
+- Favorites system
+- Inquiries and basic messaging
+
+Steps:
+
+1. Extend Prisma schema:
+   - Favorite
+   - Inquiry
+   - Message
+
+2. Implement API endpoints:
+   - `POST /auth/register`, `POST /auth/login`
+   - `GET /me`
+   - `GET /favorites`, `POST /favorites/:propertyId`, `DELETE /favorites/:propertyId`
+   - `POST /inquiries`, `GET /inquiries`
+   - `/messages` endpoints for simple conversation
+
+3. In Next.js web app:
+   - Auth pages: `/auth/login`, `/auth/register`
+   - Favorites page under `/dashboard/favorites`
+   - Inquiry form on property detail page
+   - Simple messages UI for user/agent
+
+Deliverables:
+- Web users can sign up, log in, save favorites, send inquiries, and see messages.
+
+
+### PHASE 5 (Week 5): Jobs, Notifications, and Mobile App
+
+Goals:
+- Setup queues and workers with BullMQ
+- Create notifications (in-app + email)
+- Set up React Native (Expo) app
+
+Steps:
+
+1. Add Redis + BullMQ to the stack:
+   - docker-compose: `postgres`, `redis`
+   - `pnpm add bullmq ioredis` in `apps/api` and `packages/worker`
+
+2. In `packages/shared`, define job payload types:
+   - EmailJobPayload
+   - NotificationJobPayload
+
+3. In `apps/api`:
+   - Configure QueueModule (custom or NestJS bull integration)
+   - Queue producers in services (e.g. when booking/inquiry created)
+   - WebSocket Gateway for real-time notifications
+
+4. In `packages/worker`:
+   - Implement job processors for:
+     - Sending email (Resend, SendGrid, etc.)
+     - Persisting notifications and calling WebSocket broadcast endpoint
+
+5. Add `Notification` model to Prisma and API:
+   - `GET /notifications`
+   - `PATCH /notifications/:id/read`
+
+6. Create In-app notification UI in Next.js:
+   - Bell icon in header
+   - Dropdown or page listing notifications
+   - Subscribe to WebSocket events for live updates
+
+7. Create React Native app in `apps/mobile` (Expo):
+   - Basic navigation (home, properties list, property details)
+   - Auth screens
+   - Simple notifications list
+   - Connect to WebSocket for real-time notifications
+
+Deliverables:
+- Jobs and notifications working end-to-end
+- Basic mobile app consuming the same API and shared types
+
+
+### PHASE 6 (Week 6): Admin UI, SEO, Polish, and Deployment
+
+Goals:
+- Admin/operator screens inside Next.js web app (`/admin` or `/dashboard`)
+- SEO, performance, security polish
+- CI/CD and production deployment
+
+Steps:
+
+1. Admin UI (as React pages in Next.js):
+   - `/admin/properties` – table with filters, CRUD forms
+   - `/admin/users`
+   - `/admin/agents`
+   - `/admin/reviews` – moderation
+
+2. Use shared UI components from `packages/ui`
+   - Table, form, modal, button, inputs
+
+3. SEO & performance:
+   - Add meta tags, OpenGraph, structured data
+   - Implement static generation for main listing pages where possible
+   - Optimize images (Next.js Image component)
+   - Cache strategies (HTTP caching, incremental static regeneration)
+
+4. Security:
+   - Role-based access control in NestJS guards
+   - Input validation via DTOs + class-validator or zod
+   - Rate limiting for auth/inquiry endpoints
+
+5. Deployment:
+   - Backend (NestJS) + worker → VPS / Docker
+   - Frontend (Next.js) → Vercel or same VPS
+   - Mobile app → Expo builds / app stores
+   - Configure environment variables and secrets
+
+6. CI/CD:
+   - GitHub Actions pipeline:
+     - Install, lint, test, build
+     - Deploy backend and frontend on main branch
+
+Deliverables:
+- Production-ready system with admin UI, SEO, deployments, and CI/CD
+
+
+============================================================
+7. KEY DECISIONS
+============================================================
+
+1. Full TypeScript monorepo:
+   - One language across backend, frontend, mobile, workers.
+   - AI can operate with maximum consistency.
+
+2. NestJS + Prisma:
+   - Opinionated, structured backend best suited for AI-generated code.
+   - Prisma provides strongly-typed database access and migrations.
+
+3. Next.js App Router:
+   - Modern, flexible frontend with great SSR/SSG/ISR abilities.
+   - Excellent for SEO for a real estate platform.
+
+4. React Native (Expo):
+   - Mobile app shares domain logic and types with web and backend.
+   - Expo simplifies build and deployment.
+
+5. BullMQ + Redis:
+   - Clear pattern for background processing and asynchronous work.
+   - Scales well, easy to reason about in TypeScript.
+
+6. Shared types in `packages/shared`:
+   - DTOs, models, events, and job payloads defined once.
+   - Reduces drift between services and clients.
+
+7. No PHP / Laravel / Filament:
+   - Everything is JS/TS based.
+   - Admin UI is implemented as a React app, which AI can generate easily.
+
+
+============================================================
+8. QUICKSTART COMMAND SUMMARY (EXAMPLE)
+============================================================
+
+# 1. Clone repo and install dependencies
+pnpm install
+
+# 2. Start Postgres and Redis via Docker
+docker-compose up -d
+
+# 3. Setup database (from apps/api)
+cd apps/api
+npx prisma migrate dev
+
+# 4. Run API, Web, and Worker
+pnpm dev   # (configured via turbo.json to run api, web, worker concurrently)
+
+# 5. Run Mobile (from apps/mobile)
+cd apps/mobile
+pnpm start  # Expo CLI
+
+============================================================
+END OF FILE
+============================================================

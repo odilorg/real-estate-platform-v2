@@ -1,9 +1,9 @@
 'use client';
 
-import React, { useState } from 'react';
+import React, { useState, useEffect } from 'react';
 import Link from 'next/link';
 import { usePathname } from 'next/navigation';
-import { ChevronDown, Menu, X, User, LogOut, Plus } from 'lucide-react';
+import { ChevronDown, Menu, X, User, LogOut, Plus, MessageSquare } from 'lucide-react';
 import { cn } from '@/lib/utils';
 import { useAuth } from '@/context/AuthContext';
 import { LanguageSwitcher } from './language-switcher';
@@ -95,8 +95,46 @@ export function Navbar() {
   const [mobileMenuOpen, setMobileMenuOpen] = useState(false);
   const [activeDropdown, setActiveDropdown] = useState<number | null>(null);
   const [closeTimeout, setCloseTimeout] = useState<NodeJS.Timeout | null>(null);
+  const [unreadCount, setUnreadCount] = useState(0);
   const pathname = usePathname();
   const { user, isAuthenticated, logout } = useAuth();
+
+  const apiUrl = process.env.NEXT_PUBLIC_API_URL || 'http://localhost:3001/api';
+
+  // Fetch unread messages count
+  useEffect(() => {
+    if (!isAuthenticated) {
+      setUnreadCount(0);
+      return;
+    }
+
+    const fetchUnreadCount = async () => {
+      try {
+        const token = localStorage.getItem('token');
+        if (!token) return;
+
+        const response = await fetch(`${apiUrl}/messages/unread`, {
+          headers: {
+            Authorization: `Bearer ${token}`,
+          },
+        });
+
+        if (response.ok) {
+          const data = await response.json();
+          setUnreadCount(data.unreadCount || 0);
+        }
+      } catch (error) {
+        console.error('Failed to fetch unread count:', error);
+      }
+    };
+
+    fetchUnreadCount();
+
+    // Poll for updates every 30 seconds
+    const interval = setInterval(fetchUnreadCount, 30000);
+
+    return () => clearInterval(interval);
+  }, [isAuthenticated, apiUrl]);
 
   const handleMouseEnter = (index: number) => {
     if (closeTimeout) {
@@ -214,6 +252,17 @@ export function Navbar() {
             <LanguageSwitcher />
             {isAuthenticated ? (
               <>
+                <Link href="/dashboard/messages">
+                  <Button variant="ghost" size="sm" className="gap-1 relative">
+                    <MessageSquare className="h-4 w-4" />
+                    Сообщения
+                    {unreadCount > 0 && (
+                      <span className="absolute -top-1 -right-1 bg-red-500 text-white text-xs rounded-full h-5 w-5 flex items-center justify-center font-semibold">
+                        {unreadCount > 9 ? '9+' : unreadCount}
+                      </span>
+                    )}
+                  </Button>
+                </Link>
                 <Link href="/properties/new">
                   <Button size="sm" className="gap-1">
                     <Plus className="h-4 w-4" />
