@@ -115,7 +115,27 @@ const INITIAL_FORM_DATA: WizardFormData = {
   description: '',
 };
 
-const DRAFT_STORAGE_KEY = 'property_creation_draft';
+// Helper function to get user ID from JWT token
+const getUserIdFromToken = (): string | null => {
+  try {
+    const token = localStorage.getItem('token');
+    if (!token) return null;
+
+    // Decode JWT token (format: header.payload.signature)
+    const payload = token.split('.')[1];
+    const decodedPayload = JSON.parse(atob(payload));
+    return decodedPayload.sub || decodedPayload.userId || null;
+  } catch (e) {
+    console.error('Failed to decode token:', e);
+    return null;
+  }
+};
+
+// Helper function to get user-specific draft key
+const getDraftStorageKey = (): string | null => {
+  const userId = getUserIdFromToken();
+  return userId ? `property_creation_draft_${userId}` : null;
+};
 
 export default function PropertyCreationWizard() {
   const router = useRouter();
@@ -126,7 +146,10 @@ export default function PropertyCreationWizard() {
 
   // Load draft from localStorage on mount
   useEffect(() => {
-    const savedDraft = localStorage.getItem(DRAFT_STORAGE_KEY);
+    const draftKey = getDraftStorageKey();
+    if (!draftKey) return; // No user logged in, skip draft loading
+
+    const savedDraft = localStorage.getItem(draftKey);
     if (savedDraft) {
       try {
         const draft = JSON.parse(savedDraft);
@@ -137,7 +160,7 @@ export default function PropertyCreationWizard() {
           setFormData(draft.formData);
           setCurrentStep(draft.currentStep);
         } else {
-          localStorage.removeItem(DRAFT_STORAGE_KEY);
+          localStorage.removeItem(draftKey);
         }
       } catch (e) {
         console.error('Failed to restore draft:', e);
@@ -155,9 +178,12 @@ export default function PropertyCreationWizard() {
   }, [formData, currentStep]);
 
   const saveDraft = () => {
+    const draftKey = getDraftStorageKey();
+    if (!draftKey) return; // No user logged in, skip draft saving
+
     try {
       localStorage.setItem(
-        DRAFT_STORAGE_KEY,
+        draftKey,
         JSON.stringify({
           formData,
           currentStep,
@@ -278,7 +304,10 @@ export default function PropertyCreationWizard() {
       const property = await response.json();
 
       // Clear draft on success
-      localStorage.removeItem(DRAFT_STORAGE_KEY);
+      const draftKey = getDraftStorageKey();
+      if (draftKey) {
+        localStorage.removeItem(draftKey);
+      }
 
       // Redirect to property page
       router.push(`/properties/${property.id}`);
