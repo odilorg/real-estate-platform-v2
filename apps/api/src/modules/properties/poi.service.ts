@@ -1,7 +1,7 @@
 import { Injectable, Logger } from '@nestjs/common';
-import { PrismaService } from '@/common/prisma/prisma.service';
+import { PrismaService } from '../../common/prisma';
 
-interface POI {
+export interface POI {
   id: string;
   name: string;
   type: string;
@@ -12,7 +12,7 @@ interface POI {
   address?: string;
 }
 
-interface POICategory {
+export interface POICategory {
   category: string;
   displayName: string;
   icon: string;
