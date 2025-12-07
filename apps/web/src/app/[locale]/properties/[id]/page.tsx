@@ -429,44 +429,38 @@ export default function PropertyDetailPage({
 
   return (
     <div className="min-h-screen bg-gray-50">
-      {/* Header */}
-      <header className="bg-white shadow-sm sticky top-0 z-40">
-        <div className="container mx-auto px-4 py-4">
-          <div className="flex items-center justify-between">
-            <div className="flex items-center gap-4">
-              <Button variant="ghost" onClick={() => router.back()}>
-                <ArrowLeft className="h-4 w-4 mr-2" />
-                Назад
-              </Button>
-            </div>
-            <div className="flex items-center gap-2">
-              <Button
-                variant="outline"
-                size="icon"
-                onClick={handleToggleFavorite}
-                disabled={favoriteLoading}
-              >
-                <Heart
-                  className={`h-4 w-4 ${isFavorite ? 'fill-red-500 text-red-500' : ''}`}
-                />
-              </Button>
-              <Button variant="outline" size="icon" onClick={handleShare}>
-                <Share2 className="h-4 w-4" />
-              </Button>
-              {isOwner && (
-                <Link href={`/properties/${id}/edit`}>
-                  <Button variant="outline">
-                    <Edit className="h-4 w-4 mr-2" />
-                    Редактировать
-                  </Button>
-                </Link>
-              )}
-            </div>
+      <main className="container mx-auto px-4 py-8">
+        {/* Action Bar */}
+        <div className="flex items-center justify-between mb-6">
+          <Button variant="ghost" onClick={() => router.back()}>
+            <ArrowLeft className="h-4 w-4 mr-2" />
+            Назад
+          </Button>
+          <div className="flex items-center gap-2">
+            <Button
+              variant="outline"
+              size="icon"
+              onClick={handleToggleFavorite}
+              disabled={favoriteLoading}
+            >
+              <Heart
+                className={`h-4 w-4 ${isFavorite ? 'fill-red-500 text-red-500' : ''}`}
+              />
+            </Button>
+            <Button variant="outline" size="icon" onClick={handleShare}>
+              <Share2 className="h-4 w-4" />
+            </Button>
+            {isOwner && (
+              <Link href={`/properties/${id}/edit`}>
+                <Button variant="outline">
+                  <Edit className="h-4 w-4 mr-2" />
+                  Редактировать
+                </Button>
+              </Link>
+            )}
           </div>
         </div>
-      </header>
 
-      <main className="container mx-auto px-4 py-8">
         <div className="grid grid-cols-1 lg:grid-cols-3 gap-8">
           {/* Main Content */}
           <div className="lg:col-span-2 space-y-6">

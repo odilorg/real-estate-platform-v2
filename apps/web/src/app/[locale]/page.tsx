@@ -91,53 +91,6 @@ export default function Home() {
 
   return (
     <div className="min-h-screen bg-gray-50">
-      {/* Header */}
-      <header className="bg-white shadow-sm">
-        <div className="container mx-auto px-4 py-4">
-          <div className="flex items-center justify-between">
-            <Link href="/" className="text-2xl font-bold text-blue-600">
-              RealEstate
-            </Link>
-            <nav className="hidden md:flex items-center gap-6">
-              <Link href="/properties" className="text-gray-600 hover:text-gray-900">
-                Объявления
-              </Link>
-              {isAuthenticated ? (
-                <>
-                  <Link href="/dashboard" className="text-gray-600 hover:text-gray-900">
-                    Мои объявления
-                  </Link>
-                  <Link href="/properties/new">
-                    <Button size="sm">Разместить</Button>
-                  </Link>
-                  <div className="flex items-center gap-2">
-                    <Link href="/dashboard">
-                      <Button variant="ghost" size="sm">
-                        <User className="h-4 w-4 mr-1" />
-                        {user?.firstName}
-                      </Button>
-                    </Link>
-                    <Button variant="ghost" size="icon" onClick={logout}>
-                      <LogOut className="h-4 w-4" />
-                    </Button>
-                  </div>
-                </>
-              ) : (
-                <>
-                  <Link href="/auth/login">
-                    <Button variant="ghost">{t('signInButton')}</Button>
-                  </Link>
-                  <Link href="/auth/register">
-                    <Button>{t('createAccountButton')}</Button>
-                  </Link>
-                </>
-              )}
-              <LanguageSwitcher />
-            </nav>
-          </div>
-        </div>
-      </header>
-
       {/* Hero Section */}
       <section className="bg-gradient-to-r from-blue-600 to-blue-700 text-white py-20">
         <div className="container mx-auto px-4">

@@ -144,59 +144,40 @@ export default function DashboardPage() {
 
   return (
     <div className="min-h-screen bg-gray-50">
-      {/* Header */}
-      <header className="bg-white shadow-sm">
-        <div className="container mx-auto px-4 py-4">
-          <div className="flex items-center justify-between">
-            <div className="flex items-center gap-4">
-              <Link href="/" className="text-2xl font-bold text-blue-600">
-                RealEstate
-              </Link>
-              <span className="text-gray-300">|</span>
-              <span className="text-gray-600">Личный кабинет</span>
-            </div>
-            <div className="flex items-center gap-4">
-              <Link href="/properties">
-                <Button variant="ghost">Все объявления</Button>
-              </Link>
-              <Link href="/dashboard/favorites">
-                <Button variant="ghost">
-                  <Heart className="h-4 w-4 mr-2" />
-                  Избранное
+      <main className="container mx-auto px-4 py-8">
+        {/* Dashboard Navigation */}
+        <div className="mb-6 flex items-center justify-between">
+          <h1 className="text-2xl font-bold text-gray-900">Личный кабинет</h1>
+          <div className="flex items-center gap-2">
+            <Link href="/dashboard/favorites">
+              <Button variant="ghost" size="sm">
+                <Heart className="h-4 w-4 mr-2" />
+                Избранное
+              </Button>
+            </Link>
+            <Link href="/dashboard/messages">
+              <Button variant="ghost" size="sm">
+                <MessageSquare className="h-4 w-4 mr-2" />
+                Сообщения
+              </Button>
+            </Link>
+            <Link href="/dashboard/profile">
+              <Button variant="ghost" size="sm">
+                <Settings className="h-4 w-4 mr-2" />
+                Настройки
+              </Button>
+            </Link>
+            {user?.role === 'ADMIN' && (
+              <Link href="/admin">
+                <Button variant="ghost" size="sm">
+                  <Shield className="h-4 w-4 mr-2" />
+                  Админ
                 </Button>
               </Link>
-              <Link href="/dashboard/messages">
-                <Button variant="ghost">
-                  <MessageSquare className="h-4 w-4 mr-2" />
-                  Сообщения
-                </Button>
-              </Link>
-              <Link href="/dashboard/profile">
-                <Button variant="ghost">
-                  <Settings className="h-4 w-4 mr-2" />
-                  Настройки
-                </Button>
-              </Link>
-              {user?.role === 'ADMIN' && (
-                <Link href="/admin">
-                  <Button variant="ghost">
-                    <Shield className="h-4 w-4 mr-2" />
-                    Админ
-                  </Button>
-                </Link>
-              )}
-              <Link href="/properties/new">
-                <Button>
-                  <Plus className="h-4 w-4 mr-2" />
-                  Новое объявление
-                </Button>
-              </Link>
-            </div>
+            )}
           </div>
         </div>
-      </header>
 
-      <main className="container mx-auto px-4 py-8">
         {/* User Info */}
         <div className="mb-8">
           <h1 className="text-2xl font-bold mb-2">

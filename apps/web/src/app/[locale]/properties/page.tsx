@@ -2,7 +2,7 @@
 
 import { useState, useEffect, useRef, useCallback } from 'react';
 import Link from 'next/link';
-import { useRouter } from 'next/navigation';
+import { useRouter, useSearchParams } from 'next/navigation';
 import { PropertyCard, Button, Select, SelectContent, SelectItem, SelectTrigger, SelectValue } from '@repo/ui';
 import { AdvancedFilters, type AdvancedFilterValues, PropertyMap, type PropertyMapMarker } from '@/components';
 import { Search, Plus, Loader2, User, LogOut, MapPin, ArrowUpDown, Grid3X3, Map as MapIcon } from 'lucide-react';
@@ -72,6 +72,7 @@ const SORT_OPTIONS = [
 
 export default function PropertiesPage() {
   const { user, isAuthenticated, logout } = useAuth();
+  const searchParams = useSearchParams();
   const [properties, setProperties] = useState<Property[]>([]);
   const [loading, setLoading] = useState(true);
   const [error, setError] = useState<string | null>(null);
@@ -86,11 +87,119 @@ export default function PropertiesPage() {
   const [searchRadius, setSearchRadius] = useState<number | null>(null);
   const [viewMode, setViewMode] = useState<ViewMode>('grid');
   const [selectedPropertyId, setSelectedPropertyId] = useState<string | null>(null);
+  const [filtersInitialized, setFiltersInitialized] = useState(false);
   const searchInputRef = useRef<HTMLInputElement>(null);
   const suggestionsRef = useRef<HTMLDivElement>(null);
   const router = useRouter();
 
   const apiUrl = process.env.NEXT_PUBLIC_API_URL || 'http://localhost:3001/api';
+
+  // Initialize filters from URL query parameters
+  useEffect(() => {
+    if (!searchParams) return;
+
+    const initialFilters: AdvancedFilterValues = { ...defaultFilters };
+
+    // Parse property types
+    const propertyType = searchParams.get('propertyType');
+    if (propertyType) {
+      initialFilters.propertyTypes = propertyType.split(',');
+    }
+
+    // Parse listing types
+    const listingType = searchParams.get('listingType');
+    if (listingType) {
+      // Convert from navbar format (RENT, SALE) to API format
+      const types = listingType.split(',').map(type => {
+        if (type === 'RENT') return 'RENT_LONG'; // Default to long-term rent
+        return type;
+      });
+      initialFilters.listingTypes = types;
+    }
+
+    // Check for rent type (daily vs long-term)
+    const rentType = searchParams.get('rentType');
+    if (rentType === 'DAILY' && listingType === 'RENT') {
+      initialFilters.listingTypes = ['RENT_DAILY'];
+    }
+
+    // Parse price range
+    const minPrice = searchParams.get('minPrice');
+    const maxPrice = searchParams.get('maxPrice');
+    if (minPrice) initialFilters.minPrice = Number(minPrice);
+    if (maxPrice) initialFilters.maxPrice = Number(maxPrice);
+
+    // Parse bedrooms
+    const minBedrooms = searchParams.get('minBedrooms');
+    const maxBedrooms = searchParams.get('maxBedrooms');
+    if (minBedrooms) initialFilters.minBedrooms = Number(minBedrooms);
+    if (maxBedrooms) initialFilters.maxBedrooms = Number(maxBedrooms);
+
+    // Parse area
+    const minArea = searchParams.get('minArea');
+    const maxArea = searchParams.get('maxArea');
+    if (minArea) initialFilters.minArea = Number(minArea);
+    if (maxArea) initialFilters.maxArea = Number(maxArea);
+
+    // Parse location
+    const city = searchParams.get('city');
+    const district = searchParams.get('district');
+    const mahalla = searchParams.get('mahalla');
+    if (city) initialFilters.city = city;
+    if (district) initialFilters.district = district;
+    if (mahalla) initialFilters.mahalla = mahalla;
+
+    // Parse building filters
+    const buildingClass = searchParams.get('buildingClass');
+    const renovation = searchParams.get('renovation');
+    const parkingType = searchParams.get('parkingType');
+    const buildingType = searchParams.get('buildingType');
+    if (buildingClass) initialFilters.buildingClasses = [buildingClass];
+    if (renovation) initialFilters.renovationTypes = [renovation];
+    if (parkingType) initialFilters.parkingTypes = [parkingType];
+
+    // Parse year built (for new buildings filter)
+    const minYearBuilt = searchParams.get('minYearBuilt');
+    const maxYearBuilt = searchParams.get('maxYearBuilt');
+    if (minYearBuilt) initialFilters.minYearBuilt = Number(minYearBuilt);
+    if (maxYearBuilt) initialFilters.maxYearBuilt = Number(maxYearBuilt);
+
+    // Parse commercial type
+    const commercialType = searchParams.get('commercialType');
+    if (commercialType) {
+      // Store commercial type for filtering (may need backend support)
+      initialFilters.propertyTypes = ['COMMERCIAL'];
+    }
+
+    // Parse amenities
+    const amenities = searchParams.get('amenities');
+    if (amenities) initialFilters.amenities = amenities.split(',');
+
+    // Parse boolean features
+    if (searchParams.get('hasBalcony') === 'true') initialFilters.hasBalcony = true;
+    if (searchParams.get('hasConcierge') === 'true') initialFilters.hasConcierge = true;
+    if (searchParams.get('hasGatedArea') === 'true') initialFilters.hasGatedArea = true;
+
+    // Parse search query
+    const search = searchParams.get('search');
+    if (search) setSearchQuery(search);
+
+    // Parse sorting
+    const sortByParam = searchParams.get('sortBy');
+    const sortOrderParam = searchParams.get('sortOrder');
+    if (sortByParam && sortOrderParam) {
+      setSortBy(`${sortByParam}:${sortOrderParam}`);
+    }
+
+    // Parse featured flag
+    const featured = searchParams.get('featured');
+    if (featured === 'true') {
+      // This might need backend support to filter featured properties
+    }
+
+    setFilters(initialFilters);
+    setFiltersInitialized(true);
+  }, [searchParams]);
 
   const fetchProperties = useCallback(async (page = currentPage) => {
     setLoading(true);
@@ -125,6 +234,8 @@ export default function PropertiesPage() {
       // Location
       if (filters.city) params.append('city', filters.city);
       if (filters.district) params.append('district', filters.district);
+      if (filters.mahalla) params.append('mahalla', filters.mahalla);
+      if (filters.mahalla) params.append('mahalla', filters.mahalla);
 
       // Geo-location search
       if (userLocation && searchRadius) {
@@ -174,7 +285,8 @@ export default function PropertiesPage() {
       }
 
       const data = await response.json();
-      setProperties(data.items || data.data || data);
+      const properties = data.items || data.data || data;
+      setProperties(properties);
       if (data.meta) {
         setPagination(data.meta);
       }
@@ -230,8 +342,10 @@ export default function PropertiesPage() {
   }, []);
 
   useEffect(() => {
-    fetchProperties();
-  }, []);
+    if (filtersInitialized) {
+      fetchProperties();
+    }
+  }, [filtersInitialized, filters, fetchProperties]);
 
   // Refetch when sort changes
   useEffect(() => {
@@ -291,47 +405,6 @@ export default function PropertiesPage() {
 
   return (
     <div className="min-h-screen bg-gray-50">
-      {/* Header */}
-      <header className="bg-white shadow-sm">
-        <div className="container mx-auto px-4 py-4">
-          <div className="flex items-center justify-between">
-            <Link href="/" className="text-2xl font-bold text-blue-600">
-              RealEstate
-            </Link>
-            <div className="flex items-center gap-4">
-              {isAuthenticated ? (
-                <>
-                  <Link href="/dashboard">
-                    <Button variant="ghost">
-                      <User className="h-4 w-4 mr-2" />
-                      {user?.firstName}
-                    </Button>
-                  </Link>
-                  <Link href="/properties/new">
-                    <Button>
-                      <Plus className="h-4 w-4 mr-2" />
-                      Разместить
-                    </Button>
-                  </Link>
-                  <Button variant="ghost" onClick={logout}>
-                    <LogOut className="h-4 w-4" />
-                  </Button>
-                </>
-              ) : (
-                <>
-                  <Link href="/auth/login">
-                    <Button variant="ghost">Войти</Button>
-                  </Link>
-                  <Link href="/auth/register">
-                    <Button>Регистрация</Button>
-                  </Link>
-                </>
-              )}
-            </div>
-          </div>
-        </div>
-      </header>
-
       <main className="container mx-auto px-4 py-8">
         {/* Search Bar */}
         <div className="mb-6">

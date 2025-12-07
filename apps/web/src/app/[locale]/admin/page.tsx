@@ -254,27 +254,21 @@ export default function AdminPage() {
 
   return (
     <div className="min-h-screen bg-gray-50">
-      {/* Header */}
-      <header className="bg-white shadow-sm sticky top-0 z-40">
-        <div className="container mx-auto px-4 py-4">
-          <div className="flex items-center justify-between">
-            <div className="flex items-center gap-4">
-              <Link href="/dashboard">
-                <Button variant="ghost">
-                  <ArrowLeft className="h-4 w-4 mr-2" />
-                  Назад
-                </Button>
-              </Link>
-              <div className="flex items-center gap-2">
-                <Shield className="h-5 w-5 text-blue-600" />
-                <h1 className="text-xl font-semibold">Панель администратора</h1>
-              </div>
-            </div>
+      <main className="container mx-auto px-4 py-8">
+        {/* Admin Header */}
+        <div className="mb-6 flex items-center gap-4">
+          <Link href="/dashboard">
+            <Button variant="ghost">
+              <ArrowLeft className="h-4 w-4 mr-2" />
+              Назад
+            </Button>
+          </Link>
+          <div className="flex items-center gap-2">
+            <Shield className="h-5 w-5 text-blue-600" />
+            <h1 className="text-2xl font-bold">Панель администратора</h1>
           </div>
         </div>
-      </header>
 
-      <main className="container mx-auto px-4 py-8">
         {/* Tabs */}
         <div className="flex gap-2 mb-6">
           <Button
