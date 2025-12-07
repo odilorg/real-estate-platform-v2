@@ -14,4 +14,5 @@ export { PropertyLocationMap } from './property-location-map';
 export { PropertyAmenities } from './property-amenities';
 export { PriceHistoryChart } from './price-history-chart';
 export { LocationPicker } from './location-picker';
+export { NearbyPOIs } from './nearby-pois';
 export { default as PropertyCreationWizard } from './property-wizard/PropertyCreationWizard';

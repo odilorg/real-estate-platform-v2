@@ -13,6 +13,7 @@ import {
 import { PropertiesService } from './properties.service';
 import { LocationService } from './location.service';
 import { PriceHistoryService } from './price-history.service';
+import { POIService } from './poi.service';
 import {
   CreatePropertyDto,
   UpdatePropertyDto,
@@ -30,6 +31,7 @@ export class PropertiesController {
     private propertiesService: PropertiesService,
     private locationService: LocationService,
     private priceHistoryService: PriceHistoryService,
+    private poiService: POIService,
   ) {}
 
   @Post()
@@ -198,6 +200,18 @@ export class PropertiesController {
       history,
       stats,
     };
+  }
+
+  @Get(':id/pois')
+  @Public()
+  async getPOIs(@Param('id') id: string) {
+    const property = await this.propertiesService.findOne(id);
+
+    if (!property) {
+      throw new NotFoundException(`Property with ID ${id} not found`);
+    }
+
+    return this.poiService.getPOIsForProperty(id);
   }
 
   @Get(':id')

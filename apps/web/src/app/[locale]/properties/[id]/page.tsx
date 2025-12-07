@@ -4,7 +4,7 @@ import { useState, useEffect, use } from 'react';
 import Link from 'next/link';
 import { useRouter } from 'next/navigation';
 import { Button, Badge, Card, CardContent } from '@repo/ui';
-import { ImageGallery, MortgageCalculator, PropertyKeyFacts, PropertyDetailedInfo, PropertyLocationMap, PropertyAmenities, PriceHistoryChart } from '@/components';
+import { ImageGallery, MortgageCalculator, PropertyKeyFacts, PropertyDetailedInfo, PropertyLocationMap, PropertyAmenities, PriceHistoryChart, NearbyPOIs } from '@/components';
 import { useAuth } from '@/context/AuthContext';
 import {
   ArrowLeft,
@@ -655,10 +655,8 @@ export default function PropertyDetailPage({
               metroDistance={property.metroDistance}
             />
 
-            {/* Walking Score & Nearby Amenities */}
-            {property.latitude && property.longitude && (
-              <PropertyAmenities propertyId={property.id} />
-            )}
+            {/* Nearby Points of Interest */}
+            <NearbyPOIs propertyId={property.id} />
 
             {/* Price History Chart */}
             {priceHistory.length > 0 && priceStats && (

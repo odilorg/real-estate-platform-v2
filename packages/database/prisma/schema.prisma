@@ -125,6 +125,7 @@ model Property {
   analytics   PropertyAnalytics[]
   propertyViews PropertyView[]
   priceHistory PriceHistory[]
+  pois        PropertyPOI[]
 
   @@index([userId])
   @@index([city])
@@ -555,4 +556,27 @@ model PriceHistory {
   @@index([createdAt])
   @@index([propertyId, createdAt])
   @@map("price_history")
+}
+
+// Points of Interest (POI) cached for each property
+model PropertyPOI {
+  id          String    @id @default(cuid())
+  propertyId  String
+  category    String    // 'metro', 'school', 'hospital', etc.
+  displayName String    // Category display name in Russian
+  name        String    // POI name
+  type        String    // OSM type (amenity, shop, leisure, etc.)
+  distance    Int       // Distance in meters
+  latitude    Float
+  longitude   Float
+  address     String?
+  icon        String    // Icon name for UI
+  color       String    // Color for UI
+  fetchedAt   DateTime  @default(now())
+
+  property    Property  @relation(fields: [propertyId], references: [id], onDelete: Cascade)
+
+  @@index([propertyId])
+  @@index([propertyId, category])
+  @@index([fetchedAt])
 }

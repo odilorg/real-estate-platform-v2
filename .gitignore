@@ -38,6 +38,9 @@ coverage/
 *.db
 *.db-journal
 
+# Uploads
+apps/api/uploads/
+
 # Mobile
 apps/mobile/.expo/
 apps/mobile/android/
