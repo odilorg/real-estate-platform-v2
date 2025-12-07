@@ -8,6 +8,8 @@ import { CreatePropertyDto, UpdatePropertyDto, PropertyFilterDto, Currency, EXCH
 import { UploadService } from '../upload/upload.service';
 import { Prisma } from '@repo/database';
 import { PropertyQueryBuilder } from './property-query-builder';
+import { POIService } from './poi.service';
+import { PriceHistoryService } from './price-history.service';
 
 export interface PaginatedResult<T> {
   items: T[];
@@ -22,7 +24,8 @@ export class PropertiesService {
   constructor(
     private prisma: PrismaService,
     private uploadService: UploadService,
-    private priceHistoryService: any, // Will be injected after compilation
+    private priceHistoryService: PriceHistoryService,
+    private poiService: POIService,
   ) { }
 
   /**
@@ -90,6 +93,15 @@ export class PropertiesService {
         },
       },
     });
+
+    // Fire-and-forget: Trigger background POI fetching if property has coordinates
+    if (property.latitude && property.longitude) {
+      this.poiService
+        .fetchAndStorePOIs(property.id, property.latitude, property.longitude)
+        .catch((err) => {
+          console.error(`Failed to fetch POIs for property ${property.id}:`, err);
+        });
+    }
 
     return property;
   }
