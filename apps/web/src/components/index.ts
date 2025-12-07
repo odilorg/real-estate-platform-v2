@@ -13,3 +13,5 @@ export { PropertyDetailedInfo } from './property-detailed-info';
 export { PropertyLocationMap } from './property-location-map';
 export { PropertyAmenities } from './property-amenities';
 export { PriceHistoryChart } from './price-history-chart';
+export { LocationPicker } from './location-picker';
+export { default as PropertyCreationWizard } from './property-wizard/PropertyCreationWizard';
