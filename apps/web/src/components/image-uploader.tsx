@@ -94,7 +94,7 @@ export function ImageUploader({ images, onChange, maxImages = 20 }: ImageUploade
         headers: { Authorization: `Bearer ${token}` },
       });
     } catch (err) {
-      console.error('Failed to delete from server:', err);
+      // Silently fail - file may already be deleted
     }
   };
 

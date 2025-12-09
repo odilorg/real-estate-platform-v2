@@ -102,7 +102,6 @@ export function NearbyPOIs({ propertyId }: NearbyPOIsProps) {
         const data = await response.json();
         setPOICategories(data);
       } catch (err) {
-        console.error('Error loading POIs:', err);
         setError('Не удалось загрузить информацию об окрестностях');
       } finally {
         setLoading(false);
@@ -176,60 +175,58 @@ export function NearbyPOIs({ propertyId }: NearbyPOIsProps) {
           </p>
         </div>
 
-        {/* POI Categories */}
-        <div className="divide-y divide-gray-200">
-          {categoriesWithPOIs.map((category) => {
-            const Icon = ICON_MAP[category.icon] || MapPin;
-            const isExpanded = expandedCategories.has(category.category);
-            const displayCount = Math.min(category.items.length, 3);
-            const hasMore = category.items.length > 3;
+        {/* POI Categories - 2 Column Grid */}
+        <div className="p-6">
+          <div className="grid grid-cols-1 md:grid-cols-2 gap-6">
+            {categoriesWithPOIs.map((category) => {
+              const Icon = ICON_MAP[category.icon] || MapPin;
+              const isExpanded = expandedCategories.has(category.category);
+              const displayCount = Math.min(category.items.length, 3);
+              const hasMore = category.items.length > 3;
 
-            return (
-              <div key={category.category} className="p-6">
-                {/* Category Header */}
-                <div
-                  className="flex items-center justify-between cursor-pointer"
-                  onClick={() => hasMore && toggleCategory(category.category)}
-                >
-                  <div className="flex items-center gap-3">
-                    <div className={`w-10 h-10 flex items-center justify-center rounded-lg ${COLOR_MAP[category.color] || 'bg-gray-50 text-gray-600'}`}>
-                      <Icon className="h-5 w-5" />
-                    </div>
-                    <div>
-                      <div className="font-semibold">{category.category}</div>
-                      <div className="text-sm text-gray-500">
-                        {category.totalCount > 0
-                          ? `${category.totalCount} ${category.totalCount === 1 ? 'место' : category.totalCount < 5 ? 'места' : 'мест'}`
-                          : 'Не найдено'}
+              return (
+                <div key={category.category} className="border border-gray-200 rounded-lg p-4 hover:shadow-sm transition-shadow">
+                  {/* Category Header */}
+                  <div
+                    className="flex items-center justify-between cursor-pointer"
+                    onClick={() => hasMore && toggleCategory(category.category)}
+                  >
+                    <div className="flex items-center gap-3">
+                      <div className={`w-10 h-10 flex items-center justify-center rounded-lg ${COLOR_MAP[category.color] || 'bg-gray-50 text-gray-600'}`}>
+                        <Icon className="h-5 w-5" />
+                      </div>
+                      <div>
+                        <div className="font-semibold">{category.category}</div>
+                        <div className="text-sm text-gray-500">
+                          {category.totalCount > 0
+                            ? `${category.totalCount} ${category.totalCount === 1 ? 'место' : category.totalCount < 5 ? 'места' : 'мест'}`
+                            : 'Не найдено'}
+                        </div>
                       </div>
                     </div>
+                    {hasMore && (
+                      <button className="text-blue-600 hover:text-blue-700 text-sm font-medium flex items-center gap-1">
+                        {isExpanded ? (
+                          <ChevronUp className="h-4 w-4" />
+                        ) : (
+                          <ChevronDown className="h-4 w-4" />
+                        )}
+                      </button>
+                    )}
                   </div>
-                  {hasMore && (
-                    <button className="text-blue-600 hover:text-blue-700 text-sm font-medium flex items-center gap-1">
-                      {isExpanded ? (
-                        <>
-                          Скрыть <ChevronUp className="h-4 w-4" />
-                        </>
-                      ) : (
-                        <>
-                          Показать все <ChevronDown className="h-4 w-4" />
-                        </>
-                      )}
-                    </button>
+
+                  {/* POI List */}
+                  {category.items.length > 0 && (
+                    <div className="mt-4 space-y-2">
+                      {(isExpanded ? category.items : category.items.slice(0, displayCount)).map((poi) => (
+                        <POIItem key={poi.id} poi={poi} />
+                      ))}
+                    </div>
                   )}
                 </div>
-
-                {/* POI List */}
-                {category.items.length > 0 && (
-                  <div className="mt-4 space-y-3">
-                    {(isExpanded ? category.items : category.items.slice(0, displayCount)).map((poi) => (
-                      <POIItem key={poi.id} poi={poi} />
-                    ))}
-                  </div>
-                )}
-              </div>
-            );
-          })}
+              );
+            })}
+          </div>
         </div>
       </CardContent>
     </Card>
@@ -238,16 +235,16 @@ export function NearbyPOIs({ propertyId }: NearbyPOIsProps) {
 
 function POIItem({ poi }: { poi: POI }) {
   return (
-    <div className="flex items-start justify-between py-2 px-3 rounded-lg hover:bg-gray-50 transition-colors">
-      <div className="flex-1 min-w-0">
-        <div className="font-medium text-gray-900 truncate">{poi.name}</div>
+    <div className="flex items-start justify-between py-2 px-2 rounded-lg hover:bg-gray-50 transition-colors">
+      <div className="flex-1 min-w-0 pr-2">
+        <div className="text-sm font-medium text-gray-900 truncate">{poi.name}</div>
         {poi.address && (
           <div className="text-xs text-gray-500 truncate mt-0.5">{poi.address}</div>
         )}
       </div>
-      <div className="ml-4 text-right flex-shrink-0">
-        <div className="text-sm font-semibold text-gray-900">{formatDistance(poi.distance)}</div>
-        <div className="text-xs text-gray-500">{calculateWalkingTime(poi.distance)}</div>
+      <div className="text-right flex-shrink-0">
+        <div className="text-xs font-semibold text-gray-900">{formatDistance(poi.distance)}</div>
+        <div className="text-xs text-gray-500 whitespace-nowrap">{calculateWalkingTime(poi.distance)}</div>
       </div>
     </div>
   );

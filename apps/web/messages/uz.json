@@ -28,7 +28,59 @@
     "title": "O'zbekiston Ko'chmas Mulki",
     "description": "O'zbekistonda ideal mulkingizni toping",
     "signInButton": "Kirish",
-    "createAccountButton": "Hisob yaratish"
+    "createAccountButton": "Hisob yaratish",
+    "searchPlaceholder": "Manzil, tuman, shahar bo'yicha qidirish...",
+    "searchButton": "Qidirish",
+    "cities": {
+      "tashkent": "Toshkent",
+      "samarkand": "Samarqand",
+      "bukhara": "Buxoro",
+      "navoi": "Navoiy",
+      "andijan": "Andijon",
+      "fergana": "Farg'ona"
+    },
+    "featuredTitle": "Tavsiya etiladigan mulklar",
+    "featuredSubtitle": "Haftaning eng yaxshi takliflari",
+    "viewAll": "Barcha e'lonlar",
+    "propertyTypesTitle": "Ideal mulkni toping",
+    "propertyTypes": {
+      "apartments": "Kvartiralar",
+      "apartmentsDesc": "Barcha kvartiralar",
+      "houses": "Uylar",
+      "housesDesc": "Xususiy uylar",
+      "commercial": "Tijorat",
+      "commercialDesc": "Ofislar, omborlar",
+      "land": "Yer",
+      "landDesc": "Yer uchastkalari"
+    },
+    "recentTitle": "Yangi e'lonlar",
+    "recentSubtitle": "Bozordagi yangi takliflar",
+    "viewAllNew": "Barcha yangi e'lonlar",
+    "whyUsTitle": "Nima uchun bizni tanlashadi",
+    "features": {
+      "verified": "Tekshirilgan e'lonlar",
+      "verifiedDesc": "Barcha e'lonlar xavfsizligingiz uchun moderatsiyadan o'tkaziladi",
+      "pricing": "Dolzarb narxlar",
+      "pricingDesc": "Mulk egalaridan haqiqiy narxlar, ortiqcha to'lovsiz",
+      "support": "Tezkor javob",
+      "supportDesc": "Sotuvchilar bilan to'g'ridan-to'g'ri platforma orqali bog'laning"
+    },
+    "ctaTitle": "E'lon joylashtirishga tayyormisiz?",
+    "ctaSubtitle": "Mulkingizni bepul joylashtiring va bugun xaridor yoki ijarachini toping",
+    "ctaButtonAuth": "E'lon yaratish",
+    "ctaButtonGuest": "Bepul boshlash",
+    "footer": {
+      "description": "O'zbekistonda ko'chmas mulk qidirish va sotish uchun yetakchi platforma",
+      "buyers": "Xaridorlar uchun",
+      "buyApartment": "Kvartira sotib olish",
+      "rentApartment": "Kvartira ijaraga olish",
+      "houses": "Uylar",
+      "sellers": "Sotuvchilar uchun",
+      "postListing": "E'lon joylashtirish",
+      "dashboard": "Shaxsiy kabinet",
+      "contacts": "Aloqa",
+      "copyright": "Barcha huquqlar himoyalangan."
+    }
   },
   "auth": {
     "login": {
@@ -72,21 +124,410 @@
     },
     "listingTypes": {
       "SALE": "Sotish",
-      "RENT_LONG": "Uzoq muddatli ijara",
-      "RENT_DAILY": "Kunlik ijara"
+      "RENT_LONG": "Ijara",
+      "RENT_DAILY": "Kunlik"
     },
     "renovation": {
       "EURO": "Yevrota'mir",
       "NORMAL": "Oddiy ta'mir",
       "NEEDS_REPAIR": "Ta'mir talab qiladi"
     },
+    "ownerTypes": {
+      "DEVELOPER": "QURUVCHI",
+      "AGENT": "AGENT",
+      "OWNER": "EGA",
+      "CONTACT": "ALOQA"
+    },
     "rooms": "xona",
     "area": "m²",
     "floor": "qavat",
-    "price": "Narx"
+    "price": "Narx",
+    "studio": "studiya",
+    "roomCount": "{{count}} xonali",
+    "noPhoto": "Rasm yo'q",
+    "morePhotos": "Yana {{count}} rasm",
+    "addToComparison": "Taqqoslashga qo'shish",
+    "removeFromComparison": "Taqqoslashdan olib tashlash",
+    "viewAllProperties": "Barcha mulklarni ko'rish",
+    "writeMessage": "Xabar yozish",
+    "builtIn": "{{year}}-yilda qurilgan",
+    "pricePerSqm": "so'm/m²",
+    "perMonth": "/oy",
+    "perDay": "/kun",
+    "currency": "y.e.",
+    "messageError": "Xato: noto'g'ri e'lon ID raqami",
+    "defaultMessage": "Salom! Men \"{{title}}\" mulkiga qiziqaman. Qo'shimcha ma'lumot bera olasizmi?",
+    "propertyTypes": {
+      "APARTMENT": "Kvartira",
+      "HOUSE": "Uy",
+      "CONDO": "Apartamentlar",
+      "TOWNHOUSE": "Taunxaus",
+      "VILLA": "Villa",
+      "STUDIO": "Studiya",
+      "COMMERCIAL": "Tijorat",
+      "LAND": "Yer"
+    },
+    "buildingClass": {
+      "ECONOMY": "Ekonom",
+      "COMFORT": "Komfort",
+      "BUSINESS": "Biznes",
+      "ELITE": "Elita"
+    },
+    "renovationTypes": {
+      "NONE": "Ta'mirsiz",
+      "COSMETIC": "Kosmetik ta'mir",
+      "EURO": "Yevrota'mir",
+      "DESIGNER": "Dizaynerlik ta'miri",
+      "NEEDS_RENOVATION": "Ta'mir talab qiladi"
+    },
+    "errors": {
+      "notFound": "Mulk topilmadi",
+      "loadError": "Yuklashda xatolik"
+    },
+    "actions": {
+      "back": "Orqaga",
+      "backToList": "Ro'yxatga qaytish",
+      "edit": "Tahrirlash",
+      "verified": "Tekshirilgan",
+      "featured": "Top",
+      "writeReview": "Sharh yozish",
+      "cancel": "Bekor qilish"
+    }
+  },
+  "filters": {
+    "found": "Topildi",
+    "listings": "e'lonlar",
+    "recommended": "Ko'rishni tavsiya qilamiz",
+    "selected": "Tanlangan:",
+    "clearAll": "Hammasini tozalash",
+    "clearFilters": "Filtrlarni tozalash",
+    "defaultSort": "Standart",
+    "onMap": "Xaritada",
+    "loading": "Yuklanmoqda...",
+    "unavailable": "Filtrlar mavjud emas",
+    "roomsShort": "xona"
+  },
+  "navbar": {
+    "rent": "Ijara",
+    "longTermRent": "Uzoq muddatli ijara",
+    "dailyRent": "Kunlik ijara",
+    "sale": "Sotish",
+    "newBuildings": "Yangi binolar",
+    "mortgage": "Ipoteka",
+    "housesAndLand": "Uylar va yer",
+    "commercial": "Tijorat",
+    "apartments": "Kvartiralar",
+    "houses": "Uylar",
+    "condos": "Kondominiumlar",
+    "townhouses": "Taunxauslar",
+    "landPlots": "Yer uchastkalari",
+    "commercialProperty": "Tijorat mulki",
+    "buyHouse": "Uy sotib olish",
+    "buyLand": "Yer sotib olish",
+    "rentHouse": "Uy ijarasi",
+    "buy": "Sotib olish",
+    "rent": "Ijara",
+    "offices": "Ofislar",
+    "retail": "Savdo joylari",
+    "warehouses": "Omborlar",
+    "comparison": "Taqqoslash",
+    "messages": "Xabarlar",
+    "post": "E'lon berish",
+    "profile": "Profil",
+    "signIn": "Kirish",
+    "signOut": "Chiqish",
+    "register": "Ro'yxatdan o'tish"
   },
   "currency": {
     "YE": "y.e.",
     "UZS": "so'm"
+  },
+  "wizard": {
+    "steps": {
+      "1": {
+        "title": "Turi",
+        "description": "Mulk turini tanlang"
+      },
+      "2": {
+        "title": "Manzil",
+        "description": "Manzilni kiriting"
+      },
+      "3": {
+        "title": "Asosiy ma'lumot",
+        "description": "Narx va parametrlar"
+      },
+      "4": {
+        "title": "Xususiyatlar",
+        "description": "Bino tafsilotlari"
+      },
+      "5": {
+        "title": "Rasm va tavsif",
+        "description": "Rasmlarni yuklang"
+      },
+      "6": {
+        "title": "Tekshirish",
+        "description": "Ma'lumotlarni tekshiring"
+      }
+    },
+    "defaultCity": "Toshkent",
+    "validation": {
+      "propertyType": "Mulk turini tanlang",
+      "listingType": "E'lon turini tanlang",
+      "address": "Manzilni kiriting",
+      "city": "Shaharni tanlang",
+      "price": "To'g'ri narxni kiriting",
+      "currency": "Valyutani tanlang",
+      "area": "0 m²dan katta maydonni kiriting",
+      "images": "Kamida bitta rasm yuklang",
+      "title": "Sarlavha kamida 10 ta belgidan iborat bo'lishi kerak",
+      "description": "Tavsif kamida 50 ta belgidan iborat bo'lishi kerak"
+    },
+    "fields": {
+      "propertyType": "Mulk turi",
+      "listingType": "E'lon turi",
+      "address": "Manzil",
+      "city": "Shahar",
+      "price": "Narx",
+      "currency": "Valyuta",
+      "area": "Maydon",
+      "photos": "Rasmlar",
+      "title": "Sarlavha",
+      "description": "Tavsif"
+    },
+    "errors": {
+      "found": "{{count}} ta {{errors}} topildi",
+      "error_one": "xato",
+      "error_other": "xato",
+      "createFailed": "E'lon yaratishda xatolik: {{message}}",
+      "unknownError": "Noma'lum xato"
+    }
+  },
+  "compare": {
+    "title": "Mulklarni taqqoslash",
+    "back": "Ro'yxatga qaytish",
+    "clearAll": "Hammasini tozalash",
+    "empty": {
+      "title": "Taqqoslash uchun mulklar yo'q",
+      "description": "Taqqoslash uchun ro'yxatdan mulklar qo'shing",
+      "button": "Qidiruvga o'tish"
+    },
+    "errors": {
+      "loadError": "Taqqoslash uchun mulklarni yuklashda xatolik"
+    },
+    "sections": {
+      "basicInfo": "Asosiy ma'lumot",
+      "price": "Narx",
+      "location": "Manzil",
+      "building": "Bino",
+      "amenities": "Qulayliklar"
+    },
+    "fields": {
+      "propertyType": "Mulk turi",
+      "listingType": "E'lon turi",
+      "price": "Narx",
+      "pricePerSqm": "m² uchun narx",
+      "area": "Maydon",
+      "livingArea": "Yashash maydoni",
+      "kitchenArea": "Oshxona maydoni",
+      "bedrooms": "Yotoq xonalar",
+      "bathrooms": "Vannaxonalar",
+      "rooms": "Xonalar",
+      "address": "Manzil",
+      "district": "Tuman",
+      "floor": "Qavat",
+      "totalFloors": "Qavatlar soni",
+      "yearBuilt": "Qurilgan yili",
+      "buildingType": "Bino turi",
+      "buildingClass": "Bino klassi",
+      "renovation": "Ta'mir",
+      "ceilingHeight": "Shift balandligi",
+      "parking": "Avtoturargoh",
+      "balcony": "Balkonlar",
+      "amenities": "Qulayliklar"
+    },
+    "units": {
+      "sqm": "m²",
+      "m": "m",
+      "spaces": "joy",
+      "notSpecified": "Ko'rsatilmagan"
+    }
+  },
+  "dashboard": {
+    "favorites": {
+      "title": "Sevimlilar",
+      "back": "Orqaga",
+      "empty": {
+        "title": "Sizda hali sevimli mulklar yo'q",
+        "description": "Mulkni sevimlilarga qo'shish uchun yurak belgisini bosing",
+        "button": "Mulklarni ko'rish"
+      },
+      "count": "Sevimlilarda {{count}} ta mulk",
+      "object_one": "mulk",
+      "object_few": "mulk",
+      "object_many": "mulk",
+      "removeFromFavorites": "Sevimlilardan olib tashlash",
+      "errors": {
+        "loadError": "Sevimlilarni yuklashda xatolik",
+        "generalError": "Yuklashda xatolik"
+      }
+    },
+    "savedSearches": {
+      "title": "Saqlangan qidiruvlar",
+      "back": "Orqaga",
+      "description": "Qidiruv so'rovlaringizni saqlang va yangi mulklar haqida xabarnomalar oling",
+      "empty": {
+        "title": "Sizda hali saqlangan qidiruvlar yo'q",
+        "description": "Qidiruvga o'ting va kerakli parametrlarni saqlang",
+        "button": "Qidiruvga o'tish"
+      },
+      "notificationsEnabled": "Xabarnomalar yoqilgan",
+      "openSearch": "Qidiruvni ochish",
+      "created": "Yaratildi",
+      "allParameters": "Barcha parametrlar",
+      "bedrooms": "yotoq xona",
+      "deleteConfirm": "Ushbu saqlangan qidiruvni o'chirishni xohlaysizmi?",
+      "errors": {
+        "loadError": "Saqlangan qidiruvlarni yuklashda xatolik",
+        "deleteError": "O'chirishda xatolik",
+        "toggleError": "Xabarnomalarni o'zgartirishda xatolik"
+      }
+    },
+    "analytics": {
+      "title": "Analitika va statistika",
+      "back": "Orqaga",
+      "description": "E'lonlaringiz samaradorligini kuzating",
+      "days": "kun",
+      "totalViews": "Jami ko'rishlar",
+      "totalFavorites": "Sevimlilarda",
+      "totalContacts": "Murojaatlar",
+      "propertyPerformance": "E'lonlar samaradorligi",
+      "never": "Hech qachon",
+      "noProperties": {
+        "title": "Sizda hali e'lonlar yo'q",
+        "description": "Statistikani kuzatishni boshlash uchun birinchi e'lon yarating",
+        "button": "E'lon yaratish"
+      },
+      "table": {
+        "property": "E'lon",
+        "views": "Ko'rishlar",
+        "favorites": "Sevimlilar",
+        "contacts": "Murojaatlar",
+        "avgViewsPerDay": "Ko'rish/kun",
+        "lastViewed": "Oxirgi ko'rish"
+      },
+      "insights": {
+        "title": "Tavsiyalar",
+        "conversion": {
+          "title": "Murojaatlarga konversiya",
+          "description": "Tashrif buyuruvchilarning {{rate}}% siz bilan bog'lanadi"
+        },
+        "lowViews": {
+          "title": "Past faollik",
+          "description": "Ba'zi e'lonlar kam ko'rilmoqda. Rasmlarni yangilang, tavsifni yaxshilang yoki narxni pasaytiring"
+        }
+      },
+      "errors": {
+        "loadError": "Analitikani yuklashda xatolik"
+      }
+    }
+  },
+  "reviews": {
+    "reviews": "sharh",
+    "stars": "yulduz",
+    "writeReview": "Sharh yozish",
+    "yourReview": "Sizning sharhingiz",
+    "editReview": "Sharhni tahrirlash",
+    "rating": "Baho",
+    "comment": "Izoh",
+    "commentPlaceholder": "Ushbu mulk haqida fikrlaringiz bilan bo'lishing...",
+    "submit": "Yuborish",
+    "submitting": "Yuborilmoqda...",
+    "cancel": "Bekor qilish",
+    "noReviews": "Hali sharhlar yo'q",
+    "beFirst": "Ushbu mulk haqida birinchi bo'lib sharh qoldiring",
+    "writeFirstReview": "Birinchi sharhni yozish"
+  },
+  "agents": {
+    "title": "Agentlar",
+    "backToAgents": "Agentlar ro'yxatiga qaytish",
+    "verified": "Tasdiqlangan",
+    "superAgent": "Super-agent",
+    "reviews": "sharh",
+    "experience": "Ish tajribasi",
+    "years": "yil",
+    "totalDeals": "Bitimlar",
+    "license": "Litsenziya",
+    "emailAgent": "Xat yozish",
+    "about": "O'zi haqida",
+    "specializations": "Ixtisoslashuv",
+    "languages": "Tillar",
+    "areasServed": "Ish hududlari",
+    "listings": "Agent e'lonlari",
+    "noListings": "Agentda hali e'lonlar yo'q",
+    "findAgent": "Agent topish",
+    "allAgents": "Barcha agentlar",
+    "filter": {
+      "city": "Shahar",
+      "verified": "Faqat tasdiqlangan",
+      "superAgent": "Faqat super-agentlar",
+      "specialization": "Ixtisoslashuv"
+    },
+    "sortBy": {
+      "label": "Saralash",
+      "rating": "Reytingga ko'ra",
+      "experience": "Tajribaga ko'ra",
+      "deals": "Bitimlarga ko'ra"
+    },
+    "empty": {
+      "title": "Agentlar topilmadi",
+      "description": "Qidiruv parametrlarini o'zgartirib ko'ring",
+      "button": "Filtrlarni tozalash"
+    },
+    "errors": {
+      "notFound": "Agent topilmadi",
+      "loadError": "Yuklashda xatolik"
+    }
+  },
+  "agencies": {
+    "title": "Agentliklar",
+    "backToAgencies": "Agentliklar ro'yxatiga qaytish",
+    "verified": "Tasdiqlangan",
+    "premium": "Premium",
+    "founded": "Tashkil etilgan",
+    "agents": "agent",
+    "activeListings": "faol e'lon",
+    "totalDeals": "bitim",
+    "about": "Kompaniya haqida",
+    "contact": "Aloqa ma'lumotlari",
+    "phone": "Telefon",
+    "email": "Email",
+    "website": "Veb-sayt",
+    "address": "Manzil",
+    "ourAgents": "Bizning agentlar",
+    "ourListings": "Bizning e'lonlar",
+    "noListings": "Agentlikda hali e'lonlar yo'q",
+    "viewAllListings": "Barcha e'lonlar",
+    "findAgency": "Agentlik topish",
+    "allAgencies": "Barcha agentliklar",
+    "filter": {
+      "city": "Shahar",
+      "verified": "Faqat tasdiqlangan",
+      "premium": "Faqat premium"
+    },
+    "sortBy": {
+      "label": "Saralash",
+      "rating": "Reytingga ko'ra",
+      "agents": "Agentlar soniga ko'ra",
+      "listings": "E'lonlarga ko'ra"
+    },
+    "empty": {
+      "title": "Agentliklar topilmadi",
+      "description": "Qidiruv parametrlarini o'zgartirib ko'ring",
+      "button": "Filtrlarni tozalash"
+    },
+    "errors": {
+      "notFound": "Agentlik topilmadi",
+      "loadError": "Yuklashda xatolik"
+    }
   }
 }

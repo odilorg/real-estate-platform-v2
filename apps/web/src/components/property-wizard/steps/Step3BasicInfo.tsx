@@ -10,7 +10,6 @@ interface Step3BasicInfoProps {
 }
 
 const CURRENCIES = [
-  { value: 'USD', label: 'USD ($)', symbol: '$' },
   { value: 'YE', label: 'у.е.', symbol: 'у.е.' },
   { value: 'UZS', label: 'UZS (сўм)', symbol: 'сўм' },
 ];

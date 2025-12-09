@@ -136,7 +136,7 @@ export default function AdminPage() {
         }
       }
     } catch (error) {
-      console.error('Error fetching data:', error);
+      // Silently fail
     } finally {
       setLoading(false);
     }
@@ -158,7 +158,7 @@ export default function AdminPage() {
       });
       fetchData();
     } catch (error) {
-      console.error('Error banning user:', error);
+      alert('Ошибка при бане пользователя');
     }
   };
 
@@ -171,7 +171,7 @@ export default function AdminPage() {
       });
       fetchData();
     } catch (error) {
-      console.error('Error unbanning user:', error);
+      alert('Ошибка при разблокировке пользователя');
     }
   };
 
@@ -184,7 +184,7 @@ export default function AdminPage() {
       });
       fetchData();
     } catch (error) {
-      console.error('Error approving property:', error);
+      alert('Ошибка при одобрении объявления');
     }
   };
 
@@ -204,7 +204,7 @@ export default function AdminPage() {
       });
       fetchData();
     } catch (error) {
-      console.error('Error rejecting property:', error);
+      alert('Ошибка при отклонении объявления');
     }
   };
 
@@ -221,7 +221,7 @@ export default function AdminPage() {
       });
       fetchData();
     } catch (error) {
-      console.error('Error featuring property:', error);
+      alert('Ошибка при изменении статуса объявления');
     }
   };
 
@@ -236,7 +236,7 @@ export default function AdminPage() {
       });
       fetchData();
     } catch (error) {
-      console.error('Error deleting property:', error);
+      alert('Ошибка при удалении объявления');
     }
   };
 

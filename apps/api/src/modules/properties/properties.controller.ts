@@ -14,6 +14,10 @@ import { PropertiesService } from './properties.service';
 import { LocationService } from './location.service';
 import { PriceHistoryService } from './price-history.service';
 import { POIService } from './poi.service';
+import { AnalyticsService } from './analytics.service';
+import { RecommendationService } from './recommendation.service';
+import { StatusHistoryService } from './status-history.service';
+import { ValuationService, ValuationResult } from './valuation.service';
 import {
   CreatePropertyDto,
   UpdatePropertyDto,
@@ -32,6 +36,10 @@ export class PropertiesController {
     private locationService: LocationService,
     private priceHistoryService: PriceHistoryService,
     private poiService: POIService,
+    private analyticsService: AnalyticsService,
+    private recommendationService: RecommendationService,
+    private statusHistoryService: StatusHistoryService,
+    private valuationService: ValuationService,
   ) {}
 
   @Post()
@@ -212,6 +220,169 @@ export class PropertiesController {
     }
 
     return this.poiService.getPOIsForProperty(id);
+  }
+
+  @Get(':id/similar')
+  @Public()
+  async getSimilarProperties(
+    @Param('id') id: string,
+    @Query('limit') limit?: string,
+  ) {
+    const property = await this.propertiesService.findOne(id);
+
+    if (!property) {
+      throw new NotFoundException(`Property with ID ${id} not found`);
+    }
+
+    return this.recommendationService.findSimilarProperties(
+      id,
+      limit ? parseInt(limit) : 6,
+    );
+  }
+
+  @Get('my/analytics')
+  @UseGuards(JwtAuthGuard)
+  async getMyPropertiesAnalytics(
+    @CurrentUser() user: User,
+    @Query('days') days?: string,
+  ) {
+    return this.analyticsService.getUserPropertiesAnalytics(
+      user.id,
+      days ? parseInt(days) : 30,
+    );
+  }
+
+  @Get(':id/analytics')
+  @UseGuards(JwtAuthGuard)
+  async getPropertyAnalytics(
+    @Param('id') id: string,
+    @CurrentUser() user: User,
+    @Query('days') days?: string,
+  ) {
+    const property = await this.propertiesService.findOne(id);
+
+    if (!property) {
+      throw new NotFoundException(`Property with ID ${id} not found`);
+    }
+
+    // Only property owner can view analytics
+    if (property.userId !== user.id) {
+      throw new NotFoundException(`Property with ID ${id} not found`);
+    }
+
+    return this.analyticsService.getPropertyAnalytics(
+      id,
+      days ? parseInt(days) : 30,
+    );
+  }
+
+  @Post(':id/track-view')
+  @Public()
+  async trackView(
+    @Param('id') id: string,
+    @CurrentUser() user: User | null,
+    @Query('ip') ipAddress?: string,
+    @Query('userAgent') userAgent?: string,
+    @Query('referrer') referrer?: string,
+  ) {
+    const property = await this.propertiesService.findOne(id);
+
+    if (!property) {
+      throw new NotFoundException(`Property with ID ${id} not found`);
+    }
+
+    await this.analyticsService.trackView(
+      id,
+      user?.id,
+      ipAddress,
+      userAgent,
+      referrer,
+    );
+
+    return { success: true };
+  }
+
+  @Post('valuation')
+  @Public()
+  async calculateValuation(@Body() input: Record<string, unknown>): Promise<ValuationResult> {
+    try {
+      return await this.valuationService.calculateValuation(input as any);
+    } catch (error) {
+      const message = error instanceof Error ? error.message : 'Valuation failed';
+      throw new NotFoundException(message);
+    }
+  }
+
+  @Get(':id/valuation')
+  @Public()
+  async getPropertyValuation(@Param('id') id: string): Promise<ValuationResult> {
+    const property = await this.propertiesService.findOne(id);
+
+    if (!property) {
+      throw new NotFoundException(`Property with ID ${id} not found`);
+    }
+
+    const input = {
+      propertyType: property.propertyType,
+      listingType: property.listingType,
+      city: property.city,
+      district: property.district || undefined,
+      area: property.area || 0,
+      bedrooms: property.bedrooms || undefined,
+      bathrooms: property.bathrooms || undefined,
+      floor: property.floor || undefined,
+      totalFloors: property.totalFloors || undefined,
+      yearBuilt: property.yearBuilt || undefined,
+      buildingClass: property.buildingClass || undefined,
+      renovation: property.renovation || undefined,
+      hasBalcony: (property.balcony || 0) > 0,
+      parkingType: property.parkingType || undefined,
+      latitude: property.latitude || undefined,
+      longitude: property.longitude || undefined,
+    };
+
+    try {
+      return await this.valuationService.calculateValuation(input);
+    } catch (error) {
+      const message = error instanceof Error ? error.message : 'Valuation failed';
+      throw new NotFoundException(message);
+    }
+  }
+
+  @Get(':id/status-history')
+  @Public()
+  async getStatusHistory(@Param('id') id: string) {
+    const property = await this.propertiesService.findOne(id);
+
+    if (!property) {
+      throw new NotFoundException(`Property with ID ${id} not found`);
+    }
+
+    return this.statusHistoryService.getPropertyStatusHistory(id);
+  }
+
+  @Get(':id/timeline')
+  @Public()
+  async getTimeline(@Param('id') id: string) {
+    const property = await this.propertiesService.findOne(id);
+
+    if (!property) {
+      throw new NotFoundException(`Property with ID ${id} not found`);
+    }
+
+    return this.statusHistoryService.getPropertyTimeline(id);
+  }
+
+  @Get(':id/status-stats')
+  @Public()
+  async getStatusStats(@Param('id') id: string) {
+    const property = await this.propertiesService.findOne(id);
+
+    if (!property) {
+      throw new NotFoundException(`Property with ID ${id} not found`);
+    }
+
+    return this.statusHistoryService.getStatusStats(id);
   }
 
   @Get(':id')

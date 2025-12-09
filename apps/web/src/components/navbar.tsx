@@ -3,103 +3,113 @@
 import React, { useState, useEffect } from 'react';
 import Link from 'next/link';
 import { usePathname } from 'next/navigation';
-import { ChevronDown, Menu, X, User, LogOut, Plus, MessageSquare } from 'lucide-react';
+import { ChevronDown, Menu, X, User, LogOut, Plus, MessageSquare, Scale } from 'lucide-react';
 import { cn } from '@/lib/utils';
 import { useAuth } from '@/context/AuthContext';
+import { useComparison } from '@/context';
 import { LanguageSwitcher } from './language-switcher';
 import { Button } from '@repo/ui';
+import { useTranslations } from 'next-intl';
 
 interface MenuItem {
-  label: string;
+  labelKey: string;
   href?: string;
   submenu?: {
-    title?: string;
+    titleKey?: string;
     items: {
-      label: string;
+      labelKey: string;
       href: string;
       description?: string;
     }[];
   }[];
 }
 
-const menuItems: MenuItem[] = [
-  {
-    label: 'Аренда',
-    submenu: [
-      {
-        title: 'Длительная аренда',
-        items: [
-          { label: 'Квартиры', href: '/properties?listingType=RENT&propertyType=APARTMENT' },
-          { label: 'Дома', href: '/properties?listingType=RENT&propertyType=HOUSE' },
-          { label: 'Таунхаусы', href: '/properties?listingType=RENT&propertyType=TOWNHOUSE' },
-        ],
-      },
-      {
-        title: 'Посуточная аренда',
-        items: [
-          { label: 'Квартиры', href: '/properties?listingType=RENT&propertyType=APARTMENT&rentType=DAILY' },
-          { label: 'Дома', href: '/properties?listingType=RENT&propertyType=HOUSE&rentType=DAILY' },
-        ],
-      },
-    ],
-  },
-  {
-    label: 'Продажа',
-    submenu: [
-      {
-        items: [
-          { label: 'Квартиры', href: '/properties?listingType=SALE&propertyType=APARTMENT' },
-          { label: 'Дома', href: '/properties?listingType=SALE&propertyType=HOUSE' },
-          { label: 'Кондоминиумы', href: '/properties?listingType=SALE&propertyType=CONDO' },
-          { label: 'Таунхаусы', href: '/properties?listingType=SALE&propertyType=TOWNHOUSE' },
-          { label: 'Земельные участки', href: '/properties?listingType=SALE&propertyType=LAND' },
-          { label: 'Коммерческая недвижимость', href: '/properties?listingType=SALE&propertyType=COMMERCIAL' },
-        ],
-      },
-    ],
-  },
-  {
-    label: 'Новостройки',
-    href: '/properties?propertyType=APARTMENT&minYearBuilt=2020',
-  },
-  {
-    label: 'Дома и участки',
-    submenu: [
-      {
-        items: [
-          { label: 'Купить дом', href: '/properties?listingType=SALE&propertyType=HOUSE' },
-          { label: 'Купить участок', href: '/properties?listingType=SALE&propertyType=LAND' },
-          { label: 'Арендовать дом', href: '/properties?listingType=RENT&propertyType=HOUSE' },
-          { label: 'Таунхаусы', href: '/properties?listingType=SALE&propertyType=TOWNHOUSE' },
-        ],
-      },
-    ],
-  },
-  {
-    label: 'Коммерческая',
-    submenu: [
-      {
-        items: [
-          { label: 'Купить', href: '/properties?listingType=SALE&propertyType=COMMERCIAL' },
-          { label: 'Арендовать', href: '/properties?listingType=RENT&propertyType=COMMERCIAL' },
-          { label: 'Офисы', href: '/properties?propertyType=COMMERCIAL&search=офис' },
-          { label: 'Торговые помещения', href: '/properties?propertyType=COMMERCIAL&search=торговое' },
-          { label: 'Склады', href: '/properties?propertyType=COMMERCIAL&search=склад' },
-        ],
-      },
-    ],
-  },
-];
-
 export function Navbar() {
+  const t = useTranslations('navbar');
+  const tCommon = useTranslations('common');
   const [mobileMenuOpen, setMobileMenuOpen] = useState(false);
   const [activeDropdown, setActiveDropdown] = useState<number | null>(null);
   const [closeTimeout, setCloseTimeout] = useState<NodeJS.Timeout | null>(null);
   const [unreadCount, setUnreadCount] = useState(0);
   const pathname = usePathname();
   const { user, isAuthenticated, logout } = useAuth();
+  const { comparisonIds } = useComparison();
 
   const apiUrl = process.env.NEXT_PUBLIC_API_URL || 'http://localhost:3001/api';
+
+  // Define menu structure with translation keys
+  const menuItems: MenuItem[] = [
+    {
+      labelKey: 'rent',
+      submenu: [
+        {
+          titleKey: 'longTermRent',
+          items: [
+            { labelKey: 'apartments', href: '/properties?listingType=RENT&propertyType=APARTMENT' },
+            { labelKey: 'houses', href: '/properties?listingType=RENT&propertyType=HOUSE' },
+            { labelKey: 'townhouses', href: '/properties?listingType=RENT&propertyType=TOWNHOUSE' },
+          ],
+        },
+        {
+          titleKey: 'dailyRent',
+          items: [
+            { labelKey: 'apartments', href: '/properties?listingType=RENT&propertyType=APARTMENT&rentType=DAILY' },
+            { labelKey: 'houses', href: '/properties?listingType=RENT&propertyType=HOUSE&rentType=DAILY' },
+          ],
+        },
+      ],
+    },
+    {
+      labelKey: 'sale',
+      submenu: [
+        {
+          items: [
+            { labelKey: 'apartments', href: '/properties?listingType=SALE&propertyType=APARTMENT' },
+            { labelKey: 'houses', href: '/properties?listingType=SALE&propertyType=HOUSE' },
+            { labelKey: 'condos', href: '/properties?listingType=SALE&propertyType=CONDO' },
+            { labelKey: 'townhouses', href: '/properties?listingType=SALE&propertyType=TOWNHOUSE' },
+            { labelKey: 'landPlots', href: '/properties?listingType=SALE&propertyType=LAND' },
+            { labelKey: 'commercialProperty', href: '/properties?listingType=SALE&propertyType=COMMERCIAL' },
+          ],
+        },
+      ],
+    },
+    {
+      labelKey: 'newBuildings',
+      href: '/properties?propertyType=APARTMENT&minYearBuilt=2020',
+    },
+    {
+      labelKey: 'mortgage',
+      href: '/mortgage-calculator',
+    },
+    {
+      labelKey: 'housesAndLand',
+      submenu: [
+        {
+          items: [
+            { labelKey: 'buyHouse', href: '/properties?listingType=SALE&propertyType=HOUSE' },
+            { labelKey: 'buyLand', href: '/properties?listingType=SALE&propertyType=LAND' },
+            { labelKey: 'rentHouse', href: '/properties?listingType=RENT&propertyType=HOUSE' },
+            { labelKey: 'townhouses', href: '/properties?listingType=SALE&propertyType=TOWNHOUSE' },
+          ],
+        },
+      ],
+    },
+    {
+      labelKey: 'commercial',
+      submenu: [
+        {
+          items: [
+            { labelKey: 'buy', href: '/properties?listingType=SALE&propertyType=COMMERCIAL' },
+            { labelKey: 'rent', href: '/properties?listingType=RENT&propertyType=COMMERCIAL' },
+            { labelKey: 'offices', href: '/properties?propertyType=COMMERCIAL&search=офис' },
+            { labelKey: 'retail', href: '/properties?propertyType=COMMERCIAL&search=торговое' },
+            { labelKey: 'warehouses', href: '/properties?propertyType=COMMERCIAL&search=склад' },
+          ],
+        },
+      ],
+    },
+  ];
 
   // Fetch unread messages count
   useEffect(() => {
@@ -124,7 +134,7 @@ export function Navbar() {
           setUnreadCount(data.unreadCount || 0);
         }
       } catch (error) {
-        console.error('Failed to fetch unread count:', error);
+        // Silently fail - unread count is not critical
       }
     };
 
@@ -185,7 +195,7 @@ export function Navbar() {
                         : 'text-gray-700 hover:text-blue-600 hover:bg-gray-50'
                     )}
                   >
-                    {item.label}
+                    {t(item.labelKey as any)}
                   </Link>
                 ) : (
                   <button
@@ -196,7 +206,7 @@ export function Navbar() {
                         : 'text-gray-700 hover:text-blue-600 hover:bg-gray-50'
                     )}
                   >
-                    {item.label}
+                    {t(item.labelKey as any)}
                     <ChevronDown
                       className={cn(
                         'ml-1 h-4 w-4 transition-transform',
@@ -216,12 +226,12 @@ export function Navbar() {
                     <div className="bg-white rounded-lg shadow-lg border border-gray-200 py-2 animate-in fade-in slide-in-from-top-2 duration-200">
                     {item.submenu.map((section, sectionIndex) => (
                       <div key={sectionIndex} className="px-2">
-                        {section.title && (
+                        {section.titleKey && (
                           <div className="px-3 py-2 text-xs font-semibold text-gray-500 uppercase tracking-wider">
-                            {section.title}
+                            {t(section.titleKey as any)}
                           </div>
                         )}
-                        <div className={section.title ? 'mb-3' : ''}>
+                        <div className={section.titleKey ? 'mb-3' : ''}>
                           {section.items.map((subItem, subItemIndex) => (
                             <Link
                               key={subItemIndex}
@@ -234,7 +244,7 @@ export function Navbar() {
                               )}
                               onClick={() => setActiveDropdown(null)}
                             >
-                              {subItem.label}
+                              {t(subItem.labelKey as any)}
                             </Link>
                           ))}
                         </div>
@@ -250,12 +260,26 @@ export function Navbar() {
           {/* User Actions - Desktop */}
           <div className="hidden lg:flex lg:items-center lg:gap-4">
             <LanguageSwitcher />
+
+            {/* Comparison link - available to all users */}
+            {comparisonIds.length > 0 && (
+              <Link href="/compare">
+                <Button variant="ghost" size="sm" className="gap-1 relative">
+                  <Scale className="h-4 w-4" />
+                  {t('comparison')}
+                  <span className="absolute -top-1 -right-1 bg-blue-500 text-white text-xs rounded-full h-5 w-5 flex items-center justify-center font-semibold">
+                    {comparisonIds.length}
+                  </span>
+                </Button>
+              </Link>
+            )}
+
             {isAuthenticated ? (
               <>
                 <Link href="/dashboard/messages">
                   <Button variant="ghost" size="sm" className="gap-1 relative">
                     <MessageSquare className="h-4 w-4" />
-                    Сообщения
+                    {t('messages')}
                     {unreadCount > 0 && (
                       <span className="absolute -top-1 -right-1 bg-red-500 text-white text-xs rounded-full h-5 w-5 flex items-center justify-center font-semibold">
                         {unreadCount > 9 ? '9+' : unreadCount}
@@ -266,13 +290,13 @@ export function Navbar() {
                 <Link href="/properties/new">
                   <Button size="sm" className="gap-1">
                     <Plus className="h-4 w-4" />
-                    Разместить
+                    {t('post')}
                   </Button>
                 </Link>
                 <Link href="/dashboard">
                   <Button variant="ghost" size="sm" className="gap-1">
                     <User className="h-4 w-4" />
-                    {user?.firstName || 'Профиль'}
+                    {user?.firstName || t('profile')}
                   </Button>
                 </Link>
                 <Button variant="ghost" size="sm" onClick={logout}>
@@ -283,11 +307,11 @@ export function Navbar() {
               <>
                 <Link href="/auth/login">
                   <Button variant="ghost" size="sm">
-                    Войти
+                    {t('signIn')}
                   </Button>
                 </Link>
                 <Link href="/auth/register">
-                  <Button size="sm">Регистрация</Button>
+                  <Button size="sm">{t('register')}</Button>
                 </Link>
               </>
             )}
@@ -326,7 +350,7 @@ export function Navbar() {
                     )}
                     onClick={() => setMobileMenuOpen(false)}
                   >
-                    {item.label}
+                    {t(item.labelKey as any)}
                   </Link>
                 ) : (
                   <>
@@ -336,7 +360,7 @@ export function Navbar() {
                       }
                       className="w-full flex items-center justify-between px-3 py-2 rounded-md text-base font-medium text-gray-700 hover:text-blue-600 hover:bg-gray-50"
                     >
-                      {item.label}
+                      {t(item.labelKey as any)}
                       <ChevronDown
                         className={cn(
                           'h-4 w-4 transition-transform',
@@ -348,9 +372,9 @@ export function Navbar() {
                       <div className="pl-4 mt-1 space-y-1">
                         {item.submenu.map((section, sectionIndex) => (
                           <div key={sectionIndex}>
-                            {section.title && (
+                            {section.titleKey && (
                               <div className="px-3 py-2 text-xs font-semibold text-gray-500 uppercase tracking-wider">
-                                {section.title}
+                                {t(section.titleKey as any)}
                               </div>
                             )}
                             {section.items.map((subItem, subItemIndex) => (
@@ -368,7 +392,7 @@ export function Navbar() {
                                   setActiveDropdown(null);
                                 }}
                               >
-                                {subItem.label}
+                                {t(subItem.labelKey as any)}
                               </Link>
                             ))}
                           </div>
@@ -391,13 +415,13 @@ export function Navbar() {
                 <Link href="/properties/new" onClick={() => setMobileMenuOpen(false)}>
                   <Button size="sm" className="w-full gap-1 justify-center">
                     <Plus className="h-4 w-4" />
-                    Разместить
+                    {t('post')}
                   </Button>
                 </Link>
                 <Link href="/dashboard" onClick={() => setMobileMenuOpen(false)}>
                   <Button variant="ghost" size="sm" className="w-full gap-1 justify-center">
                     <User className="h-4 w-4" />
-                    {user?.firstName || 'Профиль'}
+                    {user?.firstName || t('profile')}
                   </Button>
                 </Link>
                 <Button
@@ -410,19 +434,19 @@ export function Navbar() {
                   }}
                 >
                   <LogOut className="h-4 w-4 mr-1" />
-                  Выйти
+                  {t('signOut')}
                 </Button>
               </>
             ) : (
               <>
                 <Link href="/auth/login" onClick={() => setMobileMenuOpen(false)}>
                   <Button variant="ghost" size="sm" className="w-full">
-                    Войти
+                    {t('signIn')}
                   </Button>
                 </Link>
                 <Link href="/auth/register" onClick={() => setMobileMenuOpen(false)}>
                   <Button size="sm" className="w-full">
-                    Регистрация
+                    {t('register')}
                   </Button>
                 </Link>
               </>

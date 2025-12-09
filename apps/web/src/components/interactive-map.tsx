@@ -24,10 +24,7 @@ function MapClickHandler({ onClick }: { onClick: (lat: number, lng: number) => v
   const map = useMap();
 
   useEffect(() => {
-    console.log('MapClickHandler mounted, map:', map);
-
     const handleClick = (e: L.LeafletMouseEvent) => {
-      console.log('Map clicked at:', e.latlng.lat, e.latlng.lng);
       onClick(e.latlng.lat, e.latlng.lng);
     };
 
@@ -62,7 +59,6 @@ function DraggableMarker({ position, onPositionChange }: {
     if (marker) {
       marker.on('dragend', () => {
         const pos = marker.getLatLng();
-        console.log('Marker dragged to:', pos.lat, pos.lng);
         onPositionChange(pos.lat, pos.lng);
       });
     }
@@ -78,7 +74,6 @@ function DraggableMarker({ position, onPositionChange }: {
           const marker = markerRef.current;
           if (marker) {
             const pos = marker.getLatLng();
-            console.log('Marker dragend event:', pos.lat, pos.lng);
             onPositionChange(pos.lat, pos.lng);
           }
         }

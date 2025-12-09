@@ -5,6 +5,7 @@ import Link from 'next/link';
 import { useRouter } from 'next/navigation';
 import { PropertyCard, Button } from '@repo/ui';
 import { useAuth } from '@/context/AuthContext';
+import { useTranslations } from 'next-intl';
 import {
   ArrowLeft,
   Heart,
@@ -40,6 +41,7 @@ interface FavoriteItem {
 }
 
 export default function FavoritesPage() {
+  const t = useTranslations('dashboard.favorites');
   const router = useRouter();
   const { isAuthenticated, loading: authLoading } = useAuth();
   const [favorites, setFavorites] = useState<FavoriteItem[]>([]);
@@ -80,13 +82,13 @@ export default function FavoritesPage() {
         });
 
         if (!response.ok) {
-          throw new Error('Ошибка загрузки избранного');
+          throw new Error(t('errors.loadError'));
         }
 
         const data = await response.json();
         setFavorites(data.items || []);
       } catch (err) {
-        setError(err instanceof Error ? err.message : 'Ошибка загрузки');
+        setError(err instanceof Error ? err.message : t('errors.generalError'));
       } finally {
         setLoading(false);
       }
@@ -142,12 +144,12 @@ export default function FavoritesPage() {
               <Link href="/dashboard">
                 <Button variant="ghost">
                   <ArrowLeft className="h-4 w-4 mr-2" />
-                  Назад
+                  {t('back')}
                 </Button>
               </Link>
               <h1 className="text-xl font-semibold flex items-center gap-2">
                 <Heart className="h-5 w-5 text-red-500" />
-                Избранное
+                {t('title')}
               </h1>
             </div>
           </div>
@@ -169,14 +171,13 @@ export default function FavoritesPage() {
               <Heart className="h-16 w-16 mx-auto" />
             </div>
             <h2 className="text-xl font-semibold mb-2">
-              У вас пока нет избранных объектов
+              {t('empty.title')}
             </h2>
             <p className="text-gray-600 mb-6">
-              Нажмите на сердечко на странице объекта, чтобы добавить его в
-              избранное
+              {t('empty.description')}
             </p>
             <Link href="/properties">
-              <Button>Смотреть объекты</Button>
+              <Button>{t('empty.button')}</Button>
             </Link>
           </div>
         )}
@@ -186,13 +187,14 @@ export default function FavoritesPage() {
           <>
             <div className="mb-4">
               <p className="text-gray-600">
-                {favorites.length}{' '}
-                {favorites.length === 1
-                  ? 'объект'
-                  : favorites.length < 5
-                    ? 'объекта'
-                    : 'объектов'}{' '}
-                в избранном
+                {t('count', {
+                  count: favorites.length,
+                  objects: favorites.length === 1
+                    ? t('object_one')
+                    : favorites.length < 5
+                      ? t('object_few')
+                      : t('object_many')
+                })}
               </p>
             </div>
             <div className="grid grid-cols-1 md:grid-cols-2 lg:grid-cols-3 gap-6">
@@ -214,7 +216,7 @@ export default function FavoritesPage() {
                     onClick={() => handleRemoveFavorite(favorite.property.id)}
                     disabled={removingId === favorite.property.id}
                     className="absolute top-2 right-2 p-2 bg-white/90 hover:bg-white rounded-full shadow-md opacity-0 group-hover:opacity-100 transition-opacity"
-                    title="Удалить из избранного"
+                    title={t('removeFromFavorites')}
                   >
                     {removingId === favorite.property.id ? (
                       <Loader2 className="h-5 w-5 animate-spin text-gray-500" />

@@ -1,5 +1,5 @@
 import { Prisma } from '@repo/database';
-import { PropertyFilterDto } from '@repo/shared';
+import { PropertyFilterDto, Currency, EXCHANGE_RATE_UZS_TO_USD } from '@repo/shared';
 
 /**
  * Builder class to construct Prisma where clauses for property queries
@@ -7,6 +7,7 @@ import { PropertyFilterDto } from '@repo/shared';
  */
 export class PropertyQueryBuilder {
   private where: Prisma.PropertyWhereInput = {};
+  private needsPricePerSqMPostFilter = false;
 
   constructor(private filters: PropertyFilterDto) {
     this.buildWhereClause();
@@ -18,6 +19,7 @@ export class PropertyQueryBuilder {
     this.applyLocationFilters();
     this.applyPropertyTypeFilters();
     this.applyPriceFilter();
+    this.applyPricePerSqMFilter();
     this.applyAreaFilter();
     this.applyBedroomsFilter();
     this.applyRoomsFilter();
@@ -76,8 +78,25 @@ export class PropertyQueryBuilder {
     const { minPrice, maxPrice } = this.filters;
     if (minPrice || maxPrice) {
       this.where.priceUsd = {};
-      if (minPrice) this.where.priceUsd.gte = minPrice;
-      if (maxPrice) this.where.priceUsd.lte = maxPrice;
+
+      const isUzs = this.filters.currency === Currency.UZS;
+      const rate = EXCHANGE_RATE_UZS_TO_USD;
+
+      const filterMin = isUzs && minPrice ? minPrice / rate : minPrice;
+      const filterMax = isUzs && maxPrice ? maxPrice / rate : maxPrice;
+
+      if (filterMin) this.where.priceUsd.gte = filterMin;
+      if (filterMax) this.where.priceUsd.lte = filterMax;
+    }
+  }
+
+  private applyPricePerSqMFilter(): void {
+    const { minPricePerSqM, maxPricePerSqM } = this.filters;
+    if (minPricePerSqM || maxPricePerSqM) {
+      // Calculate price per square meter using priceUsd and area
+      // This requires post-filtering since Prisma doesn't support computed fields in where clauses
+      // We mark this for post-processing
+      this.needsPricePerSqMPostFilter = true;
     }
   }
 
@@ -196,5 +215,34 @@ export class PropertyQueryBuilder {
 
   needsFloorPostFilter(): boolean {
     return !!this.filters.notLastFloor;
+  }
+
+  needsPricePerSqMFilter(): boolean {
+    return this.needsPricePerSqMPostFilter;
+  }
+
+  filterByPricePerSqM(properties: any[]): any[] {
+    const { minPricePerSqM, maxPricePerSqM } = this.filters;
+    if (!minPricePerSqM && !maxPricePerSqM) {
+      return properties;
+    }
+
+    return properties.filter((property) => {
+      if (!property.priceUsd || !property.area || property.area === 0) {
+        return false;
+      }
+
+      const pricePerSqM = property.priceUsd / property.area;
+
+      if (minPricePerSqM && pricePerSqM < minPricePerSqM) {
+        return false;
+      }
+
+      if (maxPricePerSqM && pricePerSqM > maxPricePerSqM) {
+        return false;
+      }
+
+      return true;
+    });
   }
 }

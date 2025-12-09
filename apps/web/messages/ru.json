@@ -28,7 +28,59 @@
     "title": "Недвижимость Узбекистана",
     "description": "Найдите идеальную недвижимость в Узбекистане",
     "signInButton": "Войти",
-    "createAccountButton": "Создать аккаунт"
+    "createAccountButton": "Создать аккаунт",
+    "searchPlaceholder": "Поиск по адресу, району, городу...",
+    "searchButton": "Найти",
+    "cities": {
+      "tashkent": "Ташкент",
+      "samarkand": "Самарканд",
+      "bukhara": "Бухара",
+      "navoi": "Навои",
+      "andijan": "Андижан",
+      "fergana": "Фергана"
+    },
+    "featuredTitle": "Рекомендуемые объекты",
+    "featuredSubtitle": "Лучшие предложения недели",
+    "viewAll": "Все объекты",
+    "propertyTypesTitle": "Найдите идеальную недвижимость",
+    "propertyTypes": {
+      "apartments": "Квартиры",
+      "apartmentsDesc": "Все квартиры",
+      "houses": "Дома",
+      "housesDesc": "Частные дома",
+      "commercial": "Коммерческая",
+      "commercialDesc": "Офисы, склады",
+      "land": "Участки",
+      "landDesc": "Земельные участки"
+    },
+    "recentTitle": "Новые объявления",
+    "recentSubtitle": "Свежие предложения на рынке",
+    "viewAllNew": "Все новые",
+    "whyUsTitle": "Почему выбирают нас",
+    "features": {
+      "verified": "Проверенные объявления",
+      "verifiedDesc": "Все объявления проходят модерацию для вашей безопасности",
+      "pricing": "Актуальные цены",
+      "pricingDesc": "Реальные цены от собственников без накруток",
+      "support": "Быстрый отклик",
+      "supportDesc": "Связывайтесь с продавцами напрямую через платформу"
+    },
+    "ctaTitle": "Готовы разместить объявление?",
+    "ctaSubtitle": "Разместите свою недвижимость бесплатно и найдите покупателя или арендатора уже сегодня",
+    "ctaButtonAuth": "Создать объявление",
+    "ctaButtonGuest": "Начать бесплатно",
+    "footer": {
+      "description": "Ведущая платформа для поиска и продажи недвижимости в Узбекистане",
+      "buyers": "Для покупателей",
+      "buyApartment": "Купить квартиру",
+      "rentApartment": "Снять квартиру",
+      "houses": "Дома",
+      "sellers": "Для продавцов",
+      "postListing": "Разместить объявление",
+      "dashboard": "Личный кабинет",
+      "contacts": "Контакты",
+      "copyright": "Все права защищены."
+    }
   },
   "auth": {
     "login": {
@@ -72,21 +124,410 @@
     },
     "listingTypes": {
       "SALE": "Продажа",
-      "RENT_LONG": "Долгосрочная аренда",
-      "RENT_DAILY": "Посуточная аренда"
+      "RENT_LONG": "Аренда",
+      "RENT_DAILY": "Посуточно"
     },
     "renovation": {
       "EURO": "Евроремонт",
       "NORMAL": "Обычный ремонт",
       "NEEDS_REPAIR": "Требует ремонта"
     },
-    "rooms": "комнат",
+    "ownerTypes": {
+      "DEVELOPER": "ЗАСТРОЙЩИК",
+      "AGENT": "АГЕНТ",
+      "OWNER": "ВЛАДЕЛЕЦ",
+      "CONTACT": "КОНТАКТ"
+    },
+    "rooms": "комн.",
     "area": "м²",
     "floor": "этаж",
-    "price": "Цена"
+    "price": "Цена",
+    "studio": "студия",
+    "roomCount": "{{count}} комнатные",
+    "noPhoto": "Нет фото",
+    "morePhotos": "Еще {{count}} фото",
+    "addToComparison": "Добавить к сравнению",
+    "removeFromComparison": "Убрать из сравнения",
+    "viewAllProperties": "Посмотреть все объекты",
+    "writeMessage": "Написать",
+    "builtIn": "Построен в {{year}}",
+    "pricePerSqm": "₽/м²",
+    "perMonth": "/мес",
+    "perDay": "/сутки",
+    "currency": "у.е.",
+    "messageError": "Ошибка: некорректный ID объявления",
+    "defaultMessage": "Здравствуйте! Меня интересует объект \"{{title}}\". Можете предоставить дополнительную информацию?",
+    "propertyTypes": {
+      "APARTMENT": "Квартира",
+      "HOUSE": "Дом",
+      "CONDO": "Апартаменты",
+      "TOWNHOUSE": "Таунхаус",
+      "VILLA": "Вилла",
+      "STUDIO": "Студия",
+      "COMMERCIAL": "Коммерческая",
+      "LAND": "Участок"
+    },
+    "buildingClass": {
+      "ECONOMY": "Эконом",
+      "COMFORT": "Комфорт",
+      "BUSINESS": "Бизнес",
+      "ELITE": "Элитный"
+    },
+    "renovationTypes": {
+      "NONE": "Без ремонта",
+      "COSMETIC": "Косметический",
+      "EURO": "Евроремонт",
+      "DESIGNER": "Дизайнерский",
+      "NEEDS_RENOVATION": "Требует ремонта"
+    },
+    "errors": {
+      "notFound": "Объект не найден",
+      "loadError": "Ошибка загрузки"
+    },
+    "actions": {
+      "back": "Назад",
+      "backToList": "К списку объектов",
+      "edit": "Редактировать",
+      "verified": "Проверено",
+      "featured": "Топ",
+      "writeReview": "Написать отзыв",
+      "cancel": "Отмена"
+    }
+  },
+  "filters": {
+    "found": "Найдено",
+    "listings": "объявлений",
+    "recommended": "Рекомендуем посмотреть",
+    "selected": "Выбрано:",
+    "clearAll": "Сбросить все",
+    "clearFilters": "Сбросить фильтры",
+    "defaultSort": "По умолчанию",
+    "onMap": "На карте",
+    "loading": "Загрузка...",
+    "unavailable": "Фильтры недоступны",
+    "roomsShort": "комн."
+  },
+  "navbar": {
+    "rent": "Аренда",
+    "longTermRent": "Длительная аренда",
+    "dailyRent": "Посуточная аренда",
+    "sale": "Продажа",
+    "newBuildings": "Новостройки",
+    "mortgage": "Ипотека",
+    "housesAndLand": "Дома и участки",
+    "commercial": "Коммерческая",
+    "apartments": "Квартиры",
+    "houses": "Дома",
+    "condos": "Кондоминиумы",
+    "townhouses": "Таунхаусы",
+    "landPlots": "Земельные участки",
+    "commercialProperty": "Коммерческая недвижимость",
+    "buyHouse": "Купить дом",
+    "buyLand": "Купить участок",
+    "rentHouse": "Арендовать дом",
+    "buy": "Купить",
+    "rent": "Арендовать",
+    "offices": "Офисы",
+    "retail": "Торговые помещения",
+    "warehouses": "Склады",
+    "comparison": "Сравнение",
+    "messages": "Сообщения",
+    "post": "Разместить",
+    "profile": "Профиль",
+    "signIn": "Войти",
+    "signOut": "Выйти",
+    "register": "Регистрация"
   },
   "currency": {
     "YE": "у.е.",
     "UZS": "сум"
+  },
+  "wizard": {
+    "steps": {
+      "1": {
+        "title": "Тип",
+        "description": "Выберите тип недвижимости"
+      },
+      "2": {
+        "title": "Местоположение",
+        "description": "Укажите адрес"
+      },
+      "3": {
+        "title": "Основная информация",
+        "description": "Цена и параметры"
+      },
+      "4": {
+        "title": "Характеристики",
+        "description": "Детали здания"
+      },
+      "5": {
+        "title": "Фото и описание",
+        "description": "Загрузите фото"
+      },
+      "6": {
+        "title": "Проверка",
+        "description": "Проверьте данные"
+      }
+    },
+    "defaultCity": "Ташкент",
+    "validation": {
+      "propertyType": "Выберите тип недвижимости",
+      "listingType": "Выберите тип объявления",
+      "address": "Укажите адрес",
+      "city": "Выберите город",
+      "price": "Укажите корректную цену",
+      "currency": "Выберите валюту",
+      "area": "Укажите площадь больше 0 м²",
+      "images": "Загрузите хотя бы одно фото",
+      "title": "Заголовок должен содержать минимум 10 символов",
+      "description": "Описание должно содержать минимум 50 символов"
+    },
+    "fields": {
+      "propertyType": "Тип недвижимости",
+      "listingType": "Тип объявления",
+      "address": "Адрес",
+      "city": "Город",
+      "price": "Цена",
+      "currency": "Валюта",
+      "area": "Площадь",
+      "photos": "Фотографии",
+      "title": "Заголовок",
+      "description": "Описание"
+    },
+    "errors": {
+      "found": "Найдено {{count}} {{errors}}",
+      "error_one": "ошибка",
+      "error_other": "ошибок",
+      "createFailed": "Ошибка при создании объявления: {{message}}",
+      "unknownError": "Неизвестная ошибка"
+    }
+  },
+  "compare": {
+    "title": "Сравнение объектов",
+    "back": "К списку",
+    "clearAll": "Очистить все",
+    "empty": {
+      "title": "Нет объектов для сравнения",
+      "description": "Добавьте объекты из списка для сравнения",
+      "button": "Перейти к поиску"
+    },
+    "errors": {
+      "loadError": "Ошибка загрузки объектов для сравнения"
+    },
+    "sections": {
+      "basicInfo": "Основная информация",
+      "price": "Стоимость",
+      "location": "Расположение",
+      "building": "Здание",
+      "amenities": "Удобства"
+    },
+    "fields": {
+      "propertyType": "Тип недвижимости",
+      "listingType": "Тип объявления",
+      "price": "Цена",
+      "pricePerSqm": "Цена за м²",
+      "area": "Площадь",
+      "livingArea": "Жилая площадь",
+      "kitchenArea": "Площадь кухни",
+      "bedrooms": "Спален",
+      "bathrooms": "Санузлов",
+      "rooms": "Комнат",
+      "address": "Адрес",
+      "district": "Район",
+      "floor": "Этаж",
+      "totalFloors": "Этажность",
+      "yearBuilt": "Год постройки",
+      "buildingType": "Тип здания",
+      "buildingClass": "Класс здания",
+      "renovation": "Ремонт",
+      "ceilingHeight": "Высота потолков",
+      "parking": "Парковка",
+      "balcony": "Балконы",
+      "amenities": "Удобства"
+    },
+    "units": {
+      "sqm": "м²",
+      "m": "м",
+      "spaces": "мест",
+      "notSpecified": "Не указаны"
+    }
+  },
+  "dashboard": {
+    "favorites": {
+      "title": "Избранное",
+      "back": "Назад",
+      "empty": {
+        "title": "У вас пока нет избранных объектов",
+        "description": "Нажмите на сердечко на странице объекта, чтобы добавить его в избранное",
+        "button": "Смотреть объекты"
+      },
+      "count": "{{count}} {{objects}} в избранном",
+      "object_one": "объект",
+      "object_few": "объекта",
+      "object_many": "объектов",
+      "removeFromFavorites": "Удалить из избранного",
+      "errors": {
+        "loadError": "Ошибка загрузки избранного",
+        "generalError": "Ошибка загрузки"
+      }
+    },
+    "savedSearches": {
+      "title": "Сохраненные поиски",
+      "back": "Назад",
+      "description": "Сохраняйте свои поисковые запросы и получайте уведомления о новых объектах",
+      "empty": {
+        "title": "У вас пока нет сохраненных поисков",
+        "description": "Перейдите в поиск и сохраните интересующие вас параметры",
+        "button": "Перейти к поиску"
+      },
+      "notificationsEnabled": "Уведомления включены",
+      "openSearch": "Открыть поиск",
+      "created": "Создан",
+      "allParameters": "Все параметры",
+      "bedrooms": "спален",
+      "deleteConfirm": "Вы уверены, что хотите удалить этот сохраненный поиск?",
+      "errors": {
+        "loadError": "Ошибка загрузки сохраненных поисков",
+        "deleteError": "Ошибка удаления",
+        "toggleError": "Ошибка изменения уведомлений"
+      }
+    },
+    "analytics": {
+      "title": "Аналитика и статистика",
+      "back": "Назад",
+      "description": "Отслеживайте эффективность ваших объявлений",
+      "days": "дней",
+      "totalViews": "Всего просмотров",
+      "totalFavorites": "В избранном",
+      "totalContacts": "Обращений",
+      "propertyPerformance": "Эффективность объявлений",
+      "never": "Никогда",
+      "noProperties": {
+        "title": "У вас пока нет объявлений",
+        "description": "Создайте первое объявление, чтобы начать отслеживать статистику",
+        "button": "Создать объявление"
+      },
+      "table": {
+        "property": "Объявление",
+        "views": "Просмотры",
+        "favorites": "Избранное",
+        "contacts": "Обращения",
+        "avgViewsPerDay": "Просмотров/день",
+        "lastViewed": "Последний просмотр"
+      },
+      "insights": {
+        "title": "Insights и рекомендации",
+        "conversion": {
+          "title": "Конверсия в обращения",
+          "description": "{{rate}}% посетителей связываются с вами"
+        },
+        "lowViews": {
+          "title": "Низкая активность",
+          "description": "Некоторые объявления получают мало просмотров. Обновите фото, улучшите описание или снизьте цену"
+        }
+      },
+      "errors": {
+        "loadError": "Ошибка загрузки аналитики"
+      }
+    }
+  },
+  "reviews": {
+    "reviews": "отзывов",
+    "stars": "звезд",
+    "writeReview": "Написать отзыв",
+    "yourReview": "Ваш отзыв",
+    "editReview": "Редактировать отзыв",
+    "rating": "Оценка",
+    "comment": "Комментарий",
+    "commentPlaceholder": "Поделитесь своими впечатлениями об этом объекте...",
+    "submit": "Отправить",
+    "submitting": "Отправка...",
+    "cancel": "Отмена",
+    "noReviews": "Пока нет отзывов",
+    "beFirst": "Будьте первым, кто оставит отзыв об этом объекте",
+    "writeFirstReview": "Написать первый отзыв"
+  },
+  "agents": {
+    "title": "Агенты",
+    "backToAgents": "К списку агентов",
+    "verified": "Проверен",
+    "superAgent": "Супер-агент",
+    "reviews": "отзывов",
+    "experience": "Опыт работы",
+    "years": "лет",
+    "totalDeals": "Сделок",
+    "license": "Лицензия",
+    "emailAgent": "Написать",
+    "about": "О себе",
+    "specializations": "Специализация",
+    "languages": "Языки",
+    "areasServed": "Районы работы",
+    "listings": "Объявления агента",
+    "noListings": "У агента пока нет объявлений",
+    "findAgent": "Найти агента",
+    "allAgents": "Все агенты",
+    "filter": {
+      "city": "Город",
+      "verified": "Только проверенные",
+      "superAgent": "Только супер-агенты",
+      "specialization": "Специализация"
+    },
+    "sortBy": {
+      "label": "Сортировка",
+      "rating": "По рейтингу",
+      "experience": "По опыту",
+      "deals": "По сделкам"
+    },
+    "empty": {
+      "title": "Агентов не найдено",
+      "description": "Попробуйте изменить параметры поиска",
+      "button": "Сбросить фильтры"
+    },
+    "errors": {
+      "notFound": "Агент не найден",
+      "loadError": "Ошибка загрузки"
+    }
+  },
+  "agencies": {
+    "title": "Агентства",
+    "backToAgencies": "К списку агентств",
+    "verified": "Проверено",
+    "premium": "Премиум",
+    "founded": "Основано",
+    "agents": "агентов",
+    "activeListings": "активных объявлений",
+    "totalDeals": "сделок",
+    "about": "О компании",
+    "contact": "Контактная информация",
+    "phone": "Телефон",
+    "email": "Email",
+    "website": "Сайт",
+    "address": "Адрес",
+    "ourAgents": "Наши агенты",
+    "ourListings": "Наши объявления",
+    "noListings": "У агентства пока нет объявлений",
+    "viewAllListings": "Все объявления агентства",
+    "findAgency": "Найти агентство",
+    "allAgencies": "Все агентства",
+    "filter": {
+      "city": "Город",
+      "verified": "Только проверенные",
+      "premium": "Только премиум"
+    },
+    "sortBy": {
+      "label": "Сортировка",
+      "rating": "По рейтингу",
+      "agents": "По количеству агентов",
+      "listings": "По объявлениям"
+    },
+    "empty": {
+      "title": "Агентств не найдено",
+      "description": "Попробуйте изменить параметры поиска",
+      "button": "Сбросить фильтры"
+    },
+    "errors": {
+      "notFound": "Агентство не найдено",
+      "loadError": "Ошибка загрузки"
+    }
   }
 }

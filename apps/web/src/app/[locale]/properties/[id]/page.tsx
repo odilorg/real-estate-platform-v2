@@ -4,8 +4,9 @@ import { useState, useEffect, use } from 'react';
 import Link from 'next/link';
 import { useRouter } from 'next/navigation';
 import { Button, Badge, Card, CardContent } from '@repo/ui';
-import { ImageGallery, MortgageCalculator, PropertyKeyFacts, PropertyDetailedInfo, PropertyLocationMap, PropertyAmenities, PriceHistoryChart, NearbyPOIs } from '@/components';
+import { ImageGallery, MortgageCalculator, PropertyKeyFacts, PropertyDetailedInfo, PropertyLocationMap, PropertyAmenities, PriceHistoryChart, NearbyPOIs, PropertyReviews, SocialShare } from '@/components';
 import { useAuth } from '@/context/AuthContext';
+import { useTranslations } from 'next-intl';
 import {
   ArrowLeft,
   MapPin,
@@ -122,38 +123,13 @@ interface ReviewStats {
   ratingDistribution: Record<number, number>;
 }
 
-const PROPERTY_TYPE_LABELS: Record<string, string> = {
-  APARTMENT: 'Квартира',
-  HOUSE: 'Дом',
-  CONDO: 'Апартаменты',
-  TOWNHOUSE: 'Таунхаус',
-  VILLA: 'Вилла',
-  STUDIO: 'Студия',
-  COMMERCIAL: 'Коммерческая',
-  LAND: 'Участок',
-};
-
-const BUILDING_CLASS_LABELS: Record<string, string> = {
-  ECONOMY: 'Эконом',
-  COMFORT: 'Комфорт',
-  BUSINESS: 'Бизнес',
-  ELITE: 'Элитный',
-};
-
-const RENOVATION_LABELS: Record<string, string> = {
-  NONE: 'Без ремонта',
-  COSMETIC: 'Косметический',
-  EURO: 'Евроремонт',
-  DESIGNER: 'Дизайнерский',
-  NEEDS_RENOVATION: 'Требует ремонта',
-};
-
 export default function PropertyDetailPage({
   params,
 }: {
   params: Promise<{ id: string }>;
 }) {
   const { id } = use(params);
+  const t = useTranslations('property');
   const router = useRouter();
   const { user, isAuthenticated } = useAuth();
   const [property, setProperty] = useState<Property | null>(null);
@@ -195,14 +171,14 @@ export default function PropertyDetailPage({
         const response = await fetch(`${apiUrl}/properties/${id}`);
         if (!response.ok) {
           if (response.status === 404) {
-            throw new Error('Объект не найден');
+            throw new Error(t('errors.notFound'));
           }
-          throw new Error('Ошибка загрузки');
+          throw new Error(t('errors.loadError'));
         }
         const data = await response.json();
         setProperty(data);
       } catch (err) {
-        setError(err instanceof Error ? err.message : 'Ошибка загрузки');
+        setError(err instanceof Error ? err.message : t('errors.loadError'));
       } finally {
         setLoading(false);
       }
@@ -272,6 +248,34 @@ export default function PropertyDetailPage({
     fetchReviews();
     fetchUserReview();
   }, [id, apiUrl, isAuthenticated]);
+
+  // Track property view
+  useEffect(() => {
+    const trackView = async () => {
+      if (!id) return;
+
+      const token = getAuthToken();
+      const headers: Record<string, string> = {};
+      if (token) {
+        headers.Authorization = `Bearer ${token}`;
+      }
+
+      try {
+        // Get user agent and referrer
+        const userAgent = navigator.userAgent;
+        const referrer = document.referrer;
+
+        await fetch(`${apiUrl}/properties/${id}/track-view?userAgent=${encodeURIComponent(userAgent)}&referrer=${encodeURIComponent(referrer)}`, {
+          method: 'POST',
+          headers,
+        });
+      } catch {
+        // Silently fail - analytics shouldn't block the user
+      }
+    };
+
+    trackView();
+  }, [id, apiUrl]);
 
   // Fetch price history
   useEffect(() => {
@@ -470,10 +474,10 @@ export default function PropertyDetailPage({
     return (
       <div className="min-h-screen flex items-center justify-center">
         <div className="text-center">
-          <h1 className="text-2xl font-bold mb-4">{error || 'Объект не найден'}</h1>
+          <h1 className="text-2xl font-bold mb-4">{error || t('errors.notFound')}</h1>
           <Button onClick={() => router.push('/properties')}>
             <ArrowLeft className="h-4 w-4 mr-2" />
-            К списку объектов
+            {t('actions.backToList')}
           </Button>
         </div>
       </div>
@@ -489,7 +493,7 @@ export default function PropertyDetailPage({
         <div className="flex items-center justify-between mb-6">
           <Button variant="ghost" onClick={() => router.back()}>
             <ArrowLeft className="h-4 w-4 mr-2" />
-            Назад
+            {t('actions.back')}
           </Button>
           <div className="flex items-center gap-2">
             <Button
@@ -502,14 +506,17 @@ export default function PropertyDetailPage({
                 className={`h-4 w-4 ${isFavorite ? 'fill-red-500 text-red-500' : ''}`}
               />
             </Button>
-            <Button variant="outline" size="icon" onClick={handleShare}>
-              <Share2 className="h-4 w-4" />
-            </Button>
+            <SocialShare
+              url={`/properties/${id}`}
+              title={property.title}
+              description={property.description}
+              image={property.images[0]?.url}
+            />
             {isOwner && (
               <Link href={`/properties/${id}/edit`}>
                 <Button variant="outline">
                   <Edit className="h-4 w-4 mr-2" />
-                  Редактировать
+                  {t('actions.edit')}
                 </Button>
               </Link>
             )}
@@ -528,16 +535,16 @@ export default function PropertyDetailPage({
                 <div>
                   <div className="flex items-center gap-2 mb-2">
                     <Badge variant={property.listingType === 'SALE' ? 'default' : 'secondary'}>
-                      {property.listingType === 'SALE' ? 'Продажа' : property.listingType === 'RENT_DAILY' ? 'Посуточно' : 'Аренда'}
+                      {t(`listingTypes.${property.listingType}` as any)}
                     </Badge>
                     {property.verified && (
                       <Badge variant="outline" className="text-green-600 border-green-600">
-                        Проверено
+                        {t('actions.verified')}
                       </Badge>
                     )}
                     {property.featured && (
                       <Badge variant="outline" className="text-amber-600 border-amber-600">
-                        Топ
+                        {t('actions.featured')}
                       </Badge>
                     )}
                   </div>
@@ -545,17 +552,17 @@ export default function PropertyDetailPage({
                 </div>
                 <div className="text-right">
                   <div className="text-3xl font-bold text-blue-600">
-                    {property.price.toLocaleString()} у.е.
+                    {property.price.toLocaleString()} {t('currency')}
                     {property.listingType === 'RENT_LONG' && (
-                      <span className="text-lg font-normal text-gray-500">/мес</span>
+                      <span className="text-lg font-normal text-gray-500">{t('perMonth')}</span>
                     )}
                     {property.listingType === 'RENT_DAILY' && (
-                      <span className="text-lg font-normal text-gray-500">/сутки</span>
+                      <span className="text-lg font-normal text-gray-500">{t('perDay')}</span>
                     )}
                   </div>
                   {property.area > 0 && (
                     <div className="text-sm text-gray-500">
-                      {Math.round(property.price / property.area).toLocaleString()} у.е./м²
+                      {Math.round(property.price / property.area).toLocaleString()} {t('currency')}/м²
                     </div>
                   )}
                 </div>
@@ -664,124 +671,7 @@ export default function PropertyDetailPage({
             )}
 
             {/* Reviews Section */}
-            <Card>
-              <CardContent className="p-6">
-                <div className="flex items-center justify-between mb-6">
-                  <div>
-                    <h2 className="text-xl font-semibold">Отзывы</h2>
-                    {reviewStats && reviewStats.totalReviews > 0 && (
-                      <div className="flex items-center gap-2 mt-1">
-                        <StarRating rating={Math.round(reviewStats.averageRating)} />
-                        <span className="text-lg font-medium">{reviewStats.averageRating}</span>
-                        <span className="text-gray-500">({reviewStats.totalReviews} отзывов)</span>
-                      </div>
-                    )}
-                  </div>
-                  {!isOwner && !userReview && (
-                    <Button
-                      variant={showReviewForm ? 'outline' : 'default'}
-                      onClick={() => {
-                        if (!isAuthenticated) {
-                          router.push('/auth/login');
-                        } else {
-                          setShowReviewForm(!showReviewForm);
-                        }
-                      }}
-                    >
-                      {showReviewForm ? 'Отмена' : 'Написать отзыв'}
-                    </Button>
-                  )}
-                </div>
-
-                {/* Review Form */}
-                {showReviewForm && !userReview && (
-                  <div className="mb-6 p-4 bg-gray-50 rounded-lg">
-                    <div className="mb-4">
-                      <label className="block text-sm font-medium mb-2">Ваша оценка</label>
-                      <StarRating
-                        rating={hoverRating || reviewRating}
-                        onSelect={setReviewRating}
-                        onHover={setHoverRating}
-                        interactive
-                      />
-                    </div>
-                    <div className="mb-4">
-                      <label className="block text-sm font-medium mb-2">Ваш отзыв</label>
-                      <textarea
-                        value={reviewComment}
-                        onChange={(e) => setReviewComment(e.target.value)}
-                        placeholder="Поделитесь своим опытом..."
-                        className="w-full p-3 border rounded-md resize-none h-24 text-sm focus:outline-none focus:ring-2 focus:ring-blue-500"
-                        disabled={submittingReview}
-                      />
-                    </div>
-                    <Button
-                      onClick={handleSubmitReview}
-                      disabled={submittingReview || reviewRating === 0 || !reviewComment.trim()}
-                      className="w-full"
-                    >
-                      {submittingReview ? (
-                        <Loader2 className="h-4 w-4 animate-spin mr-2" />
-                      ) : null}
-                      Отправить отзыв
-                    </Button>
-                  </div>
-                )}
-
-                {/* Your Review */}
-                {userReview && (
-                  <div className="mb-6 p-4 bg-blue-50 rounded-lg border border-blue-100">
-                    <div className="text-sm text-blue-600 font-medium mb-2">Ваш отзыв</div>
-                    <div className="flex items-center gap-2 mb-2">
-                      <StarRating rating={userReview.rating} />
-                    </div>
-                    <p className="text-gray-700">{userReview.comment}</p>
-                    <div className="text-xs text-gray-500 mt-2">
-                      {new Date(userReview.createdAt).toLocaleDateString('ru-RU', {
-                        day: 'numeric',
-                        month: 'long',
-                        year: 'numeric',
-                      })}
-                    </div>
-                  </div>
-                )}
-
-                {/* Reviews List */}
-                {reviews.length > 0 ? (
-                  <div className="space-y-4">
-                    {reviews
-                      .filter((r) => r.id !== userReview?.id)
-                      .map((review) => (
-                        <div key={review.id} className="border-b pb-4 last:border-b-0">
-                          <div className="flex items-center gap-3 mb-2">
-                            <div className="w-10 h-10 bg-gray-200 rounded-full flex items-center justify-center">
-                              <User className="h-5 w-5 text-gray-500" />
-                            </div>
-                            <div>
-                              <div className="font-medium">
-                                {review.user.firstName} {review.user.lastName}
-                              </div>
-                              <div className="flex items-center gap-2">
-                                <StarRating rating={review.rating} />
-                                <span className="text-xs text-gray-500">
-                                  {new Date(review.createdAt).toLocaleDateString('ru-RU')}
-                                </span>
-                              </div>
-                            </div>
-                          </div>
-                          <p className="text-gray-700 ml-13">{review.comment}</p>
-                        </div>
-                      ))}
-                  </div>
-                ) : (
-                  !userReview && (
-                    <div className="text-center py-8 text-gray-500">
-                      Пока нет отзывов. Будьте первым!
-                    </div>
-                  )
-                )}
-              </CardContent>
-            </Card>
+            <PropertyReviews propertyId={property.id} />
           </div>
 
           {/* Sidebar */}

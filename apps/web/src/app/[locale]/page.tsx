@@ -38,13 +38,13 @@ interface Property {
   images: PropertyImage[];
 }
 
-const CITIES = [
-  'Ташкент',
-  'Самарканд',
-  'Бухара',
-  'Навои',
-  'Андижан',
-  'Фергана',
+const CITY_KEYS = [
+  'tashkent',
+  'samarkand',
+  'bukhara',
+  'navoi',
+  'andijan',
+  'fergana',
 ];
 
 export default function Home() {
@@ -108,26 +108,26 @@ export default function Home() {
                 <Search className="absolute left-3 top-1/2 -translate-y-1/2 h-5 w-5 text-gray-400" />
                 <input
                   type="text"
-                  placeholder="Поиск по адресу, району, городу..."
+                  placeholder={t('searchPlaceholder')}
                   value={searchQuery}
                   onChange={(e) => setSearchQuery(e.target.value)}
                   className="w-full pl-10 pr-4 py-3 rounded-lg text-gray-800 focus:outline-none focus:ring-2 focus:ring-blue-500"
                 />
               </div>
               <Button type="submit" size="lg">
-                Найти
+                {t('searchButton')}
               </Button>
             </form>
 
             {/* Quick Links */}
             <div className="mt-6 flex flex-wrap justify-center gap-2">
-              {CITIES.map((city) => (
+              {CITY_KEYS.map((cityKey) => (
                 <Link
-                  key={city}
-                  href={`/properties?city=${encodeURIComponent(city)}`}
+                  key={cityKey}
+                  href={`/properties?city=${encodeURIComponent(t(`cities.${cityKey}` as any))}`}
                   className="px-4 py-2 bg-white/10 hover:bg-white/20 rounded-full text-sm transition"
                 >
-                  {city}
+                  {t(`cities.${cityKey}` as any)}
                 </Link>
               ))}
             </div>
@@ -141,12 +141,12 @@ export default function Home() {
           <div className="container mx-auto px-4">
             <div className="flex items-center justify-between mb-8">
               <div>
-                <h2 className="text-2xl font-bold mb-1">Рекомендуемые объекты</h2>
-                <p className="text-gray-600">Лучшие предложения недели</p>
+                <h2 className="text-2xl font-bold mb-1">{t('featuredTitle')}</h2>
+                <p className="text-gray-600">{t('featuredSubtitle')}</p>
               </div>
               <Link href="/properties?featured=true">
                 <Button variant="ghost">
-                  Все объекты
+                  {t('viewAll')}
                   <ChevronRight className="h-4 w-4 ml-1" />
                 </Button>
               </Link>
@@ -175,7 +175,7 @@ export default function Home() {
       <section className="py-16 bg-white">
         <div className="container mx-auto px-4">
           <h2 className="text-2xl font-bold mb-8 text-center">
-            Найдите идеальную недвижимость
+            {t('propertyTypesTitle')}
           </h2>
           <div className="grid grid-cols-2 md:grid-cols-4 gap-4">
             <Link
@@ -183,8 +183,8 @@ export default function Home() {
               className="p-6 bg-gray-50 rounded-xl hover:bg-gray-100 transition text-center"
             >
               <Building2 className="h-10 w-10 mx-auto mb-3 text-blue-600" />
-              <h3 className="font-semibold mb-1">Квартиры</h3>
-              <p className="text-sm text-gray-500">Все квартиры</p>
+              <h3 className="font-semibold mb-1">{t('propertyTypes.apartments')}</h3>
+              <p className="text-sm text-gray-500">{t('propertyTypes.apartmentsDesc')}</p>
             </Link>
             <Link
               href="/properties?propertyType=HOUSE"
@@ -203,8 +203,8 @@ export default function Home() {
                   d="M3 12l2-2m0 0l7-7 7 7M5 10v10a1 1 0 001 1h3m10-11l2 2m-2-2v10a1 1 0 01-1 1h-3m-6 0a1 1 0 001-1v-4a1 1 0 011-1h2a1 1 0 011 1v4a1 1 0 001 1m-6 0h6"
                 />
               </svg>
-              <h3 className="font-semibold mb-1">Дома</h3>
-              <p className="text-sm text-gray-500">Частные дома</p>
+              <h3 className="font-semibold mb-1">{t('propertyTypes.houses')}</h3>
+              <p className="text-sm text-gray-500">{t('propertyTypes.housesDesc')}</p>
             </Link>
             <Link
               href="/properties?propertyType=COMMERCIAL"
@@ -223,16 +223,16 @@ export default function Home() {
                   d="M19 21V5a2 2 0 00-2-2H7a2 2 0 00-2 2v16m14 0h2m-2 0h-5m-9 0H3m2 0h5M9 7h1m-1 4h1m4-4h1m-1 4h1m-5 10v-5a1 1 0 011-1h2a1 1 0 011 1v5m-4 0h4"
                 />
               </svg>
-              <h3 className="font-semibold mb-1">Коммерческая</h3>
-              <p className="text-sm text-gray-500">Офисы, склады</p>
+              <h3 className="font-semibold mb-1">{t('propertyTypes.commercial')}</h3>
+              <p className="text-sm text-gray-500">{t('propertyTypes.commercialDesc')}</p>
             </Link>
             <Link
               href="/properties?propertyType=LAND"
               className="p-6 bg-gray-50 rounded-xl hover:bg-gray-100 transition text-center"
             >
               <MapPin className="h-10 w-10 mx-auto mb-3 text-blue-600" />
-              <h3 className="font-semibold mb-1">Участки</h3>
-              <p className="text-sm text-gray-500">Земельные участки</p>
+              <h3 className="font-semibold mb-1">{t('propertyTypes.land')}</h3>
+              <p className="text-sm text-gray-500">{t('propertyTypes.landDesc')}</p>
             </Link>
           </div>
         </div>
@@ -244,12 +244,12 @@ export default function Home() {
           <div className="container mx-auto px-4">
             <div className="flex items-center justify-between mb-8">
               <div>
-                <h2 className="text-2xl font-bold mb-1">Новые объявления</h2>
-                <p className="text-gray-600">Свежие предложения на рынке</p>
+                <h2 className="text-2xl font-bold mb-1">{t('recentTitle')}</h2>
+                <p className="text-gray-600">{t('recentSubtitle')}</p>
               </div>
               <Link href="/properties?sortBy=createdAt&sortOrder=desc">
                 <Button variant="ghost">
-                  Все новые
+                  {t('viewAllNew')}
                   <ChevronRight className="h-4 w-4 ml-1" />
                 </Button>
               </Link>
@@ -278,34 +278,34 @@ export default function Home() {
       <section className="py-16 bg-white">
         <div className="container mx-auto px-4">
           <h2 className="text-2xl font-bold mb-8 text-center">
-            Почему выбирают нас
+            {t('whyUsTitle')}
           </h2>
           <div className="grid grid-cols-1 md:grid-cols-3 gap-8">
             <div className="text-center p-6">
               <div className="w-16 h-16 bg-blue-100 rounded-full flex items-center justify-center mx-auto mb-4">
                 <Shield className="h-8 w-8 text-blue-600" />
               </div>
-              <h3 className="text-lg font-semibold mb-2">Проверенные объявления</h3>
+              <h3 className="text-lg font-semibold mb-2">{t('features.verified')}</h3>
               <p className="text-gray-600">
-                Все объявления проходят модерацию для вашей безопасности
+                {t('features.verifiedDesc')}
               </p>
             </div>
             <div className="text-center p-6">
               <div className="w-16 h-16 bg-blue-100 rounded-full flex items-center justify-center mx-auto mb-4">
                 <TrendingUp className="h-8 w-8 text-blue-600" />
               </div>
-              <h3 className="text-lg font-semibold mb-2">Актуальные цены</h3>
+              <h3 className="text-lg font-semibold mb-2">{t('features.pricing')}</h3>
               <p className="text-gray-600">
-                Реальные цены от собственников без накруток
+                {t('features.pricingDesc')}
               </p>
             </div>
             <div className="text-center p-6">
               <div className="w-16 h-16 bg-blue-100 rounded-full flex items-center justify-center mx-auto mb-4">
                 <Clock className="h-8 w-8 text-blue-600" />
               </div>
-              <h3 className="text-lg font-semibold mb-2">Быстрый отклик</h3>
+              <h3 className="text-lg font-semibold mb-2">{t('features.support')}</h3>
               <p className="text-gray-600">
-                Связывайтесь с продавцами напрямую через платформу
+                {t('features.supportDesc')}
               </p>
             </div>
           </div>
@@ -316,15 +316,14 @@ export default function Home() {
       <section className="py-16 bg-blue-600 text-white">
         <div className="container mx-auto px-4 text-center">
           <h2 className="text-3xl font-bold mb-4">
-            Готовы разместить объявление?
+            {t('ctaTitle')}
           </h2>
           <p className="text-xl text-blue-100 mb-8 max-w-2xl mx-auto">
-            Разместите свою недвижимость бесплатно и найдите покупателя или
-            арендатора уже сегодня
+            {t('ctaSubtitle')}
           </p>
           <Link href={isAuthenticated ? '/properties/new' : '/auth/register'}>
             <Button size="lg" variant="secondary">
-              {isAuthenticated ? 'Создать объявление' : 'Начать бесплатно'}
+              {isAuthenticated ? t('ctaButtonAuth') : t('ctaButtonGuest')}
             </Button>
           </Link>
         </div>
@@ -337,52 +336,52 @@ export default function Home() {
             <div>
               <h3 className="text-white font-bold text-xl mb-4">RealEstate</h3>
               <p className="text-sm">
-                Ведущая платформа для поиска и продажи недвижимости в Узбекистане
+                {t('footer.description')}
               </p>
             </div>
             <div>
-              <h4 className="text-white font-semibold mb-4">Для покупателей</h4>
+              <h4 className="text-white font-semibold mb-4">{t('footer.buyers')}</h4>
               <ul className="space-y-2 text-sm">
                 <li>
                   <Link href="/properties?listingType=SALE" className="hover:text-white">
-                    Купить квартиру
+                    {t('footer.buyApartment')}
                   </Link>
                 </li>
                 <li>
                   <Link href="/properties?listingType=RENT_LONG" className="hover:text-white">
-                    Снять квартиру
+                    {t('footer.rentApartment')}
                   </Link>
                 </li>
                 <li>
                   <Link href="/properties?propertyType=HOUSE" className="hover:text-white">
-                    Дома
+                    {t('footer.houses')}
                   </Link>
                 </li>
               </ul>
             </div>
             <div>
-              <h4 className="text-white font-semibold mb-4">Для продавцов</h4>
+              <h4 className="text-white font-semibold mb-4">{t('footer.sellers')}</h4>
               <ul className="space-y-2 text-sm">
                 <li>
                   <Link href="/properties/new" className="hover:text-white">
-                    Разместить объявление
+                    {t('footer.postListing')}
                   </Link>
                 </li>
                 <li>
                   <Link href="/dashboard" className="hover:text-white">
-                    Личный кабинет
+                    {t('footer.dashboard')}
                   </Link>
                 </li>
               </ul>
             </div>
             <div>
-              <h4 className="text-white font-semibold mb-4">Контакты</h4>
+              <h4 className="text-white font-semibold mb-4">{t('footer.contacts')}</h4>
               <p className="text-sm">support@realestate.uz</p>
               <p className="text-sm">+998 71 123 45 67</p>
             </div>
           </div>
           <div className="border-t border-gray-800 mt-8 pt-8 text-center text-sm">
-            <p>&copy; 2024 RealEstate. Все права защищены.</p>
+            <p>&copy; 2024 RealEstate. {t('footer.copyright')}</p>
           </div>
         </div>
       </footer>

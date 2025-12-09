@@ -38,17 +38,12 @@ export default function LoginPage() {
     setLoading(true);
 
     try {
-      console.log('Attempting login with:', email);
-      const result = await login({ email, password });
-      console.log('Login result:', result);
-      console.log('Login successful, refreshing user...');
+      await login({ email, password });
       await refreshUser();
-      console.log('User refreshed, redirecting now...');
       // Force redirect to properties page
       window.location.assign('/properties');
       return; // Don't execute finally
     } catch (err) {
-      console.error('Login error:', err);
       setError(err instanceof Error ? err.message : t('loginFailed'));
       setLoading(false);
     }

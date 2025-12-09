@@ -45,6 +45,7 @@ interface Message {
   content: string;
   createdAt: string;
   read: boolean;
+  readAt?: string;
 }
 
 export default function MessagesPage() {
@@ -58,8 +59,10 @@ export default function MessagesPage() {
   const [loading, setLoading] = useState(true);
   const [messagesLoading, setMessagesLoading] = useState(false);
   const [sending, setSending] = useState(false);
+  const [isTyping, setIsTyping] = useState(false);
   const messagesEndRef = useRef<HTMLDivElement>(null);
   const socketRef = useRef<Socket | null>(null);
+  const typingTimeoutRef = useRef<NodeJS.Timeout | null>(null);
 
   const apiUrl = process.env.NEXT_PUBLIC_API_URL || 'http://localhost:3001/api';
   const wsUrl = process.env.NEXT_PUBLIC_WS_URL || 'http://localhost:3001';
@@ -79,7 +82,7 @@ export default function MessagesPage() {
 
   useEffect(() => {
     scrollToBottom();
-  }, [messages]);
+  }, [messages, isTyping]);
 
   // WebSocket connection
   useEffect(() => {
@@ -97,16 +100,15 @@ export default function MessagesPage() {
     socketRef.current = socket;
 
     socket.on('connect', () => {
-      console.log('WebSocket connected');
+      // Connected
     });
 
     socket.on('disconnect', () => {
-      console.log('WebSocket disconnected');
+      // Disconnected
     });
 
     // Listen for new messages
     socket.on('new_message', (message: Message) => {
-      console.log('Received new message:', message);
 
       // Add message to the list if we're viewing this conversation
       if (selectedConversation && message.conversationId === selectedConversation.id) {
@@ -135,15 +137,42 @@ export default function MessagesPage() {
 
     // Listen for new conversations
     socket.on('new_conversation', (conversation: Conversation) => {
-      console.log('Received new conversation:', conversation);
       setConversations((prev) => [conversation, ...prev]);
+    });
+
+    // Listen for typing indicators
+    socket.on('user_typing', (data: { userId: string; conversationId: string }) => {
+      if (selectedConversation && data.conversationId === selectedConversation.id) {
+        setIsTyping(true);
+      }
+    });
+
+    socket.on('user_stopped_typing', (data: { userId: string; conversationId: string }) => {
+      if (selectedConversation && data.conversationId === selectedConversation.id) {
+        setIsTyping(false);
+      }
+    });
+
+    // Listen for read receipts
+    socket.on('messages_read', (data: { conversationId: string; userId: string; messageIds: string[]; readAt: string }) => {
+
+      // Update message read status in the list
+      if (selectedConversation && data.conversationId === selectedConversation.id) {
+        setMessages((prev) =>
+          prev.map((msg) =>
+            data.messageIds.includes(msg.id)
+              ? { ...msg, read: true, readAt: data.readAt }
+              : msg
+          )
+        );
+      }
     });
 
     return () => {
       socket.disconnect();
       socketRef.current = null;
     };
-  }, [isAuthenticated, user, wsUrl]);
+  }, [isAuthenticated, user, wsUrl, selectedConversation]);
 
   // Auto-select conversation from URL parameter
   useEffect(() => {
@@ -202,7 +231,7 @@ export default function MessagesPage() {
         setConversations(data);
       }
     } catch (error) {
-      console.error('Error fetching conversations:', error);
+      // Silently fail - will retry on refresh
     } finally {
       setLoading(false);
     }
@@ -222,7 +251,7 @@ export default function MessagesPage() {
         setMessages(data.items);
       }
     } catch (error) {
-      console.error('Error fetching messages:', error);
+      // Silently fail - user can retry
     } finally {
       setMessagesLoading(false);
     }
@@ -235,6 +264,7 @@ export default function MessagesPage() {
     }
 
     setSelectedConversation(conversation);
+    setIsTyping(false); // Reset typing indicator
     fetchMessages(conversation.id);
 
     // Join new conversation room
@@ -242,12 +272,40 @@ export default function MessagesPage() {
       socketRef.current.emit('join_conversation', conversation.id);
     }
 
-    // Update unread count locally
+    // Update unread count locally and mark as read
     setConversations((prev) =>
       prev.map((c) =>
         c.id === conversation.id ? { ...c, unreadCount: 0 } : c
       )
     );
+
+    // Mark conversation messages as read via WebSocket
+    if (socketRef.current) {
+      socketRef.current.emit('mark_as_read', { conversationId: conversation.id });
+    }
+  };
+
+  const handleTyping = () => {
+    if (!selectedConversation || !socketRef.current) return;
+
+    // Emit typing_start event
+    socketRef.current.emit('typing_start', {
+      conversationId: selectedConversation.id,
+    });
+
+    // Clear existing timeout
+    if (typingTimeoutRef.current) {
+      clearTimeout(typingTimeoutRef.current);
+    }
+
+    // Set timeout to emit typing_stop after 2 seconds of no typing
+    typingTimeoutRef.current = setTimeout(() => {
+      if (socketRef.current && selectedConversation) {
+        socketRef.current.emit('typing_stop', {
+          conversationId: selectedConversation.id,
+        });
+      }
+    }, 2000);
   };
 
   const sendMessage = async (e: React.FormEvent) => {
@@ -255,6 +313,15 @@ export default function MessagesPage() {
     if (!newMessage.trim() || !selectedConversation || sending) return;
 
     setSending(true);
+
+    // Stop typing indicator when sending
+    if (socketRef.current && typingTimeoutRef.current) {
+      clearTimeout(typingTimeoutRef.current);
+      socketRef.current.emit('typing_stop', {
+        conversationId: selectedConversation.id,
+      });
+    }
+
     try {
       const token = localStorage.getItem('token');
       const response = await fetch(
@@ -287,7 +354,8 @@ export default function MessagesPage() {
         );
       }
     } catch (error) {
-      console.error('Error sending message:', error);
+      // Show error to user - message failed
+      alert('Failed to send message. Please try again.');
     } finally {
       setSending(false);
     }
@@ -425,38 +493,62 @@ export default function MessagesPage() {
                       <Loader2 className="h-6 w-6 animate-spin text-blue-600" />
                     </div>
                   ) : (
-                    messages.map((message) => (
-                      <div
-                        key={message.id}
-                        className={`flex ${
-                          message.senderId === user?.id
-                            ? 'justify-end'
-                            : 'justify-start'
-                        }`}
-                      >
+                    <>
+                      {messages.map((message) => (
                         <div
-                          className={`max-w-[70%] rounded-lg px-4 py-2 ${
+                          key={message.id}
+                          className={`flex ${
                             message.senderId === user?.id
-                              ? 'bg-blue-600 text-white'
-                              : 'bg-gray-100 text-gray-900'
+                              ? 'justify-end'
+                              : 'justify-start'
                           }`}
                         >
-                          <p>{message.content}</p>
-                          <p
-                            className={`text-xs mt-1 ${
+                          <div
+                            className={`max-w-[70%] rounded-lg px-4 py-2 ${
                               message.senderId === user?.id
-                                ? 'text-blue-100'
-                                : 'text-gray-500'
+                                ? 'bg-blue-600 text-white'
+                                : 'bg-gray-100 text-gray-900'
                             }`}
                           >
-                            {new Date(message.createdAt).toLocaleTimeString(
-                              'ru-RU',
-                              { hour: '2-digit', minute: '2-digit' }
-                            )}
-                          </p>
+                            <p>{message.content}</p>
+                            <div className="flex items-center justify-between gap-2 mt-1">
+                              <p
+                                className={`text-xs ${
+                                  message.senderId === user?.id
+                                    ? 'text-blue-100'
+                                    : 'text-gray-500'
+                                }`}
+                              >
+                                {new Date(message.createdAt).toLocaleTimeString(
+                                  'ru-RU',
+                                  { hour: '2-digit', minute: '2-digit' }
+                                )}
+                              </p>
+                              {message.senderId === user?.id && (
+                                <span
+                                  className={`text-xs ${
+                                    message.read ? 'text-blue-200' : 'text-blue-300'
+                                  }`}
+                                >
+                                  {message.read ? '✓✓' : '✓'}
+                                </span>
+                              )}
+                            </div>
+                          </div>
                         </div>
-                      </div>
-                    ))
+                      ))}
+                      {isTyping && (
+                        <div className="flex justify-start">
+                          <div className="bg-gray-100 rounded-lg px-4 py-2">
+                            <div className="flex gap-1">
+                              <span className="w-2 h-2 bg-gray-400 rounded-full animate-bounce" style={{ animationDelay: '0ms' }}></span>
+                              <span className="w-2 h-2 bg-gray-400 rounded-full animate-bounce" style={{ animationDelay: '150ms' }}></span>
+                              <span className="w-2 h-2 bg-gray-400 rounded-full animate-bounce" style={{ animationDelay: '300ms' }}></span>
+                            </div>
+                          </div>
+                        </div>
+                      )}
+                    </>
                   )}
                   <div ref={messagesEndRef} />
                 </div>
@@ -468,7 +560,10 @@ export default function MessagesPage() {
                 >
                   <Input
                     value={newMessage}
-                    onChange={(e) => setNewMessage(e.target.value)}
+                    onChange={(e) => {
+                      setNewMessage(e.target.value);
+                      handleTyping();
+                    }}
                     placeholder="Введите сообщение..."
                     className="flex-1"
                     disabled={sending}

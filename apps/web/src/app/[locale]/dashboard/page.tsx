@@ -19,6 +19,10 @@ import {
   Settings,
   MessageSquare,
   Shield,
+  TrendingUp,
+  TrendingDown,
+  Minus,
+  BookmarkCheck,
 } from 'lucide-react';
 
 interface PropertyImage {
@@ -39,6 +43,15 @@ interface Property {
   views: number;
   images: PropertyImage[];
   createdAt: string;
+}
+
+interface Analytics {
+  totalViews: number;
+  totalFavorites: number;
+  totalContacts: number;
+  viewsTrend: number;
+  favoritesTrend: number;
+  contactsTrend: number;
 }
 
 const LISTING_TYPE_LABELS: Record<string, string> = {
@@ -63,6 +76,8 @@ export default function DashboardPage() {
   const [error, setError] = useState<string | null>(null);
   const [deletingId, setDeletingId] = useState<string | null>(null);
   const [unreadCount, setUnreadCount] = useState(0);
+  const [analytics, setAnalytics] = useState<Analytics | null>(null);
+  const [analyticsLoading, setAnalyticsLoading] = useState(false);
 
   const apiUrl = process.env.NEXT_PUBLIC_API_URL || 'http://localhost:3001/api';
 
@@ -76,6 +91,7 @@ export default function DashboardPage() {
     if (isAuthenticated) {
       fetchMyProperties();
       fetchUnreadCount();
+      fetchAnalytics();
     }
   }, [isAuthenticated]);
 
@@ -95,7 +111,30 @@ export default function DashboardPage() {
         setUnreadCount(data.unreadCount || 0);
       }
     } catch (error) {
-      console.error('Failed to fetch unread count:', error);
+      // Silently fail
+    }
+  };
+
+  const fetchAnalytics = async () => {
+    setAnalyticsLoading(true);
+    try {
+      const token = localStorage.getItem('token');
+      if (!token) return;
+
+      const response = await fetch(`${apiUrl}/properties/my/analytics?days=30`, {
+        headers: {
+          Authorization: `Bearer ${token}`,
+        },
+      });
+
+      if (response.ok) {
+        const data = await response.json();
+        setAnalytics(data);
+      }
+    } catch (error) {
+      // Silently fail
+    } finally {
+      setAnalyticsLoading(false);
     }
   };
 
@@ -152,6 +191,31 @@ export default function DashboardPage() {
     }
   };
 
+  const renderTrend = (trend: number) => {
+    if (trend > 0) {
+      return (
+        <div className="flex items-center text-green-600 text-sm mt-1">
+          <TrendingUp className="h-4 w-4 mr-1" />
+          +{trend.toFixed(1)}%
+        </div>
+      );
+    } else if (trend < 0) {
+      return (
+        <div className="flex items-center text-red-600 text-sm mt-1">
+          <TrendingDown className="h-4 w-4 mr-1" />
+          {trend.toFixed(1)}%
+        </div>
+      );
+    } else {
+      return (
+        <div className="flex items-center text-gray-500 text-sm mt-1">
+          <Minus className="h-4 w-4 mr-1" />
+          0%
+        </div>
+      );
+    }
+  };
+
   if (authLoading) {
     return (
       <div className="min-h-screen flex items-center justify-center">
@@ -175,6 +239,12 @@ export default function DashboardPage() {
               <Button variant="ghost" size="sm">
                 <Heart className="h-4 w-4 mr-2" />
                 Избранное
+              </Button>
+            </Link>
+            <Link href="/dashboard/saved-searches">
+              <Button variant="ghost" size="sm">
+                <BookmarkCheck className="h-4 w-4 mr-2" />
+                Сохраненные поиски
               </Button>
             </Link>
             <Link href="/dashboard/messages">
@@ -216,7 +286,7 @@ export default function DashboardPage() {
         </div>
 
         {/* Stats */}
-        <div className="grid grid-cols-1 md:grid-cols-3 gap-4 mb-8">
+        <div className="grid grid-cols-1 md:grid-cols-2 lg:grid-cols-5 gap-4 mb-8">
           <Card>
             <CardContent className="p-6">
               <div className="text-3xl font-bold text-blue-600">
@@ -235,10 +305,47 @@ export default function DashboardPage() {
           </Card>
           <Card>
             <CardContent className="p-6">
-              <div className="text-3xl font-bold text-gray-600">
-                {properties.reduce((sum, p) => sum + p.views, 0)}
-              </div>
-              <div className="text-sm text-gray-500">Всего просмотров</div>
+              {analyticsLoading ? (
+                <Loader2 className="h-8 w-8 animate-spin text-gray-400" />
+              ) : (
+                <>
+                  <div className="text-3xl font-bold text-purple-600">
+                    {analytics?.totalViews.toLocaleString() || 0}
+                  </div>
+                  <div className="text-sm text-gray-500">Просмотры (30 дн)</div>
+                  {analytics && renderTrend(analytics.viewsTrend)}
+                </>
+              )}
+            </CardContent>
+          </Card>
+          <Card>
+            <CardContent className="p-6">
+              {analyticsLoading ? (
+                <Loader2 className="h-8 w-8 animate-spin text-gray-400" />
+              ) : (
+                <>
+                  <div className="text-3xl font-bold text-pink-600">
+                    {analytics?.totalFavorites.toLocaleString() || 0}
+                  </div>
+                  <div className="text-sm text-gray-500">В избранном (30 дн)</div>
+                  {analytics && renderTrend(analytics.favoritesTrend)}
+                </>
+              )}
+            </CardContent>
+          </Card>
+          <Card>
+            <CardContent className="p-6">
+              {analyticsLoading ? (
+                <Loader2 className="h-8 w-8 animate-spin text-gray-400" />
+              ) : (
+                <>
+                  <div className="text-3xl font-bold text-orange-600">
+                    {analytics?.totalContacts.toLocaleString() || 0}
+                  </div>
+                  <div className="text-sm text-gray-500">Обращения (30 дн)</div>
+                  {analytics && renderTrend(analytics.contactsTrend)}
+                </>
+              )}
             </CardContent>
           </Card>
         </div>

@@ -160,7 +160,7 @@ export class MessagesGateway implements OnGatewayConnection, OnGatewayDisconnect
   @SubscribeMessage('mark_as_read')
   async handleMarkAsRead(
     @ConnectedSocket() client: AuthenticatedSocket,
-    @MessageBody() data: { conversationId: string },
+    @MessageBody() data: { conversationId: string; messageIds?: string[] },
   ) {
     // Verify conversation exists and user is a participant
     const conversation = await this.prisma.conversation.findUnique({
@@ -175,20 +175,37 @@ export class MessagesGateway implements OnGatewayConnection, OnGatewayDisconnect
       return { event: 'error', data: 'Access denied' };
     }
 
+    const now = new Date();
+
     // Mark messages as read for this user
+    const whereClause: Record<string, unknown> = {
+      conversationId: data.conversationId,
+      senderId: { not: client.userId },
+      read: false,
+    };
+
+    // Optionally mark specific messages
+    if (data.messageIds && data.messageIds.length > 0) {
+      whereClause.id = { in: data.messageIds };
+    }
+
     await this.prisma.message.updateMany({
-      where: {
-        conversationId: data.conversationId,
-        senderId: { not: client.userId },
-        read: false,
-      },
-      data: { read: true },
+      where: whereClause as never,
+      data: { read: true, readAt: now },
     });
 
-    // Notify other participant
+    // Get the updated messages to send with the notification
+    const updatedMessages = await this.prisma.message.findMany({
+      where: whereClause as never,
+      select: { id: true },
+    });
+
+    // Notify other participant with read receipts
     client.to(`conversation:${data.conversationId}`).emit('messages_read', {
       conversationId: data.conversationId,
       userId: client.userId,
+      messageIds: updatedMessages.map(m => m.id),
+      readAt: now,
     });
 
     return { event: 'marked_as_read', data: data.conversationId };

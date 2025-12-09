@@ -25,6 +25,7 @@ model User {
   // Relations
   properties    Property[]
   favorites     Favorite[]
+  collections   Collection[]
   reviews       Review[]
   viewingsRequested Viewing[] @relation("ViewingRequester")
   viewingsOwned     Viewing[] @relation("ViewingOwner")
@@ -34,6 +35,7 @@ model User {
   adminLogs     AdminLog[]
   propertyViews PropertyView[]
   priceChanges  PriceHistory[]
+  statusChanges PropertyStatusHistory[]
 
   @@index([email])
   @@index([role])
@@ -119,6 +121,7 @@ model Property {
   images      PropertyImage[]
   amenities   PropertyAmenity[]
   favorites   Favorite[]
+  collections CollectionProperty[]
   reviews     Review[]
   viewings    Viewing[]
   conversations Conversation[]
@@ -126,6 +129,7 @@ model Property {
   propertyViews PropertyView[]
   priceHistory PriceHistory[]
   pois        PropertyPOI[]
+  statusHistory PropertyStatusHistory[]
 
   @@index([userId])
   @@index([city])
@@ -245,6 +249,41 @@ model Favorite {
   @@index([userId, createdAt])
 }
 
+// Property Collections (Folders)
+model Collection {
+  id          String               @id @default(cuid())
+  userId      String
+  name        String
+  description String?
+  isDefault   Boolean              @default(false)
+  color       String?              // Optional color for UI
+  icon        String?              // Optional icon name
+  createdAt   DateTime             @default(now())
+  updatedAt   DateTime             @updatedAt
+
+  user        User                 @relation(fields: [userId], references: [id], onDelete: Cascade)
+  properties  CollectionProperty[]
+
+  @@index([userId])
+  @@index([userId, createdAt])
+}
+
+// Many-to-many relationship between Collections and Properties
+model CollectionProperty {
+  id           String     @id @default(cuid())
+  collectionId String
+  propertyId   String
+  addedAt      DateTime   @default(now())
+  notes        String?    // Optional notes about why this property is in the collection
+
+  collection   Collection @relation(fields: [collectionId], references: [id], onDelete: Cascade)
+  property     Property   @relation(fields: [propertyId], references: [id], onDelete: Cascade)
+
+  @@unique([collectionId, propertyId])
+  @@index([collectionId])
+  @@index([propertyId])
+}
+
 // Conversation model for messaging
 model Conversation {
   id            String    @id @default(cuid())
@@ -269,6 +308,7 @@ model Message {
   senderId       String
   content        String
   read           Boolean      @default(false)
+  readAt         DateTime?    // Timestamp when message was read
   createdAt      DateTime     @default(now())
 
   conversation   Conversation @relation(fields: [conversationId], references: [id], onDelete: Cascade)
@@ -309,12 +349,14 @@ model SavedSearch {
   name                 String
   filters              Json
   notificationsEnabled Boolean   @default(false)
+  lastNotifiedAt       DateTime?
   createdAt            DateTime  @default(now())
   updatedAt            DateTime  @updatedAt
 
   user                 User      @relation(fields: [userId], references: [id], onDelete: Cascade)
 
   @@index([userId])
+  @@index([notificationsEnabled, lastNotifiedAt])
 }
 
 // Viewing appointments/scheduling
@@ -579,4 +621,23 @@ model PropertyPOI {
   @@index([propertyId])
   @@index([propertyId, category])
   @@index([fetchedAt])
+}
+
+// Property status history tracking
+model PropertyStatusHistory {
+  id          String         @id @default(cuid())
+  propertyId  String
+  oldStatus   PropertyStatus?
+  newStatus   PropertyStatus
+  changedBy   String?        // User who made the change
+  reason      String?        // Optional reason for status change
+  notes       String?        // Additional notes
+  createdAt   DateTime       @default(now())
+
+  property    Property       @relation(fields: [propertyId], references: [id], onDelete: Cascade)
+  user        User?          @relation(fields: [changedBy], references: [id], onDelete: SetNull)
+
+  @@index([propertyId])
+  @@index([createdAt])
+  @@index([propertyId, createdAt])
 }

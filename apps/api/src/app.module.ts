@@ -1,5 +1,6 @@
 import { Module, MiddlewareConsumer, NestModule } from '@nestjs/common';
 import { ConfigModule } from '@nestjs/config';
+import { ScheduleModule } from '@nestjs/schedule';
 import { APP_GUARD } from '@nestjs/core';
 import { ThrottlerModule, ThrottlerGuard } from '@nestjs/throttler';
 import { AppController } from './app.controller';
@@ -27,6 +28,8 @@ import { RequestIdMiddleware } from './common/middleware/request-id.middleware';
       isGlobal: true,
       envFilePath: '.env',
     }),
+    // Enable scheduled tasks
+    ScheduleModule.forRoot(),
     // Rate limiting - 60 requests per minute by default
     ThrottlerModule.forRoot([
       {

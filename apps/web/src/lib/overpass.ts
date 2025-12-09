@@ -180,7 +180,6 @@ export async function fetchNearbyPOIs(
       });
 
       if (!response.ok) {
-        console.error(`Failed to fetch ${category.name}:`, response.statusText);
         continue;
       }
 
@@ -225,7 +224,6 @@ export async function fetchNearbyPOIs(
       // Small delay to avoid overwhelming the API
       await new Promise(resolve => setTimeout(resolve, 100));
     } catch (error) {
-      console.error(`Error fetching ${category.name}:`, error);
       results.push({
         category: category.displayName,
         icon: category.icon,

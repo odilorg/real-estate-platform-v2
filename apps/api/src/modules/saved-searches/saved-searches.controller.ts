@@ -11,6 +11,7 @@ import {
   Patch,
 } from '@nestjs/common';
 import { SavedSearchesService } from './saved-searches.service';
+import { SavedSearchNotificationsService } from './notifications.service';
 import { JwtAuthGuard } from '../../common/guards/jwt-auth.guard';
 import { CurrentUser } from '../../common/decorators/current-user.decorator';
 import { User, SavedSearch } from '@repo/database';
@@ -26,7 +27,10 @@ type ToggleNotificationsDto = z.infer<typeof ToggleNotificationsDto>;
 @Controller('saved-searches')
 @UseGuards(JwtAuthGuard)
 export class SavedSearchesController {
-  constructor(private readonly savedSearchesService: SavedSearchesService) {}
+  constructor(
+    private readonly savedSearchesService: SavedSearchesService,
+    private readonly notificationsService: SavedSearchNotificationsService,
+  ) {}
 
   @Post()
   @UsePipes(new ZodValidationPipe(CreateSavedSearchDto))
@@ -72,5 +76,23 @@ export class SavedSearchesController {
   @Get('stats/count')
   getCount(@CurrentUser() user: User): Promise<number> {
     return this.savedSearchesService.getCount(user.id);
+  }
+
+  @Post(':id/send-notification')
+  async sendNotification(
+    @Param('id') id: string,
+    @CurrentUser() user: User,
+  ): Promise<{ message: string }> {
+    // Verify ownership
+    await this.savedSearchesService.findOne(id, user.id);
+
+    await this.notificationsService.sendImmediateNotification(id);
+    return { message: 'Notification sent successfully' };
+  }
+
+  @Post('test-notification')
+  async testNotification(@CurrentUser() user: User): Promise<{ message: string }> {
+    await this.notificationsService.sendTestNotification(user.id);
+    return { message: 'Test notification sent successfully' };
   }
 }

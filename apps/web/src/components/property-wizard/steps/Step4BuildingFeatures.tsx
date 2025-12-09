@@ -10,21 +10,19 @@ interface Step4BuildingFeaturesProps {
 }
 
 const BUILDING_TYPES = [
-  'PANEL',
   'BRICK',
-  'MONOLITH',
-  'MONOLITH_BRICK',
-  'BLOCK',
+  'PANEL',
+  'MONOLITHIC',
   'WOOD',
+  'BLOCK',
 ];
 
 const BUILDING_TYPE_LABELS: Record<string, string> = {
-  PANEL: 'Панельный',
   BRICK: 'Кирпичный',
-  MONOLITH: 'Монолитный',
-  MONOLITH_BRICK: 'Монолитно-кирпичный',
-  BLOCK: 'Блочный',
+  PANEL: 'Панельный',
+  MONOLITHIC: 'Монолитный',
   WOOD: 'Деревянный',
+  BLOCK: 'Блочный',
 };
 
 const BUILDING_CLASSES = ['ECONOMY', 'COMFORT', 'BUSINESS', 'ELITE'];
@@ -37,19 +35,19 @@ const BUILDING_CLASS_LABELS: Record<string, string> = {
 };
 
 const RENOVATION_TYPES = [
-  'NO_RENOVATION',
+  'NONE',
   'COSMETIC',
   'EURO',
-  'DESIGN',
-  'NEEDS_RENOVATION',
+  'DESIGNER',
+  'NEEDS_REPAIR',
 ];
 
 const RENOVATION_LABELS: Record<string, string> = {
-  NO_RENOVATION: 'Без ремонта',
+  NONE: 'Без ремонта',
   COSMETIC: 'Косметический',
   EURO: 'Евроремонт',
-  DESIGN: 'Дизайнерский',
-  NEEDS_RENOVATION: 'Требует ремонта',
+  DESIGNER: 'Дизайнерский',
+  NEEDS_REPAIR: 'Требует ремонта',
 };
 
 const BATHROOM_TYPES = ['COMBINED', 'SEPARATE', 'MULTIPLE'];
@@ -254,10 +252,10 @@ export default function Step4BuildingFeatures({
               className="w-full px-4 py-2 border border-gray-300 rounded-lg focus:ring-2 focus:ring-blue-500 focus:border-transparent"
             >
               <option value="">Тип парковки</option>
-              <option value="GROUND">Наземная</option>
+              <option value="STREET">Уличная</option>
               <option value="UNDERGROUND">Подземная</option>
-              <option value="MULTILEVEL">Многоуровневая</option>
-              <option value="OPEN">Открытая</option>
+              <option value="GARAGE">Гараж</option>
+              <option value="MULTI_LEVEL">Многоуровневая</option>
             </select>
           </div>
         </div>

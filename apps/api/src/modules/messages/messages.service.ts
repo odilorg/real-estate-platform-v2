@@ -139,7 +139,7 @@ export class MessagesService {
         senderId: { not: userId },
         read: false,
       },
-      data: { read: true },
+      data: { read: true, readAt: new Date() },
     });
 
     return {

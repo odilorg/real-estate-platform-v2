@@ -1,7 +1,7 @@
 'use client';
 
 import { Card, CardContent } from '@repo/ui';
-import { MapPin, Bus, GraduationCap, Baby, Expand } from 'lucide-react';
+import { MapPin, Bus, Expand } from 'lucide-react';
 import dynamic from 'next/dynamic';
 import { useState, useEffect } from 'react';
 import type { Icon as LeafletIcon } from 'leaflet';
@@ -112,27 +112,27 @@ export function PropertyLocationMap({
           </button>
         </div>
 
-        {/* Additional Info */}
-        <div className="p-6 border-t border-gray-200">
-          <button
-            onClick={() => setShowAdditional(!showAdditional)}
-            className="flex items-center justify-between w-full mb-4"
-          >
-            <h3 className="font-semibold">Дополнительно</h3>
-            <svg
-              className={`h-5 w-5 text-gray-600 transition-transform ${showAdditional ? 'rotate-180' : ''}`}
-              fill="none"
-              stroke="currentColor"
-              viewBox="0 0 24 24"
+        {/* Additional Info - Only show if there's metro information */}
+        {nearestMetro && (
+          <div className="p-6 border-t border-gray-200">
+            <button
+              onClick={() => setShowAdditional(!showAdditional)}
+              className="flex items-center justify-between w-full mb-4"
             >
-              <path strokeLinecap="round" strokeLinejoin="round" strokeWidth={2} d="M19 9l-7 7-7-7" />
-            </svg>
-          </button>
+              <h3 className="font-semibold">Дополнительно</h3>
+              <svg
+                className={`h-5 w-5 text-gray-600 transition-transform ${showAdditional ? 'rotate-180' : ''}`}
+                fill="none"
+                stroke="currentColor"
+                viewBox="0 0 24 24"
+              >
+                <path strokeLinecap="round" strokeLinejoin="round" strokeWidth={2} d="M19 9l-7 7-7-7" />
+              </svg>
+            </button>
 
-          {showAdditional && (
-            <div className="space-y-4">
-              {/* Metro/Transport */}
-              {nearestMetro && (
+            {showAdditional && (
+              <div className="space-y-4">
+                {/* Metro/Transport */}
                 <div className="flex items-start gap-3">
                   <div className="w-10 h-10 flex items-center justify-center bg-blue-50 rounded-lg">
                     <Bus className="h-5 w-5 text-blue-600" />
@@ -145,63 +145,10 @@ export function PropertyLocationMap({
                     )}
                   </div>
                 </div>
-              )}
-
-              {/* Future routes placeholder */}
-              <div className="flex items-start gap-3 opacity-50">
-                <div className="w-10 h-10 flex items-center justify-center bg-gray-50 rounded-lg">
-                  <Bus className="h-5 w-5 text-gray-400" />
-                </div>
-                <div>
-                  <div className="text-sm text-gray-600">Маршруты</div>
-                  <div className="text-sm text-gray-400">Информация появится позже</div>
-                </div>
               </div>
-
-              {/* Schools placeholder */}
-              <div className="flex items-start gap-3 opacity-50">
-                <div className="w-10 h-10 flex items-center justify-center bg-gray-50 rounded-lg">
-                  <GraduationCap className="h-5 w-5 text-gray-400" />
-                </div>
-                <div>
-                  <div className="text-sm text-gray-600">Школы</div>
-                  <div className="text-sm text-gray-400">Информация появится позже</div>
-                </div>
-              </div>
-
-              {/* Kindergartens placeholder */}
-              <div className="flex items-start gap-3 opacity-50">
-                <div className="w-10 h-10 flex items-center justify-center bg-gray-50 rounded-lg">
-                  <Baby className="h-5 w-5 text-gray-400" />
-                </div>
-                <div>
-                  <div className="text-sm text-gray-600">Детские сады</div>
-                  <div className="text-sm text-gray-400">Информация появится позже</div>
-                </div>
-              </div>
-            </div>
-          )}
-
-          {/* Bottom tabs */}
-          <div className="mt-6 flex items-center gap-2 overflow-x-auto pb-2">
-            <button className="flex items-center gap-2 px-4 py-2 bg-gray-100 rounded-lg text-sm whitespace-nowrap">
-              <MapPin className="h-4 w-4" />
-              Похожие объявления
-            </button>
-            <button className="flex items-center gap-2 px-4 py-2 bg-gray-100 rounded-lg text-sm whitespace-nowrap">
-              <Bus className="h-4 w-4" />
-              Метро
-            </button>
-            <button className="flex items-center gap-2 px-4 py-2 bg-gray-100 rounded-lg text-sm whitespace-nowrap">
-              <Bus className="h-4 w-4" />
-              Школы
-            </button>
-            <button className="flex items-center gap-2 px-4 py-2 bg-gray-100 rounded-lg text-sm whitespace-nowrap">
-              <Baby className="h-4 w-4" />
-              Детские сады
-            </button>
+            )}
           </div>
-        </div>
+        )}
       </CardContent>
     </Card>
   );

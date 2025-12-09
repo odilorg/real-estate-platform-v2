@@ -102,8 +102,6 @@ export function PropertyMap({
     mapZoom = 15; // Single property - zoom in close
   }
 
-  console.log('PropertyMap: Rendering', properties.length, 'properties with coordinates, zoom:', mapZoom);
-
   // Use a key to force remount when properties change significantly
   const mapKey = properties.length > 0 ? `${properties.length}-${mapCenter[0].toFixed(2)}-${mapCenter[1].toFixed(2)}` : 'empty';
 

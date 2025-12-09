@@ -125,6 +125,7 @@ export const PropertyFilterDto = z.object({
   // Price range
   minPrice: z.number().optional(),
   maxPrice: z.number().optional(),
+  currency: z.nativeEnum(Currency).optional(),
 
   // Area range
   minArea: z.number().optional(),
@@ -154,6 +155,10 @@ export const PropertyFilterDto = z.object({
   // Year built range
   minYearBuilt: z.number().optional(),
   maxYearBuilt: z.number().optional(),
+
+  // Price per square meter
+  minPricePerSqM: z.number().optional(),
+  maxPricePerSqM: z.number().optional(),
 
   // Amenities
   amenities: z.array(z.string()).optional(),
@@ -292,6 +297,24 @@ export type CreateAgencyDto = z.infer<typeof CreateAgencyDto>;
 
 export const UpdateAgencyDto = CreateAgencyDto.partial().omit({ slug: true });
 export type UpdateAgencyDto = z.infer<typeof UpdateAgencyDto>;
+
+// Collection DTOs
+export const CreateCollectionDto = z.object({
+  name: z.string().min(1).max(100),
+  description: z.string().max(500).optional(),
+  color: z.string().regex(/^#[0-9A-Fa-f]{6}$/).optional(), // Hex color
+  icon: z.string().max(50).optional(),
+});
+export type CreateCollectionDto = z.infer<typeof CreateCollectionDto>;
+
+export const UpdateCollectionDto = CreateCollectionDto.partial();
+export type UpdateCollectionDto = z.infer<typeof UpdateCollectionDto>;
+
+export const AddPropertyToCollectionDto = z.object({
+  propertyId: z.string(),
+  notes: z.string().max(500).optional(),
+});
+export type AddPropertyToCollectionDto = z.infer<typeof AddPropertyToCollectionDto>;
 
 // Pagination Response
 export const PaginatedResponseDto = <T extends z.ZodTypeAny>(itemSchema: T) =>

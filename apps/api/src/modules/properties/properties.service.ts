@@ -122,9 +122,10 @@ export class PropertiesService {
     const where = queryBuilder.getWhereClause();
     const needsGeoFilter = queryBuilder.needsGeoFilter();
     const needsFloorPostFilter = queryBuilder.needsFloorPostFilter();
+    const needsPricePerSqMFilter = queryBuilder.needsPricePerSqMFilter();
 
-    // For geo-location search, fetch more to account for post-filtering
-    const fetchLimit = needsGeoFilter ? limit * 10 : limit;
+    // For geo-location search or price per m² filter, fetch more to account for post-filtering
+    const fetchLimit = (needsGeoFilter || needsPricePerSqMFilter) ? limit * 10 : limit;
 
     // Determine order by
     let orderBy: Prisma.PropertyOrderByWithRelationInput = { [sortBy]: sortOrder };
@@ -204,6 +205,10 @@ export class PropertiesService {
       processedProperties = processedProperties.filter(
         (p) => p.floor !== p.totalFloors,
       );
+    }
+
+    if (needsPricePerSqMFilter) {
+      processedProperties = queryBuilder.filterByPricePerSqM(processedProperties);
     }
 
     // Apply in-memory sorting
@@ -315,6 +320,17 @@ export class PropertiesService {
         userId,
       );
     }
+
+    // Track status changes
+    // Note: status is not part of UpdatePropertyDto, so this code is commented out
+    // Status changes should be handled through a dedicated endpoint if needed
+    // if (propertyData.status !== undefined && propertyData.status !== property.status) {
+    //   await this.statusHistoryService.recordStatusChange(id, {
+    //     oldStatus: property.status,
+    //     newStatus: propertyData.status,
+    //     changedBy: userId,
+    //   });
+    // }
 
     // Update property
     await this.prisma.property.update({
@@ -530,7 +546,7 @@ export class PropertiesService {
    * Get available filter options based on current filters
    */
   async getFilterOptions() {
-    const [cities, districts, propertyTypes, buildingClasses, renovations] =
+    const [cities, districts, propertyTypes, buildingClasses, renovations, listingTypes, bedrooms] =
       await Promise.all([
         this.prisma.property.findMany({
           where: { status: 'ACTIVE' },
@@ -558,6 +574,16 @@ export class PropertiesService {
           where: { status: 'ACTIVE', renovation: { not: null } },
           _count: true,
         }),
+        this.prisma.property.groupBy({
+          by: ['listingType'],
+          where: { status: 'ACTIVE' },
+          _count: true,
+        }),
+        this.prisma.property.groupBy({
+          by: ['bedrooms'],
+          where: { status: 'ACTIVE', bedrooms: { not: null } },
+          _count: true,
+        }),
       ]);
 
     return {
@@ -583,6 +609,14 @@ export class PropertiesService {
       renovations: renovations.map((r) => ({
         type: r.renovation,
         count: r._count,
+      })),
+      listingTypes: listingTypes.map((l) => ({
+        type: l.listingType,
+        count: l._count,
+      })),
+      bedrooms: bedrooms.map((b) => ({
+        count: b.bedrooms,
+        total: b._count,
       })),
     };
   }

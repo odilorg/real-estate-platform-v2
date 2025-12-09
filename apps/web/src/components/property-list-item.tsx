@@ -2,8 +2,10 @@
 
 import Link from 'next/link';
 import { useRouter } from 'next/navigation';
-import { MapPin, Bed, Bath, Maximize, Heart, Phone, MessageCircle } from 'lucide-react';
+import { MapPin, Bed, Bath, Maximize, Heart, Phone, MessageCircle, Scale } from 'lucide-react';
 import { Badge } from '@repo/ui';
+import { useComparison } from '@/context';
+import { useTranslations } from 'next-intl';
 
 interface PropertyListItemProps {
   id: string;
@@ -34,39 +36,6 @@ interface PropertyListItemProps {
   };
 }
 
-function formatPrice(price: number, listingType: string): string {
-  const formatted = new Intl.NumberFormat('ru-RU').format(price);
-  if (listingType === 'SALE') {
-    return `${formatted} у.е.`;
-  }
-  return `${formatted} у.е./мес`;
-}
-
-function getListingTypeBadge(listingType: string) {
-  switch (listingType) {
-    case 'SALE':
-      return 'Продажа';
-    case 'RENT_LONG':
-      return 'Аренда';
-    case 'RENT_DAILY':
-      return 'Посуточно';
-    default:
-      return listingType;
-  }
-}
-
-function getOwnerTypeLabel(ownerType?: string) {
-  switch (ownerType) {
-    case 'DEVELOPER':
-      return 'ЗАСТРОЙЩИК';
-    case 'AGENT':
-      return 'АГЕНТ';
-    case 'OWNER':
-      return 'ВЛАДЕЛЕЦ';
-    default:
-      return 'КОНТАКТ';
-  }
-}
 
 export function PropertyListItem({
   id,
@@ -89,9 +58,31 @@ export function PropertyListItem({
   isFavorite = false,
   owner,
 }: PropertyListItemProps) {
+  const t = useTranslations('property');
   const router = useRouter();
+  const { addToComparison, isInComparison, removeFromComparison } = useComparison();
   const primaryImage = imageUrl || images?.[0]?.url;
   const additionalImagesCount = images && images.length > 1 ? images.length - 1 : 0;
+  const inComparison = isInComparison(id);
+
+  // Helper functions using translations
+  const formatPrice = (price: number, listingType: string): string => {
+    const formatted = new Intl.NumberFormat('ru-RU').format(price);
+    const currency = t('currency');
+    if (listingType === 'SALE') {
+      return `${formatted} ${currency}`;
+    }
+    return `${formatted} ${currency}${t('perMonth')}`;
+  };
+
+  const getListingTypeBadge = (listingType: string) => {
+    return t(`listingTypes.${listingType}` as any) || listingType;
+  };
+
+  const getOwnerTypeLabel = (ownerType?: string) => {
+    if (!ownerType) return t('ownerTypes.CONTACT');
+    return t(`ownerTypes.${ownerType}` as any) || t('ownerTypes.CONTACT');
+  };
 
   const handleMessageClick = async () => {
     // Check if user is authenticated
@@ -103,8 +94,7 @@ export function PropertyListItem({
 
     // Validate required fields
     if (!id || typeof id !== 'string') {
-      console.error('Invalid property ID:', id);
-      alert('Ошибка: некорректный ID объявления');
+      alert(t('messageError'));
       return;
     }
 
@@ -113,10 +103,8 @@ export function PropertyListItem({
       const apiUrl = process.env.NEXT_PUBLIC_API_URL || 'http://localhost:3001/api';
       const payload = {
         propertyId: id,
-        message: `Здравствуйте! Меня интересует объект "${title}". Можете предоставить дополнительную информацию?`,
+        message: t('defaultMessage', { title }),
       };
-
-      console.log('Sending message request:', payload);
 
       const response = await fetch(`${apiUrl}/messages/start`, {
         method: 'POST',
@@ -135,13 +123,10 @@ export function PropertyListItem({
         // Unauthorized - redirect to login
         router.push('/auth/login');
       } else {
-        const errorText = await response.text();
-        console.error('Failed to start conversation:', response.status, errorText);
         // Still navigate to messages page
         router.push('/dashboard/messages');
       }
     } catch (error) {
-      console.error('Error starting conversation:', error);
       // Navigate to messages page anyway
       router.push('/dashboard/messages');
     }
@@ -161,7 +146,7 @@ export function PropertyListItem({
               />
             ) : (
               <div className="w-full h-full bg-gray-200 flex items-center justify-center">
-                <span className="text-gray-400">Нет фото</span>
+                <span className="text-gray-400">{t('noPhoto')}</span>
               </div>
             )}
           </Link>
@@ -176,22 +161,50 @@ export function PropertyListItem({
           {/* Additional images indicator */}
           {additionalImagesCount > 0 && (
             <div className="absolute bottom-3 left-3 bg-black/70 text-white px-2 py-1 rounded text-sm">
-              Еще {additionalImagesCount} фото
+              {t('morePhotos', { count: additionalImagesCount })}
             </div>
           )}
 
-          {/* Favorite button */}
-          <button
-            onClick={(e) => {
-              e.preventDefault();
-              onFavoriteClick?.(id);
-            }}
-            className="absolute top-3 right-3 bg-white/90 hover:bg-white rounded-full p-2 transition-colors"
-          >
-            <Heart
-              className={`h-5 w-5 ${isFavorite ? 'fill-red-500 text-red-500' : 'text-gray-600'}`}
-            />
-          </button>
+          {/* Action buttons */}
+          <div className="absolute top-3 right-3 flex gap-2">
+            {/* Comparison button */}
+            <button
+              onClick={(e) => {
+                e.preventDefault();
+                if (inComparison) {
+                  removeFromComparison(id);
+                } else {
+                  addToComparison({
+                    id,
+                    title,
+                    price,
+                    imageUrl: primaryImage,
+                  });
+                }
+              }}
+              className={`bg-white/90 hover:bg-white rounded-full p-2 transition-colors ${
+                inComparison ? 'ring-2 ring-blue-500' : ''
+              }`}
+              title={inComparison ? t('removeFromComparison') : t('addToComparison')}
+            >
+              <Scale
+                className={`h-5 w-5 ${inComparison ? 'text-blue-600' : 'text-gray-600'}`}
+              />
+            </button>
+
+            {/* Favorite button */}
+            <button
+              onClick={(e) => {
+                e.preventDefault();
+                onFavoriteClick?.(id);
+              }}
+              className="bg-white/90 hover:bg-white rounded-full p-2 transition-colors"
+            >
+              <Heart
+                className={`h-5 w-5 ${isFavorite ? 'fill-red-500 text-red-500' : 'text-gray-600'}`}
+              />
+            </button>
+          </div>
         </div>
 
         {/* Content Section */}
@@ -208,7 +221,7 @@ export function PropertyListItem({
                 {bedrooms && (
                   <div className="flex items-center gap-1">
                     <Bed className="h-4 w-4" />
-                    <span>{bedrooms} комн.</span>
+                    <span>{bedrooms} {t('rooms')}</span>
                   </div>
                 )}
                 {bathrooms && (
@@ -219,10 +232,10 @@ export function PropertyListItem({
                 )}
                 <div className="flex items-center gap-1">
                   <Maximize className="h-4 w-4" />
-                  <span>{area} м²</span>
+                  <span>{area} {t('area')}</span>
                 </div>
                 {floor && totalFloors && (
-                  <span>{floor}/{totalFloors} этаж</span>
+                  <span>{floor}/{totalFloors} {t('floor')}</span>
                 )}
               </div>
 
@@ -245,7 +258,7 @@ export function PropertyListItem({
                   <span className="capitalize">{propertyType}</span>
                 )}
                 {yearBuilt && (
-                  <span>Построен в {yearBuilt}</span>
+                  <span>{t('builtIn', { year: yearBuilt })}</span>
                 )}
               </div>
 
@@ -256,7 +269,7 @@ export function PropertyListItem({
                 </div>
                 {area && (
                   <div className="text-sm text-gray-500">
-                    {Math.round(price / area).toLocaleString('ru-RU')} ₽/м²
+                    {Math.round(price / area).toLocaleString('ru-RU')} {t('pricePerSqm')}
                   </div>
                 )}
               </div>
@@ -299,7 +312,7 @@ export function PropertyListItem({
                   href={`/properties?userId=${owner.id || ''}`}
                   className="flex items-center justify-center w-full bg-white hover:bg-gray-50 text-gray-700 font-medium py-2.5 px-4 rounded-lg border border-gray-300 transition-colors text-sm"
                 >
-                  Посмотреть все объекты
+                  {t('viewAllProperties')}
                 </Link>
 
                 {owner.phone && (
@@ -320,7 +333,7 @@ export function PropertyListItem({
                   className="flex items-center justify-center gap-2 w-full bg-blue-600 hover:bg-blue-700 text-white font-medium py-2.5 px-4 rounded-lg transition-colors"
                 >
                   <MessageCircle className="h-4 w-4" />
-                  Написать
+                  {t('writeMessage')}
                 </button>
               </div>
             </div>

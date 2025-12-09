@@ -92,7 +92,7 @@ export function LocationPicker({
         setSearchResults(data);
         setShowResults(true);
       } catch (error) {
-        console.error('Search error:', error);
+        // Silently fail - user can try again or use map
       } finally {
         setSearching(false);
       }
@@ -119,13 +119,10 @@ export function LocationPicker({
   };
 
   const getCurrentLocation = () => {
-    console.log('getCurrentLocation called');
     setGettingLocation(true);
     if ('geolocation' in navigator) {
-      console.log('Geolocation is supported, requesting permission...');
       navigator.geolocation.getCurrentPosition(
         async (pos) => {
-          console.log('Got position:', pos.coords.latitude, pos.coords.longitude);
           const lat = pos.coords.latitude;
           const lng = pos.coords.longitude;
           setPosition([lat, lng]);
@@ -142,32 +139,27 @@ export function LocationPicker({
                 })
             );
             const data = await response.json();
-            console.log('Reverse geocode result:', data);
             onLocationChange(lat, lng, data.display_name);
             if (onAddressSelect) {
               onAddressSelect(data.display_name);
             }
           } catch (error) {
-            console.error('Reverse geocode error:', error);
             onLocationChange(lat, lng);
           }
           setGettingLocation(false);
         },
         (error) => {
-          console.error('Geolocation error:', error);
           alert('Не удалось определить ваше местоположение');
           setGettingLocation(false);
         }
       );
     } else {
-      console.error('Geolocation not supported');
       alert('Геолокация не поддерживается вашим браузером');
       setGettingLocation(false);
     }
   };
 
   const handleMapClick = useCallback(async (lat: number, lng: number) => {
-    console.log('handleMapClick called with:', lat, lng);
     setPosition([lat, lng]);
 
     // Reverse geocode
@@ -182,13 +174,11 @@ export function LocationPicker({
           })
       );
       const data = await response.json();
-      console.log('Map click reverse geocode result:', data);
       onLocationChange(lat, lng, data.display_name);
       if (onAddressSelect) {
         onAddressSelect(data.display_name);
       }
     } catch (error) {
-      console.error('Map click reverse geocode error:', error);
       onLocationChange(lat, lng);
     }
   }, [onLocationChange, onAddressSelect]);

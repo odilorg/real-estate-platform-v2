@@ -4,7 +4,7 @@ import { useState, useEffect, useRef, useCallback } from 'react';
 import Link from 'next/link';
 import { useRouter, useSearchParams } from 'next/navigation';
 import { PropertyCard, Button, Select, SelectContent, SelectItem, SelectTrigger, SelectValue } from '@repo/ui';
-import { AdvancedFilters, type AdvancedFilterValues, PropertyMap, type PropertyMapMarker, PropertyListItem } from '@/components';
+import { PropertyFiltersModern, type ModernFilterValues, PropertyMap, type PropertyMapMarker, PropertyListItem } from '@/components';
 import { Search, Plus, Loader2, User, LogOut, MapPin, ArrowUpDown, Grid3X3, Map as MapIcon, List } from 'lucide-react';
 import { useAuth } from '@/context/AuthContext';
 
@@ -63,13 +63,10 @@ interface PaginationMeta {
   pages: number;
 }
 
-const defaultFilters: AdvancedFilterValues = {
+const defaultFilters: ModernFilterValues = {
   propertyTypes: [],
   listingTypes: [],
   amenities: [],
-  buildingClasses: [],
-  renovationTypes: [],
-  parkingTypes: [],
 };
 
 const SORT_OPTIONS = [
@@ -88,7 +85,7 @@ export default function PropertiesPage() {
   const [properties, setProperties] = useState<Property[]>([]);
   const [loading, setLoading] = useState(true);
   const [error, setError] = useState<string | null>(null);
-  const [filters, setFilters] = useState<AdvancedFilterValues>(defaultFilters);
+  const [filters, setFilters] = useState<ModernFilterValues>(defaultFilters);
   const [searchQuery, setSearchQuery] = useState('');
   const [suggestions, setSuggestions] = useState<SearchSuggestion[]>([]);
   const [showSuggestions, setShowSuggestions] = useState(false);
@@ -110,7 +107,7 @@ export default function PropertiesPage() {
   useEffect(() => {
     if (!searchParams) return;
 
-    const initialFilters: AdvancedFilterValues = { ...defaultFilters };
+    const initialFilters: ModernFilterValues = { ...defaultFilters };
 
     // Parse property types
     const propertyType = searchParams.get('propertyType');
@@ -143,15 +140,8 @@ export default function PropertiesPage() {
 
     // Parse bedrooms
     const bedrooms = searchParams.get('bedrooms');
-    const minBedrooms = searchParams.get('minBedrooms');
-    const maxBedrooms = searchParams.get('maxBedrooms');
     if (bedrooms) {
-      // Exact bedroom count
-      initialFilters.minBedrooms = Number(bedrooms);
-      initialFilters.maxBedrooms = Number(bedrooms);
-    } else {
-      if (minBedrooms) initialFilters.minBedrooms = Number(minBedrooms);
-      if (maxBedrooms) initialFilters.maxBedrooms = Number(maxBedrooms);
+      initialFilters.bedrooms = Number(bedrooms);
     }
 
     // Parse area
@@ -216,6 +206,15 @@ export default function PropertiesPage() {
       // This might need backend support to filter featured properties
     }
 
+    // Parse page number
+    const page = searchParams.get('page');
+    if (page) {
+      const pageNum = parseInt(page);
+      if (!isNaN(pageNum) && pageNum > 0) {
+        setCurrentPage(pageNum);
+      }
+    }
+
     setFilters(initialFilters);
     setFiltersInitialized(true);
 
@@ -252,10 +251,9 @@ export default function PropertiesPage() {
       if (filters.maxPrice) params.append('maxPrice', filters.maxPrice.toString());
 
       // Bedrooms
-      if (filters.minBedrooms)
-        params.append('minBedrooms', filters.minBedrooms.toString());
-      if (filters.maxBedrooms)
-        params.append('maxBedrooms', filters.maxBedrooms.toString());
+      if (filters.bedrooms !== undefined) {
+        params.append('bedrooms', filters.bedrooms.toString());
+      }
 
       // Area
       if (filters.minArea) params.append('minArea', filters.minArea.toString());
@@ -385,8 +383,89 @@ export default function PropertiesPage() {
     }
   }, [sortBy]);
 
+  const updateURLWithFilters = useCallback(() => {
+    const params = new URLSearchParams();
+
+    // Search query
+    if (searchQuery) params.set('search', searchQuery);
+
+    // Property types
+    if (filters.propertyTypes.length > 0) {
+      params.set('propertyType', filters.propertyTypes.join(','));
+    }
+
+    // Listing types
+    if (filters.listingTypes.length > 0) {
+      params.set('listingType', filters.listingTypes.join(','));
+    }
+
+    // Price range
+    if (filters.minPrice) params.set('minPrice', filters.minPrice.toString());
+    if (filters.maxPrice) params.set('maxPrice', filters.maxPrice.toString());
+
+    // Bedrooms
+    if (filters.bedrooms !== undefined) {
+      params.set('bedrooms', filters.bedrooms.toString());
+    }
+
+    // Area
+    if (filters.minArea) params.set('minArea', filters.minArea.toString());
+    if (filters.maxArea) params.set('maxArea', filters.maxArea.toString());
+
+    // Location
+    if (filters.city) params.set('city', filters.city);
+    if (filters.district) params.set('district', filters.district);
+    if (filters.mahalla) params.set('mahalla', filters.mahalla);
+
+    // Floor
+    if (filters.minFloor) params.set('minFloor', filters.minFloor.toString());
+    if (filters.maxFloor) params.set('maxFloor', filters.maxFloor.toString());
+
+    // Building filters
+    if (filters.buildingClasses?.length > 0) {
+      params.set('buildingClass', filters.buildingClasses[0]);
+    }
+    if (filters.renovationTypes?.length > 0) {
+      params.set('renovation', filters.renovationTypes[0]);
+    }
+    if (filters.parkingTypes?.length > 0) {
+      params.set('parkingType', filters.parkingTypes[0]);
+    }
+
+    // Year built
+    if (filters.minYearBuilt) params.set('minYearBuilt', filters.minYearBuilt.toString());
+    if (filters.maxYearBuilt) params.set('maxYearBuilt', filters.maxYearBuilt.toString());
+
+    // Amenities
+    if (filters.amenities.length > 0) {
+      params.set('amenities', filters.amenities.join(','));
+    }
+
+    // Boolean features
+    if (filters.hasBalcony) params.set('hasBalcony', 'true');
+    if (filters.hasConcierge) params.set('hasConcierge', 'true');
+    if (filters.hasGatedArea) params.set('hasGatedArea', 'true');
+
+    // Sorting
+    const [sortField, sortOrder] = sortBy.split(':');
+    if (sortField !== 'createdAt' || sortOrder !== 'desc') {
+      params.set('sortBy', sortField);
+      params.set('sortOrder', sortOrder);
+    }
+
+    // Page number (only add if not page 1)
+    if (currentPage > 1) {
+      params.set('page', currentPage.toString());
+    }
+
+    // Update URL without reloading
+    const newURL = params.toString() ? `/properties?${params.toString()}` : '/properties';
+    router.replace(newURL, { scroll: false });
+  }, [filters, searchQuery, sortBy, currentPage, router]);
+
   const handleApplyFilters = () => {
     setCurrentPage(1);
+    updateURLWithFilters();
     fetchProperties(1);
   };
 
@@ -396,9 +475,13 @@ export default function PropertiesPage() {
     setSearchRadius(null);
     setUserLocation(null);
     setCurrentPage(1);
+    setSortBy('createdAt:desc');
+    // Clear URL parameters
+    router.replace('/properties', { scroll: false });
   };
 
   const handleSuggestionClick = (suggestion: SearchSuggestion) => {
+    setCurrentPage(1);
     if (suggestion.type === 'city') {
       setFilters({ ...filters, city: suggestion.value });
     } else if (suggestion.type === 'district') {
@@ -408,6 +491,12 @@ export default function PropertiesPage() {
     }
     setShowSuggestions(false);
     setTimeout(() => fetchProperties(1), 100);
+  };
+
+  const handleSearchSubmit = () => {
+    setCurrentPage(1);
+    setShowSuggestions(false);
+    fetchProperties(1);
   };
 
   const handleGetUserLocation = () => {
@@ -433,6 +522,13 @@ export default function PropertiesPage() {
     window.scrollTo({ top: 0, behavior: 'smooth' });
   };
 
+  // Update URL when filters, search, or sort changes
+  useEffect(() => {
+    if (filtersInitialized) {
+      updateURLWithFilters();
+    }
+  }, [filters, searchQuery, sortBy, currentPage, filtersInitialized, updateURLWithFilters]);
+
   return (
     <div className="min-h-screen bg-gray-50">
       <main className="container mx-auto px-4 py-8">
@@ -450,8 +546,7 @@ export default function PropertiesPage() {
                 onFocus={() => setShowSuggestions(true)}
                 onKeyDown={(e) => {
                   if (e.key === 'Enter') {
-                    setShowSuggestions(false);
-                    fetchProperties(1);
+                    handleSearchSubmit();
                   }
                 }}
                 className="w-full pl-10 pr-4 py-3 border rounded-lg focus:ring-2 focus:ring-blue-500 focus:border-blue-500"
@@ -502,7 +597,7 @@ export default function PropertiesPage() {
               <MapPin className="h-5 w-5" />
             </Button>
 
-            <Button onClick={() => fetchProperties(1)} size="lg">
+            <Button onClick={handleSearchSubmit} size="lg">
               Найти
             </Button>
           </div>
@@ -543,51 +638,20 @@ export default function PropertiesPage() {
           )}
         </div>
 
-        {/* Quick Filter Links - Recommended */}
+        {/* Modern Filters */}
         <div className="mb-6">
-          <h3 className="text-sm font-semibold text-gray-700 mb-3">Рекомендуем посмотреть</h3>
-          <div className="flex flex-wrap gap-x-6 gap-y-2 text-sm">
-            <Link href="/properties?propertyType=APARTMENT&minYearBuilt=2020" className="text-blue-600 hover:underline">
-              квартиры в новостройке <span className="text-gray-400">62 423</span>
-            </Link>
-            <Link href="/properties?listingType=SALE&propertyType=APARTMENT&bedrooms=2" className="text-blue-600 hover:underline">
-              2 комнатные <span className="text-gray-400">29 145</span>
-            </Link>
-            <Link href="/properties?listingType=SALE&propertyType=APARTMENT&bedrooms=3" className="text-blue-600 hover:underline">
-              3 комнатные <span className="text-gray-400">22 073</span>
-            </Link>
-            <Link href="/properties?listingType=SALE&propertyType=APARTMENT&bedrooms=4" className="text-blue-600 hover:underline">
-              4 комнатные <span className="text-gray-400">6 304</span>
-            </Link>
-          </div>
-          <div className="flex flex-wrap gap-x-6 gap-y-2 text-sm mt-2">
-            <Link href="/properties?buildingType=MONOLITHIC" className="text-blue-600 hover:underline">
-              квартиры во вторичке <span className="text-gray-400">42 076</span>
-            </Link>
-            <Link href="/properties?listingType=SALE&propertyType=APARTMENT&bedrooms=1" className="text-blue-600 hover:underline">
-              1 комнатные <span className="text-gray-400">22 432</span>
-            </Link>
-            <Link href="/properties?propertyType=APARTMENT&minArea=20&maxArea=35" className="text-blue-600 hover:underline">
-              студия <span className="text-gray-400">7 362</span>
-            </Link>
-            <Link href="/properties?listingType=SALE&propertyType=APARTMENT&bedrooms=5" className="text-blue-600 hover:underline">
-              5 комнатные <span className="text-gray-400">1 655</span>
-            </Link>
-          </div>
-        </div>
-
-        {/* Filters */}
-        <div className="mb-8">
-          <AdvancedFilters
+          <PropertyFiltersModern
             values={filters}
-            onChange={setFilters}
-            onApply={handleApplyFilters}
-            onReset={handleResetFilters}
+            onChange={(newFilters) => {
+              setFilters(newFilters);
+              setCurrentPage(1);
+            }}
+            totalResults={pagination?.total || properties.length}
           />
         </div>
 
-        {/* Results Header with Sorting and View Mode */}
-        <div className="mb-4 flex flex-col sm:flex-row sm:items-center sm:justify-between gap-4">
+        {/* Results Header with Sorting and View Mode - Removed as it's now in the filter component */}
+        <div className="mb-4 flex flex-col sm:flex-row sm:items-center sm:justify-between gap-4 hidden">
           <h1 className="text-2xl font-bold">
             Недвижимость{' '}
             {!loading && (

@@ -3,7 +3,8 @@
 import { useState, useEffect } from 'react';
 import { useRouter } from 'next/navigation';
 import { Card, CardContent, Button } from '@repo/ui';
-import { ArrowLeft, ArrowRight, Save, Check } from 'lucide-react';
+import { ArrowLeft, ArrowRight, Save, Check, Trash2 } from 'lucide-react';
+import { useTranslations } from 'next-intl';
 import Step1PropertyType from './steps/Step1PropertyType';
 import Step2Location from './steps/Step2Location';
 import Step3BasicInfo from './steps/Step3BasicInfo';
@@ -63,20 +64,13 @@ export interface WizardFormData {
   description: string;
 }
 
-const STEPS = [
-  { number: 1, title: 'Тип', description: 'Выберите тип недвижимости' },
-  { number: 2, title: 'Местоположение', description: 'Укажите адрес' },
-  { number: 3, title: 'Основная информация', description: 'Цена и параметры' },
-  { number: 4, title: 'Характеристики', description: 'Детали здания' },
-  { number: 5, title: 'Фото и описание', description: 'Загрузите фото' },
-  { number: 6, title: 'Проверка', description: 'Проверьте данные' },
-];
 
-const INITIAL_FORM_DATA: WizardFormData = {
+  // Initial form data using translation for city
+  const getInitialFormData = (): WizardFormData => ({
   propertyType: '',
   listingType: 'SALE',
   address: '',
-  city: 'Ташкент',
+  city: t('defaultCity'),
   district: '',
   mahalla: '',
   nearestMetro: '',
@@ -113,7 +107,7 @@ const INITIAL_FORM_DATA: WizardFormData = {
   images: [],
   title: '',
   description: '',
-};
+  });
 
 // Helper function to get user ID from JWT token
 const getUserIdFromToken = (): string | null => {
@@ -126,7 +120,6 @@ const getUserIdFromToken = (): string | null => {
     const decodedPayload = JSON.parse(atob(payload));
     return decodedPayload.sub || decodedPayload.userId || null;
   } catch (e) {
-    console.error('Failed to decode token:', e);
     return null;
   }
 };
@@ -138,11 +131,27 @@ const getDraftStorageKey = (): string | null => {
 };
 
 export default function PropertyCreationWizard() {
+  const t = useTranslations('wizard');
   const router = useRouter();
   const [currentStep, setCurrentStep] = useState(1);
-  const [formData, setFormData] = useState<WizardFormData>(INITIAL_FORM_DATA);
+
+  // Define steps using translations
+  const STEPS = [
+    { number: 1, title: t('steps.1.title'), description: t('steps.1.description') },
+    { number: 2, title: t('steps.2.title'), description: t('steps.2.description') },
+    { number: 3, title: t('steps.3.title'), description: t('steps.3.description') },
+    { number: 4, title: t('steps.4.title'), description: t('steps.4.description') },
+    { number: 5, title: t('steps.5.title'), description: t('steps.5.description') },
+    { number: 6, title: t('steps.6.title'), description: t('steps.6.description') },
+  ];
+  const [formData, setFormData] = useState<WizardFormData>(getInitialFormData());
   const [saving, setSaving] = useState(false);
   const [errors, setErrors] = useState<Record<string, string>>({});
+  const [showClearConfirm, setShowClearConfirm] = useState(false);
+  const [showValidationModal, setShowValidationModal] = useState(false);
+  const [validationErrors, setValidationErrors] = useState<Array<{ step: number; field: string; message: string }>>([]);
+  const [showSuccessModal, setShowSuccessModal] = useState(false);
+  const [createdPropertyId, setCreatedPropertyId] = useState<string>('');
 
   // Load draft from localStorage on mount
   useEffect(() => {
@@ -153,17 +162,50 @@ export default function PropertyCreationWizard() {
     if (savedDraft) {
       try {
         const draft = JSON.parse(savedDraft);
-        const shouldRestore = window.confirm(
-          'Найден сохраненный черновик. Хотите продолжить с того места, где остановились?'
-        );
-        if (shouldRestore) {
-          setFormData(draft.formData);
-          setCurrentStep(draft.currentStep);
-        } else {
-          localStorage.removeItem(draftKey);
+
+        // Migrate invalid enum values to match backend schema
+        if (draft.formData) {
+          // Currency migration: USD -> YE
+          if (draft.formData.currency === 'USD') {
+            draft.formData.currency = 'YE';
+          }
+
+          // ParkingType migration: GROUND -> STREET, MULTILEVEL -> MULTI_LEVEL, remove OPEN
+          if (draft.formData.parkingType === 'GROUND') {
+            draft.formData.parkingType = 'STREET';
+          }
+          if (draft.formData.parkingType === 'MULTILEVEL') {
+            draft.formData.parkingType = 'MULTI_LEVEL';
+          }
+          if (draft.formData.parkingType === 'OPEN') {
+            draft.formData.parkingType = '';
+          }
+
+          // Renovation migration: NO_RENOVATION -> NONE, DESIGN -> DESIGNER, NEEDS_RENOVATION -> NEEDS_REPAIR
+          if (draft.formData.renovation === 'NO_RENOVATION') {
+            draft.formData.renovation = 'NONE';
+          }
+          if (draft.formData.renovation === 'DESIGN') {
+            draft.formData.renovation = 'DESIGNER';
+          }
+          if (draft.formData.renovation === 'NEEDS_RENOVATION') {
+            draft.formData.renovation = 'NEEDS_REPAIR';
+          }
+
+          // BuildingType migration: MONOLITH -> MONOLITHIC, remove MONOLITH_BRICK
+          if (draft.formData.buildingType === 'MONOLITH') {
+            draft.formData.buildingType = 'MONOLITHIC';
+          }
+          if (draft.formData.buildingType === 'MONOLITH_BRICK') {
+            draft.formData.buildingType = 'BRICK'; // Fallback to BRICK as closest match
+          }
         }
+
+        // Silently restore draft without confirmation
+        setFormData(draft.formData);
+        setCurrentStep(draft.currentStep);
       } catch (e) {
-        console.error('Failed to restore draft:', e);
+        // Silently fail - corrupted draft will be ignored
       }
     }
   }, []);
@@ -191,8 +233,23 @@ export default function PropertyCreationWizard() {
         })
       );
     } catch (e) {
-      console.error('Failed to save draft:', e);
+      // Silently fail - localStorage might be full or disabled
     }
+  };
+
+  const clearDraft = () => {
+    setShowClearConfirm(true);
+  };
+
+  const confirmClearDraft = () => {
+    const draftKey = getDraftStorageKey();
+    if (draftKey) {
+      localStorage.removeItem(draftKey);
+      setFormData(INITIAL_FORM_DATA);
+      setCurrentStep(1);
+      setErrors({});
+    }
+    setShowClearConfirm(false);
   };
 
   const updateFormData = (updates: Partial<WizardFormData>) => {
@@ -206,10 +263,10 @@ export default function PropertyCreationWizard() {
     switch (step) {
       case 1:
         if (!formData.propertyType) {
-          newErrors.propertyType = 'Выберите тип недвижимости';
+          newErrors.propertyType = t('validation.propertyType');
         }
         if (!formData.listingType) {
-          newErrors.listingType = 'Выберите тип объявления';
+          newErrors.listingType = t('validation.listingType');
         }
         break;
 
@@ -224,7 +281,7 @@ export default function PropertyCreationWizard() {
 
       case 3:
         if (!formData.price || parseFloat(formData.price) <= 0) {
-          newErrors.price = 'Укажите корректную цену';
+          newErrors.price = t('validation.price');
         }
         if (!formData.area || parseFloat(formData.area) <= 0) {
           newErrors.area = 'Укажите площадь больше 0 м²';
@@ -233,7 +290,7 @@ export default function PropertyCreationWizard() {
 
       case 5:
         if (formData.images.length === 0) {
-          newErrors.images = 'Загрузите хотя бы одно фото';
+          newErrors.images = t('validation.images');
         }
         if (!formData.title || formData.title.length < 10) {
           newErrors.title = 'Заголовок должен содержать минимум 10 символов';
@@ -246,6 +303,50 @@ export default function PropertyCreationWizard() {
 
     setErrors(newErrors);
     return Object.keys(newErrors).length === 0;
+  };
+
+  const validateAllSteps = (): Array<{ step: number; field: string; message: string }> => {
+    const allErrors: Array<{ step: number; field: string; message: string }> = [];
+
+    // Step 1: Property Type
+    if (!formData.propertyType) {
+      allErrors.push({ step: 1, field: 'Тип недвижимости', message: 'Выберите тип недвижимости' });
+    }
+    if (!formData.listingType) {
+      allErrors.push({ step: 1, field: 'Тип объявления', message: 'Выберите тип объявления' });
+    }
+
+    // Step 2: Location
+    if (!formData.address) {
+      allErrors.push({ step: 2, field: 'Адрес', message: 'Укажите адрес' });
+    }
+    if (!formData.city) {
+      allErrors.push({ step: 2, field: 'Город', message: 'Выберите город' });
+    }
+
+    // Step 3: Basic Info
+    if (!formData.price || parseFloat(formData.price) <= 0) {
+      allErrors.push({ step: 3, field: 'Цена', message: 'Укажите корректную цену' });
+    }
+    if (!formData.currency) {
+      allErrors.push({ step: 3, field: 'Валюта', message: 'Выберите валюту' });
+    }
+    if (!formData.area || parseFloat(formData.area) <= 0) {
+      allErrors.push({ step: 3, field: 'Площадь', message: 'Укажите площадь больше 0 м²' });
+    }
+
+    // Step 5: Photos & Description
+    if (formData.images.length === 0) {
+      allErrors.push({ step: 5, field: 'Фотографии', message: 'Загрузите хотя бы одно фото' });
+    }
+    if (!formData.title || formData.title.length < 10) {
+      allErrors.push({ step: 5, field: 'Заголовок', message: 'Заголовок должен содержать минимум 10 символов' });
+    }
+    if (!formData.description || formData.description.length < 50) {
+      allErrors.push({ step: 5, field: 'Описание', message: 'Описание должно содержать минимум 50 символов' });
+    }
+
+    return allErrors;
   };
 
   const handleNext = () => {
@@ -262,12 +363,86 @@ export default function PropertyCreationWizard() {
   };
 
   const handleSubmit = async () => {
-    if (!validateStep(5)) return;
+    // Validate all steps before submitting
+    const allErrors = validateAllSteps();
+
+    if (allErrors.length > 0) {
+      setValidationErrors(allErrors);
+      setShowValidationModal(true);
+      return;
+    }
 
     setSaving(true);
     try {
       const token = localStorage.getItem('token');
       const apiUrl = process.env.NEXT_PUBLIC_API_URL || 'http://localhost:3001/api';
+
+      // Helper to convert empty strings to undefined
+      const cleanValue = (value: any) => {
+        if (value === '' || value === null) return undefined;
+        return value;
+      };
+
+      // Build payload with cleaned values
+      const payload = {
+        propertyType: formData.propertyType,
+        listingType: formData.listingType,
+        title: formData.title,
+        description: formData.description,
+        price: parseFloat(formData.price),
+        currency: formData.currency,
+
+        // Location
+        address: formData.address,
+        city: formData.city,
+        district: cleanValue(formData.district),
+        mahalla: cleanValue(formData.mahalla),
+        nearestMetro: cleanValue(formData.nearestMetro),
+        metroDistance: formData.metroDistance ? parseInt(formData.metroDistance) : undefined,
+        latitude: formData.latitude,
+        longitude: formData.longitude,
+
+        // Property details
+        area: parseFloat(formData.area),
+        bedrooms: formData.bedrooms ? parseInt(formData.bedrooms) : undefined,
+        bathrooms: formData.bathrooms ? parseFloat(formData.bathrooms) : undefined,
+        rooms: formData.rooms ? parseInt(formData.rooms) : undefined,
+        floor: formData.floor ? parseInt(formData.floor) : undefined,
+        totalFloors: formData.totalFloors ? parseInt(formData.totalFloors) : undefined,
+
+        // Building info
+        yearBuilt: formData.yearBuilt ? parseInt(formData.yearBuilt) : undefined,
+        livingArea: formData.livingArea ? parseFloat(formData.livingArea) : undefined,
+        kitchenArea: formData.kitchenArea ? parseFloat(formData.kitchenArea) : undefined,
+        ceilingHeight: formData.ceilingHeight ? parseFloat(formData.ceilingHeight) : undefined,
+
+        // Features
+        parking: formData.parking ? parseInt(formData.parking) : undefined,
+        parkingType: cleanValue(formData.parkingType),
+        balcony: formData.balcony ? parseInt(formData.balcony) : undefined,
+        loggia: formData.loggia ? parseInt(formData.loggia) : undefined,
+        elevatorPassenger: formData.elevatorPassenger ? parseInt(formData.elevatorPassenger) : undefined,
+        elevatorCargo: formData.elevatorCargo ? parseInt(formData.elevatorCargo) : undefined,
+
+        // Building characteristics
+        buildingType: cleanValue(formData.buildingType),
+        buildingClass: cleanValue(formData.buildingClass),
+        renovation: cleanValue(formData.renovation),
+        windowView: cleanValue(formData.windowView),
+        bathroomType: cleanValue(formData.bathroomType),
+        furnished: cleanValue(formData.furnished),
+        hasGarbageChute: formData.hasGarbageChute,
+        hasConcierge: formData.hasConcierge,
+        hasGatedArea: formData.hasGatedArea,
+
+        // Images
+        images: formData.images,
+      };
+
+      // Remove undefined values
+      const cleanPayload = Object.fromEntries(
+        Object.entries(payload).filter(([_, v]) => v !== undefined)
+      );
 
       const response = await fetch(`${apiUrl}/properties`, {
         method: 'POST',
@@ -275,30 +450,19 @@ export default function PropertyCreationWizard() {
           'Content-Type': 'application/json',
           Authorization: `Bearer ${token}`,
         },
-        body: JSON.stringify({
-          ...formData,
-          price: parseFloat(formData.price),
-          area: parseFloat(formData.area),
-          bedrooms: formData.bedrooms ? parseInt(formData.bedrooms) : null,
-          bathrooms: formData.bathrooms ? parseFloat(formData.bathrooms) : null,
-          floor: formData.floor ? parseInt(formData.floor) : null,
-          totalFloors: formData.totalFloors ? parseInt(formData.totalFloors) : null,
-          yearBuilt: formData.yearBuilt ? parseInt(formData.yearBuilt) : null,
-          livingArea: formData.livingArea ? parseFloat(formData.livingArea) : null,
-          kitchenArea: formData.kitchenArea ? parseFloat(formData.kitchenArea) : null,
-          ceilingHeight: formData.ceilingHeight ? parseFloat(formData.ceilingHeight) : null,
-          parking: formData.parking ? parseInt(formData.parking) : null,
-          balcony: formData.balcony ? parseInt(formData.balcony) : null,
-          loggia: formData.loggia ? parseInt(formData.loggia) : null,
-          metroDistance: formData.metroDistance ? parseInt(formData.metroDistance) : null,
-          elevatorPassenger: formData.elevatorPassenger ? parseInt(formData.elevatorPassenger) : null,
-          elevatorCargo: formData.elevatorCargo ? parseInt(formData.elevatorCargo) : null,
-          rooms: formData.rooms ? parseInt(formData.rooms) : null,
-        }),
+        body: JSON.stringify(cleanPayload),
       });
 
       if (!response.ok) {
-        throw new Error('Failed to create property');
+        const errorData = await response.json().catch(() => null);
+
+        // Show specific validation errors if available
+        if (errorData?.errors && Array.isArray(errorData.errors)) {
+          alert(`Ошибка валидации:\n${errorData.errors.join('\n')}`);
+        } else {
+          alert(t('errors.createFailed', { message: errorData?.message || t('errors.unknownError') }));
+        }
+        throw new Error(errorData?.message || 'Failed to create property');
       }
 
       const property = await response.json();
@@ -309,10 +473,10 @@ export default function PropertyCreationWizard() {
         localStorage.removeItem(draftKey);
       }
 
-      // Redirect to property page
-      router.push(`/properties/${property.id}`);
+      // Show success modal instead of immediate redirect
+      setCreatedPropertyId(property.id);
+      setShowSuccessModal(true);
     } catch (error) {
-      console.error('Error creating property:', error);
       alert('Ошибка при создании объявления. Попробуйте еще раз.');
     } finally {
       setSaving(false);
@@ -444,14 +608,25 @@ export default function PropertyCreationWizard() {
             Назад
           </Button>
 
-          <Button
-            variant="ghost"
-            onClick={saveDraft}
-            className="gap-2"
-          >
-            <Save className="h-4 w-4" />
-            Сохранить черновик
-          </Button>
+          <div className="flex gap-2">
+            <button
+              type="button"
+              onClick={clearDraft}
+              className="inline-flex items-center gap-2 px-4 py-2 text-red-600 hover:text-red-700 hover:bg-red-50 rounded-md transition-colors"
+            >
+              <Trash2 className="h-4 w-4" />
+              Удалить черновик
+            </button>
+
+            <button
+              type="button"
+              onClick={saveDraft}
+              className="inline-flex items-center gap-2 px-4 py-2 text-gray-700 hover:bg-gray-100 rounded-md transition-colors"
+            >
+              <Save className="h-4 w-4" />
+              Сохранить черновик
+            </button>
+          </div>
 
           {currentStep < STEPS.length ? (
             <Button onClick={handleNext} className="gap-2">
@@ -475,6 +650,166 @@ export default function PropertyCreationWizard() {
             </Button>
           )}
         </div>
+
+        {/* Clear Draft Confirmation Modal */}
+        {showClearConfirm && (
+          <div className="fixed inset-0 bg-black bg-opacity-50 flex items-center justify-center z-50">
+            <div className="bg-white rounded-lg shadow-xl max-w-md w-full mx-4 animate-in fade-in zoom-in duration-200">
+              <div className="p-6">
+                <div className="flex items-center gap-3 mb-4">
+                  <div className="flex-shrink-0 w-12 h-12 rounded-full bg-red-100 flex items-center justify-center">
+                    <Trash2 className="h-6 w-6 text-red-600" />
+                  </div>
+                  <h3 className="text-lg font-semibold text-gray-900">
+                    Удалить черновик?
+                  </h3>
+                </div>
+                <p className="text-gray-600 mb-6">
+                  Вы уверены, что хотите удалить черновик и начать заново? Все несохраненные данные будут потеряны.
+                </p>
+                <div className="flex gap-3 justify-end">
+                  <Button
+                    variant="outline"
+                    onClick={() => setShowClearConfirm(false)}
+                  >
+                    Отмена
+                  </Button>
+                  <Button
+                    onClick={confirmClearDraft}
+                    className="bg-red-600 hover:bg-red-700"
+                  >
+                    Удалить черновик
+                  </Button>
+                </div>
+              </div>
+            </div>
+          </div>
+        )}
+
+        {/* Validation Error Modal */}
+        {showValidationModal && (
+          <div className="fixed inset-0 bg-black bg-opacity-50 flex items-center justify-center z-50 p-4">
+            <div className="bg-white rounded-lg shadow-xl max-w-lg w-full mx-4 animate-in fade-in zoom-in duration-200 max-h-[80vh] flex flex-col">
+              <div className="p-6 border-b border-gray-200">
+                <div className="flex items-center gap-3">
+                  <div className="flex-shrink-0 w-12 h-12 rounded-full bg-yellow-100 flex items-center justify-center">
+                    <svg className="h-6 w-6 text-yellow-600" fill="none" viewBox="0 0 24 24" stroke="currentColor">
+                      <path strokeLinecap="round" strokeLinejoin="round" strokeWidth={2} d="M12 9v2m0 4h.01m-6.938 4h13.856c1.54 0 2.502-1.667 1.732-3L13.732 4c-.77-1.333-2.694-1.333-3.464 0L3.34 16c-.77 1.333.192 3 1.732 3z" />
+                    </svg>
+                  </div>
+                  <div>
+                    <h3 className="text-lg font-semibold text-gray-900">
+                      Заполните обязательные поля
+                    </h3>
+                    <p className="text-sm text-gray-600 mt-1">
+                      {t('errors.found', {
+                        count: validationErrors.length,
+                        errors: validationErrors.length === 1 ? t('errors.error_one') : t('errors.error_other')
+                      })}
+                    </p>
+                  </div>
+                </div>
+              </div>
+
+              <div className="p-6 overflow-y-auto flex-1">
+                <div className="space-y-4">
+                  {STEPS.filter(step => validationErrors.some(err => err.step === step.number)).map((step) => {
+                    const stepErrors = validationErrors.filter(err => err.step === step.number);
+                    return (
+                      <div key={step.number} className="border-l-4 border-yellow-400 bg-yellow-50 p-4 rounded-r-lg">
+                        <div className="flex items-center gap-2 mb-2">
+                          <span className="flex items-center justify-center w-6 h-6 rounded-full bg-yellow-100 text-yellow-800 text-sm font-bold">
+                            {step.number}
+                          </span>
+                          <h4 className="font-semibold text-gray-900">{step.title}</h4>
+                        </div>
+                        <ul className="ml-8 space-y-1">
+                          {stepErrors.map((error, idx) => (
+                            <li key={idx} className="text-sm text-gray-700">
+                              <span className="font-medium">{error.field}:</span>{' '}
+                              <span className="text-gray-600">{error.message}</span>
+                            </li>
+                          ))}
+                        </ul>
+                      </div>
+                    );
+                  })}
+                </div>
+              </div>
+
+              <div className="p-6 border-t border-gray-200 bg-gray-50">
+                <div className="flex gap-3 justify-end">
+                  <Button
+                    variant="outline"
+                    onClick={() => setShowValidationModal(false)}
+                  >
+                    Закрыть
+                  </Button>
+                  <Button
+                    onClick={() => {
+                      const firstErrorStep = validationErrors[0]?.step || 1;
+                      setCurrentStep(firstErrorStep);
+                      setShowValidationModal(false);
+                      window.scrollTo({ top: 0, behavior: 'smooth' });
+                    }}
+                    className="bg-blue-600 hover:bg-blue-700"
+                  >
+                    Перейти к шагу {validationErrors[0]?.step || 1}
+                  </Button>
+                </div>
+              </div>
+            </div>
+          </div>
+        )}
+
+        {/* Success Modal */}
+        {showSuccessModal && (
+          <div className="fixed inset-0 bg-black bg-opacity-50 flex items-center justify-center z-50 p-4">
+            <div className="bg-white rounded-lg shadow-xl max-w-md w-full mx-4 animate-in fade-in zoom-in duration-300">
+              <div className="p-6">
+                <div className="flex flex-col items-center text-center">
+                  {/* Success Icon with Animation */}
+                  <div className="flex-shrink-0 w-16 h-16 rounded-full bg-green-100 flex items-center justify-center mb-4 animate-in zoom-in duration-500">
+                    <svg className="h-8 w-8 text-green-600" fill="none" viewBox="0 0 24 24" stroke="currentColor">
+                      <path strokeLinecap="round" strokeLinejoin="round" strokeWidth={2} d="M5 13l4 4L19 7" />
+                    </svg>
+                  </div>
+
+                  {/* Success Message */}
+                  <h3 className="text-2xl font-bold text-gray-900 mb-2">
+                    Объявление опубликовано!
+                  </h3>
+                  <p className="text-gray-600 mb-6">
+                    Ваше объявление успешно создано и теперь доступно для просмотра.
+                  </p>
+
+                  {/* Action Buttons */}
+                  <div className="flex flex-col sm:flex-row gap-3 w-full">
+                    <Button
+                      variant="outline"
+                      onClick={() => {
+                        setShowSuccessModal(false);
+                        router.push('/');
+                      }}
+                      className="flex-1"
+                    >
+                      На главную
+                    </Button>
+                    <Button
+                      onClick={() => {
+                        setShowSuccessModal(false);
+                        router.push(`/properties/${createdPropertyId}`);
+                      }}
+                      className="flex-1 bg-green-600 hover:bg-green-700"
+                    >
+                      Посмотреть объявление
+                    </Button>
+                  </div>
+                </div>
+              </div>
+            </div>
+          </div>
+        )}
       </div>
     </div>
   );
