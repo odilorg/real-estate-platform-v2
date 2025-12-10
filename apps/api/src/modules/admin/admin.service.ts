@@ -570,4 +570,59 @@ export class AdminService {
 
     return { message: 'Agent deleted successfully' };
   }
+
+  async updateAgent(
+    adminId: string,
+    agentId: string,
+    data: {
+      firstName?: string;
+      lastName?: string;
+      email?: string;
+      phone?: string;
+      bio?: string;
+      specializations?: string[];
+      languages?: string[];
+    },
+  ) {
+    const agent = await this.prisma.agent.findUnique({
+      where: { id: agentId },
+      include: { user: true },
+    });
+
+    if (!agent) {
+      throw new NotFoundException('Agent not found');
+    }
+
+    // Update agent profile
+    const updatedAgent = await this.prisma.agent.update({
+      where: { id: agentId },
+      data: {
+        firstName: data.firstName,
+        lastName: data.lastName,
+        email: data.email,
+        phone: data.phone,
+        bio: data.bio,
+        specializations: data.specializations,
+        languages: data.languages,
+      },
+    });
+
+    // If email, firstName or lastName changed, update user as well
+    if (data.email || data.firstName || data.lastName) {
+      await this.prisma.user.update({
+        where: { id: agent.userId },
+        data: {
+          email: data.email,
+          firstName: data.firstName,
+          lastName: data.lastName,
+        },
+      });
+    }
+
+    await this.logAction(adminId, 'UPDATE_AGENT', 'agent', agentId, {
+      updatedFields: Object.keys(data),
+    });
+
+    return updatedAgent;
+  }
 }

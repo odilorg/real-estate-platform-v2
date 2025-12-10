@@ -52,6 +52,17 @@ const CreateAgentDto = z.object({
 });
 type CreateAgentDto = z.infer<typeof CreateAgentDto>;
 
+const UpdateAgentDto = z.object({
+  firstName: z.string().min(1).optional(),
+  lastName: z.string().min(1).optional(),
+  email: z.string().email().optional(),
+  phone: z.string().min(1).optional(),
+  bio: z.string().optional(),
+  specializations: z.array(z.string()).optional(),
+  languages: z.array(z.string()).optional(),
+});
+type UpdateAgentDto = z.infer<typeof UpdateAgentDto>;
+
 @Controller('admin')
 @UseGuards(JwtAuthGuard, RolesGuard)
 @Roles('ADMIN')
@@ -180,6 +191,16 @@ export class AdminController {
     @Body() dto: CreateAgentDto,
   ) {
     return this.adminService.createAgent(admin.id, dto);
+  }
+
+  @Put('agents/:id')
+  @UsePipes(new ZodValidationPipe(UpdateAgentDto))
+  updateAgent(
+    @Param('id') id: string,
+    @CurrentUser() admin: User,
+    @Body() dto: UpdateAgentDto,
+  ) {
+    return this.adminService.updateAgent(admin.id, id, dto);
   }
 
   @Put('agents/:id/verify')

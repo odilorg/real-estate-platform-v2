@@ -31,6 +31,7 @@ import {
   UserCheck,
   Award,
   Plus,
+  Edit,
 } from 'lucide-react';
 
 interface DashboardStats {
@@ -136,9 +137,15 @@ export default function AdminPage() {
   const [showCreateAgentDialog, setShowCreateAgentDialog] = useState(false);
   const [showCreateAgencyDialog, setShowCreateAgencyDialog] = useState(false);
   const [showAssignAgencyDialog, setShowAssignAgencyDialog] = useState(false);
+  const [showEditAgentDialog, setShowEditAgentDialog] = useState(false);
+  const [showEditAgencyDialog, setShowEditAgencyDialog] = useState(false);
   const [creatingAgent, setCreatingAgent] = useState(false);
   const [creatingAgency, setCreatingAgency] = useState(false);
+  const [updatingAgent, setUpdatingAgent] = useState(false);
+  const [updatingAgency, setUpdatingAgency] = useState(false);
   const [selectedAgentForAgency, setSelectedAgentForAgency] = useState<AdminAgent | null>(null);
+  const [selectedAgentForEdit, setSelectedAgentForEdit] = useState<AdminAgent | null>(null);
+  const [selectedAgencyForEdit, setSelectedAgencyForEdit] = useState<AdminAgency | null>(null);
   const [agenciesForDropdown, setAgenciesForDropdown] = useState<AdminAgency[]>([]);
   const [newAgentForm, setNewAgentForm] = useState({
     email: '',
@@ -150,6 +157,24 @@ export default function AdminPage() {
     agencyId: '',
   });
   const [newAgencyForm, setNewAgencyForm] = useState({
+    name: '',
+    slug: '',
+    logo: '',
+    description: '',
+    website: '',
+    email: '',
+    phone: '',
+    address: '',
+    city: '',
+  });
+  const [editAgentForm, setEditAgentForm] = useState({
+    firstName: '',
+    lastName: '',
+    email: '',
+    phone: '',
+    bio: '',
+  });
+  const [editAgencyForm, setEditAgencyForm] = useState({
     name: '',
     slug: '',
     logo: '',
@@ -545,6 +570,70 @@ export default function AdminPage() {
       }
     } catch (error) {
       alert('Ошибка при назначении агентства');
+    }
+  };
+
+  const handleEditAgent = async (e: React.FormEvent) => {
+    e.preventDefault();
+    if (!selectedAgentForEdit) return;
+    setUpdatingAgent(true);
+
+    const token = localStorage.getItem('token');
+    try {
+      const response = await fetch(`${apiUrl}/admin/agents/${selectedAgentForEdit.id}`, {
+        method: 'PUT',
+        headers: {
+          'Content-Type': 'application/json',
+          Authorization: `Bearer ${token}`,
+        },
+        body: JSON.stringify(editAgentForm),
+      });
+
+      if (response.ok) {
+        setShowEditAgentDialog(false);
+        setSelectedAgentForEdit(null);
+        fetchData();
+        alert('Агент успешно обновлен');
+      } else {
+        const error = await response.json();
+        alert(error.message || 'Ошибка при обновлении агента');
+      }
+    } catch (error) {
+      alert('Ошибка при обновлении агента');
+    } finally {
+      setUpdatingAgent(false);
+    }
+  };
+
+  const handleEditAgency = async (e: React.FormEvent) => {
+    e.preventDefault();
+    if (!selectedAgencyForEdit) return;
+    setUpdatingAgency(true);
+
+    const token = localStorage.getItem('token');
+    try {
+      const response = await fetch(`${apiUrl}/agencies/${selectedAgencyForEdit.id}`, {
+        method: 'PUT',
+        headers: {
+          'Content-Type': 'application/json',
+          Authorization: `Bearer ${token}`,
+        },
+        body: JSON.stringify(editAgencyForm),
+      });
+
+      if (response.ok) {
+        setShowEditAgencyDialog(false);
+        setSelectedAgencyForEdit(null);
+        fetchData();
+        alert('Агентство успешно обновлено');
+      } else {
+        const error = await response.json();
+        alert(error.message || 'Ошибка при обновлении агентства');
+      }
+    } catch (error) {
+      alert('Ошибка при обновлении агентства');
+    } finally {
+      setUpdatingAgency(false);
     }
   };
 
@@ -1081,6 +1170,24 @@ export default function AdminPage() {
                             <Button
                               variant="outline"
                               size="sm"
+                              onClick={() => {
+                                setSelectedAgentForEdit(agent);
+                                setEditAgentForm({
+                                  firstName: agent.firstName,
+                                  lastName: agent.lastName,
+                                  email: agent.email || agent.user.email,
+                                  phone: agent.phone || '',
+                                  bio: '',
+                                });
+                                setShowEditAgentDialog(true);
+                              }}
+                            >
+                              <Edit className="h-4 w-4 mr-1" />
+                              Редактировать
+                            </Button>
+                            <Button
+                              variant="outline"
+                              size="sm"
                               onClick={() => handleDeleteAgent(agent.id)}
                             >
                               <Trash2 className="h-4 w-4 mr-1 text-red-500" />
@@ -1184,6 +1291,28 @@ export default function AdminPage() {
                             </div>
                           </div>
                           <div className="flex gap-2">
+                            <Button
+                              variant="outline"
+                              size="sm"
+                              onClick={() => {
+                                setSelectedAgencyForEdit(agency);
+                                setEditAgencyForm({
+                                  name: agency.name,
+                                  slug: agency.slug,
+                                  logo: agency.logo || '',
+                                  description: agency.description || '',
+                                  website: agency.website || '',
+                                  email: agency.email || '',
+                                  phone: agency.phone || '',
+                                  address: agency.address || '',
+                                  city: agency.city || '',
+                                });
+                                setShowEditAgencyDialog(true);
+                              }}
+                            >
+                              <Edit className="h-4 w-4 mr-1" />
+                              Редактировать
+                            </Button>
                             <Button
                               variant="outline"
                               size="sm"
@@ -1570,6 +1699,281 @@ export default function AdminPage() {
                     Закрыть
                   </Button>
                 </div>
+              </div>
+            </div>
+          </div>
+        )}
+
+        {/* Edit Agent Modal */}
+        {showEditAgentDialog && selectedAgentForEdit && (
+          <div className="fixed inset-0 bg-black/50 z-50 flex items-center justify-center p-4">
+            <div className="bg-white rounded-lg max-w-md w-full max-h-[90vh] overflow-y-auto">
+              <div className="p-6">
+                <h2 className="text-xl font-bold mb-4">Редактировать агента</h2>
+                <form onSubmit={handleEditAgent} className="space-y-4">
+                  <div className="grid grid-cols-2 gap-3">
+                    <div className="space-y-2">
+                      <label htmlFor="edit-firstName" className="text-sm font-medium">
+                        Имя *
+                      </label>
+                      <Input
+                        id="edit-firstName"
+                        required
+                        value={editAgentForm.firstName}
+                        onChange={(e) =>
+                          setEditAgentForm({ ...editAgentForm, firstName: e.target.value })
+                        }
+                        placeholder="Иван"
+                      />
+                    </div>
+                    <div className="space-y-2">
+                      <label htmlFor="edit-lastName" className="text-sm font-medium">
+                        Фамилия *
+                      </label>
+                      <Input
+                        id="edit-lastName"
+                        required
+                        value={editAgentForm.lastName}
+                        onChange={(e) =>
+                          setEditAgentForm({ ...editAgentForm, lastName: e.target.value })
+                        }
+                        placeholder="Иванов"
+                      />
+                    </div>
+                  </div>
+                  <div className="space-y-2">
+                    <label htmlFor="edit-email" className="text-sm font-medium">
+                      Email *
+                    </label>
+                    <Input
+                      id="edit-email"
+                      type="email"
+                      required
+                      value={editAgentForm.email}
+                      onChange={(e) =>
+                        setEditAgentForm({ ...editAgentForm, email: e.target.value })
+                      }
+                      placeholder="agent@example.com"
+                    />
+                  </div>
+                  <div className="space-y-2">
+                    <label htmlFor="edit-phone" className="text-sm font-medium">
+                      Телефон *
+                    </label>
+                    <Input
+                      id="edit-phone"
+                      type="tel"
+                      required
+                      value={editAgentForm.phone}
+                      onChange={(e) =>
+                        setEditAgentForm({ ...editAgentForm, phone: e.target.value })
+                      }
+                      placeholder="+998 90 123 45 67"
+                    />
+                  </div>
+                  <div className="space-y-2">
+                    <label htmlFor="edit-bio" className="text-sm font-medium">
+                      Описание (опционально)
+                    </label>
+                    <Input
+                      id="edit-bio"
+                      value={editAgentForm.bio}
+                      onChange={(e) =>
+                        setEditAgentForm({ ...editAgentForm, bio: e.target.value })
+                      }
+                      placeholder="Краткое описание агента"
+                    />
+                  </div>
+                  <div className="flex gap-3 pt-4">
+                    <Button
+                      type="button"
+                      variant="outline"
+                      onClick={() => {
+                        setShowEditAgentDialog(false);
+                        setSelectedAgentForEdit(null);
+                      }}
+                      disabled={updatingAgent}
+                      className="flex-1"
+                    >
+                      Отмена
+                    </Button>
+                    <Button type="submit" disabled={updatingAgent} className="flex-1">
+                      {updatingAgent ? (
+                        <>
+                          <Loader2 className="h-4 w-4 mr-2 animate-spin" />
+                          Сохранение...
+                        </>
+                      ) : (
+                        'Сохранить'
+                      )}
+                    </Button>
+                  </div>
+                </form>
+              </div>
+            </div>
+          </div>
+        )}
+
+        {/* Edit Agency Modal */}
+        {showEditAgencyDialog && selectedAgencyForEdit && (
+          <div className="fixed inset-0 bg-black/50 z-50 flex items-center justify-center p-4">
+            <div className="bg-white rounded-lg max-w-md w-full max-h-[90vh] overflow-y-auto">
+              <div className="p-6">
+                <h2 className="text-xl font-bold mb-4">Редактировать агентство</h2>
+                <form onSubmit={handleEditAgency} className="space-y-4">
+                  <div className="space-y-2">
+                    <label htmlFor="edit-agency-name" className="text-sm font-medium">
+                      Название *
+                    </label>
+                    <Input
+                      id="edit-agency-name"
+                      required
+                      value={editAgencyForm.name}
+                      onChange={(e) =>
+                        setEditAgencyForm({ ...editAgencyForm, name: e.target.value })
+                      }
+                      placeholder="Название агентства"
+                    />
+                  </div>
+                  <div className="space-y-2">
+                    <label htmlFor="edit-agency-slug" className="text-sm font-medium">
+                      Slug (для URL) *
+                    </label>
+                    <Input
+                      id="edit-agency-slug"
+                      required
+                      pattern="[a-z0-9-]+"
+                      value={editAgencyForm.slug}
+                      onChange={(e) =>
+                        setEditAgencyForm({ ...editAgencyForm, slug: e.target.value })
+                      }
+                      placeholder="agency-name (только a-z, 0-9, -)"
+                    />
+                  </div>
+                  <div className="space-y-2">
+                    <label htmlFor="edit-agency-logo" className="text-sm font-medium">
+                      URL логотипа
+                    </label>
+                    <Input
+                      id="edit-agency-logo"
+                      type="url"
+                      value={editAgencyForm.logo}
+                      onChange={(e) =>
+                        setEditAgencyForm({ ...editAgencyForm, logo: e.target.value })
+                      }
+                      placeholder="https://example.com/logo.png"
+                    />
+                  </div>
+                  <div className="space-y-2">
+                    <label htmlFor="edit-agency-description" className="text-sm font-medium">
+                      Описание
+                    </label>
+                    <Input
+                      id="edit-agency-description"
+                      value={editAgencyForm.description}
+                      onChange={(e) =>
+                        setEditAgencyForm({ ...editAgencyForm, description: e.target.value })
+                      }
+                      placeholder="Описание агентства"
+                    />
+                  </div>
+                  <div className="grid grid-cols-2 gap-3">
+                    <div className="space-y-2">
+                      <label htmlFor="edit-agency-website" className="text-sm font-medium">
+                        Веб-сайт
+                      </label>
+                      <Input
+                        id="edit-agency-website"
+                        type="url"
+                        value={editAgencyForm.website}
+                        onChange={(e) =>
+                          setEditAgencyForm({ ...editAgencyForm, website: e.target.value })
+                        }
+                        placeholder="https://..."
+                      />
+                    </div>
+                    <div className="space-y-2">
+                      <label htmlFor="edit-agency-city" className="text-sm font-medium">
+                        Город
+                      </label>
+                      <Input
+                        id="edit-agency-city"
+                        value={editAgencyForm.city}
+                        onChange={(e) =>
+                          setEditAgencyForm({ ...editAgencyForm, city: e.target.value })
+                        }
+                        placeholder="Ташкент"
+                      />
+                    </div>
+                  </div>
+                  <div className="grid grid-cols-2 gap-3">
+                    <div className="space-y-2">
+                      <label htmlFor="edit-agency-email" className="text-sm font-medium">
+                        Email
+                      </label>
+                      <Input
+                        id="edit-agency-email"
+                        type="email"
+                        value={editAgencyForm.email}
+                        onChange={(e) =>
+                          setEditAgencyForm({ ...editAgencyForm, email: e.target.value })
+                        }
+                        placeholder="info@agency.com"
+                      />
+                    </div>
+                    <div className="space-y-2">
+                      <label htmlFor="edit-agency-phone" className="text-sm font-medium">
+                        Телефон
+                      </label>
+                      <Input
+                        id="edit-agency-phone"
+                        type="tel"
+                        value={editAgencyForm.phone}
+                        onChange={(e) =>
+                          setEditAgencyForm({ ...editAgencyForm, phone: e.target.value })
+                        }
+                        placeholder="+998 90 123 45 67"
+                      />
+                    </div>
+                  </div>
+                  <div className="space-y-2">
+                    <label htmlFor="edit-agency-address" className="text-sm font-medium">
+                      Адрес
+                    </label>
+                    <Input
+                      id="edit-agency-address"
+                      value={editAgencyForm.address}
+                      onChange={(e) =>
+                        setEditAgencyForm({ ...editAgencyForm, address: e.target.value })
+                      }
+                      placeholder="Полный адрес офиса"
+                    />
+                  </div>
+                  <div className="flex gap-3 pt-4">
+                    <Button
+                      type="button"
+                      variant="outline"
+                      onClick={() => {
+                        setShowEditAgencyDialog(false);
+                        setSelectedAgencyForEdit(null);
+                      }}
+                      disabled={updatingAgency}
+                      className="flex-1"
+                    >
+                      Отмена
+                    </Button>
+                    <Button type="submit" disabled={updatingAgency} className="flex-1">
+                      {updatingAgency ? (
+                        <>
+                          <Loader2 className="h-4 w-4 mr-2 animate-spin" />
+                          Сохранение...
+                        </>
+                      ) : (
+                        'Сохранить'
+                      )}
+                    </Button>
+                  </div>
+                </form>
               </div>
             </div>
           </div>
