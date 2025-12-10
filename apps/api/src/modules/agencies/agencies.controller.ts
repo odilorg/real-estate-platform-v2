@@ -50,7 +50,7 @@ export class AgenciesController {
       page: page ? parseInt(page, 10) : 1,
       limit: limit ? parseInt(limit, 10) : 20,
       city,
-      verified: verified === 'true',
+      verified: verified === 'true' ? true : verified === 'false' ? false : undefined,
     });
   }
 

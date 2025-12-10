@@ -390,6 +390,79 @@ export class AdminService {
     };
   }
 
+  async createAgent(adminId: string, data: {
+    email: string;
+    password: string;
+    firstName: string;
+    lastName: string;
+    phone: string;
+    agencyId?: string;
+    bio?: string;
+    specializations?: string[];
+    languages?: string[];
+  }) {
+    // Check if user with this email already exists
+    const existingUser = await this.prisma.user.findUnique({
+      where: { email: data.email },
+    });
+
+    if (existingUser) {
+      throw new ForbiddenException('User with this email already exists');
+    }
+
+    // Hash password
+    const bcrypt = require('bcryptjs');
+    const hashedPassword = await bcrypt.hash(data.password, 10);
+
+    // Create user and agent in a transaction
+    const result = await this.prisma.$transaction(async (tx) => {
+      // Create user with AGENT role
+      const user = await tx.user.create({
+        data: {
+          email: data.email,
+          passwordHash: hashedPassword,
+          firstName: data.firstName,
+          lastName: data.lastName,
+          phone: data.phone,
+          role: 'AGENT',
+        },
+      });
+
+      // Create agent profile
+      const agent = await tx.agent.create({
+        data: {
+          userId: user.id,
+          firstName: data.firstName,
+          lastName: data.lastName,
+          email: data.email,
+          phone: data.phone,
+          agencyId: data.agencyId,
+          bio: data.bio,
+          specializations: data.specializations || [],
+          languages: data.languages || [],
+          verified: false,
+          superAgent: false,
+          rating: 0,
+          reviewCount: 0,
+          yearsExperience: 0,
+          totalDeals: 0,
+          showPhone: true,
+          showEmail: true,
+        },
+      });
+
+      return { user, agent };
+    });
+
+    // Log the action
+    await this.logAction(adminId, 'CREATE_AGENT', 'agent', result.agent.id, {
+      email: data.email,
+      name: `${data.firstName} ${data.lastName}`,
+    });
+
+    return result.agent;
+  }
+
   async verifyAgent(adminId: string, agentId: string, verified: boolean) {
     const agent = await this.prisma.agent.findUnique({
       where: { id: agentId },
@@ -427,6 +500,38 @@ export class AdminService {
 
     await this.logAction(adminId, superAgent ? 'SET_SUPER_AGENT' : 'UNSET_SUPER_AGENT', 'agent', agentId, {
       superAgent,
+    });
+
+    return updatedAgent;
+  }
+
+  async assignAgency(adminId: string, agentId: string, agencyId: string | null) {
+    const agent = await this.prisma.agent.findUnique({
+      where: { id: agentId },
+    });
+
+    if (!agent) {
+      throw new NotFoundException('Agent not found');
+    }
+
+    // If agencyId is provided, verify it exists
+    if (agencyId) {
+      const agency = await this.prisma.agency.findUnique({
+        where: { id: agencyId },
+      });
+
+      if (!agency) {
+        throw new NotFoundException('Agency not found');
+      }
+    }
+
+    const updatedAgent = await this.prisma.agent.update({
+      where: { id: agentId },
+      data: { agencyId },
+    });
+
+    await this.logAction(adminId, 'ASSIGN_AGENCY', 'agent', agentId, {
+      agencyId,
     });
 
     return updatedAgent;

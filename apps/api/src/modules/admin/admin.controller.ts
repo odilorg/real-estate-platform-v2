@@ -39,6 +39,19 @@ const FeaturePropertyDto = z.object({
 });
 type FeaturePropertyDto = z.infer<typeof FeaturePropertyDto>;
 
+const CreateAgentDto = z.object({
+  email: z.string().email(),
+  password: z.string().min(6),
+  firstName: z.string().min(1),
+  lastName: z.string().min(1),
+  phone: z.string().min(1),
+  agencyId: z.string().optional(),
+  bio: z.string().optional(),
+  specializations: z.array(z.string()).optional(),
+  languages: z.array(z.string()).optional(),
+});
+type CreateAgentDto = z.infer<typeof CreateAgentDto>;
+
 @Controller('admin')
 @UseGuards(JwtAuthGuard, RolesGuard)
 @Roles('ADMIN')
@@ -160,6 +173,15 @@ export class AdminController {
     );
   }
 
+  @Post('agents')
+  @UsePipes(new ZodValidationPipe(CreateAgentDto))
+  createAgent(
+    @CurrentUser() admin: User,
+    @Body() dto: CreateAgentDto,
+  ) {
+    return this.adminService.createAgent(admin.id, dto);
+  }
+
   @Put('agents/:id/verify')
   verifyAgent(
     @Param('id') id: string,
@@ -176,6 +198,15 @@ export class AdminController {
     @Body('superAgent') superAgent: boolean,
   ) {
     return this.adminService.setSuperAgent(admin.id, id, superAgent);
+  }
+
+  @Put('agents/:id/agency')
+  assignAgency(
+    @Param('id') id: string,
+    @CurrentUser() admin: User,
+    @Body('agencyId') agencyId: string | null,
+  ) {
+    return this.adminService.assignAgency(admin.id, id, agencyId);
   }
 
   @Delete('agents/:id')
