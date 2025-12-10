@@ -368,6 +368,11 @@ export default function Home() {
                   </Link>
                 </li>
                 <li>
+                  <Link href="/agents" className="hover:text-white">
+                    {t('footer.agents')}
+                  </Link>
+                </li>
+                <li>
                   <Link href="/dashboard" className="hover:text-white">
                     {t('footer.dashboard')}
                   </Link>

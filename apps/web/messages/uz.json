@@ -77,6 +77,7 @@
       "houses": "Uylar",
       "sellers": "Sotuvchilar uchun",
       "postListing": "E'lon joylashtirish",
+      "agents": "Agentlar",
       "dashboard": "Shaxsiy kabinet",
       "contacts": "Aloqa",
       "copyright": "Barcha huquqlar himoyalangan."
@@ -216,6 +217,7 @@
     "mortgage": "Ipoteka",
     "housesAndLand": "Uylar va yer",
     "commercial": "Tijorat",
+    "agents": "Agentlar",
     "apartments": "Kvartiralar",
     "houses": "Uylar",
     "condos": "Kondominiumlar",

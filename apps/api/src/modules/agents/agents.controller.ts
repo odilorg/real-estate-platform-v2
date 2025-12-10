@@ -69,8 +69,8 @@ export class AgentsController {
       limit: limit ? parseInt(limit, 10) : 20,
       city,
       agencyId,
-      verified: verified === 'true',
-      superAgent: superAgent === 'true',
+      verified: verified === 'true' ? true : verified === 'false' ? false : undefined,
+      superAgent: superAgent === 'true' ? true : superAgent === 'false' ? false : undefined,
     });
   }
 

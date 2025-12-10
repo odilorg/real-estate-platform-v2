@@ -116,8 +116,13 @@ export default function AgentsPage() {
       }
 
       const data = await response.json();
-      setAgents(data.items || []);
-      setPagination(data.meta);
+      setAgents(data.agents || []);
+      setPagination({
+        total: data.total,
+        page: data.page,
+        limit: data.limit,
+        pages: data.totalPages,
+      });
     } catch (err) {
       setError(err instanceof Error ? err.message : t('errors.loadError'));
     } finally {

@@ -112,6 +112,15 @@ export class AgentsService {
     const agent = await this.prisma.agent.findUnique({
       where: { id },
       include: {
+        user: {
+          select: {
+            id: true,
+            firstName: true,
+            lastName: true,
+            email: true,
+            role: true,
+          },
+        },
         agency: {
           select: {
             id: true,
@@ -211,6 +220,15 @@ export class AgentsService {
           { rating: 'desc' },
         ],
         include: {
+          user: {
+            select: {
+              id: true,
+              firstName: true,
+              lastName: true,
+              email: true,
+              role: true,
+            },
+          },
           agency: {
             select: {
               id: true,

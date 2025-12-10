@@ -77,6 +77,7 @@
       "houses": "Дома",
       "sellers": "Для продавцов",
       "postListing": "Разместить объявление",
+      "agents": "Агенты",
       "dashboard": "Личный кабинет",
       "contacts": "Контакты",
       "copyright": "Все права защищены."
@@ -216,6 +217,7 @@
     "mortgage": "Ипотека",
     "housesAndLand": "Дома и участки",
     "commercial": "Коммерческая",
+    "agents": "Агенты",
     "apartments": "Квартиры",
     "houses": "Дома",
     "condos": "Кондоминиумы",
