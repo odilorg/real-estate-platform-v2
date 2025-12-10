@@ -2,7 +2,7 @@
 
 import { useEffect, useState } from 'react';
 import dynamic from 'next/dynamic';
-import type { LatLngExpression, LatLngBoundsExpression, Map as LeafletMap } from 'leaflet';
+import type { LatLngExpression, LatLngBoundsExpression, Map as LeafletMap, Icon, DivIcon } from 'leaflet';
 import 'leaflet/dist/leaflet.css';
 
 interface PropertyMapMarker {
@@ -62,9 +62,28 @@ export function PropertyMap({
   className = '',
 }: PropertyMapProps) {
   const [isMounted, setIsMounted] = useState(false);
+  const [customIcon, setCustomIcon] = useState<Icon | DivIcon | null>(null);
 
   useEffect(() => {
     setIsMounted(true);
+
+    // Fix Leaflet's default icon issue with Next.js
+    if (typeof window !== 'undefined') {
+      const L = require('leaflet');
+
+      // Create custom DivIcon with SVG pin
+      const iconHtml = '<div style="display: flex; align-items: center; justify-content: center;"><svg xmlns="http://www.w3.org/2000/svg" viewBox="0 0 24 24" fill="#3B82F6" width="32" height="32" style="display: block;"><path d="M12 2C8.13 2 5 5.13 5 9c0 5.25 7 13 7 13s7-7.75 7-13c0-3.87-3.13-7-7-7zm0 9.5c-1.38 0-2.5-1.12-2.5-2.5s1.12-2.5 2.5-2.5 2.5 1.12 2.5 2.5-1.12 2.5-2.5 2.5z"/></svg></div>';
+
+      const icon = L.divIcon({
+        html: iconHtml,
+        className: '',
+        iconSize: [32, 32],
+        iconAnchor: [16, 32],
+        popupAnchor: [0, -32],
+      });
+
+      setCustomIcon(icon);
+    }
   }, []);
 
   if (!isMounted) {
@@ -122,6 +141,7 @@ export function PropertyMap({
         <Marker
           key={property.id}
           position={[property.latitude, property.longitude] as LatLngExpression}
+          icon={customIcon || undefined}
           eventHandlers={{
             click: () => onMarkerClick?.(property.id),
             mouseover: (e) => {
