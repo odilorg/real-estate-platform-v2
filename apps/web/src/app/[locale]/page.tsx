@@ -47,6 +47,16 @@ const CITY_KEYS = [
   'fergana',
 ];
 
+// Map translation keys to English city names (as stored in database)
+const CITY_NAME_MAP: Record<string, string> = {
+  'tashkent': 'Tashkent',
+  'samarkand': 'Samarkand',
+  'bukhara': 'Bukhara',
+  'navoi': 'Navoi',
+  'andijan': 'Andijan',
+  'fergana': 'Fergana',
+};
+
 export default function Home() {
   const t = useTranslations('home');
   const { user, isAuthenticated, logout } = useAuth();
@@ -124,7 +134,7 @@ export default function Home() {
               {CITY_KEYS.map((cityKey) => (
                 <Link
                   key={cityKey}
-                  href={`/properties?city=${encodeURIComponent(t(`cities.${cityKey}` as any))}`}
+                  href={`/properties?city=${encodeURIComponent(CITY_NAME_MAP[cityKey])}`}
                   className="px-4 py-2 bg-white/10 hover:bg-white/20 rounded-full text-sm transition"
                 >
                   {t(`cities.${cityKey}` as any)}
