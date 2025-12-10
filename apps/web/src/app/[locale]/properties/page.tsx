@@ -41,6 +41,7 @@ interface Property {
     phone?: string;
     role: 'USER' | 'AGENT' | 'ADMIN';
     agent?: {
+      id: string;
       phone: string;
       photo?: string;
     };
@@ -193,6 +194,10 @@ export default function PropertiesPage() {
     const search = searchParams.get('search');
     if (search) setSearchQuery(search);
 
+    // Parse userId (for filtering by owner/agent)
+    const userId = searchParams.get('userId');
+    if (userId) initialFilters.userId = userId;
+
     // Parse sorting
     const sortByParam = searchParams.get('sortBy');
     const sortOrderParam = searchParams.get('sortOrder');
@@ -296,6 +301,9 @@ export default function PropertiesPage() {
       if (filters.hasBalcony) params.append('hasBalcony', 'true');
       if (filters.hasConcierge) params.append('hasConcierge', 'true');
       if (filters.hasGatedArea) params.append('hasGatedArea', 'true');
+
+      // User filter (filter by owner/agent)
+      if (filters.userId) params.append('userId', filters.userId);
 
       // Sorting
       const [sortField, sortOrder] = sortBy.split(':');
@@ -445,6 +453,9 @@ export default function PropertiesPage() {
     if (filters.hasBalcony) params.set('hasBalcony', 'true');
     if (filters.hasConcierge) params.set('hasConcierge', 'true');
     if (filters.hasGatedArea) params.set('hasGatedArea', 'true');
+
+    // User filter (filter by owner/agent)
+    if (filters.userId) params.set('userId', filters.userId);
 
     // Sorting
     const [sortField, sortOrder] = sortBy.split(':');
@@ -647,6 +658,11 @@ export default function PropertiesPage() {
               setCurrentPage(1);
             }}
             totalResults={pagination?.total || properties.length}
+            viewMode={viewMode}
+            onViewModeChange={setViewMode}
+            sortBy={sortBy}
+            onSortChange={setSortBy}
+            sortOptions={SORT_OPTIONS}
           />
         </div>
 
@@ -858,6 +874,7 @@ export default function PropertiesPage() {
                       phone: property.user.agent?.phone || property.user.phone,
                       email: property.user.email,
                       avatar: property.user.agent?.photo,
+                      agentId: property.user.agent?.id,
                     } : undefined}
                   />
                 ))}

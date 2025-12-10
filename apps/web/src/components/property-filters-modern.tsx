@@ -9,12 +9,33 @@ export interface ModernFilterValues {
   propertyTypes: string[];
   listingTypes: string[];
   amenities: string[];
+  city?: string;
+  district?: string;
+  minPrice?: number;
+  maxPrice?: number;
+  minArea?: number;
+  maxArea?: number;
+  userId?: string;
+  buildingClasses?: string[];
+  renovationTypes?: string[];
+  parkingTypes?: string[];
+  minYearBuilt?: number;
+  maxYearBuilt?: number;
+  hasBalcony?: boolean;
+  hasConcierge?: boolean;
+  hasGatedArea?: boolean;
+  mahalla?: string;
 }
 
 interface PropertyFiltersModernProps {
   values: ModernFilterValues;
   onChange: (values: ModernFilterValues) => void;
   totalResults: number;
+  viewMode?: string;
+  onViewModeChange?: (mode: string) => void;
+  sortBy?: string;
+  onSortChange?: (value: string) => void;
+  sortOptions?: Array<{ value: string; label: string }>;
 }
 
 interface QuickFilter {
@@ -33,6 +54,11 @@ export function PropertyFiltersModern({
   values,
   onChange,
   totalResults,
+  viewMode,
+  onViewModeChange,
+  sortBy,
+  onSortChange,
+  sortOptions = [],
 }: PropertyFiltersModernProps) {
   const t = useTranslations('filters');
   const tProperty = useTranslations('property');
@@ -43,7 +69,36 @@ export function PropertyFiltersModern({
   useEffect(() => {
     const fetchFilterCounts = async () => {
       try {
-        const response = await fetch(`${process.env.NEXT_PUBLIC_API_URL}/properties/filters`);
+        // Build query params from current filter context
+        const params = new URLSearchParams();
+
+        if (values.propertyTypes.length > 0) {
+          params.append('propertyType', values.propertyTypes.join(','));
+        }
+        if (values.listingTypes.length > 0) {
+          params.append('listingType', values.listingTypes.join(','));
+        }
+        if (values.city) {
+          params.append('city', values.city);
+        }
+        if (values.district) {
+          params.append('district', values.district);
+        }
+        if (values.minPrice) {
+          params.append('minPrice', values.minPrice.toString());
+        }
+        if (values.maxPrice) {
+          params.append('maxPrice', values.maxPrice.toString());
+        }
+        if (values.minArea) {
+          params.append('minArea', values.minArea.toString());
+        }
+        if (values.maxArea) {
+          params.append('maxArea', values.maxArea.toString());
+        }
+
+        const url = `${process.env.NEXT_PUBLIC_API_URL}/properties/filters${params.toString() ? `?${params.toString()}` : ''}`;
+        const response = await fetch(url);
         if (!response.ok) throw new Error('Failed to fetch filter counts');
 
         const data: FilterOptions = await response.json();
@@ -52,7 +107,7 @@ export function PropertyFiltersModern({
 
         // Add bedroom filters first (most popular)
         data.bedrooms
-          .sort((a, b) => (a.count || 0) - (b.count || 0))
+          .sort((a, b) => (b.total || 0) - (a.total || 0))
           .forEach((bedroom) => {
             const bedroomCount = bedroom.count || 0;
             // Labels will be set dynamically using translations
@@ -82,7 +137,7 @@ export function PropertyFiltersModern({
     };
 
     fetchFilterCounts();
-  }, []);
+  }, [values]);
 
   const isFilterActive = (value: string, type: string) => {
     if (type === 'bedrooms') {
@@ -119,18 +174,30 @@ export function PropertyFiltersModern({
             {t('found')} {formatNumber(totalResults)} {t('listings')}
           </h2>
           <div className="flex items-center gap-3">
-            <button className="inline-flex items-center text-sm text-blue-600 hover:text-blue-700">
-              <svg className="w-4 h-4 mr-1.5" fill="none" stroke="currentColor" viewBox="0 0 24 24">
-                <path strokeLinecap="round" strokeLinejoin="round" strokeWidth={2} d="M3 4h13M3 8h9m-9 4h6m4 0l4-4m0 0l4 4m-4-4v12" />
-              </svg>
-              {t('defaultSort')}
-            </button>
-            <button className="inline-flex items-center text-sm text-blue-600 hover:text-blue-700">
-              <svg className="w-4 h-4 mr-1.5" fill="none" stroke="currentColor" viewBox="0 0 24 24">
-                <path strokeLinecap="round" strokeLinejoin="round" strokeWidth={2} d="M9 20l-5.447-2.724A1 1 0 013 16.382V5.618a1 1 0 011.447-.894L9 7m0 13l6-3m-6 3V7m6 10l4.553 2.276A1 1 0 0021 18.382V7.618a1 1 0 00-.553-.894L15 4m0 13V4m0 0L9 7" />
-              </svg>
-              {t('onMap')}
-            </button>
+            {onSortChange && sortOptions.length > 0 && (
+              <select
+                value={sortBy || ''}
+                onChange={(e) => onSortChange(e.target.value)}
+                className="inline-flex items-center text-sm text-blue-600 hover:text-blue-700 bg-transparent border-none cursor-pointer focus:outline-none"
+              >
+                {sortOptions.map((option) => (
+                  <option key={option.value} value={option.value}>
+                    {option.label}
+                  </option>
+                ))}
+              </select>
+            )}
+            {onViewModeChange && (
+              <button
+                onClick={() => onViewModeChange('map')}
+                className="inline-flex items-center text-sm text-blue-600 hover:text-blue-700"
+              >
+                <svg className="w-4 h-4 mr-1.5" fill="none" stroke="currentColor" viewBox="0 0 24 24">
+                  <path strokeLinecap="round" strokeLinejoin="round" strokeWidth={2} d="M9 20l-5.447-2.724A1 1 0 013 16.382V5.618a1 1 0 011.447-.894L9 7m0 13l6-3m-6 3V7m6 10l4.553 2.276A1 1 0 0021 18.382V7.618a1 1 0 00-.553-.894L15 4m0 13V4m0 0L9 7" />
+                </svg>
+                {t('onMap')}
+              </button>
+            )}
           </div>
         </div>
       </div>
@@ -148,7 +215,7 @@ export function PropertyFiltersModern({
               const isActive = isFilterActive(filter.value, filter.type);
               const label = filter.value === 'studio'
                 ? tProperty('studio')
-                : tProperty('roomCount', { count: filter.value });
+                : `${filter.value} ${tProperty('rooms')}`;
 
               return (
                 <button
