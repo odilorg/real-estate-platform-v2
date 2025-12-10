@@ -141,4 +141,45 @@ export class AdminController {
       limit ? parseInt(limit, 10) : 50,
     );
   }
+
+  // Agent Management Endpoints
+  @Get('agents')
+  getAgents(
+    @Query('page') page?: string,
+    @Query('limit') limit?: string,
+    @Query('search') search?: string,
+    @Query('verified') verified?: string,
+    @Query('superAgent') superAgent?: string,
+  ) {
+    return this.adminService.getAgents(
+      page ? parseInt(page, 10) : 1,
+      limit ? parseInt(limit, 10) : 20,
+      search,
+      verified === 'true' ? true : verified === 'false' ? false : undefined,
+      superAgent === 'true' ? true : superAgent === 'false' ? false : undefined,
+    );
+  }
+
+  @Put('agents/:id/verify')
+  verifyAgent(
+    @Param('id') id: string,
+    @CurrentUser() admin: User,
+    @Body('verified') verified: boolean,
+  ) {
+    return this.adminService.verifyAgent(admin.id, id, verified);
+  }
+
+  @Put('agents/:id/super-agent')
+  setSuperAgent(
+    @Param('id') id: string,
+    @CurrentUser() admin: User,
+    @Body('superAgent') superAgent: boolean,
+  ) {
+    return this.adminService.setSuperAgent(admin.id, id, superAgent);
+  }
+
+  @Delete('agents/:id')
+  deleteAgent(@Param('id') id: string, @CurrentUser() admin: User) {
+    return this.adminService.deleteAgent(admin.id, id);
+  }
 }

@@ -28,6 +28,8 @@ import {
   Trash2,
   Search,
   Shield,
+  UserCheck,
+  Award,
 } from 'lucide-react';
 
 interface DashboardStats {
@@ -70,16 +72,45 @@ interface AdminProperty {
   images: { url: string }[];
 }
 
+interface AdminAgent {
+  id: string;
+  firstName: string;
+  lastName: string;
+  email: string | null;
+  phone: string | null;
+  photo: string | null;
+  verified: boolean;
+  superAgent: boolean;
+  rating: number;
+  user: {
+    id: string;
+    email: string;
+    role: string;
+    firstName: string;
+    lastName: string;
+  };
+  agency: {
+    id: string;
+    name: string;
+    verified: boolean;
+  } | null;
+  _count: {
+    reviews: number;
+  };
+}
+
 export default function AdminPage() {
   const router = useRouter();
   const { user, isAuthenticated, loading: authLoading } = useAuth();
-  const [activeTab, setActiveTab] = useState<'dashboard' | 'users' | 'properties'>('dashboard');
+  const [activeTab, setActiveTab] = useState<'dashboard' | 'users' | 'properties' | 'agents'>('dashboard');
   const [stats, setStats] = useState<DashboardStats | null>(null);
   const [users, setUsers] = useState<AdminUser[]>([]);
   const [properties, setProperties] = useState<AdminProperty[]>([]);
+  const [agents, setAgents] = useState<AdminAgent[]>([]);
   const [loading, setLoading] = useState(true);
   const [searchQuery, setSearchQuery] = useState('');
   const [propertyStatus, setPropertyStatus] = useState('');
+  const [agentFilter, setAgentFilter] = useState<'all' | 'verified' | 'unverified' | 'super'>('all');
 
   const apiUrl = process.env.NEXT_PUBLIC_API_URL || 'http://localhost:3001/api';
 
@@ -98,7 +129,7 @@ export default function AdminPage() {
     if (isAuthenticated && user?.role === 'ADMIN') {
       fetchData();
     }
-  }, [isAuthenticated, user, activeTab, searchQuery, propertyStatus]);
+  }, [isAuthenticated, user, activeTab, searchQuery, propertyStatus, agentFilter]);
 
   const fetchData = async () => {
     setLoading(true);
@@ -133,6 +164,21 @@ export default function AdminPage() {
         if (response.ok) {
           const data = await response.json();
           setProperties(data.items);
+        }
+      } else if (activeTab === 'agents') {
+        const params = new URLSearchParams();
+        if (searchQuery) params.append('search', searchQuery);
+        if (agentFilter === 'verified') params.append('verified', 'true');
+        if (agentFilter === 'unverified') params.append('verified', 'false');
+        if (agentFilter === 'super') params.append('superAgent', 'true');
+
+        const url = `${apiUrl}/admin/agents${params.toString() ? `?${params.toString()}` : ''}`;
+        const response = await fetch(url, {
+          headers: { Authorization: `Bearer ${token}` },
+        });
+        if (response.ok) {
+          const data = await response.json();
+          setAgents(data.agents);
         }
       }
     } catch (error) {
@@ -240,6 +286,55 @@ export default function AdminPage() {
     }
   };
 
+  const handleVerifyAgent = async (agentId: string, verified: boolean) => {
+    const token = localStorage.getItem('token');
+    try {
+      await fetch(`${apiUrl}/admin/agents/${agentId}/verify`, {
+        method: 'PUT',
+        headers: {
+          'Content-Type': 'application/json',
+          Authorization: `Bearer ${token}`,
+        },
+        body: JSON.stringify({ verified }),
+      });
+      fetchData();
+    } catch (error) {
+      alert('Ошибка при изменении статуса верификации агента');
+    }
+  };
+
+  const handleSetSuperAgent = async (agentId: string, superAgent: boolean) => {
+    const token = localStorage.getItem('token');
+    try {
+      await fetch(`${apiUrl}/admin/agents/${agentId}/super-agent`, {
+        method: 'PUT',
+        headers: {
+          'Content-Type': 'application/json',
+          Authorization: `Bearer ${token}`,
+        },
+        body: JSON.stringify({ superAgent }),
+      });
+      fetchData();
+    } catch (error) {
+      alert('Ошибка при изменении статуса суперагента');
+    }
+  };
+
+  const handleDeleteAgent = async (agentId: string) => {
+    if (!confirm('Вы уверены, что хотите удалить этого агента?')) return;
+
+    const token = localStorage.getItem('token');
+    try {
+      await fetch(`${apiUrl}/admin/agents/${agentId}`, {
+        method: 'DELETE',
+        headers: { Authorization: `Bearer ${token}` },
+      });
+      fetchData();
+    } catch (error) {
+      alert('Ошибка при удалении агента');
+    }
+  };
+
   if (authLoading || (user?.role !== 'ADMIN' && isAuthenticated)) {
     return (
       <div className="min-h-screen flex items-center justify-center">
@@ -282,6 +377,12 @@ export default function AdminPage() {
             onClick={() => setActiveTab('users')}
           >
             Пользователи
+          </Button>
+          <Button
+            variant={activeTab === 'agents' ? 'default' : 'outline'}
+            onClick={() => setActiveTab('agents')}
+          >
+            Агенты
           </Button>
           <Button
             variant={activeTab === 'properties' ? 'default' : 'outline'}
@@ -595,6 +696,153 @@ export default function AdminPage() {
                               variant="outline"
                               size="sm"
                               onClick={() => handleDeleteProperty(property.id)}
+                            >
+                              <Trash2 className="h-4 w-4 mr-1 text-red-500" />
+                              Удалить
+                            </Button>
+                          </div>
+                        </div>
+                      </CardContent>
+                    </Card>
+                  ))}
+                </div>
+              </div>
+            )}
+
+            {/* Agents Tab */}
+            {activeTab === 'agents' && (
+              <div>
+                <div className="mb-4 space-y-3">
+                  <div className="relative">
+                    <Search className="absolute left-3 top-1/2 -translate-y-1/2 h-4 w-4 text-gray-400" />
+                    <Input
+                      placeholder="Поиск по имени или email..."
+                      value={searchQuery}
+                      onChange={(e) => setSearchQuery(e.target.value)}
+                      className="pl-10"
+                    />
+                  </div>
+                  <div className="flex gap-2">
+                    <Button
+                      variant={agentFilter === 'all' ? 'default' : 'outline'}
+                      size="sm"
+                      onClick={() => setAgentFilter('all')}
+                    >
+                      Все
+                    </Button>
+                    <Button
+                      variant={agentFilter === 'verified' ? 'default' : 'outline'}
+                      size="sm"
+                      onClick={() => setAgentFilter('verified')}
+                    >
+                      Верифицированные
+                    </Button>
+                    <Button
+                      variant={agentFilter === 'unverified' ? 'default' : 'outline'}
+                      size="sm"
+                      onClick={() => setAgentFilter('unverified')}
+                    >
+                      Не верифицированные
+                    </Button>
+                    <Button
+                      variant={agentFilter === 'super' ? 'default' : 'outline'}
+                      size="sm"
+                      onClick={() => setAgentFilter('super')}
+                    >
+                      Суперагенты
+                    </Button>
+                  </div>
+                </div>
+
+                <div className="space-y-3">
+                  {agents.map((agent) => (
+                    <Card key={agent.id}>
+                      <CardContent className="p-4">
+                        <div className="flex items-center justify-between">
+                          <div className="flex items-center gap-4">
+                            <div className="w-12 h-12 rounded-full bg-gray-200 overflow-hidden flex-shrink-0">
+                              {agent.photo ? (
+                                <img
+                                  src={agent.photo}
+                                  alt={`${agent.firstName} ${agent.lastName}`}
+                                  className="w-full h-full object-cover"
+                                />
+                              ) : (
+                                <div className="w-full h-full flex items-center justify-center">
+                                  <UserCheck className="h-6 w-6 text-gray-400" />
+                                </div>
+                              )}
+                            </div>
+                            <div>
+                              <div className="flex items-center gap-2 mb-1">
+                                <span className="font-medium">
+                                  {agent.firstName} {agent.lastName}
+                                </span>
+                                {agent.verified && (
+                                  <Badge variant="default" className="bg-green-500">
+                                    <Check className="h-3 w-3 mr-1" />
+                                    Верифицирован
+                                  </Badge>
+                                )}
+                                {agent.superAgent && (
+                                  <Badge variant="default" className="bg-purple-500">
+                                    <Award className="h-3 w-3 mr-1" />
+                                    Суперагент
+                                  </Badge>
+                                )}
+                              </div>
+                              <div className="text-sm text-gray-500">
+                                {agent.email || agent.user.email}
+                              </div>
+                              {agent.phone && (
+                                <div className="text-sm text-gray-500">{agent.phone}</div>
+                              )}
+                              <div className="text-xs text-gray-400 mt-1 flex items-center gap-3">
+                                <span className="flex items-center gap-1">
+                                  <Star className="h-3 w-3 fill-yellow-400 text-yellow-400" />
+                                  {agent.rating.toFixed(1)} ({agent._count.reviews} отзывов)
+                                </span>
+                                {agent.agency && (
+                                  <span>
+                                    Агентство: {agent.agency.name}
+                                    {agent.agency.verified && ' ✓'}
+                                  </span>
+                                )}
+                              </div>
+                            </div>
+                          </div>
+                          <div className="flex gap-2">
+                            <Button
+                              variant="outline"
+                              size="sm"
+                              onClick={() => handleVerifyAgent(agent.id, !agent.verified)}
+                            >
+                              {agent.verified ? (
+                                <>
+                                  <X className="h-4 w-4 mr-1" />
+                                  Отменить
+                                </>
+                              ) : (
+                                <>
+                                  <Check className="h-4 w-4 mr-1" />
+                                  Верифицировать
+                                </>
+                              )}
+                            </Button>
+                            <Button
+                              variant="outline"
+                              size="sm"
+                              onClick={() => handleSetSuperAgent(agent.id, !agent.superAgent)}
+                            >
+                              <Award
+                                className={`h-4 w-4 mr-1 ${agent.superAgent ? 'fill-purple-500 text-purple-500' : ''}`}
+                              />
+                              {agent.superAgent ? 'Снять' : 'Суперагент'}
+                            </Button>
+                            <Button
+                              variant="outline"
+                              size="sm"
+                              onClick={() => handleDeleteAgent(agent.id)}
                             >
                               <Trash2 className="h-4 w-4 mr-1 text-red-500" />
                               Удалить

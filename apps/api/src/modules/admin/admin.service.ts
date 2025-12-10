@@ -317,4 +317,152 @@ export class AdminService {
       },
     });
   }
+
+  // Agent Management Methods
+  async getAgents(
+    page = 1,
+    limit = 20,
+    search?: string,
+    verified?: boolean,
+    superAgent?: boolean,
+  ) {
+    const skip = (page - 1) * limit;
+
+    const where: {
+      verified?: boolean;
+      superAgent?: boolean;
+      OR?: Array<{ firstName?: { contains: string; mode: 'insensitive' }; lastName?: { contains: string; mode: 'insensitive' }; email?: { contains: string; mode: 'insensitive' } }>;
+    } = {};
+
+    if (verified !== undefined) where.verified = verified;
+    if (superAgent !== undefined) where.superAgent = superAgent;
+    if (search) {
+      where.OR = [
+        { firstName: { contains: search, mode: 'insensitive' } },
+        { lastName: { contains: search, mode: 'insensitive' } },
+        { email: { contains: search, mode: 'insensitive' } },
+      ];
+    }
+
+    const [agents, total] = await Promise.all([
+      this.prisma.agent.findMany({
+        where,
+        skip,
+        take: limit,
+        include: {
+          user: {
+            select: {
+              id: true,
+              email: true,
+              role: true,
+              firstName: true,
+              lastName: true,
+            },
+          },
+          agency: {
+            select: {
+              id: true,
+              name: true,
+              verified: true,
+            },
+          },
+          _count: {
+            select: {
+              reviews: true,
+            },
+          },
+        },
+        orderBy: [
+          { superAgent: 'desc' },
+          { verified: 'desc' },
+          { rating: 'desc' },
+        ],
+      }),
+      this.prisma.agent.count({ where }),
+    ]);
+
+    return {
+      agents,
+      total,
+      page,
+      limit,
+      totalPages: Math.ceil(total / limit),
+    };
+  }
+
+  async verifyAgent(adminId: string, agentId: string, verified: boolean) {
+    const agent = await this.prisma.agent.findUnique({
+      where: { id: agentId },
+    });
+
+    if (!agent) {
+      throw new NotFoundException('Agent not found');
+    }
+
+    const updatedAgent = await this.prisma.agent.update({
+      where: { id: agentId },
+      data: { verified },
+    });
+
+    await this.logAction(adminId, verified ? 'VERIFY_AGENT' : 'UNVERIFY_AGENT', 'agent', agentId, {
+      verified,
+    });
+
+    return updatedAgent;
+  }
+
+  async setSuperAgent(adminId: string, agentId: string, superAgent: boolean) {
+    const agent = await this.prisma.agent.findUnique({
+      where: { id: agentId },
+    });
+
+    if (!agent) {
+      throw new NotFoundException('Agent not found');
+    }
+
+    const updatedAgent = await this.prisma.agent.update({
+      where: { id: agentId },
+      data: { superAgent },
+    });
+
+    await this.logAction(adminId, superAgent ? 'SET_SUPER_AGENT' : 'UNSET_SUPER_AGENT', 'agent', agentId, {
+      superAgent,
+    });
+
+    return updatedAgent;
+  }
+
+  async deleteAgent(adminId: string, agentId: string) {
+    const agent = await this.prisma.agent.findUnique({
+      where: { id: agentId },
+      include: {
+        user: true,
+      },
+    });
+
+    if (!agent) {
+      throw new NotFoundException('Agent not found');
+    }
+
+    await this.prisma.$transaction(async (tx) => {
+      // Delete agent profile
+      await tx.agent.delete({
+        where: { id: agentId },
+      });
+
+      // Downgrade user role to USER
+      await tx.user.update({
+        where: { id: agent.userId },
+        data: { role: 'USER' },
+      });
+    });
+
+    await this.logAction(adminId, 'DELETE_AGENT', 'agent', agentId, {
+      userId: agent.userId,
+      firstName: agent.firstName,
+      lastName: agent.lastName,
+    });
+
+    return { message: 'Agent deleted successfully' };
+  }
 }
