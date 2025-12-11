@@ -30,8 +30,8 @@ export class RecommendationsService {
     }
 
     // Calculate price range (±20%)
-    const priceMin = property.priceUsd * 0.8;
-    const priceMax = property.priceUsd * 1.2;
+    const priceMin = property.priceUsd ? property.priceUsd * 0.8 : undefined;
+    const priceMax = property.priceUsd ? property.priceUsd * 1.2 : undefined;
 
     // Calculate area range (±20%)
     const areaMin = property.area ? property.area * 0.8 : undefined;
