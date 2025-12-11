@@ -124,21 +124,4 @@ export class RecommendationsService {
       ],
     });
   }
-
-  private getMostCommon<T>(arr: T[]): T[] {
-    const counts = new Map<T, number>();
-    arr.forEach((item) => {
-      counts.set(item, (counts.get(item) || 0) + 1);
-    });
-
-    return Array.from(counts.entries())
-      .sort((a, b) => b[1] - a[1])
-      .slice(0, 3)
-      .map(([item]) => item);
-  }
-
-  private getAverage(numbers: number[]): number {
-    if (numbers.length === 0) return 0;
-    return numbers.reduce((sum, n) => sum + n, 0) / numbers.length;
-  }
 }
