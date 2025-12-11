@@ -37,6 +37,11 @@ export default tseslint.config(
       '@typescript-eslint/no-require-imports': 'warn',
       '@typescript-eslint/require-await': 'warn',
       '@typescript-eslint/unbound-method': 'warn',
+      '@typescript-eslint/no-unused-vars': ['error', {
+        'argsIgnorePattern': '^_',
+        'varsIgnorePattern': '^_',
+        'caughtErrorsIgnorePattern': '^_'
+      }],
       "prettier/prettier": ["error", { endOfLine: "auto" }],
     },
   },
