@@ -210,13 +210,13 @@ export class ValuationService {
     // Area similarity (weight: 25%)
     const areaDiff = Math.abs(input.area - comparable.area) / input.area;
     score += Math.max(0, 1 - areaDiff) * 0.25;
-    __factors++;
+    _factors++;
 
     // Bedroom similarity (weight: 15%)
     if (input.bedrooms && comparable.bedrooms) {
       const bedroomDiff = Math.abs(input.bedrooms - comparable.bedrooms);
       score += Math.max(0, 1 - bedroomDiff / 3) * 0.15;
-      __factors++;
+      _factors++;
     }
 
     // District match (weight: 15%)
