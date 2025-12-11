@@ -70,6 +70,7 @@ jobs:
 
             # Run database migrations
             echo "🗄️  Running database migrations..."
+            export DATABASE_URL="${{ secrets.DATABASE_URL }}"
             cd packages/database
             pnpm prisma migrate deploy
             cd ../..
