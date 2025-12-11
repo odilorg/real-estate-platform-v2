@@ -93,112 +93,36 @@ export class RecommendationsService {
    * Get personalized recommendations based on user's viewing history and favorites
    */
   async getPersonalizedRecommendations(userId: string, limit: number = 10) {
-    // Get user's recent views
-    const recentViews = await this.prisma.recentlyViewed.findMany({
-      where: { userId },
-      take: 20,
-      orderBy: { viewedAt: 'desc' },
-      include: {
-        property: {
-          select: {
-            propertyType: true,
-            city: true,
-            district: true,
-            priceUsd: true,
-            listingType: true,
-          },
-        },
-      },
-    });
+    // TODO: Implement personalized recommendations
+    // Currently returning popular properties as RecentlyViewed model needs property relation added
 
-    // Get user's favorites
+    // Get user's favorites as a simple preference indicator
     const favorites = await this.prisma.favorite.findMany({
       where: { userId },
-      take: 20,
-      orderBy: { createdAt: 'desc' },
-      include: {
-        property: {
-          select: {
-            propertyType: true,
-            city: true,
-            district: true,
-            priceUsd: true,
-            listingType: true,
-          },
-        },
-      },
+      take: 5,
+      select: { propertyId: true },
     });
 
-    if (recentViews.length === 0 && favorites.length === 0) {
-      // Return popular/recent properties if no history
-      return this.prisma.property.findMany({
-        where: { status: 'ACTIVE' },
-        include: {
-          images: {
-            where: { isPrimary: true },
-            take: 1,
-          },
-        },
-        take: limit,
-        orderBy: [
-          { createdAt: 'desc' },
-        ],
-      });
-    }
-
-    // Analyze preferences
-    const allProperties = [
-      ...recentViews.map((v) => v.property),
-      ...favorites.map((f) => f.property),
-    ];
-
-    const preferences = {
-      propertyTypes: this.getMostCommon(allProperties.map((p) => p.propertyType)),
-      cities: this.getMostCommon(allProperties.map((p) => p.city)),
-      listingTypes: this.getMostCommon(allProperties.map((p) => p.listingType)),
-      avgPrice: this.getAverage(allProperties.map((p) => p.priceUsd)),
-    };
-
-    // Get excluded IDs (already viewed/favorited)
-    const excludedIds = [
-      ...recentViews.map((v) => v.propertyId),
-      ...favorites.map((f) => f.propertyId),
-    ];
-
-    // Find similar properties
-    const recommendations = await this.prisma.property.findMany({
+    // Return popular/recent properties
+    return this.prisma.property.findMany({
       where: {
-        id: { notIn: excludedIds },
         status: 'ACTIVE',
-        OR: [
-          { propertyType: { in: preferences.propertyTypes } },
-          { city: { in: preferences.cities } },
-        ],
-        priceUsd: {
-          gte: preferences.avgPrice * 0.5,
-          lte: preferences.avgPrice * 1.5,
-        },
+        ...(favorites.length > 0 && {
+          id: { notIn: favorites.map(f => f.propertyId) }
+        })
       },
       include: {
         images: {
           where: { isPrimary: true },
           take: 1,
         },
-        user: {
-          select: {
-            id: true,
-            firstName: true,
-            lastName: true,
-          },
-        },
       },
       take: limit,
       orderBy: [
+        { views: 'desc' },
         { createdAt: 'desc' },
       ],
     });
-
-    return recommendations;
   }
 
   private getMostCommon<T>(arr: T[]): T[] {
