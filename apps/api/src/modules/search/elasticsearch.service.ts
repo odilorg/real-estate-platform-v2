@@ -9,20 +9,26 @@ export class ElasticsearchService implements OnModuleInit {
   private isEnabled: boolean;
 
   constructor(private configService: ConfigService) {
-    const elasticsearchUrl = this.configService.get<string>('ELASTICSEARCH_URL');
+    const elasticsearchUrl =
+      this.configService.get<string>('ELASTICSEARCH_URL');
     this.isEnabled = !!elasticsearchUrl;
 
     if (this.isEnabled) {
       this.client = new Client({
         node: elasticsearchUrl,
         auth: {
-          username: this.configService.get<string>('ELASTICSEARCH_USERNAME') || 'elastic',
-          password: this.configService.get<string>('ELASTICSEARCH_PASSWORD') || '',
+          username:
+            this.configService.get<string>('ELASTICSEARCH_USERNAME') ||
+            'elastic',
+          password:
+            this.configService.get<string>('ELASTICSEARCH_PASSWORD') || '',
         },
       });
       this.logger.log('Elasticsearch client initialized');
     } else {
-      this.logger.warn('Elasticsearch is disabled - ELASTICSEARCH_URL not configured');
+      this.logger.warn(
+        'Elasticsearch is disabled - ELASTICSEARCH_URL not configured',
+      );
     }
   }
 
@@ -134,7 +140,11 @@ export class ElasticsearchService implements OnModuleInit {
     }
   }
 
-  async indexDocument(indexName: string, id: string, document: any): Promise<boolean> {
+  async indexDocument(
+    indexName: string,
+    id: string,
+    document: any,
+  ): Promise<boolean> {
     if (!this.isEnabled || !this.client) {
       return false;
     }
@@ -148,12 +158,19 @@ export class ElasticsearchService implements OnModuleInit {
       });
       return true;
     } catch (error) {
-      this.logger.error(`Error indexing document ${id} in ${indexName}:`, error);
+      this.logger.error(
+        `Error indexing document ${id} in ${indexName}:`,
+        error,
+      );
       return false;
     }
   }
 
-  async updateDocument(indexName: string, id: string, document: any): Promise<boolean> {
+  async updateDocument(
+    indexName: string,
+    id: string,
+    document: any,
+  ): Promise<boolean> {
     if (!this.isEnabled || !this.client) {
       return false;
     }
@@ -167,7 +184,10 @@ export class ElasticsearchService implements OnModuleInit {
       });
       return true;
     } catch (error) {
-      this.logger.error(`Error updating document ${id} in ${indexName}:`, error);
+      this.logger.error(
+        `Error updating document ${id} in ${indexName}:`,
+        error,
+      );
       return false;
     }
   }
@@ -185,7 +205,10 @@ export class ElasticsearchService implements OnModuleInit {
       });
       return true;
     } catch (error) {
-      this.logger.error(`Error deleting document ${id} from ${indexName}:`, error);
+      this.logger.error(
+        `Error deleting document ${id} from ${indexName}:`,
+        error,
+      );
       return false;
     }
   }
@@ -207,7 +230,10 @@ export class ElasticsearchService implements OnModuleInit {
     }
   }
 
-  async bulkIndex(indexName: string, documents: Array<{ id: string; data: any }>): Promise<boolean> {
+  async bulkIndex(
+    indexName: string,
+    documents: Array<{ id: string; data: any }>,
+  ): Promise<boolean> {
     if (!this.isEnabled || !this.client) {
       return false;
     }
@@ -228,7 +254,9 @@ export class ElasticsearchService implements OnModuleInit {
         return false;
       }
 
-      this.logger.log(`Bulk indexed ${documents.length} documents to ${indexName}`);
+      this.logger.log(
+        `Bulk indexed ${documents.length} documents to ${indexName}`,
+      );
       return true;
     } catch (error) {
       this.logger.error(`Error bulk indexing to ${indexName}:`, error);

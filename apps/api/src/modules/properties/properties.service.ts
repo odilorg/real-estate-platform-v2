@@ -4,7 +4,13 @@ import {
   ForbiddenException,
 } from '@nestjs/common';
 import { PrismaService } from '../../common/prisma';
-import { CreatePropertyDto, UpdatePropertyDto, PropertyFilterDto, Currency, EXCHANGE_RATE_UZS_TO_USD } from '@repo/shared';
+import {
+  CreatePropertyDto,
+  UpdatePropertyDto,
+  PropertyFilterDto,
+  Currency,
+  EXCHANGE_RATE_UZS_TO_USD,
+} from '@repo/shared';
 import { UploadService } from '../upload/upload.service';
 import { Prisma } from '@repo/database';
 import { PropertyQueryBuilder } from './property-query-builder';
@@ -26,7 +32,7 @@ export class PropertiesService {
     private uploadService: UploadService,
     private priceHistoryService: PriceHistoryService,
     private poiService: POIService,
-  ) { }
+  ) {}
 
   /**
    * Calculate distance between two coordinates using Haversine formula
@@ -44,9 +50,9 @@ export class PropertiesService {
     const a =
       Math.sin(dLat / 2) * Math.sin(dLat / 2) +
       Math.cos(this.toRad(lat1)) *
-      Math.cos(this.toRad(lat2)) *
-      Math.sin(dLon / 2) *
-      Math.sin(dLon / 2);
+        Math.cos(this.toRad(lat2)) *
+        Math.sin(dLon / 2) *
+        Math.sin(dLon / 2);
     const c = 2 * Math.atan2(Math.sqrt(a), Math.sqrt(1 - a));
     return R * c;
   }
@@ -62,22 +68,23 @@ export class PropertiesService {
       data: {
         ...propertyData,
         userId,
-        priceUsd: propertyData.currency === Currency.UZS
-          ? propertyData.price / EXCHANGE_RATE_UZS_TO_USD
-          : propertyData.price,
+        priceUsd:
+          propertyData.currency === Currency.UZS
+            ? propertyData.price / EXCHANGE_RATE_UZS_TO_USD
+            : propertyData.price,
         images: images
           ? {
-            create: images.map((url, index) => ({
-              url,
-              order: index,
-              isPrimary: index === 0,
-            })),
-          }
+              create: images.map((url, index) => ({
+                url,
+                order: index,
+                isPrimary: index === 0,
+              })),
+            }
           : undefined,
         amenities: amenities
           ? {
-            create: amenities.map((amenity) => ({ amenity })),
-          }
+              create: amenities.map((amenity) => ({ amenity })),
+            }
           : undefined,
       },
       include: {
@@ -99,14 +106,19 @@ export class PropertiesService {
       this.poiService
         .fetchAndStorePOIs(property.id, property.latitude, property.longitude)
         .catch((err) => {
-          console.error(`Failed to fetch POIs for property ${property.id}:`, err);
+          console.error(
+            `Failed to fetch POIs for property ${property.id}:`,
+            err,
+          );
         });
     }
 
     return property;
   }
 
-  async findAll(filters: PropertyFilterDto): Promise<PaginatedResult<Record<string, unknown>>> {
+  async findAll(
+    filters: PropertyFilterDto,
+  ): Promise<PaginatedResult<Record<string, unknown>>> {
     const {
       latitude,
       longitude,
@@ -125,10 +137,13 @@ export class PropertiesService {
     const needsPricePerSqMFilter = queryBuilder.needsPricePerSqMFilter();
 
     // For geo-location search or price per m² filter, fetch more to account for post-filtering
-    const fetchLimit = (needsGeoFilter || needsPricePerSqMFilter) ? limit * 10 : limit;
+    const fetchLimit =
+      needsGeoFilter || needsPricePerSqMFilter ? limit * 10 : limit;
 
     // Determine order by
-    let orderBy: Prisma.PropertyOrderByWithRelationInput = { [sortBy]: sortOrder };
+    let orderBy: Prisma.PropertyOrderByWithRelationInput = {
+      [sortBy]: sortOrder,
+    };
 
     // For rating sort, we need to handle differently (in-memory sort after fetch)
     if (sortBy === 'rating') {
@@ -176,8 +191,9 @@ export class PropertiesService {
       const averageRating =
         reviewCount > 0
           ? Math.round(
-            (reviews.reduce((sum, r) => sum + r.rating, 0) / reviewCount) * 10,
-          ) / 10
+              (reviews.reduce((sum, r) => sum + r.rating, 0) / reviewCount) *
+                10,
+            ) / 10
           : null;
 
       // Calculate distance if geo search
@@ -208,7 +224,8 @@ export class PropertiesService {
     }
 
     if (needsPricePerSqMFilter) {
-      processedProperties = queryBuilder.filterByPricePerSqM(processedProperties);
+      processedProperties =
+        queryBuilder.filterByPricePerSqM(processedProperties);
     }
 
     // Apply in-memory sorting
@@ -311,7 +328,10 @@ export class PropertiesService {
     const { images, amenities, ...propertyData } = dto;
 
     // Track price changes
-    if (propertyData.price !== undefined && propertyData.price !== property.price) {
+    if (
+      propertyData.price !== undefined &&
+      propertyData.price !== property.price
+    ) {
       await this.priceHistoryService.createPriceChange(
         id,
         property.price,
@@ -338,9 +358,9 @@ export class PropertiesService {
       data: {
         ...propertyData,
         priceUsd: propertyData.price
-          ? (propertyData.currency === Currency.UZS
+          ? propertyData.currency === Currency.UZS
             ? propertyData.price / EXCHANGE_RATE_UZS_TO_USD
-            : propertyData.price)
+            : propertyData.price
           : undefined, // Only update priceUsd if price is being updated, logic technically needs to check if currency or price changed, but for now strict update is fine or we fallback to existing
       },
     });
@@ -538,7 +558,11 @@ export class PropertiesService {
         .map((m) => ({ metro: m.nearestMetro!, city: m.city })),
       mahallas: mahallas
         .filter((m) => m.mahalla)
-        .map((m) => ({ mahalla: m.mahalla!, district: m.district, city: m.city })),
+        .map((m) => ({
+          mahalla: m.mahalla!,
+          district: m.district,
+          city: m.city,
+        })),
     };
   }
 
@@ -546,45 +570,52 @@ export class PropertiesService {
    * Get available filter options based on current filters
    */
   async getFilterOptions() {
-    const [cities, districts, propertyTypes, buildingClasses, renovations, listingTypes, bedrooms] =
-      await Promise.all([
-        this.prisma.property.findMany({
-          where: { status: 'ACTIVE' },
-          select: { city: true },
-          distinct: ['city'],
-          orderBy: { city: 'asc' },
-        }),
-        this.prisma.property.findMany({
-          where: { status: 'ACTIVE', district: { not: null } },
-          select: { district: true, city: true },
-          distinct: ['district', 'city'],
-        }),
-        this.prisma.property.groupBy({
-          by: ['propertyType'],
-          where: { status: 'ACTIVE' },
-          _count: true,
-        }),
-        this.prisma.property.groupBy({
-          by: ['buildingClass'],
-          where: { status: 'ACTIVE', buildingClass: { not: null } },
-          _count: true,
-        }),
-        this.prisma.property.groupBy({
-          by: ['renovation'],
-          where: { status: 'ACTIVE', renovation: { not: null } },
-          _count: true,
-        }),
-        this.prisma.property.groupBy({
-          by: ['listingType'],
-          where: { status: 'ACTIVE' },
-          _count: true,
-        }),
-        this.prisma.property.groupBy({
-          by: ['bedrooms'],
-          where: { status: 'ACTIVE', bedrooms: { not: null } },
-          _count: true,
-        }),
-      ]);
+    const [
+      cities,
+      districts,
+      propertyTypes,
+      buildingClasses,
+      renovations,
+      listingTypes,
+      bedrooms,
+    ] = await Promise.all([
+      this.prisma.property.findMany({
+        where: { status: 'ACTIVE' },
+        select: { city: true },
+        distinct: ['city'],
+        orderBy: { city: 'asc' },
+      }),
+      this.prisma.property.findMany({
+        where: { status: 'ACTIVE', district: { not: null } },
+        select: { district: true, city: true },
+        distinct: ['district', 'city'],
+      }),
+      this.prisma.property.groupBy({
+        by: ['propertyType'],
+        where: { status: 'ACTIVE' },
+        _count: true,
+      }),
+      this.prisma.property.groupBy({
+        by: ['buildingClass'],
+        where: { status: 'ACTIVE', buildingClass: { not: null } },
+        _count: true,
+      }),
+      this.prisma.property.groupBy({
+        by: ['renovation'],
+        where: { status: 'ACTIVE', renovation: { not: null } },
+        _count: true,
+      }),
+      this.prisma.property.groupBy({
+        by: ['listingType'],
+        where: { status: 'ACTIVE' },
+        _count: true,
+      }),
+      this.prisma.property.groupBy({
+        by: ['bedrooms'],
+        where: { status: 'ACTIVE', bedrooms: { not: null } },
+        _count: true,
+      }),
+    ]);
 
     return {
       cities: cities.map((c) => c.city),

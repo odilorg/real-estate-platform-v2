@@ -2,7 +2,11 @@ import { Test, TestingModule } from '@nestjs/testing';
 import { NotFoundException } from '@nestjs/common';
 import { FavoritesService } from './favorites.service';
 import { PrismaService } from '../../common/prisma/prisma.service';
-import { mockPrismaService, resetMocks, TestFactories } from '../../test/test-utils';
+import {
+  mockPrismaService,
+  resetMocks,
+  TestFactories,
+} from '../../test/test-utils';
 
 describe('FavoritesService', () => {
   let service: FavoritesService;
@@ -68,7 +72,7 @@ describe('FavoritesService', () => {
         expect.objectContaining({
           skip: 10, // (page 2 - 1) * 10
           take: 10,
-        })
+        }),
       );
     });
 
@@ -83,7 +87,7 @@ describe('FavoritesService', () => {
         expect.objectContaining({
           skip: 0, // (page 1 - 1) * 20
           take: 20,
-        })
+        }),
       );
     });
   });
@@ -121,7 +125,7 @@ describe('FavoritesService', () => {
       prisma.property.findUnique.mockResolvedValue(null);
 
       await expect(service.addFavorite(userId, propertyId)).rejects.toThrow(
-        NotFoundException
+        NotFoundException,
       );
       expect(prisma.favorite.create).not.toHaveBeenCalled();
     });
@@ -174,7 +178,7 @@ describe('FavoritesService', () => {
       prisma.favorite.findUnique.mockResolvedValue(null);
 
       await expect(service.removeFavorite(userId, propertyId)).rejects.toThrow(
-        NotFoundException
+        NotFoundException,
       );
       expect(prisma.favorite.delete).not.toHaveBeenCalled();
     });

@@ -41,6 +41,10 @@ export const faker = {
     name: () => 'Test Company LLC',
   },
   helpers: {
-    slugify: (text: string) => text.toLowerCase().replace(/\s+/g, '-').replace(/[^a-z0-9-]/g, ''),
+    slugify: (text: string) =>
+      text
+        .toLowerCase()
+        .replace(/\s+/g, '-')
+        .replace(/[^a-z0-9-]/g, ''),
   },
 };

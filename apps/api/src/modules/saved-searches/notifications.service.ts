@@ -41,7 +41,9 @@ export class SavedSearchNotificationsService {
         },
       });
 
-      this.logger.log(`Found ${savedSearches.length} saved searches with notifications enabled`);
+      this.logger.log(
+        `Found ${savedSearches.length} saved searches with notifications enabled`,
+      );
 
       for (const savedSearch of savedSearches) {
         try {
@@ -65,7 +67,7 @@ export class SavedSearchNotificationsService {
 
     // Find properties created since last check
     const filters = {
-      ...(savedSearch.filters as any),
+      ...savedSearch.filters,
       // Only get properties created after last notification
       createdAfter: lastChecked,
     };

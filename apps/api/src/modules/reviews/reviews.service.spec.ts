@@ -1,8 +1,16 @@
 import { Test, TestingModule } from '@nestjs/testing';
-import { NotFoundException, ForbiddenException, BadRequestException } from '@nestjs/common';
+import {
+  NotFoundException,
+  ForbiddenException,
+  BadRequestException,
+} from '@nestjs/common';
 import { ReviewsService } from './reviews.service';
 import { PrismaService } from '../../common/prisma/prisma.service';
-import { mockPrismaService, resetMocks, TestFactories } from '../../test/test-utils';
+import {
+  mockPrismaService,
+  resetMocks,
+  TestFactories,
+} from '../../test/test-utils';
 
 describe('ReviewsService', () => {
   let service: ReviewsService;
@@ -151,11 +159,7 @@ describe('ReviewsService', () => {
     it('should round average rating to one decimal place', async () => {
       const propertyId = 'prop-123';
 
-      const mockReviews = [
-        { rating: 5 },
-        { rating: 4 },
-        { rating: 4 },
-      ];
+      const mockReviews = [{ rating: 5 }, { rating: 4 }, { rating: 4 }];
 
       prisma.review.findMany.mockResolvedValue(mockReviews);
 
@@ -168,10 +172,7 @@ describe('ReviewsService', () => {
     it('should only count approved reviews', async () => {
       const propertyId = 'prop-123';
 
-      prisma.review.findMany.mockResolvedValue([
-        { rating: 5 },
-        { rating: 5 },
-      ]);
+      prisma.review.findMany.mockResolvedValue([{ rating: 5 }, { rating: 5 }]);
 
       await service.getPropertyReviewStats(propertyId);
 
@@ -243,7 +244,7 @@ describe('ReviewsService', () => {
       prisma.property.findUnique.mockResolvedValue(null);
 
       await expect(
-        service.createReview(userId, propertyId, reviewData)
+        service.createReview(userId, propertyId, reviewData),
       ).rejects.toThrow(NotFoundException);
       expect(prisma.review.create).not.toHaveBeenCalled();
     });
@@ -257,7 +258,7 @@ describe('ReviewsService', () => {
       prisma.property.findUnique.mockResolvedValue(mockProperty);
 
       await expect(
-        service.createReview(userId, propertyId, reviewData)
+        service.createReview(userId, propertyId, reviewData),
       ).rejects.toThrow(ForbiddenException);
       expect(prisma.review.create).not.toHaveBeenCalled();
     });
@@ -283,7 +284,7 @@ describe('ReviewsService', () => {
       prisma.review.findUnique.mockResolvedValue(existingReview);
 
       await expect(
-        service.createReview(userId, propertyId, reviewData)
+        service.createReview(userId, propertyId, reviewData),
       ).rejects.toThrow(BadRequestException);
       expect(prisma.review.create).not.toHaveBeenCalled();
     });
@@ -298,7 +299,7 @@ describe('ReviewsService', () => {
       prisma.review.findUnique.mockResolvedValue(null);
 
       await expect(
-        service.createReview(userId, propertyId, { ...reviewData, rating: 0 })
+        service.createReview(userId, propertyId, { ...reviewData, rating: 0 }),
       ).rejects.toThrow(BadRequestException);
       expect(prisma.review.create).not.toHaveBeenCalled();
     });
@@ -313,7 +314,7 @@ describe('ReviewsService', () => {
       prisma.review.findUnique.mockResolvedValue(null);
 
       await expect(
-        service.createReview(userId, propertyId, { ...reviewData, rating: 6 })
+        service.createReview(userId, propertyId, { ...reviewData, rating: 6 }),
       ).rejects.toThrow(BadRequestException);
       expect(prisma.review.create).not.toHaveBeenCalled();
     });
@@ -455,7 +456,7 @@ describe('ReviewsService', () => {
       prisma.review.findUnique.mockResolvedValue(null);
 
       await expect(
-        service.updateReview(reviewId, userId, { rating: 4 })
+        service.updateReview(reviewId, userId, { rating: 4 }),
       ).rejects.toThrow(NotFoundException);
       expect(prisma.review.update).not.toHaveBeenCalled();
     });
@@ -475,7 +476,7 @@ describe('ReviewsService', () => {
       prisma.review.findUnique.mockResolvedValue(mockReview);
 
       await expect(
-        service.updateReview(reviewId, userId, { rating: 5 })
+        service.updateReview(reviewId, userId, { rating: 5 }),
       ).rejects.toThrow(ForbiddenException);
       expect(prisma.review.update).not.toHaveBeenCalled();
     });
@@ -495,7 +496,7 @@ describe('ReviewsService', () => {
       prisma.review.findUnique.mockResolvedValue(mockReview);
 
       await expect(
-        service.updateReview(reviewId, userId, { rating: 10 })
+        service.updateReview(reviewId, userId, { rating: 10 }),
       ).rejects.toThrow(BadRequestException);
       expect(prisma.review.update).not.toHaveBeenCalled();
     });
@@ -525,7 +526,9 @@ describe('ReviewsService', () => {
       prisma.review.findUnique.mockResolvedValue(mockReview);
       prisma.review.update.mockResolvedValue(updatedReview);
 
-      const result = await service.updateReview(reviewId, userId, { rating: 5 });
+      const result = await service.updateReview(reviewId, userId, {
+        rating: 5,
+      });
 
       expect(result.rating).toBe(5);
       expect(result.comment).toBe('Original comment');
@@ -622,7 +625,9 @@ describe('ReviewsService', () => {
       prisma.review.update.mockResolvedValue(updatedReview);
 
       // Should not throw when rating is not provided
-      const result = await service.updateReview(reviewId, userId, { comment: 'New comment' });
+      const result = await service.updateReview(reviewId, userId, {
+        comment: 'New comment',
+      });
       expect(result).toBeDefined();
     });
 
@@ -641,7 +646,7 @@ describe('ReviewsService', () => {
       prisma.review.findUnique.mockResolvedValue(mockReview);
 
       await expect(
-        service.updateReview(reviewId, userId, { rating: 0 })
+        service.updateReview(reviewId, userId, { rating: 0 }),
       ).rejects.toThrow(BadRequestException);
       expect(prisma.review.update).not.toHaveBeenCalled();
     });
@@ -661,7 +666,7 @@ describe('ReviewsService', () => {
       prisma.review.findUnique.mockResolvedValue(mockReview);
 
       await expect(
-        service.updateReview(reviewId, userId, { rating: 6 })
+        service.updateReview(reviewId, userId, { rating: 6 }),
       ).rejects.toThrow(BadRequestException);
       expect(prisma.review.update).not.toHaveBeenCalled();
     });
@@ -698,7 +703,7 @@ describe('ReviewsService', () => {
       prisma.review.findUnique.mockResolvedValue(null);
 
       await expect(service.deleteReview(reviewId, userId)).rejects.toThrow(
-        NotFoundException
+        NotFoundException,
       );
       expect(prisma.review.delete).not.toHaveBeenCalled();
     });
@@ -718,7 +723,7 @@ describe('ReviewsService', () => {
       prisma.review.findUnique.mockResolvedValue(mockReview);
 
       await expect(service.deleteReview(reviewId, userId)).rejects.toThrow(
-        ForbiddenException
+        ForbiddenException,
       );
       expect(prisma.review.delete).not.toHaveBeenCalled();
     });
@@ -747,7 +752,7 @@ describe('ReviewsService', () => {
 
       // Other user should not be able to delete
       await expect(service.deleteReview(reviewId, otherUser)).rejects.toThrow(
-        ForbiddenException
+        ForbiddenException,
       );
     });
   });
@@ -939,14 +944,10 @@ describe('ReviewsService', () => {
       prisma.review.findUnique.mockResolvedValue(createdReview);
       prisma.review.update.mockResolvedValue(updatedReview);
 
-      const updateResult = await service.updateReview(
-        'review-123',
-        userId,
-        {
-          rating: 5,
-          comment: 'Actually, great property!',
-        }
-      );
+      const updateResult = await service.updateReview('review-123', userId, {
+        rating: 5,
+        comment: 'Actually, great property!',
+      });
 
       expect(updateResult.rating).toBe(5);
 

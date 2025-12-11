@@ -28,7 +28,10 @@ export class AgentsController {
   @Post('register')
   @UseGuards(JwtAuthGuard)
   @UsePipes(new ZodValidationPipe(RegisterAgentDto))
-  register(@CurrentUser() user: User, @Body() dto: RegisterAgentDto): Promise<Agent> {
+  register(
+    @CurrentUser() user: User,
+    @Body() dto: RegisterAgentDto,
+  ): Promise<Agent> {
     return this.agentsService.register(user.id, dto);
   }
 
@@ -47,7 +50,10 @@ export class AgentsController {
   @Put('me')
   @UseGuards(JwtAuthGuard)
   @UsePipes(new ZodValidationPipe(UpdateAgentDto))
-  updateMyProfile(@CurrentUser() user: User, @Body() dto: UpdateAgentDto): Promise<Agent> {
+  updateMyProfile(
+    @CurrentUser() user: User,
+    @Body() dto: UpdateAgentDto,
+  ): Promise<Agent> {
     return this.agentsService.update(user.id, dto);
   }
 
@@ -69,8 +75,14 @@ export class AgentsController {
       limit: limit ? parseInt(limit, 10) : 20,
       city,
       agencyId,
-      verified: verified === 'true' ? true : verified === 'false' ? false : undefined,
-      superAgent: superAgent === 'true' ? true : superAgent === 'false' ? false : undefined,
+      verified:
+        verified === 'true' ? true : verified === 'false' ? false : undefined,
+      superAgent:
+        superAgent === 'true'
+          ? true
+          : superAgent === 'false'
+            ? false
+            : undefined,
     });
   }
 

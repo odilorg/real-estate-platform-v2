@@ -1,4 +1,9 @@
-import { Injectable, NotFoundException, ForbiddenException, BadRequestException } from '@nestjs/common';
+import {
+  Injectable,
+  NotFoundException,
+  ForbiddenException,
+  BadRequestException,
+} from '@nestjs/common';
 import { PrismaService } from '../../common/prisma';
 
 @Injectable()
@@ -38,7 +43,13 @@ export class ReviewsService {
     const totalRating = reviews.reduce((sum, r) => sum + r.rating, 0);
     const averageRating = totalRating / reviews.length;
 
-    const ratingDistribution: Record<number, number> = { 1: 0, 2: 0, 3: 0, 4: 0, 5: 0 };
+    const ratingDistribution: Record<number, number> = {
+      1: 0,
+      2: 0,
+      3: 0,
+      4: 0,
+      5: 0,
+    };
     reviews.forEach((r) => {
       ratingDistribution[r.rating]++;
     });

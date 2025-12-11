@@ -83,6 +83,10 @@ export class AuthService {
       );
     }
 
+    if (!user.passwordHash) {
+      throw new UnauthorizedException('Invalid credentials');
+    }
+
     const isPasswordValid = await bcrypt.compare(
       dto.password,
       user.passwordHash,
@@ -200,6 +204,9 @@ export class AuthService {
     // For OAuth users setting their first password, skip current password verification
     // Otherwise, verify the current password
     if (!user.isOAuthUser) {
+      if (!user.passwordHash) {
+        return false;
+      }
       const isValid = await bcrypt.compare(currentPassword, user.passwordHash);
       if (!isValid) {
         return false;

@@ -89,7 +89,9 @@ describe('EmailService', () => {
         verify: jest.fn().mockResolvedValue(true),
         sendMail: jest.fn().mockResolvedValue({ messageId: 'test-id' }),
       };
-      (nodemailer.createTransport as jest.Mock).mockReturnValue(mockTransporter2);
+      (nodemailer.createTransport as jest.Mock).mockReturnValue(
+        mockTransporter2,
+      );
 
       const module: TestingModule = await Test.createTestingModule({
         providers: [EmailService],
@@ -111,10 +113,16 @@ describe('EmailService', () => {
     });
 
     it('should handle connection verification failure gracefully', async () => {
-      const loggerErrorSpy = jest.spyOn(Logger.prototype, 'error').mockImplementation();
-      const loggerWarnSpy = jest.spyOn(Logger.prototype, 'warn').mockImplementation();
+      const loggerErrorSpy = jest
+        .spyOn(Logger.prototype, 'error')
+        .mockImplementation();
+      const loggerWarnSpy = jest
+        .spyOn(Logger.prototype, 'warn')
+        .mockImplementation();
 
-      mockTransporter.verify.mockRejectedValueOnce(new Error('Connection failed'));
+      mockTransporter.verify.mockRejectedValueOnce(
+        new Error('Connection failed'),
+      );
 
       const module: TestingModule = await Test.createTestingModule({
         providers: [EmailService],
@@ -128,7 +136,7 @@ describe('EmailService', () => {
       expect(newService).toBeDefined();
       expect(loggerErrorSpy).toHaveBeenCalled();
       expect(loggerWarnSpy).toHaveBeenCalledWith(
-        'Emails will be logged to console instead of sending'
+        'Emails will be logged to console instead of sending',
       );
 
       loggerErrorSpy.mockRestore();
@@ -178,7 +186,9 @@ describe('EmailService', () => {
     it('should log to console when SMTP_USER is not configured', async () => {
       delete process.env.SMTP_USER;
 
-      const loggerLogSpy = jest.spyOn(Logger.prototype, 'log').mockImplementation();
+      const loggerLogSpy = jest
+        .spyOn(Logger.prototype, 'log')
+        .mockImplementation();
 
       const module: TestingModule = await Test.createTestingModule({
         providers: [EmailService],
@@ -196,8 +206,12 @@ describe('EmailService', () => {
       const result = await newService.sendEmail(options);
 
       expect(result).toBe(true);
-      expect(loggerLogSpy).toHaveBeenCalledWith('[EMAIL] To: recipient@example.com');
-      expect(loggerLogSpy).toHaveBeenCalledWith('[EMAIL] Subject: Test Subject');
+      expect(loggerLogSpy).toHaveBeenCalledWith(
+        '[EMAIL] To: recipient@example.com',
+      );
+      expect(loggerLogSpy).toHaveBeenCalledWith(
+        '[EMAIL] Subject: Test Subject',
+      );
       expect(loggerLogSpy).toHaveBeenCalledWith('[EMAIL] Content: Test text');
       expect(mockTransporter.sendMail).not.toHaveBeenCalled();
 
@@ -205,7 +219,9 @@ describe('EmailService', () => {
     });
 
     it('should return false and log error when sending fails', async () => {
-      const loggerErrorSpy = jest.spyOn(Logger.prototype, 'error').mockImplementation();
+      const loggerErrorSpy = jest
+        .spyOn(Logger.prototype, 'error')
+        .mockImplementation();
 
       mockTransporter.sendMail.mockRejectedValueOnce(new Error('Send failed'));
 
@@ -220,16 +236,20 @@ describe('EmailService', () => {
       expect(result).toBe(false);
       expect(loggerErrorSpy).toHaveBeenCalledWith(
         'Failed to send email to recipient@example.com:',
-        expect.any(Error)
+        expect.any(Error),
       );
 
       loggerErrorSpy.mockRestore();
     });
 
     it('should log success message when email is sent', async () => {
-      const loggerLogSpy = jest.spyOn(Logger.prototype, 'log').mockImplementation();
+      const loggerLogSpy = jest
+        .spyOn(Logger.prototype, 'log')
+        .mockImplementation();
 
-      mockTransporter.sendMail.mockResolvedValueOnce({ messageId: 'msg-12345' });
+      mockTransporter.sendMail.mockResolvedValueOnce({
+        messageId: 'msg-12345',
+      });
 
       const options = {
         to: 'recipient@example.com',
@@ -245,9 +265,13 @@ describe('EmailService', () => {
     });
 
     it('should handle invalid email addresses gracefully', async () => {
-      const loggerErrorSpy = jest.spyOn(Logger.prototype, 'error').mockImplementation();
+      const loggerErrorSpy = jest
+        .spyOn(Logger.prototype, 'error')
+        .mockImplementation();
 
-      mockTransporter.sendMail.mockRejectedValueOnce(new Error('Invalid recipient'));
+      mockTransporter.sendMail.mockRejectedValueOnce(
+        new Error('Invalid recipient'),
+      );
 
       const options = {
         to: 'invalid-email',
@@ -264,9 +288,13 @@ describe('EmailService', () => {
     });
 
     it('should handle network failures gracefully', async () => {
-      const loggerErrorSpy = jest.spyOn(Logger.prototype, 'error').mockImplementation();
+      const loggerErrorSpy = jest
+        .spyOn(Logger.prototype, 'error')
+        .mockImplementation();
 
-      mockTransporter.sendMail.mockRejectedValueOnce(new Error('Network error: ECONNREFUSED'));
+      mockTransporter.sendMail.mockRejectedValueOnce(
+        new Error('Network error: ECONNREFUSED'),
+      );
 
       const options = {
         to: 'recipient@example.com',
@@ -279,7 +307,9 @@ describe('EmailService', () => {
       expect(result).toBe(false);
       expect(loggerErrorSpy).toHaveBeenCalledWith(
         'Failed to send email to recipient@example.com:',
-        expect.objectContaining({ message: expect.stringContaining('Network error') })
+        expect.objectContaining({
+          message: expect.stringContaining('Network error'),
+        }),
       );
 
       loggerErrorSpy.mockRestore();
@@ -288,7 +318,10 @@ describe('EmailService', () => {
 
   describe('sendWelcomeEmail', () => {
     it('should send welcome email with correct content', async () => {
-      const result = await service.sendWelcomeEmail('user@example.com', 'John Doe');
+      const result = await service.sendWelcomeEmail(
+        'user@example.com',
+        'John Doe',
+      );
 
       expect(result).toBe(true);
       expect(mockTransporter.sendMail).toHaveBeenCalledWith(
@@ -296,7 +329,7 @@ describe('EmailService', () => {
           to: 'user@example.com',
           subject: 'Welcome to Real Estate Platform!',
           html: expect.stringContaining('Welcome to Real Estate Platform!'),
-        })
+        }),
       );
     });
 
@@ -320,7 +353,10 @@ describe('EmailService', () => {
     it('should return false if sending fails', async () => {
       mockTransporter.sendMail.mockRejectedValueOnce(new Error('Send failed'));
 
-      const result = await service.sendWelcomeEmail('user@example.com', 'John Doe');
+      const result = await service.sendWelcomeEmail(
+        'user@example.com',
+        'John Doe',
+      );
 
       expect(result).toBe(false);
     });
@@ -347,7 +383,7 @@ describe('EmailService', () => {
         'user@example.com',
         'John Doe',
         'City Center Apartments',
-        properties
+        properties,
       );
 
       expect(result).toBe(true);
@@ -356,7 +392,7 @@ describe('EmailService', () => {
           to: 'user@example.com',
           subject: '2 New Properties Match "City Center Apartments"',
           html: expect.stringContaining('New Properties Match Your Search!'),
-        })
+        }),
       );
     });
 
@@ -365,7 +401,7 @@ describe('EmailService', () => {
         'user@example.com',
         'Jane Smith',
         'Test Search',
-        properties
+        properties,
       );
 
       const callArgs = mockTransporter.sendMail.mock.calls[0][0];
@@ -377,7 +413,7 @@ describe('EmailService', () => {
         'user@example.com',
         'John Doe',
         'Downtown Condos',
-        properties
+        properties,
       );
 
       const callArgs = mockTransporter.sendMail.mock.calls[0][0];
@@ -390,7 +426,7 @@ describe('EmailService', () => {
         'user@example.com',
         'John Doe',
         'Test Search',
-        properties
+        properties,
       );
 
       const callArgs = mockTransporter.sendMail.mock.calls[0][0];
@@ -407,12 +443,16 @@ describe('EmailService', () => {
         'user@example.com',
         'John Doe',
         'Test Search',
-        properties
+        properties,
       );
 
       const callArgs = mockTransporter.sendMail.mock.calls[0][0];
-      expect(callArgs.html).toContain('http://localhost:3000/properties/prop-1');
-      expect(callArgs.html).toContain('http://localhost:3000/properties/prop-2');
+      expect(callArgs.html).toContain(
+        'http://localhost:3000/properties/prop-1',
+      );
+      expect(callArgs.html).toContain(
+        'http://localhost:3000/properties/prop-2',
+      );
     });
 
     it('should use singular form for single property', async () => {
@@ -422,7 +462,7 @@ describe('EmailService', () => {
         'user@example.com',
         'John Doe',
         'Test Search',
-        singleProperty
+        singleProperty,
       );
 
       const callArgs = mockTransporter.sendMail.mock.calls[0][0];
@@ -435,7 +475,7 @@ describe('EmailService', () => {
         'user@example.com',
         'John Doe',
         'Test Search',
-        properties
+        properties,
       );
 
       const callArgs = mockTransporter.sendMail.mock.calls[0][0];
@@ -457,7 +497,7 @@ describe('EmailService', () => {
         'user@example.com',
         'John Doe',
         'Test Search',
-        propertiesWithHighPrice
+        propertiesWithHighPrice,
       );
 
       const callArgs = mockTransporter.sendMail.mock.calls[0][0];
@@ -472,7 +512,7 @@ describe('EmailService', () => {
         'John Doe',
         'Jane Smith',
         'Luxury Apartment in Tashkent',
-        'Hello, I am interested in viewing this property'
+        'Hello, I am interested in viewing this property',
       );
 
       expect(result).toBe(true);
@@ -481,7 +521,7 @@ describe('EmailService', () => {
           to: 'recipient@example.com',
           subject: 'New message from Jane Smith',
           html: expect.stringContaining('New Message from Jane Smith'),
-        })
+        }),
       );
     });
 
@@ -491,7 +531,7 @@ describe('EmailService', () => {
         'John Doe',
         'Jane Smith',
         'Test Property',
-        'Test message'
+        'Test message',
       );
 
       const callArgs = mockTransporter.sendMail.mock.calls[0][0];
@@ -504,11 +544,13 @@ describe('EmailService', () => {
         'John Doe',
         'Jane Smith',
         'Luxury Apartment in Tashkent',
-        'Test message'
+        'Test message',
       );
 
       const callArgs = mockTransporter.sendMail.mock.calls[0][0];
-      expect(callArgs.html).toContain('<strong>Luxury Apartment in Tashkent</strong>');
+      expect(callArgs.html).toContain(
+        '<strong>Luxury Apartment in Tashkent</strong>',
+      );
     });
 
     it('should include message preview', async () => {
@@ -517,7 +559,7 @@ describe('EmailService', () => {
         'John Doe',
         'Jane Smith',
         'Test Property',
-        'I would like to schedule a viewing'
+        'I would like to schedule a viewing',
       );
 
       const callArgs = mockTransporter.sendMail.mock.calls[0][0];
@@ -530,7 +572,7 @@ describe('EmailService', () => {
         'John Doe',
         'Jane Smith',
         'Test Property',
-        'Test message'
+        'Test message',
       );
 
       const callArgs = mockTransporter.sendMail.mock.calls[0][0];
@@ -544,11 +586,13 @@ describe('EmailService', () => {
         'John Doe',
         'Jane Smith',
         'Test Property',
-        'Test message'
+        'Test message',
       );
 
       const callArgs = mockTransporter.sendMail.mock.calls[0][0];
-      expect(callArgs.html).toContain('http://localhost:3000/settings/notifications');
+      expect(callArgs.html).toContain(
+        'http://localhost:3000/settings/notifications',
+      );
       expect(callArgs.html).toContain('Manage notification preferences');
     });
   });
@@ -561,7 +605,7 @@ describe('EmailService', () => {
         'Jane Smith',
         'Luxury Apartment',
         '2024-01-15',
-        '14:00'
+        '14:00',
       );
 
       expect(result).toBe(true);
@@ -570,7 +614,7 @@ describe('EmailService', () => {
           to: 'owner@example.com',
           subject: 'Viewing request for Luxury Apartment',
           html: expect.stringContaining('New Viewing Request'),
-        })
+        }),
       );
     });
 
@@ -581,7 +625,7 @@ describe('EmailService', () => {
         'Jane Smith',
         'Test Property',
         '2024-01-15',
-        '14:00'
+        '14:00',
       );
 
       const callArgs = mockTransporter.sendMail.mock.calls[0][0];
@@ -595,7 +639,7 @@ describe('EmailService', () => {
         'Jane Smith',
         'Luxury Apartment',
         '2024-01-15',
-        '14:00'
+        '14:00',
       );
 
       const callArgs = mockTransporter.sendMail.mock.calls[0][0];
@@ -610,7 +654,7 @@ describe('EmailService', () => {
         'Jane Smith',
         'Test Property',
         '2024-01-15',
-        '14:00'
+        '14:00',
       );
 
       const callArgs = mockTransporter.sendMail.mock.calls[0][0];
@@ -625,7 +669,7 @@ describe('EmailService', () => {
         'Jane Smith',
         'Test Property',
         '2024-01-15',
-        '14:00'
+        '14:00',
       );
 
       const callArgs = mockTransporter.sendMail.mock.calls[0][0];
@@ -638,7 +682,7 @@ describe('EmailService', () => {
     it('should send agent verification email with correct content', async () => {
       const result = await service.sendAgentVerificationEmail(
         'agent@example.com',
-        'John Doe'
+        'John Doe',
       );
 
       expect(result).toBe(true);
@@ -647,12 +691,15 @@ describe('EmailService', () => {
           to: 'agent@example.com',
           subject: 'Welcome to Real Estate Platform - Agent Account',
           html: expect.stringContaining("Congratulations! You're Now an Agent"),
-        })
+        }),
       );
     });
 
     it('should include agent name', async () => {
-      await service.sendAgentVerificationEmail('agent@example.com', 'Jane Smith');
+      await service.sendAgentVerificationEmail(
+        'agent@example.com',
+        'Jane Smith',
+      );
 
       const callArgs = mockTransporter.sendMail.mock.calls[0][0];
       expect(callArgs.html).toContain('Hi Jane Smith,');
@@ -663,8 +710,12 @@ describe('EmailService', () => {
 
       const callArgs = mockTransporter.sendMail.mock.calls[0][0];
       expect(callArgs.html).toContain('Manage your agent profile');
-      expect(callArgs.html).toContain('Receive inquiries from potential clients');
-      expect(callArgs.html).toContain('Track your property listings performance');
+      expect(callArgs.html).toContain(
+        'Receive inquiries from potential clients',
+      );
+      expect(callArgs.html).toContain(
+        'Track your property listings performance',
+      );
       expect(callArgs.html).toContain('Build your professional reputation');
     });
 
@@ -672,8 +723,12 @@ describe('EmailService', () => {
       await service.sendAgentVerificationEmail('agent@example.com', 'John Doe');
 
       const callArgs = mockTransporter.sendMail.mock.calls[0][0];
-      expect(callArgs.html).toContain('Complete your agent profile with photo and bio');
-      expect(callArgs.html).toContain('Add your specializations and areas served');
+      expect(callArgs.html).toContain(
+        'Complete your agent profile with photo and bio',
+      );
+      expect(callArgs.html).toContain(
+        'Add your specializations and areas served',
+      );
       expect(callArgs.html).toContain('Start listing properties');
     });
   });
@@ -754,11 +809,13 @@ describe('EmailService', () => {
         'user@example.com',
         'John Doe',
         'Test Search',
-        [{ id: 'prop-1', title: 'Test', price: 100000, city: 'Tashkent' }]
+        [{ id: 'prop-1', title: 'Test', price: 100000, city: 'Tashkent' }],
       );
 
       const callArgs = mockTransporter.sendMail.mock.calls[0][0];
-      expect(callArgs.html).toContain('https://production.example.com/properties/prop-1');
+      expect(callArgs.html).toContain(
+        'https://production.example.com/properties/prop-1',
+      );
     });
 
     it('should use custom email from name', async () => {
@@ -789,7 +846,9 @@ describe('EmailService', () => {
         verify: jest.fn().mockResolvedValue(true),
         sendMail: jest.fn().mockResolvedValue({ messageId: 'test-id' }),
       };
-      (nodemailer.createTransport as jest.Mock).mockReturnValue(mockTransporter2);
+      (nodemailer.createTransport as jest.Mock).mockReturnValue(
+        mockTransporter2,
+      );
 
       const module: TestingModule = await Test.createTestingModule({
         providers: [EmailService],
@@ -801,7 +860,7 @@ describe('EmailService', () => {
         expect.objectContaining({
           port: 465,
           secure: true,
-        })
+        }),
       );
 
       expect(newService).toBeDefined();
@@ -814,7 +873,7 @@ describe('EmailService', () => {
         'user@example.com',
         'John Doe',
         'Test Search',
-        []
+        [],
       );
 
       expect(result).toBe(true);
@@ -830,7 +889,7 @@ describe('EmailService', () => {
         'John Doe',
         'Jane Smith',
         'Test Property',
-        longMessage
+        longMessage,
       );
 
       expect(result).toBe(true);
@@ -851,12 +910,14 @@ describe('EmailService', () => {
         'John Doe',
         'Jane Smith',
         'Apartment with "Luxury" & <Premium> Features',
-        'Test message'
+        'Test message',
       );
 
       const callArgs = mockTransporter.sendMail.mock.calls[0][0];
       // Note: The service doesn't HTML-escape the title, so special characters appear as-is
-      expect(callArgs.html).toContain('Apartment with "Luxury" & <Premium> Features');
+      expect(callArgs.html).toContain(
+        'Apartment with "Luxury" & <Premium> Features',
+      );
     });
 
     it('should handle multiple concurrent email sends', async () => {
@@ -899,7 +960,7 @@ describe('EmailService', () => {
             'test@example.com',
             'Test User',
             'Test Search',
-            [{ id: 'prop-1', title: 'Test', price: 100000, city: 'Tashkent' }]
+            [{ id: 'prop-1', title: 'Test', price: 100000, city: 'Tashkent' }],
           ),
         () =>
           service.sendNewMessageNotification(
@@ -907,7 +968,7 @@ describe('EmailService', () => {
             'Recipient',
             'Sender',
             'Property',
-            'Message'
+            'Message',
           ),
         () =>
           service.sendViewingRequestNotification(
@@ -916,9 +977,10 @@ describe('EmailService', () => {
             'Requester',
             'Property',
             '2024-01-15',
-            '14:00'
+            '14:00',
           ),
-        () => service.sendAgentVerificationEmail('test@example.com', 'Agent Name'),
+        () =>
+          service.sendAgentVerificationEmail('test@example.com', 'Agent Name'),
       ];
 
       for (const emailFunction of emailFunctions) {
@@ -946,7 +1008,7 @@ describe('EmailService', () => {
         'test@example.com',
         'User',
         'Search',
-        properties
+        properties,
       );
 
       const callArgs = mockTransporter.sendMail.mock.calls[0][0];

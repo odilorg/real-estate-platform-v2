@@ -132,7 +132,9 @@ export class LocationService {
   private calculateWalkingScore(
     nearbyAmenities: LocationDataResponse['nearbyAmenities'],
   ): WalkingScoreData {
-    const calculateCategoryScore = (amenities: NearbyAmenityResult[]): number => {
+    const calculateCategoryScore = (
+      amenities: NearbyAmenityResult[],
+    ): number => {
       if (amenities.length === 0) return 0;
 
       // Score based on proximity of closest amenity
@@ -155,7 +157,9 @@ export class LocationService {
     // Calculate scores for each category
     const transportScore = Math.max(
       calculateCategoryScore(nearbyAmenities.transport),
-      calculateCategoryScore(nearbyAmenities.transport.filter(a => a.type === AmenityType.METRO))
+      calculateCategoryScore(
+        nearbyAmenities.transport.filter((a) => a.type === AmenityType.METRO),
+      ),
     );
 
     const educationScore = Math.max(
@@ -176,16 +180,19 @@ export class LocationService {
     const recreationScore = Math.max(
       calculateCategoryScore(nearbyAmenities.parks),
       calculateCategoryScore(nearbyAmenities.gyms),
-      calculateCategoryScore([...nearbyAmenities.restaurants, ...nearbyAmenities.cafes]),
+      calculateCategoryScore([
+        ...nearbyAmenities.restaurants,
+        ...nearbyAmenities.cafes,
+      ]),
     );
 
     // Overall score is weighted average
     const overallScore = Math.round(
-      (transportScore * 0.3 +
+      transportScore * 0.3 +
         educationScore * 0.15 +
         healthcareScore * 0.15 +
         shoppingScore * 0.25 +
-        recreationScore * 0.15),
+        recreationScore * 0.15,
     );
 
     // Determine description
@@ -195,7 +202,8 @@ export class LocationService {
     } else if (overallScore >= 70) {
       description = 'Very Walkable - Most errands can be accomplished on foot';
     } else if (overallScore >= 50) {
-      description = 'Somewhat Walkable - Some errands can be accomplished on foot';
+      description =
+        'Somewhat Walkable - Some errands can be accomplished on foot';
     } else if (overallScore >= 25) {
       description = 'Car-Dependent - Most errands require a car';
     } else {
@@ -251,7 +259,9 @@ export class LocationService {
           1000,
           3,
         );
-        return [...metros, ...busStops].sort((a, b) => a.distance - b.distance).slice(0, 5);
+        return [...metros, ...busStops]
+          .sort((a, b) => a.distance - b.distance)
+          .slice(0, 5);
       }),
       this.getNearbyAmenitiesByType(
         latitude,

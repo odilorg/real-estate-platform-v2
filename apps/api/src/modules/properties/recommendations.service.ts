@@ -108,8 +108,8 @@ export class RecommendationsService {
       where: {
         status: 'ACTIVE',
         ...(favorites.length > 0 && {
-          id: { notIn: favorites.map(f => f.propertyId) }
-        })
+          id: { notIn: favorites.map((f) => f.propertyId) },
+        }),
       },
       include: {
         images: {
@@ -118,10 +118,7 @@ export class RecommendationsService {
         },
       },
       take: limit,
-      orderBy: [
-        { views: 'desc' },
-        { createdAt: 'desc' },
-      ],
+      orderBy: [{ views: 'desc' }, { createdAt: 'desc' }],
     });
   }
 }

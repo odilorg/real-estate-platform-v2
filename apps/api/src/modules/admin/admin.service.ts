@@ -1,4 +1,8 @@
-import { Injectable, NotFoundException, ForbiddenException } from '@nestjs/common';
+import {
+  Injectable,
+  NotFoundException,
+  ForbiddenException,
+} from '@nestjs/common';
 import { PrismaService } from '../../common/prisma';
 
 @Injectable()
@@ -132,7 +136,11 @@ export class AdminService {
     return { success: true };
   }
 
-  async updateUserRole(adminId: string, userId: string, role: 'USER' | 'AGENT' | 'ADMIN') {
+  async updateUserRole(
+    adminId: string,
+    userId: string,
+    role: 'USER' | 'AGENT' | 'ADMIN',
+  ) {
     const user = await this.prisma.user.findUnique({
       where: { id: userId },
     });
@@ -146,14 +154,18 @@ export class AdminService {
       data: { role },
     });
 
-    await this.logAction(adminId, 'UPDATE_ROLE', 'user', userId, { newRole: role });
+    await this.logAction(adminId, 'UPDATE_ROLE', 'user', userId, {
+      newRole: role,
+    });
 
     return { success: true };
   }
 
   async getProperties(page = 1, limit = 20, status?: string) {
     const skip = (page - 1) * limit;
-    const where = status ? { status: status as 'ACTIVE' | 'PENDING' | 'SOLD' | 'RENTED' } : {};
+    const where = status
+      ? { status: status as 'ACTIVE' | 'PENDING' | 'SOLD' | 'RENTED' }
+      : {};
 
     const [properties, total] = await Promise.all([
       this.prisma.property.findMany({
@@ -202,7 +214,13 @@ export class AdminService {
       data: { status: 'ACTIVE' },
     });
 
-    await this.logAction(adminId, 'APPROVE_PROPERTY', 'property', propertyId, {});
+    await this.logAction(
+      adminId,
+      'APPROVE_PROPERTY',
+      'property',
+      propertyId,
+      {},
+    );
 
     return { success: true };
   }
@@ -221,12 +239,18 @@ export class AdminService {
       data: { status: 'INACTIVE' },
     });
 
-    await this.logAction(adminId, 'REJECT_PROPERTY', 'property', propertyId, { reason });
+    await this.logAction(adminId, 'REJECT_PROPERTY', 'property', propertyId, {
+      reason,
+    });
 
     return { success: true };
   }
 
-  async featureProperty(adminId: string, propertyId: string, featured: boolean) {
+  async featureProperty(
+    adminId: string,
+    propertyId: string,
+    featured: boolean,
+  ) {
     const property = await this.prisma.property.findUnique({
       where: { id: propertyId },
     });
@@ -240,7 +264,13 @@ export class AdminService {
       data: { featured },
     });
 
-    await this.logAction(adminId, featured ? 'FEATURE_PROPERTY' : 'UNFEATURE_PROPERTY', 'property', propertyId, {});
+    await this.logAction(
+      adminId,
+      featured ? 'FEATURE_PROPERTY' : 'UNFEATURE_PROPERTY',
+      'property',
+      propertyId,
+      {},
+    );
 
     return { success: true };
   }
@@ -258,12 +288,21 @@ export class AdminService {
       where: { id: propertyId },
     });
 
-    await this.logAction(adminId, 'DELETE_PROPERTY', 'property', propertyId, {});
+    await this.logAction(
+      adminId,
+      'DELETE_PROPERTY',
+      'property',
+      propertyId,
+      {},
+    );
 
     return { success: true };
   }
 
-  async getAdminLogs(page = 1, limit = 50): Promise<{
+  async getAdminLogs(
+    page = 1,
+    limit = 50,
+  ): Promise<{
     items: Array<Record<string, unknown>>;
     total: number;
     page: number;
@@ -331,7 +370,11 @@ export class AdminService {
     const where: {
       verified?: boolean;
       superAgent?: boolean;
-      OR?: Array<{ firstName?: { contains: string; mode: 'insensitive' }; lastName?: { contains: string; mode: 'insensitive' }; email?: { contains: string; mode: 'insensitive' } }>;
+      OR?: Array<{
+        firstName?: { contains: string; mode: 'insensitive' };
+        lastName?: { contains: string; mode: 'insensitive' };
+        email?: { contains: string; mode: 'insensitive' };
+      }>;
     } = {};
 
     if (verified !== undefined) where.verified = verified;
@@ -390,17 +433,20 @@ export class AdminService {
     };
   }
 
-  async createAgent(adminId: string, data: {
-    email: string;
-    password: string;
-    firstName: string;
-    lastName: string;
-    phone: string;
-    agencyId?: string;
-    bio?: string;
-    specializations?: string[];
-    languages?: string[];
-  }) {
+  async createAgent(
+    adminId: string,
+    data: {
+      email: string;
+      password: string;
+      firstName: string;
+      lastName: string;
+      phone: string;
+      agencyId?: string;
+      bio?: string;
+      specializations?: string[];
+      languages?: string[];
+    },
+  ) {
     // Check if user with this email already exists
     const existingUser = await this.prisma.user.findUnique({
       where: { email: data.email },
@@ -477,9 +523,15 @@ export class AdminService {
       data: { verified },
     });
 
-    await this.logAction(adminId, verified ? 'VERIFY_AGENT' : 'UNVERIFY_AGENT', 'agent', agentId, {
-      verified,
-    });
+    await this.logAction(
+      adminId,
+      verified ? 'VERIFY_AGENT' : 'UNVERIFY_AGENT',
+      'agent',
+      agentId,
+      {
+        verified,
+      },
+    );
 
     return updatedAgent;
   }
@@ -498,14 +550,24 @@ export class AdminService {
       data: { superAgent },
     });
 
-    await this.logAction(adminId, superAgent ? 'SET_SUPER_AGENT' : 'UNSET_SUPER_AGENT', 'agent', agentId, {
-      superAgent,
-    });
+    await this.logAction(
+      adminId,
+      superAgent ? 'SET_SUPER_AGENT' : 'UNSET_SUPER_AGENT',
+      'agent',
+      agentId,
+      {
+        superAgent,
+      },
+    );
 
     return updatedAgent;
   }
 
-  async assignAgency(adminId: string, agentId: string, agencyId: string | null) {
+  async assignAgency(
+    adminId: string,
+    agentId: string,
+    agencyId: string | null,
+  ) {
     const agent = await this.prisma.agent.findUnique({
       where: { id: agentId },
     });

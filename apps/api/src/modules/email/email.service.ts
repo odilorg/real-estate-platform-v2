@@ -58,7 +58,9 @@ export class EmailService {
       if (!process.env.SMTP_USER) {
         this.logger.log(`[EMAIL] To: ${options.to}`);
         this.logger.log(`[EMAIL] Subject: ${options.subject}`);
-        this.logger.log(`[EMAIL] Content: ${options.text || this.stripHtml(options.html)}`);
+        this.logger.log(
+          `[EMAIL] Content: ${options.text || this.stripHtml(options.html)}`,
+        );
         return true;
       }
 
@@ -104,7 +106,12 @@ export class EmailService {
     to: string,
     userName: string,
     searchName: string,
-    properties: Array<{ id: string; title: string; price: number; city: string }>,
+    properties: Array<{
+      id: string;
+      title: string;
+      price: number;
+      city: string;
+    }>,
   ): Promise<boolean> {
     const baseUrl = process.env.FRONTEND_URL || 'http://localhost:3000';
 

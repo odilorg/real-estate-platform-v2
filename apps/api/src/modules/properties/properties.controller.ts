@@ -104,8 +104,12 @@ export class PropertiesController {
       parkingType: query.parkingType || undefined,
 
       // Year
-      minYearBuilt: query.minYearBuilt ? parseInt(query.minYearBuilt) : undefined,
-      maxYearBuilt: query.maxYearBuilt ? parseInt(query.maxYearBuilt) : undefined,
+      minYearBuilt: query.minYearBuilt
+        ? parseInt(query.minYearBuilt)
+        : undefined,
+      maxYearBuilt: query.maxYearBuilt
+        ? parseInt(query.maxYearBuilt)
+        : undefined,
 
       // Amenities (comma-separated string)
       amenities: query.amenities ? query.amenities.split(',') : undefined,
@@ -116,8 +120,18 @@ export class PropertiesController {
       hasGatedArea: query.hasGatedArea === 'true' || undefined,
 
       // Listing options
-      featured: query.featured === 'true' ? true : query.featured === 'false' ? false : undefined,
-      verified: query.verified === 'true' ? true : query.verified === 'false' ? false : undefined,
+      featured:
+        query.featured === 'true'
+          ? true
+          : query.featured === 'false'
+            ? false
+            : undefined,
+      verified:
+        query.verified === 'true'
+          ? true
+          : query.verified === 'false'
+            ? false
+            : undefined,
 
       // Pagination & sorting
       page: query.page ? parseInt(query.page) : 1,
@@ -183,7 +197,9 @@ export class PropertiesController {
     }
 
     if (!property.latitude || !property.longitude) {
-      throw new NotFoundException('Property does not have location coordinates');
+      throw new NotFoundException(
+        'Property does not have location coordinates',
+      );
     }
 
     return this.locationService.getPropertyLocationData(
@@ -304,18 +320,23 @@ export class PropertiesController {
 
   @Post('valuation')
   @Public()
-  async calculateValuation(@Body() input: Record<string, unknown>): Promise<ValuationResult> {
+  async calculateValuation(
+    @Body() input: Record<string, unknown>,
+  ): Promise<ValuationResult> {
     try {
       return await this.valuationService.calculateValuation(input as any);
     } catch (error) {
-      const message = error instanceof Error ? error.message : 'Valuation failed';
+      const message =
+        error instanceof Error ? error.message : 'Valuation failed';
       throw new NotFoundException(message);
     }
   }
 
   @Get(':id/valuation')
   @Public()
-  async getPropertyValuation(@Param('id') id: string): Promise<ValuationResult> {
+  async getPropertyValuation(
+    @Param('id') id: string,
+  ): Promise<ValuationResult> {
     const property = await this.propertiesService.findOne(id);
 
     if (!property) {
@@ -344,7 +365,8 @@ export class PropertiesController {
     try {
       return await this.valuationService.calculateValuation(input);
     } catch (error) {
-      const message = error instanceof Error ? error.message : 'Valuation failed';
+      const message =
+        error instanceof Error ? error.message : 'Valuation failed';
       throw new NotFoundException(message);
     }
   }

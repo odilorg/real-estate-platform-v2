@@ -1,8 +1,16 @@
 import { Test, TestingModule } from '@nestjs/testing';
-import { NotFoundException, ForbiddenException, BadRequestException } from '@nestjs/common';
+import {
+  NotFoundException,
+  ForbiddenException,
+  BadRequestException,
+} from '@nestjs/common';
 import { ViewingsService } from './viewings.service';
 import { PrismaService } from '../../common/prisma/prisma.service';
-import { mockPrismaService, resetMocks, TestFactories } from '../../test/test-utils';
+import {
+  mockPrismaService,
+  resetMocks,
+  TestFactories,
+} from '../../test/test-utils';
 
 describe('ViewingsService', () => {
   let service: ViewingsService;
@@ -38,7 +46,7 @@ describe('ViewingsService', () => {
     it('should create a viewing request successfully', async () => {
       const mockProperty = TestFactories.createProperty({
         id: propertyId,
-        userId: ownerId
+        userId: ownerId,
       });
       const mockViewing = {
         id: 'viewing-123',
@@ -67,7 +75,11 @@ describe('ViewingsService', () => {
       prisma.viewing.findFirst.mockResolvedValue(null);
       prisma.viewing.create.mockResolvedValue(mockViewing as any);
 
-      const result = await service.requestViewing(requesterId, propertyId, viewingData);
+      const result = await service.requestViewing(
+        requesterId,
+        propertyId,
+        viewingData,
+      );
 
       expect(result).toEqual(mockViewing);
       expect(prisma.property.findUnique).toHaveBeenCalledWith({
@@ -98,7 +110,7 @@ describe('ViewingsService', () => {
       prisma.property.findUnique.mockResolvedValue(null);
 
       await expect(
-        service.requestViewing(requesterId, propertyId, viewingData)
+        service.requestViewing(requesterId, propertyId, viewingData),
       ).rejects.toThrow(NotFoundException);
       expect(prisma.viewing.create).not.toHaveBeenCalled();
     });
@@ -110,7 +122,7 @@ describe('ViewingsService', () => {
       } as any);
 
       await expect(
-        service.requestViewing(requesterId, propertyId, viewingData)
+        service.requestViewing(requesterId, propertyId, viewingData),
       ).rejects.toThrow(BadRequestException);
       expect(prisma.viewing.create).not.toHaveBeenCalled();
     });
@@ -130,7 +142,7 @@ describe('ViewingsService', () => {
       prisma.viewing.findFirst.mockResolvedValue(existingViewing as any);
 
       await expect(
-        service.requestViewing(requesterId, propertyId, viewingData)
+        service.requestViewing(requesterId, propertyId, viewingData),
       ).rejects.toThrow(BadRequestException);
       expect(prisma.viewing.create).not.toHaveBeenCalled();
     });
@@ -158,7 +170,7 @@ describe('ViewingsService', () => {
           data: expect.objectContaining({
             message: undefined,
           }),
-        })
+        }),
       );
     });
   });
@@ -304,7 +316,7 @@ describe('ViewingsService', () => {
         viewingId,
         ownerId,
         'CONFIRMED',
-        'Looking forward to showing you the property'
+        'Looking forward to showing you the property',
       );
 
       expect(result.status).toBe('CONFIRMED');
@@ -331,7 +343,7 @@ describe('ViewingsService', () => {
       const result = await service.respondToViewing(
         viewingId,
         ownerId,
-        'CANCELLED'
+        'CANCELLED',
       );
 
       expect(result.status).toBe('CANCELLED');
@@ -349,7 +361,7 @@ describe('ViewingsService', () => {
       prisma.viewing.findUnique.mockResolvedValue(null);
 
       await expect(
-        service.respondToViewing(viewingId, ownerId, 'CONFIRMED')
+        service.respondToViewing(viewingId, ownerId, 'CONFIRMED'),
       ).rejects.toThrow(NotFoundException);
       expect(prisma.viewing.update).not.toHaveBeenCalled();
     });
@@ -358,7 +370,7 @@ describe('ViewingsService', () => {
       prisma.viewing.findUnique.mockResolvedValue(mockViewing as any);
 
       await expect(
-        service.respondToViewing(viewingId, 'different-user', 'CONFIRMED')
+        service.respondToViewing(viewingId, 'different-user', 'CONFIRMED'),
       ).rejects.toThrow(ForbiddenException);
       expect(prisma.viewing.update).not.toHaveBeenCalled();
     });
@@ -372,7 +384,7 @@ describe('ViewingsService', () => {
       prisma.viewing.findUnique.mockResolvedValue(confirmedViewing as any);
 
       await expect(
-        service.respondToViewing(viewingId, ownerId, 'CONFIRMED')
+        service.respondToViewing(viewingId, ownerId, 'CONFIRMED'),
       ).rejects.toThrow(BadRequestException);
       expect(prisma.viewing.update).not.toHaveBeenCalled();
     });
@@ -430,7 +442,7 @@ describe('ViewingsService', () => {
       prisma.viewing.findUnique.mockResolvedValue(null);
 
       await expect(
-        service.cancelViewing(viewingId, requesterId)
+        service.cancelViewing(viewingId, requesterId),
       ).rejects.toThrow(NotFoundException);
       expect(prisma.viewing.update).not.toHaveBeenCalled();
     });
@@ -439,7 +451,7 @@ describe('ViewingsService', () => {
       prisma.viewing.findUnique.mockResolvedValue(mockViewing as any);
 
       await expect(
-        service.cancelViewing(viewingId, 'different-user')
+        service.cancelViewing(viewingId, 'different-user'),
       ).rejects.toThrow(ForbiddenException);
       expect(prisma.viewing.update).not.toHaveBeenCalled();
     });
@@ -453,7 +465,7 @@ describe('ViewingsService', () => {
       prisma.viewing.findUnique.mockResolvedValue(completedViewing as any);
 
       await expect(
-        service.cancelViewing(viewingId, requesterId)
+        service.cancelViewing(viewingId, requesterId),
       ).rejects.toThrow(BadRequestException);
       expect(prisma.viewing.update).not.toHaveBeenCalled();
     });
@@ -495,9 +507,9 @@ describe('ViewingsService', () => {
     it('should throw NotFoundException if viewing does not exist', async () => {
       prisma.viewing.findUnique.mockResolvedValue(null);
 
-      await expect(
-        service.completeViewing(viewingId, ownerId)
-      ).rejects.toThrow(NotFoundException);
+      await expect(service.completeViewing(viewingId, ownerId)).rejects.toThrow(
+        NotFoundException,
+      );
       expect(prisma.viewing.update).not.toHaveBeenCalled();
     });
 
@@ -505,7 +517,7 @@ describe('ViewingsService', () => {
       prisma.viewing.findUnique.mockResolvedValue(mockViewing as any);
 
       await expect(
-        service.completeViewing(viewingId, 'different-user')
+        service.completeViewing(viewingId, 'different-user'),
       ).rejects.toThrow(ForbiddenException);
       expect(prisma.viewing.update).not.toHaveBeenCalled();
     });
@@ -518,9 +530,9 @@ describe('ViewingsService', () => {
 
       prisma.viewing.findUnique.mockResolvedValue(pendingViewing as any);
 
-      await expect(
-        service.completeViewing(viewingId, ownerId)
-      ).rejects.toThrow(BadRequestException);
+      await expect(service.completeViewing(viewingId, ownerId)).rejects.toThrow(
+        BadRequestException,
+      );
       expect(prisma.viewing.update).not.toHaveBeenCalled();
     });
   });

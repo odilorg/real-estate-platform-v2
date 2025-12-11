@@ -131,10 +131,14 @@ export class RecommendationService {
       const priceVariance = priceDiff / avgPrice;
 
       // Score decreases as price variance increases
-      if (priceVariance <= 0.1) scores.price = 25; // Within 10%
-      else if (priceVariance <= 0.2) scores.price = 20; // Within 20%
-      else if (priceVariance <= 0.3) scores.price = 15; // Within 30%
-      else if (priceVariance <= 0.5) scores.price = 10; // Within 50%
+      if (priceVariance <= 0.1)
+        scores.price = 25; // Within 10%
+      else if (priceVariance <= 0.2)
+        scores.price = 20; // Within 20%
+      else if (priceVariance <= 0.3)
+        scores.price = 15; // Within 30%
+      else if (priceVariance <= 0.5)
+        scores.price = 10; // Within 50%
       else scores.price = 0;
     }
 
@@ -144,10 +148,14 @@ export class RecommendationService {
       const avgArea = (source.area + candidate.area) / 2;
       const areaVariance = areaDiff / avgArea;
 
-      if (areaVariance <= 0.1) scores.area = 15; // Within 10%
-      else if (areaVariance <= 0.2) scores.area = 12; // Within 20%
-      else if (areaVariance <= 0.3) scores.area = 8; // Within 30%
-      else if (areaVariance <= 0.5) scores.area = 5; // Within 50%
+      if (areaVariance <= 0.1)
+        scores.area = 15; // Within 10%
+      else if (areaVariance <= 0.2)
+        scores.area = 12; // Within 20%
+      else if (areaVariance <= 0.3)
+        scores.area = 8; // Within 30%
+      else if (areaVariance <= 0.5)
+        scores.area = 5; // Within 50%
       else scores.area = 0;
     }
 
@@ -184,14 +192,19 @@ export class RecommendationService {
           candidate.longitude,
         );
 
-        if (distance <= 1) scores.location += 5; // Within 1km
-        else if (distance <= 3) scores.location += 3; // Within 3km
+        if (distance <= 1)
+          scores.location += 5; // Within 1km
+        else if (distance <= 3)
+          scores.location += 3; // Within 3km
         else if (distance <= 5) scores.location += 1; // Within 5km
       }
     }
 
     // 6. Building Features (Weight: 5%)
-    if (source.buildingClass && source.buildingClass === candidate.buildingClass) {
+    if (
+      source.buildingClass &&
+      source.buildingClass === candidate.buildingClass
+    ) {
       scores.buildingClass = 2.5;
     }
     if (source.renovation && source.renovation === candidate.renovation) {

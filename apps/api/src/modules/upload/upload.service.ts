@@ -34,10 +34,14 @@ export class UploadService {
     const secretAccessKey = this.configService.get<string>(
       'R2_SECRET_ACCESS_KEY',
     );
-    this.bucket = this.configService.get<string>('R2_BUCKET_NAME', 'realestate');
+    this.bucket = this.configService.get<string>(
+      'R2_BUCKET_NAME',
+      'realestate',
+    );
 
     // Check if R2 credentials are configured (not placeholder values)
-    this.useLocalStorage = !accessKeyId ||
+    this.useLocalStorage =
+      !accessKeyId ||
       !secretAccessKey ||
       accessKeyId === 'your-r2-access-key' ||
       secretAccessKey === 'your-r2-secret-key';
@@ -45,17 +49,19 @@ export class UploadService {
     if (this.useLocalStorage) {
       // Use local file storage
       this.localStoragePath = path.join(process.cwd(), 'uploads');
-      this.publicUrl = this.configService.get<string>(
-        'API_URL',
-        'http://localhost:3001',
-      ) + '/uploads';
+      this.publicUrl =
+        this.configService.get<string>('API_URL', 'http://localhost:3001') +
+        '/uploads';
 
       // Create uploads directory if it doesn't exist
       if (!fs.existsSync(this.localStoragePath)) {
         fs.mkdirSync(this.localStoragePath, { recursive: true });
       }
 
-      console.log('[UploadService] Using local file storage at:', this.localStoragePath);
+      console.log(
+        '[UploadService] Using local file storage at:',
+        this.localStoragePath,
+      );
     } else {
       // Use R2 storage
       const accountId = this.configService.get<string>('R2_ACCOUNT_ID');

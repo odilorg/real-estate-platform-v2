@@ -117,7 +117,7 @@ describe('PriceHistoryService', () => {
         oldPrice,
         newPrice,
         currency,
-        changedBy
+        changedBy,
       );
 
       expect(result).toEqual(mockPriceChange);
@@ -154,7 +154,7 @@ describe('PriceHistoryService', () => {
         propertyId,
         oldPrice,
         newPrice,
-        currency
+        currency,
       );
 
       expect(result).toEqual(mockPriceChange);
@@ -189,7 +189,7 @@ describe('PriceHistoryService', () => {
             oldPrice: 120000,
             newPrice: 100000,
           }),
-        })
+        }),
       );
     });
 
@@ -211,7 +211,7 @@ describe('PriceHistoryService', () => {
           data: expect.objectContaining({
             currency: 'UZS',
           }),
-        })
+        }),
       );
     });
   });

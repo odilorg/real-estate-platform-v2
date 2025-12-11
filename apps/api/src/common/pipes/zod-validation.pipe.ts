@@ -1,8 +1,4 @@
-import {
-  PipeTransform,
-  Injectable,
-  BadRequestException,
-} from '@nestjs/common';
+import { PipeTransform, Injectable, BadRequestException } from '@nestjs/common';
 import { ZodSchema, ZodError } from 'zod';
 
 @Injectable()
@@ -11,7 +7,10 @@ export class ZodValidationPipe implements PipeTransform {
 
   transform(value: unknown) {
     try {
-      console.log('[ZodValidationPipe] Validating value:', JSON.stringify(value, null, 2));
+      console.log(
+        '[ZodValidationPipe] Validating value:',
+        JSON.stringify(value, null, 2),
+      );
       const result = this.schema.parse(value);
       console.log('[ZodValidationPipe] Validation successful');
       return result;

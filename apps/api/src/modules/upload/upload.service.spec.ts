@@ -2,7 +2,11 @@ import { Test, TestingModule } from '@nestjs/testing';
 import { ConfigService } from '@nestjs/config';
 import { BadRequestException } from '@nestjs/common';
 import { UploadService } from './upload.service';
-import { S3Client, PutObjectCommand, DeleteObjectCommand } from '@aws-sdk/client-s3';
+import {
+  S3Client,
+  PutObjectCommand,
+  DeleteObjectCommand,
+} from '@aws-sdk/client-s3';
 import { getSignedUrl } from '@aws-sdk/s3-request-presigner';
 import * as fs from 'fs';
 import * as path from 'path';
@@ -84,7 +88,7 @@ describe('UploadService', () => {
 
         expect(fs.mkdirSync).toHaveBeenCalledWith(
           expect.stringContaining('new-folder'),
-          { recursive: true }
+          { recursive: true },
         );
       });
 
@@ -95,10 +99,10 @@ describe('UploadService', () => {
         };
 
         await expect(service.uploadFile(invalidFile)).rejects.toThrow(
-          BadRequestException
+          BadRequestException,
         );
         await expect(service.uploadFile(invalidFile)).rejects.toThrow(
-          'Invalid file type'
+          'Invalid file type',
         );
       });
 
@@ -109,13 +113,21 @@ describe('UploadService', () => {
       });
 
       it('should accept PNG images', async () => {
-        const pngFile = { ...mockFile, mimetype: 'image/png', originalname: 'test.png' };
+        const pngFile = {
+          ...mockFile,
+          mimetype: 'image/png',
+          originalname: 'test.png',
+        };
         const result = await service.uploadFile(pngFile);
         expect(result.key).toMatch(/\.png$/);
       });
 
       it('should accept WebP images', async () => {
-        const webpFile = { ...mockFile, mimetype: 'image/webp', originalname: 'test.webp' };
+        const webpFile = {
+          ...mockFile,
+          mimetype: 'image/webp',
+          originalname: 'test.webp',
+        };
         const result = await service.uploadFile(webpFile);
         expect(result.key).toMatch(/\.webp$/);
       });
@@ -127,10 +139,10 @@ describe('UploadService', () => {
         };
 
         await expect(service.uploadFile(largeFile)).rejects.toThrow(
-          BadRequestException
+          BadRequestException,
         );
         await expect(service.uploadFile(largeFile)).rejects.toThrow(
-          'File size exceeds 10MB limit'
+          'File size exceeds 10MB limit',
         );
       });
 
@@ -179,10 +191,10 @@ describe('UploadService', () => {
         const files = Array(21).fill(mockFile);
 
         await expect(service.uploadMultiple(files)).rejects.toThrow(
-          BadRequestException
+          BadRequestException,
         );
         await expect(service.uploadMultiple(files)).rejects.toThrow(
-          'Maximum 20 files allowed'
+          'Maximum 20 files allowed',
         );
       });
 
@@ -206,7 +218,7 @@ describe('UploadService', () => {
         ];
 
         await expect(service.uploadMultiple(files)).rejects.toThrow(
-          BadRequestException
+          BadRequestException,
         );
       });
     });
@@ -224,7 +236,9 @@ describe('UploadService', () => {
       it('should handle deletion of non-existent file gracefully', async () => {
         (fs.existsSync as jest.Mock).mockReturnValue(false);
 
-        await expect(service.deleteFile('nonexistent.jpg')).resolves.not.toThrow();
+        await expect(
+          service.deleteFile('nonexistent.jpg'),
+        ).resolves.not.toThrow();
         expect(fs.unlinkSync).not.toHaveBeenCalled();
       });
     });
@@ -251,10 +265,10 @@ describe('UploadService', () => {
     describe('getPresignedUploadUrl', () => {
       it('should throw error in local storage mode', async () => {
         await expect(service.getPresignedUploadUrl()).rejects.toThrow(
-          BadRequestException
+          BadRequestException,
         );
         await expect(service.getPresignedUploadUrl()).rejects.toThrow(
-          'Presigned URLs are not supported in local storage mode'
+          'Presigned URLs are not supported in local storage mode',
         );
       });
     });
@@ -305,8 +319,12 @@ describe('UploadService', () => {
         send: jest.fn().mockResolvedValue({}),
       } as any;
 
-      (S3Client as jest.MockedClass<typeof S3Client>).mockImplementation(() => mockS3Client);
-      (getSignedUrl as jest.Mock).mockResolvedValue('https://signed-url.example.com');
+      (S3Client as jest.MockedClass<typeof S3Client>).mockImplementation(
+        () => mockS3Client,
+      );
+      (getSignedUrl as jest.Mock).mockResolvedValue(
+        'https://signed-url.example.com',
+      );
 
       const module: TestingModule = await Test.createTestingModule({
         providers: [
@@ -329,7 +347,9 @@ describe('UploadService', () => {
         expect(result).toHaveProperty('key');
         expect(result.url).toContain('https://test-bucket.r2.dev');
         expect(result.key).toContain('properties/');
-        expect(mockS3Client.send).toHaveBeenCalledWith(expect.any(PutObjectCommand));
+        expect(mockS3Client.send).toHaveBeenCalledWith(
+          expect.any(PutObjectCommand),
+        );
       });
 
       it('should send PutObjectCommand to S3', async () => {
@@ -345,13 +365,18 @@ describe('UploadService', () => {
       it('should delete file from R2 storage', async () => {
         await service.deleteFile('properties/test-uuid.jpg');
 
-        expect(mockS3Client.send).toHaveBeenCalledWith(expect.any(DeleteObjectCommand));
+        expect(mockS3Client.send).toHaveBeenCalledWith(
+          expect.any(DeleteObjectCommand),
+        );
       });
     });
 
     describe('getPresignedUploadUrl', () => {
       it('should generate presigned URL successfully', async () => {
-        const result = await service.getPresignedUploadUrl('properties', 'image/jpeg');
+        const result = await service.getPresignedUploadUrl(
+          'properties',
+          'image/jpeg',
+        );
 
         expect(result).toHaveProperty('uploadUrl');
         expect(result).toHaveProperty('key');
@@ -362,23 +387,29 @@ describe('UploadService', () => {
         expect(getSignedUrl).toHaveBeenCalledWith(
           mockS3Client,
           expect.any(PutObjectCommand),
-          { expiresIn: 3600 }
+          { expiresIn: 3600 },
         );
       });
 
       it('should reject invalid content types for presigned URL', async () => {
         await expect(
-          service.getPresignedUploadUrl('properties', 'application/pdf')
+          service.getPresignedUploadUrl('properties', 'application/pdf'),
         ).rejects.toThrow(BadRequestException);
       });
 
       it('should accept PNG for presigned URL', async () => {
-        const result = await service.getPresignedUploadUrl('properties', 'image/png');
+        const result = await service.getPresignedUploadUrl(
+          'properties',
+          'image/png',
+        );
         expect(result.key).toMatch(/\.png$/);
       });
 
       it('should accept WebP for presigned URL', async () => {
-        const result = await service.getPresignedUploadUrl('properties', 'image/webp');
+        const result = await service.getPresignedUploadUrl(
+          'properties',
+          'image/webp',
+        );
         expect(result.key).toMatch(/\.webp$/);
       });
 

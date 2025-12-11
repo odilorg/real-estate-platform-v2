@@ -290,34 +290,34 @@ export class AnalyticsService {
     const totalContacts = analytics.reduce((sum, a) => sum + a.contacts, 0);
 
     // Calculate per-property performance
-    const propertyPerformance: PropertyPerformance[] = properties.map((prop) => {
-      const propAnalytics = analytics.filter(
-        (a) => a.propertyId === prop.id,
-      );
-      const views = propAnalytics.reduce((sum, a) => sum + a.views, 0);
-      const favorites = propAnalytics.reduce(
-        (sum, a) => sum + a.favorites - a.unfavorites,
-        0,
-      );
-      const contacts = propAnalytics.reduce((sum, a) => sum + a.contacts, 0);
+    const propertyPerformance: PropertyPerformance[] = properties.map(
+      (prop) => {
+        const propAnalytics = analytics.filter((a) => a.propertyId === prop.id);
+        const views = propAnalytics.reduce((sum, a) => sum + a.views, 0);
+        const favorites = propAnalytics.reduce(
+          (sum, a) => sum + a.favorites - a.unfavorites,
+          0,
+        );
+        const contacts = propAnalytics.reduce((sum, a) => sum + a.contacts, 0);
 
-      const daysSinceCreation = Math.max(
-        1,
-        Math.floor(
-          (Date.now() - prop.createdAt.getTime()) / (1000 * 60 * 60 * 24),
-        ),
-      );
+        const daysSinceCreation = Math.max(
+          1,
+          Math.floor(
+            (Date.now() - prop.createdAt.getTime()) / (1000 * 60 * 60 * 24),
+          ),
+        );
 
-      return {
-        propertyId: prop.id,
-        title: prop.title,
-        totalViews: views,
-        totalFavorites: favorites,
-        totalContacts: contacts,
-        avgViewsPerDay: Math.round((views / daysSinceCreation) * 10) / 10,
-        lastViewedAt: lastViewsMap.get(prop.id) || null,
-      };
-    });
+        return {
+          propertyId: prop.id,
+          title: prop.title,
+          totalViews: views,
+          totalFavorites: favorites,
+          totalContacts: contacts,
+          avgViewsPerDay: Math.round((views / daysSinceCreation) * 10) / 10,
+          lastViewedAt: lastViewsMap.get(prop.id) || null,
+        };
+      },
+    );
 
     // Sort by total views descending
     propertyPerformance.sort((a, b) => b.totalViews - a.totalViews);

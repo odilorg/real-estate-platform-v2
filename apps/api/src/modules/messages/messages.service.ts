@@ -1,4 +1,10 @@
-import { Injectable, NotFoundException, ForbiddenException, Inject, forwardRef } from '@nestjs/common';
+import {
+  Injectable,
+  NotFoundException,
+  ForbiddenException,
+  Inject,
+  forwardRef,
+} from '@nestjs/common';
 import { PrismaService } from '../../common/prisma';
 import { MessagesGateway } from './messages.gateway';
 
@@ -13,10 +19,7 @@ export class MessagesService {
   async getConversations(userId: string) {
     const conversations = await this.prisma.conversation.findMany({
       where: {
-        OR: [
-          { participant1Id: userId },
-          { participant2Id: userId },
-        ],
+        OR: [{ participant1Id: userId }, { participant2Id: userId }],
       },
       include: {
         property: {
@@ -40,9 +43,10 @@ export class MessagesService {
     // Get participant info and unread count for each conversation
     const enrichedConversations = await Promise.all(
       conversations.map(async (conv) => {
-        const otherParticipantId = conv.participant1Id === userId
-          ? conv.participant2Id
-          : conv.participant1Id;
+        const otherParticipantId =
+          conv.participant1Id === userId
+            ? conv.participant2Id
+            : conv.participant1Id;
 
         const otherParticipant = await this.prisma.user.findUnique({
           where: { id: otherParticipantId },
@@ -62,7 +66,7 @@ export class MessagesService {
           otherParticipant,
           unreadCount,
         };
-      })
+      }),
     );
 
     return enrichedConversations;
@@ -90,13 +94,17 @@ export class MessagesService {
       throw new NotFoundException('Conversation not found');
     }
 
-    if (conversation.participant1Id !== userId && conversation.participant2Id !== userId) {
+    if (
+      conversation.participant1Id !== userId &&
+      conversation.participant2Id !== userId
+    ) {
       throw new ForbiddenException('Access denied');
     }
 
-    const otherParticipantId = conversation.participant1Id === userId
-      ? conversation.participant2Id
-      : conversation.participant1Id;
+    const otherParticipantId =
+      conversation.participant1Id === userId
+        ? conversation.participant2Id
+        : conversation.participant1Id;
 
     const otherParticipant = await this.prisma.user.findUnique({
       where: { id: otherParticipantId },
@@ -106,7 +114,12 @@ export class MessagesService {
     return { ...conversation, otherParticipant };
   }
 
-  async getMessages(conversationId: string, userId: string, page = 1, limit = 50) {
+  async getMessages(
+    conversationId: string,
+    userId: string,
+    page = 1,
+    limit = 50,
+  ) {
     // Verify access
     const conversation = await this.prisma.conversation.findUnique({
       where: { id: conversationId },
@@ -116,7 +129,10 @@ export class MessagesService {
       throw new NotFoundException('Conversation not found');
     }
 
-    if (conversation.participant1Id !== userId && conversation.participant2Id !== userId) {
+    if (
+      conversation.participant1Id !== userId &&
+      conversation.participant2Id !== userId
+    ) {
       throw new ForbiddenException('Access denied');
     }
 
@@ -231,7 +247,9 @@ export class MessagesService {
       id: conversation.id,
       propertyId: conversation.propertyId,
       property: conversation.property,
-      messages: [{ content: message, createdAt: conversation.messages[0].createdAt }],
+      messages: [
+        { content: message, createdAt: conversation.messages[0].createdAt },
+      ],
       lastMessageAt: conversation.lastMessageAt,
       unreadCount: 1,
       otherParticipant: sender,
@@ -250,7 +268,10 @@ export class MessagesService {
       throw new NotFoundException('Conversation not found');
     }
 
-    if (conversation.participant1Id !== userId && conversation.participant2Id !== userId) {
+    if (
+      conversation.participant1Id !== userId &&
+      conversation.participant2Id !== userId
+    ) {
       throw new ForbiddenException('Access denied');
     }
 
@@ -276,17 +297,14 @@ export class MessagesService {
   async getUnreadCount(userId: string) {
     const conversations = await this.prisma.conversation.findMany({
       where: {
-        OR: [
-          { participant1Id: userId },
-          { participant2Id: userId },
-        ],
+        OR: [{ participant1Id: userId }, { participant2Id: userId }],
       },
       select: { id: true },
     });
 
     const count = await this.prisma.message.count({
       where: {
-        conversationId: { in: conversations.map(c => c.id) },
+        conversationId: { in: conversations.map((c) => c.id) },
         senderId: { not: userId },
         read: false,
       },

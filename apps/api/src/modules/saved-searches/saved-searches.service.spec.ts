@@ -2,7 +2,11 @@ import { Test, TestingModule } from '@nestjs/testing';
 import { NotFoundException, ForbiddenException } from '@nestjs/common';
 import { SavedSearchesService } from './saved-searches.service';
 import { PrismaService } from '../../common/prisma/prisma.service';
-import { mockPrismaService, resetMocks, TestFactories } from '../../test/test-utils';
+import {
+  mockPrismaService,
+  resetMocks,
+  TestFactories,
+} from '../../test/test-utils';
 import { PropertyType, ListingType, Currency } from '@repo/shared';
 
 describe('SavedSearchesService', () => {
@@ -122,7 +126,7 @@ describe('SavedSearchesService', () => {
           data: expect.objectContaining({
             filters: createDto.filters,
           }),
-        })
+        }),
       );
     });
   });
@@ -182,7 +186,7 @@ describe('SavedSearchesService', () => {
       expect(prisma.savedSearch.findMany).toHaveBeenCalledWith(
         expect.objectContaining({
           orderBy: { createdAt: 'desc' },
-        })
+        }),
       );
     });
   });
@@ -210,9 +214,9 @@ describe('SavedSearchesService', () => {
     it('should throw NotFoundException if saved search does not exist', async () => {
       prisma.savedSearch.findUnique.mockResolvedValue(null);
 
-      await expect(
-        service.findOne(searchId, userId)
-      ).rejects.toThrow(NotFoundException);
+      await expect(service.findOne(searchId, userId)).rejects.toThrow(
+        NotFoundException,
+      );
     });
 
     it('should throw ForbiddenException if user does not own the saved search', async () => {
@@ -223,9 +227,9 @@ describe('SavedSearchesService', () => {
 
       prisma.savedSearch.findUnique.mockResolvedValue(mockSavedSearch as any);
 
-      await expect(
-        service.findOne(searchId, userId)
-      ).rejects.toThrow(ForbiddenException);
+      await expect(service.findOne(searchId, userId)).rejects.toThrow(
+        ForbiddenException,
+      );
     });
   });
 
@@ -320,7 +324,7 @@ describe('SavedSearchesService', () => {
       prisma.savedSearch.findUnique.mockResolvedValue(null);
 
       await expect(
-        service.update(searchId, userId, { name: 'Test' })
+        service.update(searchId, userId, { name: 'Test' }),
       ).rejects.toThrow(NotFoundException);
       expect(prisma.savedSearch.update).not.toHaveBeenCalled();
     });
@@ -334,7 +338,7 @@ describe('SavedSearchesService', () => {
       prisma.savedSearch.findUnique.mockResolvedValue(mockSavedSearch as any);
 
       await expect(
-        service.update(searchId, userId, { name: 'Test' })
+        service.update(searchId, userId, { name: 'Test' }),
       ).rejects.toThrow(ForbiddenException);
       expect(prisma.savedSearch.update).not.toHaveBeenCalled();
     });
@@ -364,9 +368,9 @@ describe('SavedSearchesService', () => {
     it('should throw NotFoundException if saved search does not exist', async () => {
       prisma.savedSearch.findUnique.mockResolvedValue(null);
 
-      await expect(
-        service.delete(searchId, userId)
-      ).rejects.toThrow(NotFoundException);
+      await expect(service.delete(searchId, userId)).rejects.toThrow(
+        NotFoundException,
+      );
       expect(prisma.savedSearch.delete).not.toHaveBeenCalled();
     });
 
@@ -378,9 +382,9 @@ describe('SavedSearchesService', () => {
 
       prisma.savedSearch.findUnique.mockResolvedValue(mockSavedSearch as any);
 
-      await expect(
-        service.delete(searchId, userId)
-      ).rejects.toThrow(ForbiddenException);
+      await expect(service.delete(searchId, userId)).rejects.toThrow(
+        ForbiddenException,
+      );
       expect(prisma.savedSearch.delete).not.toHaveBeenCalled();
     });
   });
@@ -437,7 +441,7 @@ describe('SavedSearchesService', () => {
       prisma.savedSearch.findUnique.mockResolvedValue(null);
 
       await expect(
-        service.toggleNotifications(searchId, userId, true)
+        service.toggleNotifications(searchId, userId, true),
       ).rejects.toThrow(NotFoundException);
       expect(prisma.savedSearch.update).not.toHaveBeenCalled();
     });
@@ -451,7 +455,7 @@ describe('SavedSearchesService', () => {
       prisma.savedSearch.findUnique.mockResolvedValue(mockSavedSearch as any);
 
       await expect(
-        service.toggleNotifications(searchId, userId, true)
+        service.toggleNotifications(searchId, userId, true),
       ).rejects.toThrow(ForbiddenException);
       expect(prisma.savedSearch.update).not.toHaveBeenCalled();
     });

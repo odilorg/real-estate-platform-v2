@@ -136,10 +136,7 @@ export class AgenciesService {
             superAgent: true,
             specializations: true,
           },
-          orderBy: [
-            { superAgent: 'desc' },
-            { rating: 'desc' },
-          ],
+          orderBy: [{ superAgent: 'desc' }, { rating: 'desc' }],
         },
       },
     });
@@ -154,7 +151,11 @@ export class AgenciesService {
   /**
    * Update agency (admin or agency owner)
    */
-  async update(id: string, userId: string, dto: UpdateAgencyDto): Promise<Agency> {
+  async update(
+    id: string,
+    userId: string,
+    dto: UpdateAgencyDto,
+  ): Promise<Agency> {
     // Verify user has permission (admin or agent in this agency)
     const user = await this.prisma.user.findUnique({
       where: { id: userId },
@@ -169,7 +170,9 @@ export class AgenciesService {
 
     if (user.role !== 'ADMIN') {
       if (!user.agent || user.agent.agencyId !== id) {
-        throw new ForbiddenException('You do not have permission to update this agency');
+        throw new ForbiddenException(
+          'You do not have permission to update this agency',
+        );
       }
     }
 

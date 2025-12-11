@@ -1,4 +1,9 @@
-import { Injectable, NotFoundException, ForbiddenException, BadRequestException } from '@nestjs/common';
+import {
+  Injectable,
+  NotFoundException,
+  ForbiddenException,
+  BadRequestException,
+} from '@nestjs/common';
 import { PrismaService } from '../../common/prisma';
 
 @Injectable()
@@ -20,7 +25,9 @@ export class ViewingsService {
     }
 
     if (property.userId === requesterId) {
-      throw new BadRequestException('Cannot request viewing for your own property');
+      throw new BadRequestException(
+        'Cannot request viewing for your own property',
+      );
     }
 
     // Check for existing pending viewing
@@ -33,7 +40,9 @@ export class ViewingsService {
     });
 
     if (existingViewing) {
-      throw new BadRequestException('You already have a pending viewing request for this property');
+      throw new BadRequestException(
+        'You already have a pending viewing request for this property',
+      );
     }
 
     return this.prisma.viewing.create({

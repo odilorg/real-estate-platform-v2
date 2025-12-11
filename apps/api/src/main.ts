@@ -51,7 +51,9 @@ async function bootstrap() {
   // Swagger API Documentation
   const config = new DocumentBuilder()
     .setTitle('Real Estate Platform API')
-    .setDescription('Comprehensive API for Uzbekistan real estate platform with properties, agents, agencies, messaging, and more')
+    .setDescription(
+      'Comprehensive API for Uzbekistan real estate platform with properties, agents, agencies, messaging, and more',
+    )
     .setVersion('1.0')
     .addBearerAuth(
       {
@@ -63,7 +65,10 @@ async function bootstrap() {
       'JWT-auth',
     )
     .addTag('Authentication', 'User authentication and OAuth endpoints')
-    .addTag('Search', 'Advanced search with Elasticsearch, autocomplete, and suggestions')
+    .addTag(
+      'Search',
+      'Advanced search with Elasticsearch, autocomplete, and suggestions',
+    )
     .addTag('Properties', 'Property listings CRUD and search')
     .addTag('Agents', 'Real estate agent profiles and directory')
     .addTag('Agencies', 'Real estate agency management')
@@ -87,6 +92,8 @@ async function bootstrap() {
   await app.listen(port);
 
   logger.log(`API running on http://localhost:${port}/api`);
-  logger.log(`Swagger documentation available at http://localhost:${port}/api/docs`);
+  logger.log(
+    `Swagger documentation available at http://localhost:${port}/api/docs`,
+  );
 }
 void bootstrap();

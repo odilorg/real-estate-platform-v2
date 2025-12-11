@@ -115,7 +115,9 @@ describe('AuthController - Phone Authentication (e2e)', () => {
         .send({ phone: '+998901234567' })
         .expect(400);
 
-      expect(response.body.message).toContain('Phone number already registered');
+      expect(response.body.message).toContain(
+        'Phone number already registered',
+      );
       expect(mockOtpService.sendOtp).not.toHaveBeenCalled();
     });
 
@@ -173,7 +175,9 @@ describe('AuthController - Phone Authentication (e2e)', () => {
           role: UserRole.USER,
         },
       });
-      expect(mockAuthService.registerWithPhone).toHaveBeenCalledWith(registerDto);
+      expect(mockAuthService.registerWithPhone).toHaveBeenCalledWith(
+        registerDto,
+      );
     });
 
     it('should return 400 for invalid OTP code format', async () => {
@@ -203,7 +207,10 @@ describe('AuthController - Phone Authentication (e2e)', () => {
 
     it('should return 409 if phone already registered', async () => {
       mockAuthService.registerWithPhone.mockRejectedValue({
-        response: { statusCode: 409, message: 'User with this phone number already exists' },
+        response: {
+          statusCode: 409,
+          message: 'User with this phone number already exists',
+        },
         status: 409,
       });
 
@@ -270,7 +277,9 @@ describe('AuthController - Phone Authentication (e2e)', () => {
         .send({ phone: '+998901234567' })
         .expect(400);
 
-      expect(response.body.message).toContain('No account found with this phone number');
+      expect(response.body.message).toContain(
+        'No account found with this phone number',
+      );
       expect(mockOtpService.sendOtp).not.toHaveBeenCalled();
     });
 
@@ -337,7 +346,10 @@ describe('AuthController - Phone Authentication (e2e)', () => {
 
     it('should return 401 if user not found', async () => {
       mockAuthService.loginWithPhone.mockRejectedValue({
-        response: { statusCode: 401, message: 'No account found with this phone number' },
+        response: {
+          statusCode: 401,
+          message: 'No account found with this phone number',
+        },
         status: 401,
       });
 
@@ -381,7 +393,10 @@ describe('AuthController - Phone Authentication (e2e)', () => {
         .expect(200);
 
       expect(response.body).toEqual({ success: true });
-      expect(mockAuthService.setPassword).toHaveBeenCalledWith('user-1', passwordDto);
+      expect(mockAuthService.setPassword).toHaveBeenCalledWith(
+        'user-1',
+        passwordDto,
+      );
     });
 
     it('should return 401 if not authenticated', async () => {
@@ -427,7 +442,10 @@ describe('AuthController - Phone Authentication (e2e)', () => {
         .send({ phone })
         .expect(200);
 
-      expect(mockOtpService.sendOtp).toHaveBeenCalledWith(phone, OtpPurpose.REGISTRATION);
+      expect(mockOtpService.sendOtp).toHaveBeenCalledWith(
+        phone,
+        OtpPurpose.REGISTRATION,
+      );
 
       // Step 2: Verify OTP and complete registration
       mockAuthService.registerWithPhone.mockResolvedValue({
@@ -472,7 +490,10 @@ describe('AuthController - Phone Authentication (e2e)', () => {
         .send({ phone })
         .expect(200);
 
-      expect(mockOtpService.sendOtp).toHaveBeenCalledWith(phone, OtpPurpose.LOGIN);
+      expect(mockOtpService.sendOtp).toHaveBeenCalledWith(
+        phone,
+        OtpPurpose.LOGIN,
+      );
 
       // Step 2: Verify OTP and login
       mockAuthService.loginWithPhone.mockResolvedValue({

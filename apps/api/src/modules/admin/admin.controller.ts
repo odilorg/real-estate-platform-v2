@@ -156,10 +156,7 @@ export class AdminController {
   }
 
   @Get('logs')
-  getAdminLogs(
-    @Query('page') page?: string,
-    @Query('limit') limit?: string,
-  ) {
+  getAdminLogs(@Query('page') page?: string, @Query('limit') limit?: string) {
     return this.adminService.getAdminLogs(
       page ? parseInt(page, 10) : 1,
       limit ? parseInt(limit, 10) : 50,
@@ -186,10 +183,7 @@ export class AdminController {
 
   @Post('agents')
   @UsePipes(new ZodValidationPipe(CreateAgentDto))
-  createAgent(
-    @CurrentUser() admin: User,
-    @Body() dto: CreateAgentDto,
-  ) {
+  createAgent(@CurrentUser() admin: User, @Body() dto: CreateAgentDto) {
     return this.adminService.createAgent(admin.id, dto);
   }
 

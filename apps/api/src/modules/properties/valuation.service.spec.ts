@@ -2,7 +2,11 @@ import { Test, TestingModule } from '@nestjs/testing';
 import { ValuationService, ValuationInput } from './valuation.service';
 import { PrismaService } from '../../common/prisma/prisma.service';
 import { PropertyType, ListingType, PropertyStatus } from '@repo/database';
-import { mockPrismaService, resetMocks, TestFactories } from '../../test/test-utils';
+import {
+  mockPrismaService,
+  resetMocks,
+  TestFactories,
+} from '../../test/test-utils';
 
 describe('ValuationService', () => {
   let service: ValuationService;
@@ -66,7 +70,7 @@ describe('ValuationService', () => {
           totalFloors: 10,
           latitude: 41.3 + i * 0.001,
           longitude: 69.24 + i * 0.001,
-        })
+        }),
       );
 
       prisma.property.findMany.mockResolvedValue(comparables);
@@ -89,7 +93,7 @@ describe('ValuationService', () => {
       prisma.property.findMany.mockResolvedValue([]);
 
       await expect(service.calculateValuation(mockInput)).rejects.toThrow(
-        'Not enough comparable properties found for valuation'
+        'Not enough comparable properties found for valuation',
       );
     });
 
@@ -134,7 +138,7 @@ describe('ValuationService', () => {
 
       // The exact match should have higher influence on the estimated price
       expect(result.comparableProperties[0].similarity).toBeGreaterThan(
-        result.comparableProperties[1].similarity
+        result.comparableProperties[1].similarity,
       );
     });
 
@@ -147,7 +151,7 @@ describe('ValuationService', () => {
           area: 100,
           price: 120000, // Higher recent prices
           createdAt: new Date(Date.now() - 30 * 24 * 60 * 60 * 1000), // Last 30 days
-        })
+        }),
       );
 
       const olderProperties = Array.from({ length: 5 }, () =>
@@ -158,7 +162,7 @@ describe('ValuationService', () => {
           area: 100,
           price: 100000, // Lower older prices
           createdAt: new Date(Date.now() - 120 * 24 * 60 * 60 * 1000), // 120 days ago
-        })
+        }),
       );
 
       prisma.property.findMany
@@ -190,7 +194,7 @@ describe('ValuationService', () => {
           parkingType: null,
           latitude: null,
           longitude: null,
-        })
+        }),
       );
 
       prisma.property.findMany.mockResolvedValue(comparables);
@@ -244,7 +248,7 @@ describe('ValuationService', () => {
       expect(result.comparableProperties[0].distance).toBeDefined();
       expect(result.comparableProperties[1].distance).toBeDefined();
       expect(result.comparableProperties[0].distance!).toBeLessThan(
-        result.comparableProperties[1].distance!
+        result.comparableProperties[1].distance!,
       );
     });
 
@@ -256,7 +260,7 @@ describe('ValuationService', () => {
           city: 'Ташкент',
           area: 100,
           price: 100000,
-        })
+        }),
       );
 
       prisma.property.findMany.mockResolvedValue(comparables);
@@ -275,7 +279,7 @@ describe('ValuationService', () => {
           city: 'Ташкент',
           area: null,
           price: 100000,
-        })
+        }),
       );
 
       prisma.property.findMany.mockResolvedValue(comparablesWithNullArea);

@@ -13,7 +13,25 @@ import { UploadModule } from '../upload/upload.module';
 @Module({
   imports: [UploadModule],
   controllers: [PropertiesController],
-  providers: [PropertiesService, LocationService, PriceHistoryService, POIService, AnalyticsService, RecommendationService, StatusHistoryService, ValuationService],
-  exports: [PropertiesService, LocationService, PriceHistoryService, POIService, AnalyticsService, RecommendationService, StatusHistoryService, ValuationService],
+  providers: [
+    PropertiesService,
+    LocationService,
+    PriceHistoryService,
+    POIService,
+    AnalyticsService,
+    RecommendationService,
+    StatusHistoryService,
+    ValuationService,
+  ],
+  exports: [
+    PropertiesService,
+    LocationService,
+    PriceHistoryService,
+    POIService,
+    AnalyticsService,
+    RecommendationService,
+    StatusHistoryService,
+    ValuationService,
+  ],
 })
 export class PropertiesModule {}

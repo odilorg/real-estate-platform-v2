@@ -10,7 +10,8 @@ export class RequestIdMiddleware implements NestMiddleware {
 
   use(req: Request, res: Response, next: NextFunction) {
     // Get or generate request ID
-    const requestId = (req.headers[REQUEST_ID_HEADER] as string) || randomUUID();
+    const requestId =
+      (req.headers[REQUEST_ID_HEADER] as string) || randomUUID();
 
     // Attach to request for use in other parts of the app
     (req as Request & { id: string }).id = requestId;
@@ -28,7 +29,8 @@ export class RequestIdMiddleware implements NestMiddleware {
     res.on('finish', () => {
       const duration = Date.now() - startTime;
       const { statusCode } = res;
-      const logLevel = statusCode >= 500 ? 'error' : statusCode >= 400 ? 'warn' : 'log';
+      const logLevel =
+        statusCode >= 500 ? 'error' : statusCode >= 400 ? 'warn' : 'log';
 
       this.logger[logLevel](
         `[${requestId}] ${method} ${originalUrl} ${statusCode} - ${duration}ms`,

@@ -1,5 +1,9 @@
 import { Test, TestingModule } from '@nestjs/testing';
-import { NotFoundException, ConflictException, ForbiddenException } from '@nestjs/common';
+import {
+  NotFoundException,
+  ConflictException,
+  ForbiddenException,
+} from '@nestjs/common';
 import { AgenciesService } from './agencies.service';
 import { PrismaService } from '../../common/prisma/prisma.service';
 import { mockPrismaService, resetMocks } from '../../test/test-utils';
@@ -121,7 +125,7 @@ describe('AgenciesService', () => {
       prisma.agency.findUnique.mockResolvedValue(existingAgency);
 
       await expect(service.create(userId, createDto)).rejects.toThrow(
-        ConflictException
+        ConflictException,
       );
       expect(prisma.agency.create).not.toHaveBeenCalled();
     });
@@ -158,7 +162,7 @@ describe('AgenciesService', () => {
           name: `Agency ${i}`,
           slug: `agency-${i}`,
           _count: { agents: i },
-        })
+        }),
       );
 
       prisma.agency.findMany.mockResolvedValue(mockAgencies);
@@ -201,7 +205,7 @@ describe('AgenciesService', () => {
         expect.objectContaining({
           skip: 20, // (page 3 - 1) * 10
           take: 10,
-        })
+        }),
       );
     });
 
@@ -214,7 +218,7 @@ describe('AgenciesService', () => {
       expect(prisma.agency.findMany).toHaveBeenCalledWith(
         expect.objectContaining({
           where: { city: 'Test City' },
-        })
+        }),
       );
     });
 
@@ -227,7 +231,7 @@ describe('AgenciesService', () => {
       expect(prisma.agency.findMany).toHaveBeenCalledWith(
         expect.objectContaining({
           where: { verified: true },
-        })
+        }),
       );
     });
 
@@ -240,7 +244,7 @@ describe('AgenciesService', () => {
       expect(prisma.agency.findMany).toHaveBeenCalledWith(
         expect.objectContaining({
           where: { city: 'Test City', verified: true },
-        })
+        }),
       );
     });
 
@@ -329,7 +333,7 @@ describe('AgenciesService', () => {
       prisma.agency.findUnique.mockResolvedValue(null);
 
       await expect(service.findById(agencyId)).rejects.toThrow(
-        NotFoundException
+        NotFoundException,
       );
     });
 
@@ -418,10 +422,7 @@ describe('AgenciesService', () => {
               superAgent: true,
               specializations: true,
             },
-            orderBy: [
-              { superAgent: 'desc' },
-              { rating: 'desc' },
-            ],
+            orderBy: [{ superAgent: 'desc' }, { rating: 'desc' }],
           },
         },
       });
@@ -430,9 +431,7 @@ describe('AgenciesService', () => {
     it('should throw NotFoundException if agency does not exist', async () => {
       prisma.agency.findUnique.mockResolvedValue(null);
 
-      await expect(service.findBySlug(slug)).rejects.toThrow(
-        NotFoundException
-      );
+      await expect(service.findBySlug(slug)).rejects.toThrow(NotFoundException);
     });
 
     it('should only include verified agents', async () => {
@@ -452,7 +451,7 @@ describe('AgenciesService', () => {
               where: { verified: true },
             }),
           }),
-        })
+        }),
       );
     });
 
@@ -467,13 +466,10 @@ describe('AgenciesService', () => {
         expect.objectContaining({
           include: expect.objectContaining({
             agents: expect.objectContaining({
-              orderBy: [
-                { superAgent: 'desc' },
-                { rating: 'desc' },
-              ],
+              orderBy: [{ superAgent: 'desc' }, { rating: 'desc' }],
             }),
           }),
-        })
+        }),
       );
     });
   });
@@ -543,9 +539,9 @@ describe('AgenciesService', () => {
     it('should throw NotFoundException if user does not exist', async () => {
       prisma.user.findUnique.mockResolvedValue(null);
 
-      await expect(
-        service.update(agencyId, userId, updateDto)
-      ).rejects.toThrow(NotFoundException);
+      await expect(service.update(agencyId, userId, updateDto)).rejects.toThrow(
+        NotFoundException,
+      );
       expect(prisma.agency.update).not.toHaveBeenCalled();
     });
 
@@ -559,9 +555,9 @@ describe('AgenciesService', () => {
 
       prisma.user.findUnique.mockResolvedValue(mockUser);
 
-      await expect(
-        service.update(agencyId, userId, updateDto)
-      ).rejects.toThrow(ForbiddenException);
+      await expect(service.update(agencyId, userId, updateDto)).rejects.toThrow(
+        ForbiddenException,
+      );
       expect(prisma.agency.update).not.toHaveBeenCalled();
     });
 
@@ -574,9 +570,9 @@ describe('AgenciesService', () => {
 
       prisma.user.findUnique.mockResolvedValue(mockUser);
 
-      await expect(
-        service.update(agencyId, userId, updateDto)
-      ).rejects.toThrow(ForbiddenException);
+      await expect(service.update(agencyId, userId, updateDto)).rejects.toThrow(
+        ForbiddenException,
+      );
       expect(prisma.agency.update).not.toHaveBeenCalled();
     });
 
@@ -671,7 +667,7 @@ describe('AgenciesService', () => {
       prisma.user.findUnique.mockResolvedValue(null);
 
       await expect(service.delete(agencyId, userId)).rejects.toThrow(
-        NotFoundException
+        NotFoundException,
       );
       expect(prisma.agency.findUnique).not.toHaveBeenCalled();
       expect(prisma.agency.delete).not.toHaveBeenCalled();
@@ -683,7 +679,7 @@ describe('AgenciesService', () => {
       prisma.user.findUnique.mockResolvedValue(mockUser);
 
       await expect(service.delete(agencyId, userId)).rejects.toThrow(
-        ForbiddenException
+        ForbiddenException,
       );
       expect(prisma.agency.findUnique).not.toHaveBeenCalled();
       expect(prisma.agency.delete).not.toHaveBeenCalled();
@@ -695,7 +691,7 @@ describe('AgenciesService', () => {
       prisma.user.findUnique.mockResolvedValue(mockUser);
 
       await expect(service.delete(agencyId, userId)).rejects.toThrow(
-        ForbiddenException
+        ForbiddenException,
       );
       expect(prisma.agency.findUnique).not.toHaveBeenCalled();
       expect(prisma.agency.delete).not.toHaveBeenCalled();
@@ -708,7 +704,7 @@ describe('AgenciesService', () => {
       prisma.agency.findUnique.mockResolvedValue(null);
 
       await expect(service.delete(agencyId, userId)).rejects.toThrow(
-        NotFoundException
+        NotFoundException,
       );
       expect(prisma.agency.delete).not.toHaveBeenCalled();
     });
@@ -724,7 +720,7 @@ describe('AgenciesService', () => {
       prisma.agency.findUnique.mockResolvedValue(mockAgency);
 
       await expect(service.delete(agencyId, userId)).rejects.toThrow(
-        ConflictException
+        ConflictException,
       );
       expect(prisma.agency.delete).not.toHaveBeenCalled();
     });
@@ -740,7 +736,7 @@ describe('AgenciesService', () => {
       prisma.agency.findUnique.mockResolvedValue(mockAgency);
 
       await expect(service.delete(agencyId, userId)).rejects.toThrow(
-        'Cannot delete agency with 3 active agents. Remove agents first.'
+        'Cannot delete agency with 3 active agents. Remove agents first.',
       );
     });
 
@@ -750,7 +746,7 @@ describe('AgenciesService', () => {
       prisma.user.findUnique.mockResolvedValue(mockUser);
 
       await expect(service.delete(agencyId, userId)).rejects.toThrow(
-        ForbiddenException
+        ForbiddenException,
       );
 
       // Agency should not be checked if user is not admin
@@ -799,7 +795,7 @@ describe('AgenciesService', () => {
       const updateResult = await service.update(
         'new-agency-id',
         userId,
-        updateDto
+        updateDto,
       );
       expect(updateResult.name).toBe('Updated Agency Name');
 
@@ -862,8 +858,8 @@ describe('AgenciesService', () => {
       });
 
       expect(result.agencies).toHaveLength(2);
-      expect(result.agencies.every(a => a.city === 'Test City')).toBe(true);
-      expect(result.agencies.every(a => a.verified === true)).toBe(true);
+      expect(result.agencies.every((a) => a.city === 'Test City')).toBe(true);
+      expect(result.agencies.every((a) => a.verified === true)).toBe(true);
     });
 
     it('should enforce proper permissions for different user roles', async () => {
@@ -878,10 +874,10 @@ describe('AgenciesService', () => {
       const mockAdmin = createMockUser({ id: adminId, role: 'ADMIN' });
       prisma.user.findUnique.mockResolvedValueOnce(mockAdmin);
       prisma.agency.update.mockResolvedValue(
-        createMockAgency({ id: agencyId })
+        createMockAgency({ id: agencyId }),
       );
       await expect(
-        service.update(agencyId, adminId, updateDto)
+        service.update(agencyId, adminId, updateDto),
       ).resolves.toBeDefined();
 
       // Agent in agency can update
@@ -892,10 +888,10 @@ describe('AgenciesService', () => {
       });
       prisma.user.findUnique.mockResolvedValueOnce(mockAgent);
       prisma.agency.update.mockResolvedValue(
-        createMockAgency({ id: agencyId })
+        createMockAgency({ id: agencyId }),
       );
       await expect(
-        service.update(agencyId, agentId, updateDto)
+        service.update(agencyId, agentId, updateDto),
       ).resolves.toBeDefined();
 
       // Regular user cannot update
@@ -905,9 +901,9 @@ describe('AgenciesService', () => {
         agent: null,
       });
       prisma.user.findUnique.mockResolvedValueOnce(mockUser);
-      await expect(
-        service.update(agencyId, userId, updateDto)
-      ).rejects.toThrow(ForbiddenException);
+      await expect(service.update(agencyId, userId, updateDto)).rejects.toThrow(
+        ForbiddenException,
+      );
     });
   });
 });

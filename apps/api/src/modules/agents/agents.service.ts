@@ -167,11 +167,15 @@ export class AgentsService {
         ...(dto.photo !== undefined && { photo: dto.photo }),
         ...(dto.whatsapp !== undefined && { whatsapp: dto.whatsapp }),
         ...(dto.telegram !== undefined && { telegram: dto.telegram }),
-        ...(dto.licenseNumber !== undefined && { licenseNumber: dto.licenseNumber }),
+        ...(dto.licenseNumber !== undefined && {
+          licenseNumber: dto.licenseNumber,
+        }),
         ...(dto.specializations && { specializations: dto.specializations }),
         ...(dto.languages && { languages: dto.languages }),
         ...(dto.areasServed && { areasServed: dto.areasServed }),
-        ...(dto.yearsExperience !== undefined && { yearsExperience: dto.yearsExperience }),
+        ...(dto.yearsExperience !== undefined && {
+          yearsExperience: dto.yearsExperience,
+        }),
         ...(dto.showPhone !== undefined && { showPhone: dto.showPhone }),
         ...(dto.showEmail !== undefined && { showEmail: dto.showEmail }),
       },
@@ -262,7 +266,10 @@ export class AgentsService {
   /**
    * Delete agent profile (admin only or self-removal)
    */
-  async delete(userId: string, targetUserId: string): Promise<{ message: string }> {
+  async delete(
+    userId: string,
+    targetUserId: string,
+  ): Promise<{ message: string }> {
     const requestingUser = await this.prisma.user.findUnique({
       where: { id: userId },
     });
@@ -273,7 +280,9 @@ export class AgentsService {
 
     // Only allow if admin or deleting own profile
     if (requestingUser.role !== 'ADMIN' && userId !== targetUserId) {
-      throw new ForbiddenException('You can only delete your own agent profile');
+      throw new ForbiddenException(
+        'You can only delete your own agent profile',
+      );
     }
 
     const agent = await this.prisma.agent.findUnique({

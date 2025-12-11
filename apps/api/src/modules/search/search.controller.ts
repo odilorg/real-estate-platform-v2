@@ -1,5 +1,10 @@
 import { Controller, Get, Post, Query, UseGuards } from '@nestjs/common';
-import { ApiTags, ApiOperation, ApiQuery, ApiBearerAuth } from '@nestjs/swagger';
+import {
+  ApiTags,
+  ApiOperation,
+  ApiQuery,
+  ApiBearerAuth,
+} from '@nestjs/swagger';
 import { SearchService } from './search.service';
 import { JwtAuthGuard } from '../../common/guards/jwt-auth.guard';
 import { RolesGuard } from '../../common/guards/roles.guard';
@@ -14,7 +19,11 @@ export class SearchController {
   @Get()
   @Public()
   @ApiOperation({ summary: 'Advanced property search with Elasticsearch' })
-  @ApiQuery({ name: 'query', required: false, description: 'Search query (full-text)' })
+  @ApiQuery({
+    name: 'query',
+    required: false,
+    description: 'Search query (full-text)',
+  })
   @ApiQuery({ name: 'city', required: false })
   @ApiQuery({ name: 'propertyType', required: false })
   @ApiQuery({ name: 'listingType', required: false })

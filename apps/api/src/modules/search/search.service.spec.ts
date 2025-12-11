@@ -2,7 +2,11 @@ import { Test, TestingModule } from '@nestjs/testing';
 import { SearchService } from './search.service';
 import { ElasticsearchService } from './elasticsearch.service';
 import { PrismaService } from '../../common/prisma/prisma.service';
-import { mockPrismaService, resetMocks, TestFactories } from '../../test/test-utils';
+import {
+  mockPrismaService,
+  resetMocks,
+  TestFactories,
+} from '../../test/test-utils';
 
 // Mock ElasticsearchService
 const mockElasticsearchService = {
@@ -72,7 +76,7 @@ describe('SearchService', () => {
             city: expect.any(Object),
             location: { type: 'geo_point' },
           }),
-        })
+        }),
       );
     });
 
@@ -139,7 +143,7 @@ describe('SearchService', () => {
           amenities: ['WiFi', 'Parking'],
           featured: mockProperty.featured,
           verified: mockProperty.verified,
-        })
+        }),
       );
     });
 
@@ -164,7 +168,7 @@ describe('SearchService', () => {
         expect.objectContaining({
           location: undefined,
           amenities: [],
-        })
+        }),
       );
     });
 
@@ -173,7 +177,9 @@ describe('SearchService', () => {
 
       elasticsearchService.isElasticsearchEnabled.mockReturnValue(true);
       prisma.property.findUnique.mockResolvedValue(mockProperty);
-      elasticsearchService.indexDocument.mockRejectedValue(new Error('Index error'));
+      elasticsearchService.indexDocument.mockRejectedValue(
+        new Error('Index error'),
+      );
 
       const result = await service.indexProperty(propertyId);
 
@@ -224,7 +230,7 @@ describe('SearchService', () => {
       expect(result).toBe(true);
       expect(elasticsearchService.deleteDocument).toHaveBeenCalledWith(
         'properties',
-        propertyId
+        propertyId,
       );
     });
 
@@ -254,7 +260,7 @@ describe('SearchService', () => {
           id: `prop-${i}`,
           status: 'ACTIVE',
           amenities: [{ amenity: 'WiFi' }],
-        })
+        }),
       );
 
       elasticsearchService.isElasticsearchEnabled.mockReturnValue(true);
@@ -279,7 +285,7 @@ describe('SearchService', () => {
               amenities: ['WiFi'],
             }),
           }),
-        ])
+        ]),
       );
     });
 
@@ -378,15 +384,21 @@ describe('SearchService', () => {
             bool: expect.objectContaining({
               must: [{ term: { status: 'ACTIVE' } }],
               should: expect.arrayContaining([
-                expect.objectContaining({ match: expect.objectContaining({ title: expect.any(Object) }) }),
-                expect.objectContaining({ match: expect.objectContaining({ description: expect.any(Object) }) }),
+                expect.objectContaining({
+                  match: expect.objectContaining({ title: expect.any(Object) }),
+                }),
+                expect.objectContaining({
+                  match: expect.objectContaining({
+                    description: expect.any(Object),
+                  }),
+                }),
               ]),
               minimum_should_match: 1,
             }),
           }),
           from: 0,
           size: 20,
-        })
+        }),
       );
     });
 
@@ -412,7 +424,7 @@ describe('SearchService', () => {
               ]),
             }),
           }),
-        })
+        }),
       );
     });
 
@@ -438,7 +450,7 @@ describe('SearchService', () => {
               ]),
             }),
           }),
-        })
+        }),
       );
     });
 
@@ -461,7 +473,7 @@ describe('SearchService', () => {
               ]),
             }),
           }),
-        })
+        }),
       );
     });
 
@@ -484,7 +496,7 @@ describe('SearchService', () => {
               ]),
             }),
           }),
-        })
+        }),
       );
     });
 
@@ -507,7 +519,7 @@ describe('SearchService', () => {
               ]),
             }),
           }),
-        })
+        }),
       );
     });
 
@@ -534,7 +546,7 @@ describe('SearchService', () => {
               ]),
             }),
           }),
-        })
+        }),
       );
     });
 
@@ -557,7 +569,7 @@ describe('SearchService', () => {
               ]),
             }),
           }),
-        })
+        }),
       );
     });
 
@@ -580,7 +592,7 @@ describe('SearchService', () => {
               ]),
             }),
           }),
-        })
+        }),
       );
     });
 
@@ -597,7 +609,7 @@ describe('SearchService', () => {
         'properties',
         expect.objectContaining({
           sort: [{ price: 'asc' }],
-        })
+        }),
       );
     });
 
@@ -614,7 +626,7 @@ describe('SearchService', () => {
         'properties',
         expect.objectContaining({
           sort: [{ price: 'desc' }],
-        })
+        }),
       );
     });
 
@@ -631,7 +643,7 @@ describe('SearchService', () => {
         'properties',
         expect.objectContaining({
           sort: [{ createdAt: 'desc' }],
-        })
+        }),
       );
     });
 
@@ -648,7 +660,7 @@ describe('SearchService', () => {
         'properties',
         expect.objectContaining({
           sort: [{ createdAt: 'asc' }],
-        })
+        }),
       );
     });
 
@@ -665,7 +677,7 @@ describe('SearchService', () => {
         'properties',
         expect.objectContaining({
           sort: ['_score', { createdAt: 'desc' }],
-        })
+        }),
       );
     });
 
@@ -673,7 +685,7 @@ describe('SearchService', () => {
       elasticsearchService.isElasticsearchEnabled.mockReturnValue(true);
 
       const mockProperties = Array.from({ length: 10 }, (_, i) =>
-        TestFactories.createProperty({ id: `prop-${i}` })
+        TestFactories.createProperty({ id: `prop-${i}` }),
       );
 
       elasticsearchService.search.mockResolvedValue({
@@ -704,7 +716,7 @@ describe('SearchService', () => {
         expect.objectContaining({
           from: 20, // (page 3 - 1) * 10
           size: 10,
-        })
+        }),
       );
     });
 
@@ -819,7 +831,7 @@ describe('SearchService', () => {
           }),
           _source: ['title', 'city'],
           size: 5,
-        })
+        }),
       );
     });
 
@@ -835,7 +847,7 @@ describe('SearchService', () => {
         'properties',
         expect.objectContaining({
           size: 5,
-        })
+        }),
       );
     });
 
@@ -898,7 +910,7 @@ describe('SearchService', () => {
           skip: 0,
           take: 20,
           orderBy: { createdAt: 'desc' },
-        })
+        }),
       );
     });
 
@@ -927,7 +939,7 @@ describe('SearchService', () => {
             price: { gte: 50000, lte: 200000 },
             userId: 'user-123',
           }),
-        })
+        }),
       );
     });
 
@@ -946,7 +958,7 @@ describe('SearchService', () => {
         expect.objectContaining({
           skip: 20, // (page 3 - 1) * 10
           take: 10,
-        })
+        }),
       );
     });
 
@@ -960,9 +972,7 @@ describe('SearchService', () => {
 
       const mockProperty = TestFactories.createProperty({
         user: { ...mockUser, agent: mockAgent },
-        images: [
-          { id: 'img-1', isPrimary: true, url: 'image1.jpg' },
-        ],
+        images: [{ id: 'img-1', isPrimary: true, url: 'image1.jpg' }],
       });
 
       prisma.property.findMany.mockResolvedValue([mockProperty]);
@@ -991,7 +1001,7 @@ describe('SearchService', () => {
               }),
             }),
           }),
-        })
+        }),
       );
     });
   });

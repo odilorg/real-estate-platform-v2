@@ -58,7 +58,8 @@ export class MessagesController {
   @Post('start')
   startConversation(
     @CurrentUser() user: User,
-    @Body(new ZodValidationPipe(StartConversationDto)) dto: StartConversationDto,
+    @Body(new ZodValidationPipe(StartConversationDto))
+    dto: StartConversationDto,
   ) {
     return this.messagesService.startConversation(
       user.id,

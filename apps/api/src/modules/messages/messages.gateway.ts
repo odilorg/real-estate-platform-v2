@@ -23,7 +23,9 @@ interface AuthenticatedSocket extends Socket {
   },
   namespace: '/messages',
 })
-export class MessagesGateway implements OnGatewayConnection, OnGatewayDisconnect {
+export class MessagesGateway
+  implements OnGatewayConnection, OnGatewayDisconnect
+{
   @WebSocketServer()
   server!: Server;
 
@@ -69,7 +71,9 @@ export class MessagesGateway implements OnGatewayConnection, OnGatewayDisconnect
       // Join user to their personal room
       client.join(`user:${userId}`);
 
-      this.logger.log(`Client connected: ${client.id} (User: ${client.userId})`);
+      this.logger.log(
+        `Client connected: ${client.id} (User: ${client.userId})`,
+      );
 
       // Get user's conversations and join conversation rooms
       const conversations = await this.prisma.conversation.findMany({
@@ -90,8 +94,12 @@ export class MessagesGateway implements OnGatewayConnection, OnGatewayDisconnect
         `User ${client.userId} joined ${conversations.length} conversation rooms`,
       );
     } catch (error) {
-      const errorMessage = error instanceof Error ? error.message : 'Unknown error';
-      this.logger.error(`Connection error for client ${client.id}:`, errorMessage);
+      const errorMessage =
+        error instanceof Error ? error.message : 'Unknown error';
+      this.logger.error(
+        `Connection error for client ${client.id}:`,
+        errorMessage,
+      );
       client.disconnect();
     }
   }
@@ -105,7 +113,9 @@ export class MessagesGateway implements OnGatewayConnection, OnGatewayDisconnect
           this.userSockets.delete(client.userId);
         }
       }
-      this.logger.log(`Client disconnected: ${client.id} (User: ${client.userId})`);
+      this.logger.log(
+        `Client disconnected: ${client.id} (User: ${client.userId})`,
+      );
     } else {
       this.logger.log(`Client disconnected: ${client.id}`);
     }
@@ -151,10 +161,12 @@ export class MessagesGateway implements OnGatewayConnection, OnGatewayDisconnect
     @ConnectedSocket() client: AuthenticatedSocket,
     @MessageBody() data: { conversationId: string },
   ) {
-    client.to(`conversation:${data.conversationId}`).emit('user_stopped_typing', {
-      userId: client.userId,
-      conversationId: data.conversationId,
-    });
+    client
+      .to(`conversation:${data.conversationId}`)
+      .emit('user_stopped_typing', {
+        userId: client.userId,
+        conversationId: data.conversationId,
+      });
   }
 
   @SubscribeMessage('mark_as_read')
@@ -171,7 +183,10 @@ export class MessagesGateway implements OnGatewayConnection, OnGatewayDisconnect
       return { event: 'error', data: 'Conversation not found' };
     }
 
-    if (conversation.participant1Id !== client.userId && conversation.participant2Id !== client.userId) {
+    if (
+      conversation.participant1Id !== client.userId &&
+      conversation.participant2Id !== client.userId
+    ) {
       return { event: 'error', data: 'Access denied' };
     }
 
@@ -204,7 +219,7 @@ export class MessagesGateway implements OnGatewayConnection, OnGatewayDisconnect
     client.to(`conversation:${data.conversationId}`).emit('messages_read', {
       conversationId: data.conversationId,
       userId: client.userId,
-      messageIds: updatedMessages.map(m => m.id),
+      messageIds: updatedMessages.map((m) => m.id),
       readAt: now,
     });
 
@@ -213,7 +228,9 @@ export class MessagesGateway implements OnGatewayConnection, OnGatewayDisconnect
 
   // Emit new message to conversation participants
   emitNewMessage(conversationId: string, message: Record<string, unknown>) {
-    this.server.to(`conversation:${conversationId}`).emit('new_message', message);
+    this.server
+      .to(`conversation:${conversationId}`)
+      .emit('new_message', message);
   }
 
   // Emit new conversation to user

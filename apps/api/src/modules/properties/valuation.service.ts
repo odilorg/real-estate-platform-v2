@@ -56,7 +56,9 @@ export class ValuationService {
    * Calculate automated property valuation based on comparable properties
    */
   async calculateValuation(input: ValuationInput): Promise<ValuationResult> {
-    this.logger.log(`Calculating valuation for ${input.propertyType} in ${input.city}`);
+    this.logger.log(
+      `Calculating valuation for ${input.propertyType} in ${input.city}`,
+    );
 
     // Find comparable properties
     const comparables = await this.findComparableProperties(input);
@@ -66,12 +68,13 @@ export class ValuationService {
     }
 
     // Calculate price per square meter for comparables
-    const pricesPerSqm = comparables.map(p => p.price / (p.area || 1));
-    const averagePricePerSqm = pricesPerSqm.reduce((a, b) => a + b, 0) / pricesPerSqm.length;
+    const pricesPerSqm = comparables.map((p) => p.price / (p.area || 1));
+    const averagePricePerSqm =
+      pricesPerSqm.reduce((a, b) => a + b, 0) / pricesPerSqm.length;
     const medianPricePerSqm = this.calculateMedian(pricesPerSqm);
 
     // Calculate similarity scores and weights
-    const weightedComparables = comparables.map(comp => ({
+    const weightedComparables = comparables.map((comp) => ({
       ...comp,
       similarity: this.calculateSimilarity(input, comp),
       pricePerSqm: comp.price / (comp.area || 1),
@@ -84,11 +87,13 @@ export class ValuationService {
     const topComparables = weightedComparables.slice(0, 10);
 
     // Calculate weighted average price per sqm
-    const totalWeight = topComparables.reduce((sum, c) => sum + c.similarity, 0);
-    const weightedPricePerSqm = topComparables.reduce(
-      (sum, c) => sum + (c.pricePerSqm * c.similarity),
-      0
-    ) / totalWeight;
+    const totalWeight = topComparables.reduce(
+      (sum, c) => sum + c.similarity,
+      0,
+    );
+    const weightedPricePerSqm =
+      topComparables.reduce((sum, c) => sum + c.pricePerSqm * c.similarity, 0) /
+      totalWeight;
 
     // Estimate price based on input area
     const estimatedPrice = Math.round(weightedPricePerSqm * input.area);
@@ -100,24 +105,34 @@ export class ValuationService {
     };
 
     // Calculate confidence based on number of comparables and similarity
-    const avgSimilarity = topComparables.reduce((sum, c) => sum + c.similarity, 0) / topComparables.length;
-    const confidence = Math.min(100, Math.round(
-      (comparables.length / 20) * 40 + // More comparables = higher confidence (max 40)
-      avgSimilarity * 60 // Higher similarity = higher confidence (max 60)
-    ));
+    const avgSimilarity =
+      topComparables.reduce((sum, c) => sum + c.similarity, 0) /
+      topComparables.length;
+    const confidence = Math.min(
+      100,
+      Math.round(
+        (comparables.length / 20) * 40 + // More comparables = higher confidence (max 40)
+          avgSimilarity * 60, // Higher similarity = higher confidence (max 60)
+      ),
+    );
 
     // Analyze market trend
     const marketInsights = await this.analyzeMarketTrend(input);
 
     // Calculate distances if coordinates provided
-    const comparablePropertiesWithDistance = topComparables.map(comp => {
+    const comparablePropertiesWithDistance = topComparables.map((comp) => {
       let distance: number | undefined;
-      if (input.latitude && input.longitude && comp.latitude && comp.longitude) {
+      if (
+        input.latitude &&
+        input.longitude &&
+        comp.latitude &&
+        comp.longitude
+      ) {
         distance = this.calculateDistance(
           input.latitude,
           input.longitude,
           comp.latitude,
-          comp.longitude
+          comp.longitude,
         );
       }
 
@@ -128,7 +143,8 @@ export class ValuationService {
         pricePerSqm: Math.round(comp.pricePerSqm),
         area: comp.area || 0,
         similarity: Math.round(comp.similarity * 100),
-        distance: distance !== undefined ? Math.round(distance * 1000) : undefined, // Convert to meters
+        distance:
+          distance !== undefined ? Math.round(distance * 1000) : undefined, // Convert to meters
       };
     });
 
@@ -221,26 +237,26 @@ export class ValuationService {
 
     // District match (weight: 15%)
     if (input.district && comparable.district) {
-      score += (input.district === comparable.district ? 0.15 : 0);
+      score += input.district === comparable.district ? 0.15 : 0;
       _factors++;
     }
 
     // Building class match (weight: 10%)
     if (input.buildingClass && comparable.buildingClass) {
-      score += (input.buildingClass === comparable.buildingClass ? 0.10 : 0);
+      score += input.buildingClass === comparable.buildingClass ? 0.1 : 0;
       _factors++;
     }
 
     // Renovation match (weight: 10%)
     if (input.renovation && comparable.renovation) {
-      score += (input.renovation === comparable.renovation ? 0.10 : 0);
+      score += input.renovation === comparable.renovation ? 0.1 : 0;
       _factors++;
     }
 
     // Year built similarity (weight: 10%)
     if (input.yearBuilt && comparable.yearBuilt) {
       const yearDiff = Math.abs(input.yearBuilt - comparable.yearBuilt);
-      score += Math.max(0, 1 - yearDiff / 50) * 0.10;
+      score += Math.max(0, 1 - yearDiff / 50) * 0.1;
       _factors++;
     }
 
@@ -253,17 +269,22 @@ export class ValuationService {
 
     // Parking match (weight: 5%)
     if (input.parkingType && comparable.parkingType) {
-      score += (input.parkingType === comparable.parkingType ? 0.05 : 0);
+      score += input.parkingType === comparable.parkingType ? 0.05 : 0;
       _factors++;
     }
 
     // Location proximity (weight: 5%)
-    if (input.latitude && input.longitude && comparable.latitude && comparable.longitude) {
+    if (
+      input.latitude &&
+      input.longitude &&
+      comparable.latitude &&
+      comparable.longitude
+    ) {
       const distance = this.calculateDistance(
         input.latitude,
         input.longitude,
         comparable.latitude,
-        comparable.longitude
+        comparable.longitude,
       );
       score += Math.max(0, 1 - distance / 5) * 0.05; // 5km threshold
       _factors++;
@@ -307,19 +328,27 @@ export class ValuationService {
       select: { price: true, area: true },
     });
 
-    const recentAvgPricePerSqm = recentProperties.length > 0
-      ? recentProperties.reduce((sum, p) => sum + p.price / (p.area || 1), 0) / recentProperties.length
-      : 0;
+    const recentAvgPricePerSqm =
+      recentProperties.length > 0
+        ? recentProperties.reduce(
+            (sum, p) => sum + p.price / (p.area || 1),
+            0,
+          ) / recentProperties.length
+        : 0;
 
-    const olderAvgPricePerSqm = olderProperties.length > 0
-      ? olderProperties.reduce((sum, p) => sum + p.price / (p.area || 1), 0) / olderProperties.length
-      : 0;
+    const olderAvgPricePerSqm =
+      olderProperties.length > 0
+        ? olderProperties.reduce((sum, p) => sum + p.price / (p.area || 1), 0) /
+          olderProperties.length
+        : 0;
 
     let trend: 'increasing' | 'decreasing' | 'stable' = 'stable';
     let trendPercentage = 0;
 
     if (recentAvgPricePerSqm > 0 && olderAvgPricePerSqm > 0) {
-      const change = ((recentAvgPricePerSqm - olderAvgPricePerSqm) / olderAvgPricePerSqm) * 100;
+      const change =
+        ((recentAvgPricePerSqm - olderAvgPricePerSqm) / olderAvgPricePerSqm) *
+        100;
       trendPercentage = Math.round(change * 10) / 10;
 
       if (change > 2) trend = 'increasing';
@@ -332,7 +361,12 @@ export class ValuationService {
   /**
    * Calculate distance between two coordinates in kilometers using Haversine formula
    */
-  private calculateDistance(lat1: number, lon1: number, lat2: number, lon2: number): number {
+  private calculateDistance(
+    lat1: number,
+    lon1: number,
+    lat2: number,
+    lon2: number,
+  ): number {
     const R = 6371; // Earth's radius in kilometers
     const dLat = this.toRadians(lat2 - lat1);
     const dLon = this.toRadians(lon2 - lon1);

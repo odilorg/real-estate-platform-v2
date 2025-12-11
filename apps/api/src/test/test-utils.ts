@@ -1,7 +1,12 @@
 import { Test, TestingModule } from '@nestjs/testing';
 import { PrismaService } from '../common/prisma/prisma.service';
 import { faker } from '@faker-js/faker';
-import { PropertyType, ListingType, PropertyStatus, Currency } from '@repo/database';
+import {
+  PropertyType,
+  ListingType,
+  PropertyStatus,
+  Currency,
+} from '@repo/database';
 
 /**
  * Mock ElasticsearchService for testing
@@ -277,7 +282,7 @@ export const TestFactories = {
  */
 export async function createTestingModule(
   providers: any[],
-  mockServices: Record<string, any> = {}
+  mockServices: Record<string, any> = {},
 ): Promise<TestingModule> {
   const module: TestingModule = await Test.createTestingModule({
     providers: [

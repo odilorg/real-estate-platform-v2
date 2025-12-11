@@ -58,7 +58,11 @@ class EskizSmsProvider implements SmsProvider {
   }
 
   private async ensureAuthenticated(): Promise<void> {
-    if (!this.token || !this.tokenExpiresAt || new Date() >= this.tokenExpiresAt) {
+    if (
+      !this.token ||
+      !this.tokenExpiresAt ||
+      new Date() >= this.tokenExpiresAt
+    ) {
       await this.authenticate();
     }
   }
@@ -78,7 +82,7 @@ class EskizSmsProvider implements SmsProvider {
       const response = await fetch(`${this.baseUrl}/message/sms/send`, {
         method: 'POST',
         headers: {
-          'Authorization': `Bearer ${this.token}`,
+          Authorization: `Bearer ${this.token}`,
           'Content-Type': 'application/x-www-form-urlencoded',
         },
         body: formData.toString(),
@@ -90,7 +94,7 @@ class EskizSmsProvider implements SmsProvider {
         return false;
       }
 
-      const data = await response.json();
+      await response.json(); // Consume response
       this.logger.log(`SMS sent successfully via Eskiz to ${phone}`);
       return true;
     } catch (error) {
@@ -113,7 +117,9 @@ export class SmsService {
       const secretKey = this.configService.get('ESKIZ_SECRET_KEY');
 
       if (!email || !secretKey) {
-        this.logger.error('Eskiz credentials not configured. Falling back to mock provider.');
+        this.logger.error(
+          'Eskiz credentials not configured. Falling back to mock provider.',
+        );
         this.provider = new MockSmsProvider();
       } else {
         this.provider = new EskizSmsProvider(email, secretKey);

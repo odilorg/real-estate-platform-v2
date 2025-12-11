@@ -1,4 +1,8 @@
-import { Injectable, NotFoundException, ForbiddenException } from '@nestjs/common';
+import {
+  Injectable,
+  NotFoundException,
+  ForbiddenException,
+} from '@nestjs/common';
 import { PrismaService } from '../../common/prisma';
 import { CreateSavedSearchDto, UpdateSavedSearchDto } from '@repo/shared';
 import { SavedSearch } from '@repo/database';
@@ -7,7 +11,10 @@ import { SavedSearch } from '@repo/database';
 export class SavedSearchesService {
   constructor(private prisma: PrismaService) {}
 
-  async create(userId: string, dto: CreateSavedSearchDto): Promise<SavedSearch> {
+  async create(
+    userId: string,
+    dto: CreateSavedSearchDto,
+  ): Promise<SavedSearch> {
     const savedSearch = await this.prisma.savedSearch.create({
       data: {
         userId,
@@ -39,13 +46,19 @@ export class SavedSearchesService {
     }
 
     if (savedSearch.userId !== userId) {
-      throw new ForbiddenException('You do not have access to this saved search');
+      throw new ForbiddenException(
+        'You do not have access to this saved search',
+      );
     }
 
     return savedSearch;
   }
 
-  async update(id: string, userId: string, dto: UpdateSavedSearchDto): Promise<SavedSearch> {
+  async update(
+    id: string,
+    userId: string,
+    dto: UpdateSavedSearchDto,
+  ): Promise<SavedSearch> {
     // Verify ownership
     await this.findOne(id, userId);
 
@@ -74,7 +87,11 @@ export class SavedSearchesService {
     return { message: 'Saved search deleted successfully' };
   }
 
-  async toggleNotifications(id: string, userId: string, enabled: boolean): Promise<SavedSearch> {
+  async toggleNotifications(
+    id: string,
+    userId: string,
+    enabled: boolean,
+  ): Promise<SavedSearch> {
     // Verify ownership
     await this.findOne(id, userId);
 

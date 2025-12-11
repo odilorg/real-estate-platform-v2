@@ -1,6 +1,11 @@
 import { Test, TestingModule } from '@nestjs/testing';
 import { JwtService } from '@nestjs/jwt';
-import { ConflictException, UnauthorizedException, ForbiddenException, BadRequestException } from '@nestjs/common';
+import {
+  ConflictException,
+  UnauthorizedException,
+  ForbiddenException,
+  BadRequestException,
+} from '@nestjs/common';
 import { AuthService } from './auth.service';
 import { PrismaService } from '../../common/prisma';
 import { OtpService } from '../otp/otp.service';
@@ -97,9 +102,14 @@ describe('AuthService', () => {
     });
 
     it('should throw ConflictException if user already exists', async () => {
-      mockPrismaService.user.findUnique.mockResolvedValue({ id: '1', email: registerDto.email });
+      mockPrismaService.user.findUnique.mockResolvedValue({
+        id: '1',
+        email: registerDto.email,
+      });
 
-      await expect(service.register(registerDto)).rejects.toThrow(ConflictException);
+      await expect(service.register(registerDto)).rejects.toThrow(
+        ConflictException,
+      );
     });
   });
 
@@ -136,7 +146,9 @@ describe('AuthService', () => {
     it('should throw UnauthorizedException if user not found', async () => {
       mockPrismaService.user.findUnique.mockResolvedValue(null);
 
-      await expect(service.login(loginDto)).rejects.toThrow(UnauthorizedException);
+      await expect(service.login(loginDto)).rejects.toThrow(
+        UnauthorizedException,
+      );
     });
 
     it('should throw ForbiddenException if user is banned', async () => {
@@ -153,7 +165,9 @@ describe('AuthService', () => {
       mockPrismaService.user.findUnique.mockResolvedValue(mockUser);
       (bcrypt.compare as jest.Mock).mockResolvedValue(false);
 
-      await expect(service.login(loginDto)).rejects.toThrow(UnauthorizedException);
+      await expect(service.login(loginDto)).rejects.toThrow(
+        UnauthorizedException,
+      );
     });
   });
 
@@ -229,7 +243,9 @@ describe('AuthService', () => {
         banReason: 'Spam',
       });
 
-      await expect(service.validateGoogleUser(googleProfile)).rejects.toThrow(ForbiddenException);
+      await expect(service.validateGoogleUser(googleProfile)).rejects.toThrow(
+        ForbiddenException,
+      );
     });
   });
 
@@ -249,7 +265,11 @@ describe('AuthService', () => {
       (bcrypt.compare as jest.Mock).mockResolvedValue(true);
       (bcrypt.hash as jest.Mock).mockResolvedValue('new-hash');
 
-      const result = await service.changePassword(userId, currentPassword, newPassword);
+      const result = await service.changePassword(
+        userId,
+        currentPassword,
+        newPassword,
+      );
 
       expect(result).toBe(true);
       expect(prisma.user.update).toHaveBeenCalledWith({
@@ -294,7 +314,11 @@ describe('AuthService', () => {
       mockPrismaService.user.findUnique.mockResolvedValue(user);
       (bcrypt.compare as jest.Mock).mockResolvedValue(false);
 
-      const result = await service.changePassword(userId, currentPassword, newPassword);
+      const result = await service.changePassword(
+        userId,
+        currentPassword,
+        newPassword,
+      );
 
       expect(result).toBe(false);
       expect(prisma.user.update).not.toHaveBeenCalled();
@@ -303,7 +327,11 @@ describe('AuthService', () => {
     it('should return false if user not found', async () => {
       mockPrismaService.user.findUnique.mockResolvedValue(null);
 
-      const result = await service.changePassword(userId, currentPassword, newPassword);
+      const result = await service.changePassword(
+        userId,
+        currentPassword,
+        newPassword,
+      );
 
       expect(result).toBe(false);
     });
@@ -360,7 +388,9 @@ describe('AuthService', () => {
         phone: dto.phone,
       });
 
-      await expect(service.registerWithPhone(dto)).rejects.toThrow(ConflictException);
+      await expect(service.registerWithPhone(dto)).rejects.toThrow(
+        ConflictException,
+      );
       await expect(service.registerWithPhone(dto)).rejects.toThrow(
         'User with this phone number already exists',
       );
@@ -370,8 +400,12 @@ describe('AuthService', () => {
       mockPrismaService.user.findUnique.mockResolvedValue(null);
       mockOtpService.verifyOtp.mockResolvedValue(false);
 
-      await expect(service.registerWithPhone(dto)).rejects.toThrow(UnauthorizedException);
-      await expect(service.registerWithPhone(dto)).rejects.toThrow('Invalid verification code');
+      await expect(service.registerWithPhone(dto)).rejects.toThrow(
+        UnauthorizedException,
+      );
+      await expect(service.registerWithPhone(dto)).rejects.toThrow(
+        'Invalid verification code',
+      );
     });
 
     it('should create user with phoneVerified set to true', async () => {
@@ -448,7 +482,9 @@ describe('AuthService', () => {
     it('should throw UnauthorizedException if user not found', async () => {
       mockPrismaService.user.findUnique.mockResolvedValue(null);
 
-      await expect(service.loginWithPhone(dto)).rejects.toThrow(UnauthorizedException);
+      await expect(service.loginWithPhone(dto)).rejects.toThrow(
+        UnauthorizedException,
+      );
       await expect(service.loginWithPhone(dto)).rejects.toThrow(
         'No account found with this phone number',
       );
@@ -462,8 +498,12 @@ describe('AuthService', () => {
         banReason: 'Violation of terms',
       });
 
-      await expect(service.loginWithPhone(dto)).rejects.toThrow(ForbiddenException);
-      await expect(service.loginWithPhone(dto)).rejects.toThrow('Violation of terms');
+      await expect(service.loginWithPhone(dto)).rejects.toThrow(
+        ForbiddenException,
+      );
+      await expect(service.loginWithPhone(dto)).rejects.toThrow(
+        'Violation of terms',
+      );
     });
 
     it('should mark phone as verified if not already verified', async () => {
@@ -528,8 +568,12 @@ describe('AuthService', () => {
     it('should throw BadRequestException if user not found', async () => {
       mockPrismaService.user.findUnique.mockResolvedValue(null);
 
-      await expect(service.setPassword(userId, dto)).rejects.toThrow(BadRequestException);
-      await expect(service.setPassword(userId, dto)).rejects.toThrow('User not found');
+      await expect(service.setPassword(userId, dto)).rejects.toThrow(
+        BadRequestException,
+      );
+      await expect(service.setPassword(userId, dto)).rejects.toThrow(
+        'User not found',
+      );
     });
   });
 });

@@ -210,7 +210,12 @@ export class POIService {
 
             if (!lat || !lon) continue;
 
-            const distance = this.calculateDistance(latitude, longitude, lat, lon);
+            const distance = this.calculateDistance(
+              latitude,
+              longitude,
+              lat,
+              lon,
+            );
             const name =
               element.tags?.name ||
               element.tags?.['name:en'] ||
@@ -263,10 +268,7 @@ export class POIService {
           // Small delay to avoid overwhelming the API
           await new Promise((resolve) => setTimeout(resolve, 100));
         } catch (error) {
-          this.logger.error(
-            `Error fetching category ${category.name}:`,
-            error,
-          );
+          this.logger.error(`Error fetching category ${category.name}:`, error);
         }
       }
 
@@ -289,7 +291,9 @@ export class POIService {
 
     // If no POIs exist, fetch them first
     if (pois.length === 0) {
-      this.logger.log(`No cached POIs found for property ${propertyId}, fetching from API...`);
+      this.logger.log(
+        `No cached POIs found for property ${propertyId}, fetching from API...`,
+      );
 
       // Get property coordinates
       const property = await this.prisma.property.findUnique({
@@ -311,12 +315,17 @@ export class POIService {
             orderBy: { distance: 'asc' },
           });
         } catch (error) {
-          this.logger.error(`Failed to fetch POIs for property ${propertyId}:`, error);
+          this.logger.error(
+            `Failed to fetch POIs for property ${propertyId}:`,
+            error,
+          );
           // Return empty array if fetch fails
           return [];
         }
       } else {
-        this.logger.warn(`Property ${propertyId} has no coordinates, cannot fetch POIs`);
+        this.logger.warn(
+          `Property ${propertyId} has no coordinates, cannot fetch POIs`,
+        );
         return [];
       }
     }

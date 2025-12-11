@@ -112,7 +112,10 @@ export class AuthController {
 
   @Put('profile')
   @UseGuards(JwtAuthGuard)
-  async updateProfile(@CurrentUser() user: User, @Body() dto: z.infer<typeof UpdateProfileDto>) {
+  async updateProfile(
+    @CurrentUser() user: User,
+    @Body() dto: z.infer<typeof UpdateProfileDto>,
+  ) {
     const validated = UpdateProfileDto.parse(dto);
     return this.authService.updateProfile(user.id, validated);
   }
@@ -120,7 +123,10 @@ export class AuthController {
   @Post('change-password')
   @UseGuards(JwtAuthGuard)
   @HttpCode(HttpStatus.OK)
-  async changePassword(@CurrentUser() user: User, @Body() dto: z.infer<typeof ChangePasswordDto>) {
+  async changePassword(
+    @CurrentUser() user: User,
+    @Body() dto: z.infer<typeof ChangePasswordDto>,
+  ) {
     const validated = ChangePasswordDto.parse(dto);
     const success = await this.authService.changePassword(
       user.id,

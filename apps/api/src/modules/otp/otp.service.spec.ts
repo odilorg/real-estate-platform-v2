@@ -342,12 +342,12 @@ describe('OtpService', () => {
         attempts: 1,
       });
 
-      await expect(
-        service.verifyOtp(phone, '999999', purpose),
-      ).rejects.toThrow(BadRequestException);
-      await expect(
-        service.verifyOtp(phone, '999999', purpose),
-      ).rejects.toThrow('Invalid verification code');
+      await expect(service.verifyOtp(phone, '999999', purpose)).rejects.toThrow(
+        BadRequestException,
+      );
+      await expect(service.verifyOtp(phone, '999999', purpose)).rejects.toThrow(
+        'Invalid verification code',
+      );
 
       // Should still increment attempts even for wrong code
       expect(mockPrismaService.otpCode.update).toHaveBeenCalledWith({
@@ -402,9 +402,7 @@ describe('OtpService', () => {
 
       await service.cleanupExpiredOtps();
 
-      expect(loggerSpy).toHaveBeenCalledWith(
-        'Cleaned up 10 expired OTP codes',
-      );
+      expect(loggerSpy).toHaveBeenCalledWith('Cleaned up 10 expired OTP codes');
     });
 
     it('should handle cleanup when no expired OTPs exist', async () => {

@@ -5,7 +5,12 @@ import { PrismaService } from '../../common/prisma';
 import { UploadService } from '../upload/upload.service';
 import { PriceHistoryService } from './price-history.service';
 import { POIService } from './poi.service';
-import { CreatePropertyDto, Currency, PropertyType, ListingType } from '@repo/shared';
+import {
+  CreatePropertyDto,
+  Currency,
+  PropertyType,
+  ListingType,
+} from '@repo/shared';
 import { DeepMockProxy, mockDeep } from 'jest-mock-extended';
 import type { PrismaClient } from '@repo/database';
 
@@ -27,7 +32,8 @@ describe('PropertiesService', () => {
     propertyType: PropertyType.APARTMENT,
     listingType: ListingType.SALE,
     title: 'Beautiful 2-bedroom apartment',
-    description: 'A lovely apartment in the heart of Tashkent with modern amenities.',
+    description:
+      'A lovely apartment in the heart of Tashkent with modern amenities.',
     price: 100000,
     currency: Currency.YE,
     priceUsd: 100000,
@@ -100,7 +106,8 @@ describe('PropertiesService', () => {
         propertyType: PropertyType.APARTMENT,
         listingType: ListingType.SALE,
         title: 'Beautiful 2-bedroom apartment',
-        description: 'A lovely apartment in the heart of Tashkent with modern amenities.',
+        description:
+          'A lovely apartment in the heart of Tashkent with modern amenities.',
         price: 100000,
         currency: Currency.YE,
         address: '123 Main Street',
@@ -205,7 +212,8 @@ describe('PropertiesService', () => {
         propertyType: PropertyType.APARTMENT,
         listingType: ListingType.SALE,
         title: 'Test Property',
-        description: 'Test description for property listing without coordinates.',
+        description:
+          'Test description for property listing without coordinates.',
         price: 100000,
         currency: Currency.YE,
         address: '123 Test Street',
@@ -244,7 +252,9 @@ describe('PropertiesService', () => {
     it('should throw NotFoundException if property not found', async () => {
       prisma.property.findUnique.mockResolvedValue(null);
 
-      await expect(service.findOne('non-existent')).rejects.toThrow(NotFoundException);
+      await expect(service.findOne('non-existent')).rejects.toThrow(
+        NotFoundException,
+      );
     });
   });
 
@@ -309,9 +319,9 @@ describe('PropertiesService', () => {
     it('should throw NotFoundException if property does not exist', async () => {
       prisma.property.findUnique.mockResolvedValue(null);
 
-      await expect(
-        service.remove('non-existent', 'user-123'),
-      ).rejects.toThrow(NotFoundException);
+      await expect(service.remove('non-existent', 'user-123')).rejects.toThrow(
+        NotFoundException,
+      );
     });
 
     it('should throw ForbiddenException if user is not the owner', async () => {
@@ -341,9 +351,7 @@ describe('PropertiesService', () => {
 
   describe('getFeatured', () => {
     it('should return featured properties', async () => {
-      const featuredProperties = [
-        { ...mockPropertyData, featured: true },
-      ];
+      const featuredProperties = [{ ...mockPropertyData, featured: true }];
 
       prisma.property.findMany.mockResolvedValue(featuredProperties as any);
 

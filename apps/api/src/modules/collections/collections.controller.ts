@@ -11,7 +11,11 @@ import {
 } from '@nestjs/common';
 import { CollectionsService } from './collections.service';
 import { JwtAuthGuard } from '../../common/guards/jwt-auth.guard';
-import { CreateCollectionDto, UpdateCollectionDto, AddPropertyToCollectionDto } from '@repo/shared';
+import {
+  CreateCollectionDto,
+  UpdateCollectionDto,
+  AddPropertyToCollectionDto,
+} from '@repo/shared';
 
 @Controller('collections')
 @UseGuards(JwtAuthGuard)

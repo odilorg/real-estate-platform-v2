@@ -34,7 +34,10 @@ export class SavedSearchesController {
 
   @Post()
   @UsePipes(new ZodValidationPipe(CreateSavedSearchDto))
-  create(@CurrentUser() user: User, @Body() dto: CreateSavedSearchDto): Promise<SavedSearch> {
+  create(
+    @CurrentUser() user: User,
+    @Body() dto: CreateSavedSearchDto,
+  ): Promise<SavedSearch> {
     return this.savedSearchesService.create(user.id, dto);
   }
 
@@ -44,7 +47,10 @@ export class SavedSearchesController {
   }
 
   @Get(':id')
-  findOne(@Param('id') id: string, @CurrentUser() user: User): Promise<SavedSearch> {
+  findOne(
+    @Param('id') id: string,
+    @CurrentUser() user: User,
+  ): Promise<SavedSearch> {
     return this.savedSearchesService.findOne(id, user.id);
   }
 
@@ -59,7 +65,10 @@ export class SavedSearchesController {
   }
 
   @Delete(':id')
-  delete(@Param('id') id: string, @CurrentUser() user: User): Promise<{ message: string }> {
+  delete(
+    @Param('id') id: string,
+    @CurrentUser() user: User,
+  ): Promise<{ message: string }> {
     return this.savedSearchesService.delete(id, user.id);
   }
 
@@ -70,7 +79,11 @@ export class SavedSearchesController {
     @CurrentUser() user: User,
     @Body() dto: ToggleNotificationsDto,
   ): Promise<SavedSearch> {
-    return this.savedSearchesService.toggleNotifications(id, user.id, dto.enabled);
+    return this.savedSearchesService.toggleNotifications(
+      id,
+      user.id,
+      dto.enabled,
+    );
   }
 
   @Get('stats/count')
@@ -91,7 +104,9 @@ export class SavedSearchesController {
   }
 
   @Post('test-notification')
-  async testNotification(@CurrentUser() user: User): Promise<{ message: string }> {
+  async testNotification(
+    @CurrentUser() user: User,
+  ): Promise<{ message: string }> {
     await this.notificationsService.sendTestNotification(user.id);
     return { message: 'Test notification sent successfully' };
   }

@@ -1,6 +1,14 @@
-import { Injectable, NotFoundException, ForbiddenException } from '@nestjs/common';
+import {
+  Injectable,
+  NotFoundException,
+  ForbiddenException,
+} from '@nestjs/common';
 import { PrismaService } from '../../common/prisma';
-import { CreateCollectionDto, UpdateCollectionDto, AddPropertyToCollectionDto } from '@repo/shared';
+import {
+  CreateCollectionDto,
+  UpdateCollectionDto,
+  AddPropertyToCollectionDto,
+} from '@repo/shared';
 
 @Injectable()
 export class CollectionsService {
@@ -44,10 +52,7 @@ export class CollectionsService {
           select: { properties: true },
         },
       },
-      orderBy: [
-        { isDefault: 'desc' },
-        { createdAt: 'desc' },
-      ],
+      orderBy: [{ isDefault: 'desc' }, { createdAt: 'desc' }],
     });
   }
 
@@ -125,7 +130,11 @@ export class CollectionsService {
     return { message: 'Collection deleted successfully' };
   }
 
-  async addProperty(collectionId: string, userId: string, dto: AddPropertyToCollectionDto) {
+  async addProperty(
+    collectionId: string,
+    userId: string,
+    dto: AddPropertyToCollectionDto,
+  ) {
     // Verify collection ownership
     const collection = await this.prisma.collection.findFirst({
       where: { id: collectionId, userId },
@@ -172,7 +181,11 @@ export class CollectionsService {
     });
   }
 
-  async removeProperty(collectionId: string, propertyId: string, userId: string) {
+  async removeProperty(
+    collectionId: string,
+    propertyId: string,
+    userId: string,
+  ) {
     // Verify collection ownership
     const collection = await this.prisma.collection.findFirst({
       where: { id: collectionId, userId },

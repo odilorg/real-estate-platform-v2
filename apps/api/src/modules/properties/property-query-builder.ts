@@ -1,5 +1,9 @@
 import { Prisma } from '@repo/database';
-import { PropertyFilterDto, Currency, EXCHANGE_RATE_UZS_TO_USD } from '@repo/shared';
+import {
+  PropertyFilterDto,
+  Currency,
+  EXCHANGE_RATE_UZS_TO_USD,
+} from '@repo/shared';
 
 /**
  * Builder class to construct Prisma where clauses for property queries
@@ -43,8 +47,12 @@ export class PropertyQueryBuilder {
         { address: { contains: this.filters.search, mode: 'insensitive' } },
         { city: { contains: this.filters.search, mode: 'insensitive' } },
         { district: { contains: this.filters.search, mode: 'insensitive' } },
-        { nearestMetro: { contains: this.filters.search, mode: 'insensitive' } },
-        { buildingName: { contains: this.filters.search, mode: 'insensitive' } },
+        {
+          nearestMetro: { contains: this.filters.search, mode: 'insensitive' },
+        },
+        {
+          buildingName: { contains: this.filters.search, mode: 'insensitive' },
+        },
         { mahalla: { contains: this.filters.search, mode: 'insensitive' } },
       ];
     }
@@ -55,13 +63,22 @@ export class PropertyQueryBuilder {
       this.where.city = { contains: this.filters.city, mode: 'insensitive' };
     }
     if (this.filters.district) {
-      this.where.district = { contains: this.filters.district, mode: 'insensitive' };
+      this.where.district = {
+        contains: this.filters.district,
+        mode: 'insensitive',
+      };
     }
     if (this.filters.nearestMetro) {
-      this.where.nearestMetro = { contains: this.filters.nearestMetro, mode: 'insensitive' };
+      this.where.nearestMetro = {
+        contains: this.filters.nearestMetro,
+        mode: 'insensitive',
+      };
     }
     if (this.filters.mahalla) {
-      this.where.mahalla = { contains: this.filters.mahalla, mode: 'insensitive' };
+      this.where.mahalla = {
+        contains: this.filters.mahalla,
+        mode: 'insensitive',
+      };
     }
   }
 
@@ -210,7 +227,11 @@ export class PropertyQueryBuilder {
   }
 
   needsGeoFilter(): boolean {
-    return !!(this.filters.latitude && this.filters.longitude && this.filters.radius);
+    return !!(
+      this.filters.latitude &&
+      this.filters.longitude &&
+      this.filters.radius
+    );
   }
 
   needsFloorPostFilter(): boolean {

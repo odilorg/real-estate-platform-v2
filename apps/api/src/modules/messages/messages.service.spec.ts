@@ -3,12 +3,18 @@ import { NotFoundException, ForbiddenException } from '@nestjs/common';
 import { MessagesService } from './messages.service';
 import { MessagesGateway } from './messages.gateway';
 import { PrismaService } from '../../common/prisma/prisma.service';
-import { mockPrismaService, resetMocks, TestFactories } from '../../test/test-utils';
+import {
+  mockPrismaService,
+  resetMocks,
+  TestFactories,
+} from '../../test/test-utils';
 
 describe('MessagesService', () => {
   let service: MessagesService;
   let prisma: typeof mockPrismaService;
-  let messagesGateway: jest.Mocked<Pick<MessagesGateway, 'emitNewMessage' | 'emitNewConversation'>>;
+  let messagesGateway: jest.Mocked<
+    Pick<MessagesGateway, 'emitNewMessage' | 'emitNewConversation'>
+  >;
 
   beforeEach(async () => {
     resetMocks();
@@ -84,10 +90,7 @@ describe('MessagesService', () => {
       expect(result[0].unreadCount).toBe(2);
       expect(prisma.conversation.findMany).toHaveBeenCalledWith({
         where: {
-          OR: [
-            { participant1Id: userId },
-            { participant2Id: userId },
-          ],
+          OR: [{ participant1Id: userId }, { participant2Id: userId }],
         },
         include: {
           property: {
@@ -157,7 +160,11 @@ describe('MessagesService', () => {
       });
 
       prisma.conversation.findMany.mockResolvedValue([mockConversation]);
-      prisma.user.findUnique.mockResolvedValue({ id: otherUserId, firstName: 'John', lastName: 'Doe' } as any);
+      prisma.user.findUnique.mockResolvedValue({
+        id: otherUserId,
+        firstName: 'John',
+        lastName: 'Doe',
+      } as any);
       prisma.message.count.mockResolvedValue(5);
 
       const result = await service.getConversations(userId);
@@ -217,7 +224,7 @@ describe('MessagesService', () => {
       prisma.conversation.findUnique.mockResolvedValue(null);
 
       await expect(
-        service.getConversation(conversationId, userId)
+        service.getConversation(conversationId, userId),
       ).rejects.toThrow(NotFoundException);
     });
 
@@ -234,7 +241,7 @@ describe('MessagesService', () => {
       prisma.conversation.findUnique.mockResolvedValue(mockConversation);
 
       await expect(
-        service.getConversation(conversationId, userId)
+        service.getConversation(conversationId, userId),
       ).rejects.toThrow(ForbiddenException);
     });
 
@@ -250,7 +257,11 @@ describe('MessagesService', () => {
       });
 
       prisma.conversation.findUnique.mockResolvedValue(mockConversation);
-      prisma.user.findUnique.mockResolvedValue({ id: otherUserId, firstName: 'John', lastName: 'Doe' } as any);
+      prisma.user.findUnique.mockResolvedValue({
+        id: otherUserId,
+        firstName: 'John',
+        lastName: 'Doe',
+      } as any);
 
       const result = await service.getConversation(conversationId, userId);
 
@@ -269,7 +280,11 @@ describe('MessagesService', () => {
       });
 
       prisma.conversation.findUnique.mockResolvedValue(mockConversation);
-      prisma.user.findUnique.mockResolvedValue({ id: otherUserId, firstName: 'John', lastName: 'Doe' } as any);
+      prisma.user.findUnique.mockResolvedValue({
+        id: otherUserId,
+        firstName: 'John',
+        lastName: 'Doe',
+      } as any);
 
       const result = await service.getConversation(conversationId, userId);
 
@@ -293,7 +308,7 @@ describe('MessagesService', () => {
           id: `msg-${i}`,
           conversationId,
           content: `Message ${i}`,
-        })
+        }),
       );
 
       prisma.conversation.findUnique.mockResolvedValue(mockConversation);
@@ -313,9 +328,9 @@ describe('MessagesService', () => {
     it('should throw NotFoundException if conversation does not exist', async () => {
       prisma.conversation.findUnique.mockResolvedValue(null);
 
-      await expect(
-        service.getMessages(conversationId, userId)
-      ).rejects.toThrow(NotFoundException);
+      await expect(service.getMessages(conversationId, userId)).rejects.toThrow(
+        NotFoundException,
+      );
     });
 
     it('should throw ForbiddenException if user is not a participant', async () => {
@@ -327,9 +342,9 @@ describe('MessagesService', () => {
 
       prisma.conversation.findUnique.mockResolvedValue(mockConversation);
 
-      await expect(
-        service.getMessages(conversationId, userId)
-      ).rejects.toThrow(ForbiddenException);
+      await expect(service.getMessages(conversationId, userId)).rejects.toThrow(
+        ForbiddenException,
+      );
     });
 
     it('should mark messages as read', async () => {
@@ -470,7 +485,11 @@ describe('MessagesService', () => {
       prisma.conversation.create.mockResolvedValue(mockConversation);
       prisma.user.findUnique.mockResolvedValue(mockSender);
 
-      const result = await service.startConversation(userId, propertyId, message);
+      const result = await service.startConversation(
+        userId,
+        propertyId,
+        message,
+      );
 
       expect(result.conversation.id).toBe('conv-123');
       expect(result.message.content).toBe(message);
@@ -524,7 +543,11 @@ describe('MessagesService', () => {
       prisma.message.create.mockResolvedValue(newMessage);
       prisma.conversation.update.mockResolvedValue(existingConversation);
 
-      const result = await service.startConversation(userId, propertyId, message);
+      const result = await service.startConversation(
+        userId,
+        propertyId,
+        message,
+      );
 
       expect(result.conversation.id).toBe('conv-123');
       expect(result.message.id).toBe('msg-456');
@@ -545,7 +568,7 @@ describe('MessagesService', () => {
       prisma.property.findUnique.mockResolvedValue(null);
 
       await expect(
-        service.startConversation(userId, propertyId, message)
+        service.startConversation(userId, propertyId, message),
       ).rejects.toThrow(NotFoundException);
     });
 
@@ -558,7 +581,7 @@ describe('MessagesService', () => {
       prisma.property.findUnique.mockResolvedValue(mockProperty);
 
       await expect(
-        service.startConversation(userId, propertyId, message)
+        service.startConversation(userId, propertyId, message),
       ).rejects.toThrow(ForbiddenException);
     });
 
@@ -606,7 +629,7 @@ describe('MessagesService', () => {
         expect.objectContaining({
           id: 'conv-123',
           propertyId,
-        })
+        }),
       );
     });
 
@@ -618,7 +641,9 @@ describe('MessagesService', () => {
 
       prisma.property.findUnique.mockResolvedValue(mockProperty);
 
-      await service.startConversation(userId, propertyId, message).catch(() => {});
+      await service
+        .startConversation(userId, propertyId, message)
+        .catch(() => {});
 
       expect(prisma.conversation.findFirst).toHaveBeenCalledWith({
         where: {
@@ -672,7 +697,7 @@ describe('MessagesService', () => {
       prisma.conversation.findUnique.mockResolvedValue(null);
 
       await expect(
-        service.sendMessage(conversationId, userId, content)
+        service.sendMessage(conversationId, userId, content),
       ).rejects.toThrow(NotFoundException);
     });
 
@@ -686,7 +711,7 @@ describe('MessagesService', () => {
       prisma.conversation.findUnique.mockResolvedValue(mockConversation);
 
       await expect(
-        service.sendMessage(conversationId, userId, content)
+        service.sendMessage(conversationId, userId, content),
       ).rejects.toThrow(ForbiddenException);
     });
 
@@ -737,7 +762,7 @@ describe('MessagesService', () => {
 
       expect(messagesGateway.emitNewMessage).toHaveBeenCalledWith(
         conversationId,
-        mockMessage
+        mockMessage,
       );
     });
 
@@ -753,18 +778,30 @@ describe('MessagesService', () => {
 
       prisma.conversation.findUnique.mockResolvedValue(mockConversation);
       prisma.message.create.mockResolvedValue(
-        TestFactories.createMessage({ conversationId, senderId: user1, content })
+        TestFactories.createMessage({
+          conversationId,
+          senderId: user1,
+          content,
+        }),
       );
       prisma.conversation.update.mockResolvedValue(mockConversation);
 
       // User 1 sends message
-      await expect(service.sendMessage(conversationId, user1, content)).resolves.toBeDefined();
+      await expect(
+        service.sendMessage(conversationId, user1, content),
+      ).resolves.toBeDefined();
 
       // User 2 sends message
       prisma.message.create.mockResolvedValue(
-        TestFactories.createMessage({ conversationId, senderId: user2, content })
+        TestFactories.createMessage({
+          conversationId,
+          senderId: user2,
+          content,
+        }),
       );
-      await expect(service.sendMessage(conversationId, user2, content)).resolves.toBeDefined();
+      await expect(
+        service.sendMessage(conversationId, user2, content),
+      ).resolves.toBeDefined();
     });
   });
 
@@ -786,10 +823,7 @@ describe('MessagesService', () => {
       expect(result.unreadCount).toBe(7);
       expect(prisma.conversation.findMany).toHaveBeenCalledWith({
         where: {
-          OR: [
-            { participant1Id: userId },
-            { participant2Id: userId },
-          ],
+          OR: [{ participant1Id: userId }, { participant2Id: userId }],
         },
         select: { id: true },
       });
@@ -888,7 +922,11 @@ describe('MessagesService', () => {
       prisma.conversation.create.mockResolvedValue(mockConversation);
       prisma.user.findUnique.mockResolvedValue(mockSender);
 
-      const startResult = await service.startConversation(userId, propertyId, 'Hello');
+      const startResult = await service.startConversation(
+        userId,
+        propertyId,
+        'Hello',
+      );
       expect(startResult.conversation.id).toBe('conv-123');
 
       // Send message
@@ -903,7 +941,11 @@ describe('MessagesService', () => {
       prisma.message.create.mockResolvedValue(newMessage);
       prisma.conversation.update.mockResolvedValue(mockConversation);
 
-      const sendResult = await service.sendMessage('conv-123', userId, 'Follow up message');
+      const sendResult = await service.sendMessage(
+        'conv-123',
+        userId,
+        'Follow up message',
+      );
       expect(sendResult.id).toBe('msg-2');
 
       // Get messages
@@ -936,8 +978,16 @@ describe('MessagesService', () => {
 
       prisma.conversation.findMany.mockResolvedValue(mockConversations);
       prisma.user.findUnique
-        .mockResolvedValueOnce({ id: 'user-456', firstName: 'John', lastName: 'Doe' } as any)
-        .mockResolvedValueOnce({ id: 'user-789', firstName: 'Jane', lastName: 'Smith' } as any);
+        .mockResolvedValueOnce({
+          id: 'user-456',
+          firstName: 'John',
+          lastName: 'Doe',
+        } as any)
+        .mockResolvedValueOnce({
+          id: 'user-789',
+          firstName: 'Jane',
+          lastName: 'Smith',
+        } as any);
       prisma.message.count.mockResolvedValue(0);
 
       const result = await service.getConversations(userId);

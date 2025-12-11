@@ -33,7 +33,9 @@ export class SearchService {
 
   async initializeIndex(): Promise<void> {
     if (!this.elasticsearchService.isElasticsearchEnabled()) {
-      this.logger.warn('Elasticsearch is disabled - skipping index initialization');
+      this.logger.warn(
+        'Elasticsearch is disabled - skipping index initialization',
+      );
       return;
     }
 
@@ -160,7 +162,10 @@ export class SearchService {
       return false;
     }
 
-    return await this.elasticsearchService.deleteDocument(PROPERTIES_INDEX, propertyId);
+    return await this.elasticsearchService.deleteDocument(
+      PROPERTIES_INDEX,
+      propertyId,
+    );
   }
 
   async reindexAllProperties(): Promise<{ success: boolean; count: number }> {
@@ -227,11 +232,19 @@ export class SearchService {
 
   async searchProperties(filters: PropertySearchFilters): Promise<any> {
     if (!this.elasticsearchService.isElasticsearchEnabled()) {
-      this.logger.warn('Elasticsearch disabled - falling back to database search');
+      this.logger.warn(
+        'Elasticsearch disabled - falling back to database search',
+      );
       return this.fallbackDatabaseSearch(filters);
     }
 
-    const { query, page = 1, limit = 20, sortBy = 'relevance', ...restFilters } = filters;
+    const {
+      query,
+      page = 1,
+      limit = 20,
+      sortBy = 'relevance',
+      ...restFilters
+    } = filters;
     const from = (page - 1) * limit;
 
     const mustClauses: any[] = [{ term: { status: 'ACTIVE' } }];
@@ -266,20 +279,32 @@ export class SearchService {
     }
 
     if (restFilters.buildingClass) {
-      filterClauses.push({ term: { buildingClass: restFilters.buildingClass } });
+      filterClauses.push({
+        term: { buildingClass: restFilters.buildingClass },
+      });
     }
 
-    if (restFilters.minPrice !== undefined || restFilters.maxPrice !== undefined) {
+    if (
+      restFilters.minPrice !== undefined ||
+      restFilters.maxPrice !== undefined
+    ) {
       const priceRange: any = {};
-      if (restFilters.minPrice !== undefined) priceRange.gte = restFilters.minPrice;
-      if (restFilters.maxPrice !== undefined) priceRange.lte = restFilters.maxPrice;
+      if (restFilters.minPrice !== undefined)
+        priceRange.gte = restFilters.minPrice;
+      if (restFilters.maxPrice !== undefined)
+        priceRange.lte = restFilters.maxPrice;
       filterClauses.push({ range: { price: priceRange } });
     }
 
-    if (restFilters.minArea !== undefined || restFilters.maxArea !== undefined) {
+    if (
+      restFilters.minArea !== undefined ||
+      restFilters.maxArea !== undefined
+    ) {
       const areaRange: any = {};
-      if (restFilters.minArea !== undefined) areaRange.gte = restFilters.minArea;
-      if (restFilters.maxArea !== undefined) areaRange.lte = restFilters.maxArea;
+      if (restFilters.minArea !== undefined)
+        areaRange.gte = restFilters.minArea;
+      if (restFilters.maxArea !== undefined)
+        areaRange.lte = restFilters.maxArea;
       filterClauses.push({ range: { area: areaRange } });
     }
 
@@ -327,7 +352,10 @@ export class SearchService {
       searchQuery.query.bool.minimum_should_match = 1;
     }
 
-    const result = await this.elasticsearchService.search(PROPERTIES_INDEX, searchQuery);
+    const result = await this.elasticsearchService.search(
+      PROPERTIES_INDEX,
+      searchQuery,
+    );
 
     const hits = result.hits.hits.map((hit: any) => ({
       ...hit._source,
@@ -417,7 +445,9 @@ export class SearchService {
     }
   }
 
-  private async fallbackDatabaseSearch(filters: PropertySearchFilters): Promise<any> {
+  private async fallbackDatabaseSearch(
+    filters: PropertySearchFilters,
+  ): Promise<any> {
     const { query, page = 1, limit = 20, ...restFilters } = filters;
     const skip = (page - 1) * limit;
 
@@ -447,10 +477,15 @@ export class SearchService {
       where.listingType = restFilters.listingType;
     }
 
-    if (restFilters.minPrice !== undefined || restFilters.maxPrice !== undefined) {
+    if (
+      restFilters.minPrice !== undefined ||
+      restFilters.maxPrice !== undefined
+    ) {
       where.price = {};
-      if (restFilters.minPrice !== undefined) where.price.gte = restFilters.minPrice;
-      if (restFilters.maxPrice !== undefined) where.price.lte = restFilters.maxPrice;
+      if (restFilters.minPrice !== undefined)
+        where.price.gte = restFilters.minPrice;
+      if (restFilters.maxPrice !== undefined)
+        where.price.lte = restFilters.maxPrice;
     }
 
     const [data, total] = await Promise.all([

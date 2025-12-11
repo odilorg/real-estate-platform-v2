@@ -31,7 +31,10 @@ export class AgenciesController {
   @UseGuards(JwtAuthGuard, RolesGuard)
   @Roles('ADMIN')
   @UsePipes(new ZodValidationPipe(CreateAgencyDto))
-  create(@CurrentUser() user: User, @Body() dto: CreateAgencyDto): Promise<Agency> {
+  create(
+    @CurrentUser() user: User,
+    @Body() dto: CreateAgencyDto,
+  ): Promise<Agency> {
     return this.agenciesService.create(user.id, dto);
   }
 
@@ -50,7 +53,8 @@ export class AgenciesController {
       page: page ? parseInt(page, 10) : 1,
       limit: limit ? parseInt(limit, 10) : 20,
       city,
-      verified: verified === 'true' ? true : verified === 'false' ? false : undefined,
+      verified:
+        verified === 'true' ? true : verified === 'false' ? false : undefined,
     });
   }
 
@@ -92,7 +96,10 @@ export class AgenciesController {
   @Delete(':id')
   @UseGuards(JwtAuthGuard, RolesGuard)
   @Roles('ADMIN')
-  delete(@Param('id') id: string, @CurrentUser() user: User): Promise<{ message: string }> {
+  delete(
+    @Param('id') id: string,
+    @CurrentUser() user: User,
+  ): Promise<{ message: string }> {
     return this.agenciesService.delete(id, user.id);
   }
 }
