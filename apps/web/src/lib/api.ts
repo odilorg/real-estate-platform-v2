@@ -34,6 +34,7 @@ class ApiClient {
       method,
       headers,
       body: body ? JSON.stringify(body) : undefined,
+      credentials: 'include', // Include cookies for OAuth authentication
     });
 
     if (!response.ok) {

@@ -4,21 +4,38 @@ import { Suspense, useEffect } from 'react';
 import { useSearchParams } from 'next/navigation';
 import { useTranslations } from 'next-intl';
 import { useRouter } from '@/i18n/routing';
+import { useAuth } from '@/context/AuthContext';
 
 function CallbackHandler() {
   const router = useRouter();
   const searchParams = useSearchParams();
+  const { refreshUser } = useAuth();
 
   useEffect(() => {
-    const token = searchParams.get('token');
+    const handleCallback = async () => {
+      const token = searchParams.get('token');
 
-    if (token) {
-      localStorage.setItem('token', token);
-      router.push('/');
-    } else {
-      router.push('/auth/login?error=auth_failed');
-    }
-  }, [router, searchParams]);
+      if (token) {
+        // Handle URL token (legacy)
+        localStorage.setItem('token', token);
+        await refreshUser();
+        window.location.assign('/properties');
+      } else {
+        // Handle cookie-based auth (current implementation)
+        // The token is already in an HTTP-only cookie set by the backend
+        // Just refresh the user session and redirect
+        try {
+          await refreshUser();
+          window.location.assign('/properties');
+        } catch (error) {
+          console.error('Auth callback error:', error);
+          router.push('/auth/login?error=auth_failed');
+        }
+      }
+    };
+
+    handleCallback();
+  }, [router, searchParams, refreshUser]);
 
   return null;
 }
