@@ -175,12 +175,14 @@ export class SavedSearchNotificationsService {
       },
     ];
 
-    await this.emailService.sendPropertyMatchNotification(
-      user.email,
-      user.firstName || 'User',
-      'Тестовый поиск',
-      testProperties,
-    );
+    if (user.email) {
+      await this.emailService.sendPropertyMatchNotification(
+        user.email,
+        user.firstName || 'User',
+        'Тестовый поиск',
+        testProperties,
+      );
+    }
 
     this.logger.log(`Sent test notification to ${user.email}`);
   }

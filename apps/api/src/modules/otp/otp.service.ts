@@ -7,7 +7,6 @@ import { OtpPurpose } from '@repo/database';
 @Injectable()
 export class OtpService {
   private logger = new Logger(OtpService.name);
-  private readonly OTP_LENGTH = 6;
   private readonly OTP_EXPIRY_MINUTES = 3;
   private readonly MAX_ATTEMPTS = 5;
   private readonly RATE_LIMIT_WINDOW = 60000; // 1 minute
