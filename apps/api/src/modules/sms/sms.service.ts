@@ -136,8 +136,13 @@ export class SmsService {
     // For production, top up Eskiz balance to send custom messages
     const isEskizTestMode = this.configService.get('SMS_PROVIDER') === 'eskiz';
     const message = isEskizTestMode
-      ? `Bu Eskiz dan test. Kod: ${code}`
+      ? 'Bu Eskiz dan test' // Exact test message required by Eskiz
       : `Your verification code: ${code}. Valid for 3 minutes. Do not share this code.`;
+
+    // Log OTP code when using Eskiz test mode
+    if (isEskizTestMode) {
+      this.logger.log(`[ESKIZ TEST MODE] OTP Code for ${phone}: ${code}`);
+    }
 
     try {
       return await this.provider.sendSms(phone, message);
