@@ -356,10 +356,12 @@ export default function AgencyProfilePage({ params }: { params: Promise<{ slug: 
               {properties.slice(0, 6).map((property) => (
                 <Link key={property.id} href={`/properties/${property.id}`}>
                   <PropertyListItem
+                    id={property.id}
                     title={property.title}
                     price={property.price}
                     listingType={property.listingType as 'SALE' | 'RENT_LONG' | 'RENT_DAILY'}
-                    address={`${property.address}, ${property.city}`}
+                    address={property.address}
+                    city={property.city}
                     bedrooms={property.bedrooms ?? undefined}
                     bathrooms={property.bathrooms ?? undefined}
                     area={property.area}

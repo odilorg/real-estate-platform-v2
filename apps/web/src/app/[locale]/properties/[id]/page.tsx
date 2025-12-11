@@ -84,7 +84,7 @@ interface Property {
   latitude: number | null;
   longitude: number | null;
   nearestMetro: string | null;
-  metroDistance: string | null;
+  metroDistance: number | null;
   floor: number | null;
   totalFloors: number | null;
   yearBuilt: number | null;
