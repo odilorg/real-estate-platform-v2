@@ -304,6 +304,7 @@ describe('AgenciesService', () => {
       const result = await service.findById(agencyId);
 
       expect(result).toEqual(mockAgency);
+      // eslint-disable-next-line @typescript-eslint/no-unsafe-member-access
       expect((result as any).agents).toEqual(mockAgents);
       expect(prisma.agency.findUnique).toHaveBeenCalledWith({
         where: { id: agencyId },
@@ -353,7 +354,9 @@ describe('AgenciesService', () => {
 
       const result = await service.findById(agencyId);
 
+      // eslint-disable-next-line @typescript-eslint/no-unsafe-member-access
       expect((result as any).agents[0].superAgent).toBe(true);
+      // eslint-disable-next-line @typescript-eslint/no-unsafe-member-access
       expect((result as any).agents[0].rating).toBe(4.8);
     });
   });
@@ -397,6 +400,7 @@ describe('AgenciesService', () => {
       const result = await service.findBySlug(slug);
 
       expect(result).toEqual(mockAgency);
+      // eslint-disable-next-line @typescript-eslint/no-unsafe-member-access
       expect((result as any).agents).toHaveLength(2);
       expect(prisma.agency.findUnique).toHaveBeenCalledWith({
         where: { slug },
