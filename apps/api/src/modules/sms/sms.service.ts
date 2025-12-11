@@ -132,7 +132,12 @@ export class SmsService {
   }
 
   async sendOtp(phone: string, code: string): Promise<boolean> {
-    const message = `Your verification code: ${code}. Valid for 3 minutes. Do not share this code.`;
+    // Use Eskiz test message format when in test mode
+    // For production, top up Eskiz balance to send custom messages
+    const isEskizTestMode = this.configService.get('SMS_PROVIDER') === 'eskiz';
+    const message = isEskizTestMode
+      ? `Bu Eskiz dan test. Kod: ${code}`
+      : `Your verification code: ${code}. Valid for 3 minutes. Do not share this code.`;
 
     try {
       return await this.provider.sendSms(phone, message);
