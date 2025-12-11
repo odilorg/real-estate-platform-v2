@@ -54,7 +54,7 @@ export function LocationPicker({
   const [searching, setSearching] = useState(false);
   const [gettingLocation, setGettingLocation] = useState(false);
   const [showResults, setShowResults] = useState(false);
-  const searchTimeoutRef = useRef<NodeJS.Timeout>();
+  const searchTimeoutRef = useRef<number | undefined>(undefined);
 
   // Update position when props change
   useEffect(() => {

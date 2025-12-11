@@ -64,51 +64,6 @@ export interface WizardFormData {
   description: string;
 }
 
-
-  // Initial form data using translation for city
-  const getInitialFormData = (): WizardFormData => ({
-  propertyType: '',
-  listingType: 'SALE',
-  address: '',
-  city: t('defaultCity'),
-  district: '',
-  mahalla: '',
-  nearestMetro: '',
-  metroDistance: '',
-  latitude: undefined,
-  longitude: undefined,
-  price: '',
-  currency: 'YE',
-  area: '',
-  bedrooms: '',
-  bathrooms: '',
-  floor: '',
-  totalFloors: '',
-  rooms: '',
-  buildingType: '',
-  buildingClass: '',
-  yearBuilt: '',
-  renovation: '',
-  livingArea: '',
-  kitchenArea: '',
-  ceilingHeight: '',
-  parking: '',
-  parkingType: '',
-  balcony: '',
-  loggia: '',
-  elevatorPassenger: '',
-  elevatorCargo: '',
-  hasGarbageChute: false,
-  hasConcierge: false,
-  hasGatedArea: false,
-  windowView: '',
-  bathroomType: '',
-  furnished: '',
-  images: [],
-  title: '',
-  description: '',
-  });
-
 // Helper function to get user ID from JWT token
 const getUserIdFromToken = (): string | null => {
   try {
@@ -144,6 +99,51 @@ export default function PropertyCreationWizard() {
     { number: 5, title: t('steps.5.title'), description: t('steps.5.description') },
     { number: 6, title: t('steps.6.title'), description: t('steps.6.description') },
   ];
+
+  // Initial form data using translation for city
+  const getInitialFormData = (): WizardFormData => ({
+    propertyType: '',
+    listingType: 'SALE',
+    address: '',
+    city: t('defaultCity'),
+    district: '',
+    mahalla: '',
+    nearestMetro: '',
+    metroDistance: '',
+    latitude: undefined,
+    longitude: undefined,
+    price: '',
+    currency: 'YE',
+    area: '',
+    bedrooms: '',
+    bathrooms: '',
+    floor: '',
+    totalFloors: '',
+    rooms: '',
+    buildingType: '',
+    buildingClass: '',
+    yearBuilt: '',
+    renovation: '',
+    livingArea: '',
+    kitchenArea: '',
+    ceilingHeight: '',
+    parking: '',
+    parkingType: '',
+    balcony: '',
+    loggia: '',
+    elevatorPassenger: '',
+    elevatorCargo: '',
+    hasGarbageChute: false,
+    hasConcierge: false,
+    hasGatedArea: false,
+    windowView: '',
+    bathroomType: '',
+    furnished: '',
+    images: [],
+    title: '',
+    description: '',
+  });
+
   const [formData, setFormData] = useState<WizardFormData>(getInitialFormData());
   const [saving, setSaving] = useState(false);
   const [errors, setErrors] = useState<Record<string, string>>({});
@@ -245,7 +245,7 @@ export default function PropertyCreationWizard() {
     const draftKey = getDraftStorageKey();
     if (draftKey) {
       localStorage.removeItem(draftKey);
-      setFormData(INITIAL_FORM_DATA);
+      setFormData(getInitialFormData());
       setCurrentStep(1);
       setErrors({});
     }

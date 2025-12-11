@@ -659,7 +659,7 @@ export default function PropertiesPage() {
             }}
             totalResults={pagination?.total || properties.length}
             viewMode={viewMode}
-            onViewModeChange={setViewMode}
+            onViewModeChange={(mode) => setViewMode(mode as ViewMode)}
             sortBy={sortBy}
             onSortChange={setSortBy}
             sortOptions={SORT_OPTIONS}
@@ -874,7 +874,6 @@ export default function PropertiesPage() {
                       phone: property.user.agent?.phone || property.user.phone,
                       email: property.user.email,
                       avatar: property.user.agent?.photo,
-                      agentId: property.user.agent?.id,
                     } : undefined}
                   />
                 ))}

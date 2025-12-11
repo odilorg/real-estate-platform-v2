@@ -81,6 +81,10 @@ interface Property {
   address: string;
   city: string;
   district: string | null;
+  latitude: number | null;
+  longitude: number | null;
+  nearestMetro: string | null;
+  metroDistance: string | null;
   floor: number | null;
   totalFloors: number | null;
   yearBuilt: number | null;

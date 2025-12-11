@@ -320,7 +320,7 @@ export default function AgentProfilePage({ params }: { params: Promise<{ id: str
                   <PropertyListItem
                     title={property.title}
                     price={property.price}
-                    listingType={property.listingType}
+                    listingType={property.listingType as 'SALE' | 'RENT_LONG' | 'RENT_DAILY'}
                     address={`${property.address}, ${property.city}`}
                     bedrooms={property.bedrooms ?? undefined}
                     bathrooms={property.bathrooms ?? undefined}

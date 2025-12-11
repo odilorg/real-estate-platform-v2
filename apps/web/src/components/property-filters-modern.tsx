@@ -15,6 +15,8 @@ export interface ModernFilterValues {
   maxPrice?: number;
   minArea?: number;
   maxArea?: number;
+  minFloor?: number;
+  maxFloor?: number;
   userId?: string;
   buildingClasses?: string[];
   renovationTypes?: string[];
