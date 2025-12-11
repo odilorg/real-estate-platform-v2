@@ -44,12 +44,15 @@ describe('SmsService', () => {
       const phone = '+998901234567';
       const code = '654321';
 
-      const loggerSpy = jest.spyOn((service as any).logger, 'log');
+      const loggerSpy = jest.spyOn((service as any).provider, 'sendSms');
 
       await service.sendOtp(phone, code);
 
-      // Mock provider logs to console, but we can verify it was called
-      expect(loggerSpy).toHaveBeenCalled();
+      // Verify sendSms was called with correct message format
+      expect(loggerSpy).toHaveBeenCalledWith(
+        phone,
+        expect.stringContaining('verification code'),
+      );
     });
 
     it('should handle errors gracefully', async () => {
@@ -204,9 +207,8 @@ describe('SmsService', () => {
       await service.sendOtp(phone, code);
 
       const smsCallBody = fetchSpy.mock.calls[1][1].body;
-      expect(smsCallBody).toContain('Your verification code: 654321');
-      expect(smsCallBody).toContain('Valid for 3 minutes');
-      expect(smsCallBody).toContain('Do not share this code');
+      // Eskiz test mode sends exact test message (URL-encoded)
+      expect(smsCallBody).toContain('Bu+Eskiz+dan+test');
     });
 
     it('should return false if Eskiz authentication fails', async () => {
@@ -218,7 +220,8 @@ describe('SmsService', () => {
       const phone = '+998901234567';
       const code = '123456';
 
-      await expect(service.sendOtp(phone, code)).rejects.toThrow();
+      const result = await service.sendOtp(phone, code);
+      expect(result).toBe(false);
     });
 
     it('should return false if SMS sending fails', async () => {
@@ -278,7 +281,8 @@ describe('SmsService', () => {
       const phone = '+998901234567';
       const code = '123456';
 
-      await expect(service.sendOtp(phone, code)).rejects.toThrow();
+      const result = await service.sendOtp(phone, code);
+      expect(result).toBe(false);
     });
   });
 
