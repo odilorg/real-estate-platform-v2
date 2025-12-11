@@ -229,16 +229,20 @@ describe('ComparisonContext', () => {
       return (
         <div>
           <div data-testid="count">Count: {comparisonProperties.length}</div>
-          <button
-            onClick={() => {
-              addToComparison({ id: '1', title: 'P1', price: 100, imageUrl: '' });
-              addToComparison({ id: '2', title: 'P2', price: 200, imageUrl: '' });
-              addToComparison({ id: '3', title: 'P3', price: 300, imageUrl: '' });
-              addToComparison({ id: '4', title: 'P4', price: 400, imageUrl: '' });
-              addToComparison({ id: '5', title: 'P5', price: 500, imageUrl: '' });
-            }}
-          >
-            Add 5 Properties
+          <button onClick={() => addToComparison({ id: '1', title: 'P1', price: 100, imageUrl: '' })}>
+            Add P1
+          </button>
+          <button onClick={() => addToComparison({ id: '2', title: 'P2', price: 200, imageUrl: '' })}>
+            Add P2
+          </button>
+          <button onClick={() => addToComparison({ id: '3', title: 'P3', price: 300, imageUrl: '' })}>
+            Add P3
+          </button>
+          <button onClick={() => addToComparison({ id: '4', title: 'P4', price: 400, imageUrl: '' })}>
+            Add P4
+          </button>
+          <button onClick={() => addToComparison({ id: '5', title: 'P5', price: 500, imageUrl: '' })}>
+            Add P5
           </button>
         </div>
       );
@@ -250,7 +254,12 @@ describe('ComparisonContext', () => {
       </ComparisonProvider>
     );
 
-    fireEvent.click(screen.getByText('Add 5 Properties'));
+    // Add 5 properties one by one
+    fireEvent.click(screen.getByText('Add P1'));
+    fireEvent.click(screen.getByText('Add P2'));
+    fireEvent.click(screen.getByText('Add P3'));
+    fireEvent.click(screen.getByText('Add P4'));
+    fireEvent.click(screen.getByText('Add P5'));
 
     // Should only have 4 properties (max limit)
     expect(screen.getByTestId('count')).toHaveTextContent('Count: 4');
