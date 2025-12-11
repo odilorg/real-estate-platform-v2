@@ -156,7 +156,7 @@ describe('AuthContext', () => {
     localStorage.setItem('token', 'mock-token');
 
     function TestLogoutComponent() {
-      const { user, loading, handleLogout } = useAuth();
+      const { user, loading, logout: handleLogout } = useAuth();
 
       if (loading) return <div>Loading...</div>;
 
@@ -182,7 +182,7 @@ describe('AuthContext', () => {
     getByText('Logout').click();
 
     await waitFor(() => {
-      expect(logout).toHaveBeenCalled();
+      expect(vi.mocked(logout)).toHaveBeenCalled();
     });
   });
 

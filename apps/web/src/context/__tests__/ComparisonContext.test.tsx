@@ -177,7 +177,7 @@ describe('ComparisonContext', () => {
 
     fireEvent.click(screen.getByText('Add Property 1'));
 
-    const stored = mockLocalStorage.getItem('comparison_properties');
+    const stored = mockLocalStorage.getItem('property-comparison');
     expect(stored).toBeTruthy();
 
     const parsed = JSON.parse(stored!);
@@ -188,7 +188,7 @@ describe('ComparisonContext', () => {
   it('loads comparison from localStorage on mount', () => {
     // Pre-populate localStorage
     mockLocalStorage.setItem(
-      'comparison_properties',
+      'property-comparison',
       JSON.stringify([
         {
           id: 'prop-3',
@@ -222,7 +222,7 @@ describe('ComparisonContext', () => {
     expect(screen.getByTestId('count')).toHaveTextContent('Count: 1');
   });
 
-  it('limits comparison to maximum 3 properties', () => {
+  it('limits comparison to maximum 4 properties', () => {
     function TestMaxComponent() {
       const { comparisonProperties, addToComparison } = useComparison();
 
@@ -235,9 +235,10 @@ describe('ComparisonContext', () => {
               addToComparison({ id: '2', title: 'P2', price: 200, imageUrl: '' });
               addToComparison({ id: '3', title: 'P3', price: 300, imageUrl: '' });
               addToComparison({ id: '4', title: 'P4', price: 400, imageUrl: '' });
+              addToComparison({ id: '5', title: 'P5', price: 500, imageUrl: '' });
             }}
           >
-            Add 4 Properties
+            Add 5 Properties
           </button>
         </div>
       );
@@ -249,9 +250,9 @@ describe('ComparisonContext', () => {
       </ComparisonProvider>
     );
 
-    fireEvent.click(screen.getByText('Add 4 Properties'));
+    fireEvent.click(screen.getByText('Add 5 Properties'));
 
-    // Should only have 3 properties (max limit)
-    expect(screen.getByTestId('count')).toHaveTextContent('Count: 3');
+    // Should only have 4 properties (max limit)
+    expect(screen.getByTestId('count')).toHaveTextContent('Count: 4');
   });
 });
