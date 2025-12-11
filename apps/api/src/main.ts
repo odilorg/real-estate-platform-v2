@@ -4,6 +4,7 @@ import { SwaggerModule, DocumentBuilder } from '@nestjs/swagger';
 import { AppModule } from './app.module';
 import helmet from 'helmet';
 import compression from 'compression';
+import cookieParser from 'cookie-parser';
 import { HttpExceptionFilter } from './common/filters/http-exception.filter';
 import { NestExpressApplication } from '@nestjs/platform-express';
 import { join } from 'path';
@@ -22,6 +23,9 @@ async function bootstrap() {
 
   // Security headers with helmet
   app.use(helmet());
+
+  // Cookie parser for reading cookies
+  app.use(cookieParser());
 
   // Response compression
   app.use(compression());

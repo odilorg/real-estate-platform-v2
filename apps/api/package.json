@@ -43,6 +43,7 @@
     "class-transformer": "^0.5.1",
     "class-validator": "^0.14.3",
     "compression": "^1.8.1",
+    "cookie-parser": "^1.4.7",
     "helmet": "^8.1.0",
     "multer": "^2.0.2",
     "nodemailer": "^7.0.11",
@@ -64,6 +65,7 @@
     "@nestjs/testing": "^11.0.1",
     "@types/bcrypt": "^5.0.2",
     "@types/compression": "^1.8.1",
+    "@types/cookie-parser": "^1.4.10",
     "@types/express": "^5.0.0",
     "@types/jest": "^30.0.0",
     "@types/multer": "^2.0.0",
@@ -110,7 +112,12 @@
       "!**/__mocks__/**"
     ],
     "coverageDirectory": "../coverage",
-    "coverageReporters": ["text", "text-summary", "html", "lcov"],
+    "coverageReporters": [
+      "text",
+      "text-summary",
+      "html",
+      "lcov"
+    ],
     "coverageThreshold": {
       "global": {
         "branches": 50,
