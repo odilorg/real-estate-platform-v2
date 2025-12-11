@@ -46,8 +46,6 @@ const UzbekistanPhoneSchema = z
 // Phone Authentication DTOs
 export const PhoneRegisterRequestDto = z.object({
   phone: UzbekistanPhoneSchema,
-  firstName: z.string().min(1),
-  lastName: z.string().min(1),
 });
 export type PhoneRegisterRequestDto = z.infer<typeof PhoneRegisterRequestDto>;
 
