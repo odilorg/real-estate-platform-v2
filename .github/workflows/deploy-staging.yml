@@ -1,0 +1,105 @@
+name: Deploy to Staging
+
+on:
+  push:
+    branches:
+      - develop
+  workflow_dispatch: # Allow manual trigger
+
+jobs:
+  deploy:
+    name: Deploy to staging.jahongir-app.uz
+    runs-on: ubuntu-latest
+
+    steps:
+      - name: Checkout code
+        uses: actions/checkout@v4
+
+      - name: Deploy to VPS
+        uses: appleboy/ssh-action@v1.0.0
+        with:
+          host: ${{ secrets.VPS_HOST }}
+          username: ${{ secrets.VPS_USER }}
+          key: ${{ secrets.VPS_SSH_KEY }}
+          port: ${{ secrets.VPS_PORT }}
+          script: |
+            set -e
+
+            echo "🚀 Starting deployment..."
+
+            # Navigate to app directory
+            cd /var/www/realestate-staging
+
+            # Pull latest code from develop branch
+            if [ -d ".git" ]; then
+              echo "📦 Pulling latest changes..."
+              git fetch origin
+              git reset --hard origin/develop
+            else
+              echo "📦 Cloning repository..."
+              git clone -b develop https://github.com/odilorg/real-estate-platform-v2.git .
+            fi
+
+            # Create .env files if they don't exist
+            if [ ! -f "apps/api/.env" ]; then
+              echo "📝 Creating API .env file..."
+              cat > apps/api/.env << 'EOF'
+            NODE_ENV=production
+            PORT=3001
+            DATABASE_URL=${{ secrets.DATABASE_URL }}
+            JWT_SECRET=${{ secrets.JWT_SECRET }}
+            JWT_EXPIRES_IN=7d
+            FRONTEND_URL=https://staging.jahongir-app.uz
+            API_URL=https://staging.jahongir-app.uz/api
+            EOF
+            fi
+
+            if [ ! -f "apps/web/.env.local" ]; then
+              echo "📝 Creating Web .env file..."
+              cat > apps/web/.env.local << 'EOF'
+            NEXT_PUBLIC_API_URL=https://staging.jahongir-app.uz/api
+            EOF
+            fi
+
+            # Install dependencies
+            echo "📦 Installing dependencies..."
+            pnpm install --frozen-lockfile
+
+            # Run database migrations
+            echo "🗄️  Running database migrations..."
+            cd packages/database
+            pnpm prisma migrate deploy
+            cd ../..
+
+            # Build applications
+            echo "🔨 Building applications..."
+            pnpm build
+
+            # Restart applications with PM2
+            echo "♻️  Restarting applications..."
+
+            # API
+            if pm2 describe realestate-staging-api > /dev/null 2>&1; then
+              pm2 restart realestate-staging-api
+            else
+              pm2 start apps/api/dist/main.js --name realestate-staging-api --cwd /var/www/realestate-staging/apps/api
+            fi
+
+            # Web
+            if pm2 describe realestate-staging-web > /dev/null 2>&1; then
+              pm2 restart realestate-staging-web
+            else
+              cd apps/web
+              pm2 start npm --name realestate-staging-web -- start
+              cd ../..
+            fi
+
+            # Save PM2 configuration
+            pm2 save
+
+            # Ensure PM2 starts on system boot
+            pm2 startup systemd -u root --hp /root || true
+
+            echo "✅ Deployment completed successfully!"
+            echo "📊 Application status:"
+            pm2 list | grep realestate-staging
