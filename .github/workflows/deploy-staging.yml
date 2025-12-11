@@ -54,6 +54,9 @@ jobs:
             JWT_EXPIRES_IN=7d
             FRONTEND_URL=https://staging.jahongir-app.uz
             API_URL=https://staging.jahongir-app.uz/api
+            GOOGLE_CLIENT_ID=${{ secrets.GOOGLE_CLIENT_ID }}
+            GOOGLE_CLIENT_SECRET=${{ secrets.GOOGLE_CLIENT_SECRET }}
+            GOOGLE_CALLBACK_URL=https://staging.jahongir-app.uz/api/auth/google/callback
             EOF
             fi
 
