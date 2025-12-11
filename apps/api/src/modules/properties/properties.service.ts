@@ -171,7 +171,7 @@ export class PropertiesService {
 
     // Process results: calculate ratings and distances
     let processedProperties = properties.map((property) => {
-      const { reviews, amenities: propAmenities, ...rest } = property;
+      const { reviews, amenities: _propAmenities, ...rest } = property;
       const reviewCount = reviews.length;
       const averageRating =
         reviewCount > 0

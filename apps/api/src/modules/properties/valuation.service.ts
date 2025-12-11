@@ -205,56 +205,56 @@ export class ValuationService {
    */
   private calculateSimilarity(input: ValuationInput, comparable: any): number {
     let score = 0;
-    let factors = 0;
+    let _factors = 0;
 
     // Area similarity (weight: 25%)
     const areaDiff = Math.abs(input.area - comparable.area) / input.area;
     score += Math.max(0, 1 - areaDiff) * 0.25;
-    factors++;
+    __factors++;
 
     // Bedroom similarity (weight: 15%)
     if (input.bedrooms && comparable.bedrooms) {
       const bedroomDiff = Math.abs(input.bedrooms - comparable.bedrooms);
       score += Math.max(0, 1 - bedroomDiff / 3) * 0.15;
-      factors++;
+      __factors++;
     }
 
     // District match (weight: 15%)
     if (input.district && comparable.district) {
       score += (input.district === comparable.district ? 0.15 : 0);
-      factors++;
+      _factors++;
     }
 
     // Building class match (weight: 10%)
     if (input.buildingClass && comparable.buildingClass) {
       score += (input.buildingClass === comparable.buildingClass ? 0.10 : 0);
-      factors++;
+      _factors++;
     }
 
     // Renovation match (weight: 10%)
     if (input.renovation && comparable.renovation) {
       score += (input.renovation === comparable.renovation ? 0.10 : 0);
-      factors++;
+      _factors++;
     }
 
     // Year built similarity (weight: 10%)
     if (input.yearBuilt && comparable.yearBuilt) {
       const yearDiff = Math.abs(input.yearBuilt - comparable.yearBuilt);
       score += Math.max(0, 1 - yearDiff / 50) * 0.10;
-      factors++;
+      _factors++;
     }
 
     // Floor similarity (weight: 5%)
     if (input.floor && comparable.floor) {
       const floorDiff = Math.abs(input.floor - comparable.floor);
       score += Math.max(0, 1 - floorDiff / 10) * 0.05;
-      factors++;
+      _factors++;
     }
 
     // Parking match (weight: 5%)
     if (input.parkingType && comparable.parkingType) {
       score += (input.parkingType === comparable.parkingType ? 0.05 : 0);
-      factors++;
+      _factors++;
     }
 
     // Location proximity (weight: 5%)
@@ -266,7 +266,7 @@ export class ValuationService {
         comparable.longitude
       );
       score += Math.max(0, 1 - distance / 5) * 0.05; // 5km threshold
-      factors++;
+      _factors++;
     }
 
     return score;
