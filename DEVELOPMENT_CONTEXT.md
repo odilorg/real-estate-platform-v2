@@ -18,20 +18,40 @@
 ssh -i /home/odil/projects/id_rsa -p 2222 root@62.72.22.205
 ```
 
+### ⚠️ CRITICAL: Development Workflow
+
+**WE WORK DIRECTLY ON THE VPS SERVER, NOT LOCALLY!**
+
+This is the established development workflow:
+- **Primary development environment:** VPS at `/var/www/realestate-staging`
+- **Changes are made, tested, and deployed directly on VPS**
+- **Local environment** (`/home/odil/projects/real-estate-platform-v2`) is used only for:
+  - Git operations (commit, push)
+  - Code editing when convenient
+  - Quick reference
+
+**Typical Workflow:**
+1. SSH to VPS: `ssh -i /home/odil/projects/id_rsa -p 2222 root@62.72.22.205`
+2. Make changes on VPS at `/var/www/realestate-staging`
+3. Test directly on staging: https://staging.jahongir-app.uz
+4. When satisfied, commit locally and push to git
+5. Pull changes on VPS to keep in sync
+
+**DO NOT assume local testing is required. VPS is the primary dev environment.**
+
 ### Environment Structure
-We are working on **TWO separate instances**:
 
-1. **Local Development** (Current working directory)
+1. **Local Repository** (Git operations only)
    - Path: `/home/odil/projects/real-estate-platform-v2`
-   - This is where we develop and test
-   - Dev servers: localhost:3000 (web), localhost:3001 (api)
-   - Git branch: `feature/phone-authentication`
+   - Used for: Git commits, code editing, quick reference
+   - Branch: `develop`
 
-2. **Staging Server** (On VPS)
+2. **VPS Staging = Primary Development Environment**
    - Path: `/var/www/realestate-staging`
    - Domain: https://staging.jahongir-app.uz
    - Git branch: `develop`
    - Managed by PM2: `realestate-staging-api` and `realestate-staging-web`
+   - **This is where we develop, test, and iterate**
 
 ---
 
@@ -362,4 +382,11 @@ https://github.com/odilorg/real-estate-platform-v2/actions
 
 ---
 
-**Last Session Work:** Implemented complete phone authentication with OTP, SMS integration, modal-based UI, and translations. Currently writing tests before deployment.
+**Last Session Work:**
+- ✅ Completed phone authentication with OTP and modal UI
+- ✅ Integrated Eskiz SMS API (test mode active)
+- ✅ Deployed to staging via direct VPS work
+- ✅ All changes committed and pushed to git
+- 📋 **Current Status:** Phone auth live on staging at https://staging.jahongir-app.uz
+- 📋 **Eskiz Test Mode:** Sends "Bu Eskiz dan test" SMS, OTP codes logged in PM2 logs
+- 📋 **To exit test mode:** Top up Eskiz balance to send custom OTP messages
