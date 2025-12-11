@@ -281,10 +281,45 @@ export class POIService {
    * Get cached POIs for a property
    */
   async getPOIsForProperty(propertyId: string): Promise<POICategory[]> {
-    const pois = await this.prisma.propertyPOI.findMany({
+    // Check if POIs exist in database
+    let pois = await this.prisma.propertyPOI.findMany({
       where: { propertyId },
       orderBy: { distance: 'asc' },
     });
+
+    // If no POIs exist, fetch them first
+    if (pois.length === 0) {
+      this.logger.log(`No cached POIs found for property ${propertyId}, fetching from API...`);
+
+      // Get property coordinates
+      const property = await this.prisma.property.findUnique({
+        where: { id: propertyId },
+        select: { latitude: true, longitude: true },
+      });
+
+      if (property?.latitude && property?.longitude) {
+        try {
+          await this.fetchAndStorePOIs(
+            propertyId,
+            property.latitude,
+            property.longitude,
+          );
+
+          // Retrieve the newly fetched POIs
+          pois = await this.prisma.propertyPOI.findMany({
+            where: { propertyId },
+            orderBy: { distance: 'asc' },
+          });
+        } catch (error) {
+          this.logger.error(`Failed to fetch POIs for property ${propertyId}:`, error);
+          // Return empty array if fetch fails
+          return [];
+        }
+      } else {
+        this.logger.warn(`Property ${propertyId} has no coordinates, cannot fetch POIs`);
+        return [];
+      }
+    }
 
     // Group by category
     const categoryMap = new Map<string, POICategory>();
