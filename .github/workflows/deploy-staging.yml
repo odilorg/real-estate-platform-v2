@@ -86,7 +86,9 @@ jobs:
             if pm2 describe realestate-staging-api > /dev/null 2>&1; then
               pm2 restart realestate-staging-api
             else
-              pm2 start apps/api/dist/main.js --name realestate-staging-api --cwd /var/www/realestate-staging/apps/api
+              cd apps/api
+              pm2 start dist/main.js --name realestate-staging-api
+              cd ../..
             fi
 
             # Web
