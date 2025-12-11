@@ -7,6 +7,17 @@ vi.mock('next/image', () => ({
   default: ({ src, alt, ...props }: any) => <img src={src} alt={alt} {...props} />,
 }));
 
+// Mock next/navigation
+vi.mock('next/navigation', () => ({
+  useRouter: () => ({
+    push: vi.fn(),
+    replace: vi.fn(),
+    prefetch: vi.fn(),
+  }),
+  usePathname: () => '/test',
+  useSearchParams: () => new URLSearchParams(),
+}));
+
 // Mock next-intl
 vi.mock('next-intl', () => ({
   useTranslations: () => (key: string) => key,
