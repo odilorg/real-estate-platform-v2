@@ -3,16 +3,25 @@ import {
   UnauthorizedException,
   ConflictException,
   ForbiddenException,
+  BadRequestException,
 } from '@nestjs/common';
 import { JwtService } from '@nestjs/jwt';
-import { User } from '@repo/database';
+import { User, OtpPurpose } from '@repo/database';
 import * as bcrypt from 'bcrypt';
-import { RegisterDto, LoginDto } from '@repo/shared';
+import {
+  RegisterDto,
+  LoginDto,
+  PhoneRegisterVerifyDto,
+  PhoneLoginVerifyDto,
+  SetPasswordDto,
+} from '@repo/shared';
 import { PrismaService } from '../../common/prisma';
+import { OtpService } from '../otp/otp.service';
 
 export interface JwtPayload {
   sub: string;
-  email: string;
+  email?: string;
+  phone?: string;
   role: string;
 }
 
@@ -20,7 +29,8 @@ export interface AuthResponse {
   accessToken: string;
   user: {
     id: string;
-    email: string;
+    email?: string;
+    phone?: string;
     firstName: string;
     lastName: string;
     role: string;
@@ -32,6 +42,7 @@ export class AuthService {
   constructor(
     private jwtService: JwtService,
     private prisma: PrismaService,
+    private otpService: OtpService,
   ) {}
 
   async register(dto: RegisterDto): Promise<AuthResponse> {
@@ -129,7 +140,8 @@ export class AuthService {
   generateToken(user: User): string {
     const payload: JwtPayload = {
       sub: user.id,
-      email: user.email,
+      email: user.email || undefined,
+      phone: user.phone || undefined,
       role: user.role,
     };
     return this.jwtService.sign(payload);
@@ -141,7 +153,8 @@ export class AuthService {
       accessToken,
       user: {
         id: user.id,
-        email: user.email,
+        email: user.email || undefined,
+        phone: user.phone || undefined,
         firstName: user.firstName,
         lastName: user.lastName,
         role: user.role,
@@ -199,6 +212,107 @@ export class AuthService {
       data: {
         passwordHash: newPasswordHash,
         isOAuthUser: false, // Once password is set, they're no longer OAuth-only
+      },
+    });
+
+    return true;
+  }
+
+  // Phone Authentication Methods
+
+  async registerWithPhone(dto: PhoneRegisterVerifyDto): Promise<AuthResponse> {
+    // Check if phone is already registered
+    const existingUser = await this.prisma.user.findUnique({
+      where: { phone: dto.phone },
+    });
+
+    if (existingUser) {
+      throw new ConflictException('User with this phone number already exists');
+    }
+
+    // Verify OTP
+    const isOtpValid = await this.otpService.verifyOtp(
+      dto.phone,
+      dto.code,
+      OtpPurpose.REGISTRATION,
+    );
+
+    if (!isOtpValid) {
+      throw new UnauthorizedException('Invalid verification code');
+    }
+
+    // Create user without password (phone-only user)
+    const user = await this.prisma.user.create({
+      data: {
+        phone: dto.phone,
+        phoneVerified: true,
+        firstName: dto.firstName,
+        lastName: dto.lastName,
+        passwordHash: null, // Phone-only users have no password initially
+      },
+    });
+
+    return this.generateAuthResponse(user);
+  }
+
+  async loginWithPhone(dto: PhoneLoginVerifyDto): Promise<AuthResponse> {
+    // Find user by phone
+    const user = await this.prisma.user.findUnique({
+      where: { phone: dto.phone },
+    });
+
+    if (!user) {
+      throw new UnauthorizedException(
+        'No account found with this phone number',
+      );
+    }
+
+    if (user.banned) {
+      throw new ForbiddenException(
+        user.banReason || 'Your account has been banned',
+      );
+    }
+
+    // Verify OTP
+    const isOtpValid = await this.otpService.verifyOtp(
+      dto.phone,
+      dto.code,
+      OtpPurpose.LOGIN,
+    );
+
+    if (!isOtpValid) {
+      throw new UnauthorizedException('Invalid verification code');
+    }
+
+    // Mark phone as verified if not already
+    if (!user.phoneVerified) {
+      await this.prisma.user.update({
+        where: { id: user.id },
+        data: { phoneVerified: true },
+      });
+    }
+
+    return this.generateAuthResponse(user);
+  }
+
+  async setPassword(userId: string, dto: SetPasswordDto): Promise<boolean> {
+    const user = await this.prisma.user.findUnique({
+      where: { id: userId },
+    });
+
+    if (!user) {
+      throw new BadRequestException('User not found');
+    }
+
+    // Hash the new password
+    const passwordHash = await bcrypt.hash(dto.password, 10);
+
+    // Update user with password
+    await this.prisma.user.update({
+      where: { id: userId },
+      data: {
+        passwordHash,
+        isOAuthUser: false, // No longer OAuth-only if they set a password
       },
     });
 

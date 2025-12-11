@@ -15,12 +15,22 @@ import { AuthGuard } from '@nestjs/passport';
 import { Throttle } from '@nestjs/throttler';
 import { Request, Response } from 'express';
 import { AuthService } from './auth.service';
-import { RegisterDto, LoginDto } from '@repo/shared';
+import {
+  RegisterDto,
+  LoginDto,
+  PhoneRegisterRequestDto,
+  PhoneRegisterVerifyDto,
+  PhoneLoginRequestDto,
+  PhoneLoginVerifyDto,
+  SetPasswordDto,
+} from '@repo/shared';
 import { JwtAuthGuard } from '../../common/guards/jwt-auth.guard';
 import { CurrentUser } from '../../common/decorators/current-user.decorator';
 import { Public } from '../../common/decorators/public.decorator';
-import { User } from '@repo/database';
+import { User, OtpPurpose } from '@repo/database';
 import { z } from 'zod';
+import { OtpService } from '../otp/otp.service';
+import { PrismaService } from '../../common/prisma/prisma.service';
 
 const UpdateProfileDto = z.object({
   firstName: z.string().min(1).optional(),
@@ -35,7 +45,11 @@ const ChangePasswordDto = z.object({
 
 @Controller('auth')
 export class AuthController {
-  constructor(private readonly authService: AuthService) {}
+  constructor(
+    private readonly authService: AuthService,
+    private readonly otpService: OtpService,
+    private readonly prisma: PrismaService,
+  ) {}
 
   @Public()
   @Throttle({ default: { limit: 5, ttl: 60000 } }) // Stricter rate limit for registration
@@ -117,5 +131,79 @@ export class AuthController {
       throw new BadRequestException('Current password is incorrect');
     }
     return { success: true };
+  }
+
+  // Phone Authentication Endpoints
+
+  @Public()
+  @Throttle({ default: { limit: 3, ttl: 60000 } }) // Stricter rate limit to prevent SMS spam
+  @Post('phone/register/request')
+  @HttpCode(HttpStatus.OK)
+  async requestPhoneRegistration(@Body() dto: PhoneRegisterRequestDto) {
+    const validated = PhoneRegisterRequestDto.parse(dto);
+
+    // Check if phone is already registered
+    const existingUser = await this.prisma.user.findUnique({
+      where: { phone: validated.phone },
+    });
+
+    if (existingUser) {
+      throw new BadRequestException('Phone number already registered');
+    }
+
+    await this.otpService.sendOtp(validated.phone, OtpPurpose.REGISTRATION);
+    return {
+      message: 'Verification code sent',
+      phone: validated.phone,
+    };
+  }
+
+  @Public()
+  @Throttle({ default: { limit: 5, ttl: 60000 } })
+  @Post('phone/register/verify')
+  async verifyPhoneRegistration(@Body() dto: PhoneRegisterVerifyDto) {
+    const validated = PhoneRegisterVerifyDto.parse(dto);
+    return this.authService.registerWithPhone(validated);
+  }
+
+  @Public()
+  @Throttle({ default: { limit: 3, ttl: 60000 } }) // Stricter rate limit to prevent SMS spam
+  @Post('phone/login/request')
+  @HttpCode(HttpStatus.OK)
+  async requestPhoneLogin(@Body() dto: PhoneLoginRequestDto) {
+    const validated = PhoneLoginRequestDto.parse(dto);
+
+    // Check if user exists
+    const user = await this.prisma.user.findUnique({
+      where: { phone: validated.phone },
+    });
+
+    if (!user) {
+      throw new BadRequestException('No account found with this phone number');
+    }
+
+    await this.otpService.sendOtp(validated.phone, OtpPurpose.LOGIN);
+    return {
+      message: 'Verification code sent',
+      phone: validated.phone,
+    };
+  }
+
+  @Public()
+  @Throttle({ default: { limit: 10, ttl: 60000 } })
+  @Post('phone/login/verify')
+  @HttpCode(HttpStatus.OK)
+  async verifyPhoneLogin(@Body() dto: PhoneLoginVerifyDto) {
+    const validated = PhoneLoginVerifyDto.parse(dto);
+    return this.authService.loginWithPhone(validated);
+  }
+
+  @Post('set-password')
+  @UseGuards(JwtAuthGuard)
+  @HttpCode(HttpStatus.OK)
+  async setPassword(@CurrentUser() user: User, @Body() dto: SetPasswordDto) {
+    const validated = SetPasswordDto.parse(dto);
+    const success = await this.authService.setPassword(user.id, validated);
+    return { success };
   }
 }

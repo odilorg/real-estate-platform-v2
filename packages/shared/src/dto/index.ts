@@ -29,13 +29,51 @@ export const AuthResponseDto = z.object({
   accessToken: z.string(),
   user: z.object({
     id: z.string(),
-    email: z.string(),
+    email: z.string().optional(),
+    phone: z.string().optional(),
     firstName: z.string(),
     lastName: z.string(),
     role: z.enum(['USER', 'AGENT', 'ADMIN']),
   }),
 });
 export type AuthResponseDto = z.infer<typeof AuthResponseDto>;
+
+// Phone validation schema for Uzbekistan
+const UzbekistanPhoneSchema = z
+  .string()
+  .regex(/^\+998[0-9]{9}$/, 'Phone must be in format +998XXXXXXXXX');
+
+// Phone Authentication DTOs
+export const PhoneRegisterRequestDto = z.object({
+  phone: UzbekistanPhoneSchema,
+  firstName: z.string().min(1),
+  lastName: z.string().min(1),
+});
+export type PhoneRegisterRequestDto = z.infer<typeof PhoneRegisterRequestDto>;
+
+export const PhoneRegisterVerifyDto = z.object({
+  phone: UzbekistanPhoneSchema,
+  code: z.string().length(6).regex(/^[0-9]{6}$/, 'Code must be 6 digits'),
+  firstName: z.string().min(1),
+  lastName: z.string().min(1),
+});
+export type PhoneRegisterVerifyDto = z.infer<typeof PhoneRegisterVerifyDto>;
+
+export const PhoneLoginRequestDto = z.object({
+  phone: UzbekistanPhoneSchema,
+});
+export type PhoneLoginRequestDto = z.infer<typeof PhoneLoginRequestDto>;
+
+export const PhoneLoginVerifyDto = z.object({
+  phone: UzbekistanPhoneSchema,
+  code: z.string().length(6).regex(/^[0-9]{6}$/, 'Code must be 6 digits'),
+});
+export type PhoneLoginVerifyDto = z.infer<typeof PhoneLoginVerifyDto>;
+
+export const SetPasswordDto = z.object({
+  password: z.string().min(8),
+});
+export type SetPasswordDto = z.infer<typeof SetPasswordDto>;
 
 // Property DTOs
 export const CreatePropertyDto = z.object({

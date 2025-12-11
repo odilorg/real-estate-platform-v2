@@ -1,8 +1,10 @@
 import { Test, TestingModule } from '@nestjs/testing';
 import { JwtService } from '@nestjs/jwt';
-import { ConflictException, UnauthorizedException, ForbiddenException } from '@nestjs/common';
+import { ConflictException, UnauthorizedException, ForbiddenException, BadRequestException } from '@nestjs/common';
 import { AuthService } from './auth.service';
 import { PrismaService } from '../../common/prisma';
+import { OtpService } from '../otp/otp.service';
+import { OtpPurpose, UserRole } from '@repo/database';
 import * as bcrypt from 'bcrypt';
 
 jest.mock('bcrypt');
@@ -23,12 +25,17 @@ describe('AuthService', () => {
     sign: jest.fn(() => 'mock-jwt-token'),
   };
 
+  const mockOtpService = {
+    verifyOtp: jest.fn(),
+  };
+
   beforeEach(async () => {
     const module: TestingModule = await Test.createTestingModule({
       providers: [
         AuthService,
         { provide: PrismaService, useValue: mockPrismaService },
         { provide: JwtService, useValue: mockJwtService },
+        { provide: OtpService, useValue: mockOtpService },
       ],
     }).compile();
 
@@ -299,6 +306,230 @@ describe('AuthService', () => {
       const result = await service.changePassword(userId, currentPassword, newPassword);
 
       expect(result).toBe(false);
+    });
+  });
+
+  describe('registerWithPhone', () => {
+    const dto = {
+      phone: '+998901234567',
+      code: '123456',
+      firstName: 'John',
+      lastName: 'Doe',
+    };
+
+    it('should register a new user with phone number successfully', async () => {
+      mockPrismaService.user.findUnique.mockResolvedValue(null);
+      mockOtpService.verifyOtp.mockResolvedValue(true);
+      mockPrismaService.user.create.mockResolvedValue({
+        id: 'user-1',
+        phone: dto.phone,
+        phoneVerified: true,
+        firstName: dto.firstName,
+        lastName: dto.lastName,
+        role: UserRole.USER,
+        passwordHash: null,
+        email: null,
+        banned: false,
+        isOAuthUser: false,
+        createdAt: new Date(),
+        updatedAt: new Date(),
+      });
+
+      const result = await service.registerWithPhone(dto);
+
+      expect(result).toEqual({
+        accessToken: 'mock-jwt-token',
+        user: {
+          id: 'user-1',
+          phone: dto.phone,
+          firstName: dto.firstName,
+          lastName: dto.lastName,
+          role: UserRole.USER,
+        },
+      });
+      expect(mockOtpService.verifyOtp).toHaveBeenCalledWith(
+        dto.phone,
+        dto.code,
+        OtpPurpose.REGISTRATION,
+      );
+    });
+
+    it('should throw ConflictException if phone already registered', async () => {
+      mockPrismaService.user.findUnique.mockResolvedValue({
+        id: 'existing-user',
+        phone: dto.phone,
+      });
+
+      await expect(service.registerWithPhone(dto)).rejects.toThrow(ConflictException);
+      await expect(service.registerWithPhone(dto)).rejects.toThrow(
+        'User with this phone number already exists',
+      );
+    });
+
+    it('should throw UnauthorizedException if OTP verification fails', async () => {
+      mockPrismaService.user.findUnique.mockResolvedValue(null);
+      mockOtpService.verifyOtp.mockResolvedValue(false);
+
+      await expect(service.registerWithPhone(dto)).rejects.toThrow(UnauthorizedException);
+      await expect(service.registerWithPhone(dto)).rejects.toThrow('Invalid verification code');
+    });
+
+    it('should create user with phoneVerified set to true', async () => {
+      mockPrismaService.user.findUnique.mockResolvedValue(null);
+      mockOtpService.verifyOtp.mockResolvedValue(true);
+      mockPrismaService.user.create.mockResolvedValue({
+        id: 'user-1',
+        phone: dto.phone,
+        phoneVerified: true,
+        firstName: dto.firstName,
+        lastName: dto.lastName,
+        role: UserRole.USER,
+        passwordHash: null,
+        email: null,
+        banned: false,
+        isOAuthUser: false,
+        createdAt: new Date(),
+        updatedAt: new Date(),
+      });
+
+      await service.registerWithPhone(dto);
+
+      expect(mockPrismaService.user.create).toHaveBeenCalledWith({
+        data: expect.objectContaining({
+          phoneVerified: true,
+        }),
+      });
+    });
+  });
+
+  describe('loginWithPhone', () => {
+    const dto = {
+      phone: '+998901234567',
+      code: '123456',
+    };
+
+    it('should login user with phone successfully', async () => {
+      const mockUser = {
+        id: 'user-1',
+        phone: dto.phone,
+        phoneVerified: true,
+        firstName: 'John',
+        lastName: 'Doe',
+        role: UserRole.USER,
+        banned: false,
+        email: null,
+        passwordHash: null,
+        isOAuthUser: false,
+        createdAt: new Date(),
+        updatedAt: new Date(),
+      };
+      mockPrismaService.user.findUnique.mockResolvedValue(mockUser);
+      mockOtpService.verifyOtp.mockResolvedValue(true);
+
+      const result = await service.loginWithPhone(dto);
+
+      expect(result).toEqual({
+        accessToken: 'mock-jwt-token',
+        user: {
+          id: 'user-1',
+          phone: dto.phone,
+          firstName: 'John',
+          lastName: 'Doe',
+          role: UserRole.USER,
+        },
+      });
+      expect(mockOtpService.verifyOtp).toHaveBeenCalledWith(
+        dto.phone,
+        dto.code,
+        OtpPurpose.LOGIN,
+      );
+    });
+
+    it('should throw UnauthorizedException if user not found', async () => {
+      mockPrismaService.user.findUnique.mockResolvedValue(null);
+
+      await expect(service.loginWithPhone(dto)).rejects.toThrow(UnauthorizedException);
+      await expect(service.loginWithPhone(dto)).rejects.toThrow(
+        'No account found with this phone number',
+      );
+    });
+
+    it('should throw ForbiddenException if user is banned', async () => {
+      mockPrismaService.user.findUnique.mockResolvedValue({
+        id: 'user-1',
+        phone: dto.phone,
+        banned: true,
+        banReason: 'Violation of terms',
+      });
+
+      await expect(service.loginWithPhone(dto)).rejects.toThrow(ForbiddenException);
+      await expect(service.loginWithPhone(dto)).rejects.toThrow('Violation of terms');
+    });
+
+    it('should mark phone as verified if not already verified', async () => {
+      const mockUser = {
+        id: 'user-1',
+        phone: dto.phone,
+        phoneVerified: false,
+        firstName: 'John',
+        lastName: 'Doe',
+        role: UserRole.USER,
+        banned: false,
+      };
+      mockPrismaService.user.findUnique.mockResolvedValue(mockUser);
+      mockOtpService.verifyOtp.mockResolvedValue(true);
+      mockPrismaService.user.update.mockResolvedValue({
+        ...mockUser,
+        phoneVerified: true,
+      });
+
+      await service.loginWithPhone(dto);
+
+      expect(mockPrismaService.user.update).toHaveBeenCalledWith({
+        where: { id: 'user-1' },
+        data: { phoneVerified: true },
+      });
+    });
+  });
+
+  describe('setPassword', () => {
+    const userId = 'user-1';
+    const dto = {
+      password: 'NewPassword123!',
+    };
+
+    it('should set password for phone-only user successfully', async () => {
+      const mockUser = {
+        id: userId,
+        phone: '+998901234567',
+        passwordHash: null,
+        isOAuthUser: false,
+      };
+      mockPrismaService.user.findUnique.mockResolvedValue(mockUser);
+      (bcrypt.hash as jest.Mock).mockResolvedValue('hashed-password');
+      mockPrismaService.user.update.mockResolvedValue({
+        ...mockUser,
+        passwordHash: 'hashed-password',
+      });
+
+      const result = await service.setPassword(userId, dto);
+
+      expect(result).toBe(true);
+      expect(bcrypt.hash).toHaveBeenCalledWith(dto.password, 10);
+      expect(mockPrismaService.user.update).toHaveBeenCalledWith({
+        where: { id: userId },
+        data: {
+          passwordHash: 'hashed-password',
+          isOAuthUser: false,
+        },
+      });
+    });
+
+    it('should throw BadRequestException if user not found', async () => {
+      mockPrismaService.user.findUnique.mockResolvedValue(null);
+
+      await expect(service.setPassword(userId, dto)).rejects.toThrow(BadRequestException);
+      await expect(service.setPassword(userId, dto)).rejects.toThrow('User not found');
     });
   });
 });

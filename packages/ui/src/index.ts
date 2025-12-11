@@ -18,6 +18,20 @@ export {
   SelectItem,
   SelectSeparator,
 } from './primitives/select';
+export {
+  Dialog,
+  DialogPortal,
+  DialogOverlay,
+  DialogClose,
+  DialogTrigger,
+  DialogContent,
+  DialogHeader,
+  DialogFooter,
+  DialogTitle,
+  DialogDescription,
+} from './primitives/dialog';
 
 // Composites
 export { PropertyCard, type PropertyCardProps } from './composites/property-card';
+export { PhoneInput, type PhoneInputProps } from './composites/phone-input';
+export { OtpInput, type OtpInputProps } from './composites/otp-input';

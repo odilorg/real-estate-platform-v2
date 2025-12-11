@@ -10,11 +10,12 @@ datasource db {
 // User profile with role for authentication
 model User {
   id            String    @id @default(cuid())
-  email         String    @unique
-  passwordHash  String
+  email         String?   @unique  // Nullable for phone-only users
+  passwordHash  String?              // Nullable for passwordless auth
   firstName     String
   lastName      String
-  phone         String?
+  phone         String?   @unique   // Unique for phone authentication
+  phoneVerified Boolean   @default(false)  // Track phone verification status
   role          UserRole  @default(USER)
   isOAuthUser   Boolean   @default(false)
   banned        Boolean   @default(false)
@@ -36,8 +37,10 @@ model User {
   propertyViews PropertyView[]
   priceChanges  PriceHistory[]
   statusChanges PropertyStatusHistory[]
+  otpCodes      OtpCode[]
 
   @@index([email])
+  @@index([phone])
   @@index([role])
 }
 
@@ -45,6 +48,31 @@ enum UserRole {
   USER
   AGENT
   ADMIN
+}
+
+// OTP codes for phone authentication
+model OtpCode {
+  id          String      @id @default(cuid())
+  userId      String?     // Nullable for new registrations
+  phone       String      // Phone number this OTP is for
+  code        String      // 6-digit OTP code
+  purpose     OtpPurpose  // LOGIN, REGISTRATION, PASSWORD_RESET
+  expiresAt   DateTime    // Expiry time (3 minutes from creation)
+  attempts    Int         @default(0)  // Brute force protection
+  verified    Boolean     @default(false)  // Mark as used after verification
+  createdAt   DateTime    @default(now())
+
+  user        User?       @relation(fields: [userId], references: [id], onDelete: Cascade)
+
+  @@index([phone, purpose, verified])
+  @@index([expiresAt])
+  @@index([userId])
+}
+
+enum OtpPurpose {
+  LOGIN
+  REGISTRATION
+  PASSWORD_RESET
 }
 
 // Property model - main listing entity

@@ -10,6 +10,8 @@ import { useComparison } from '@/context';
 import { LanguageSwitcher } from './language-switcher';
 import { Button } from '@repo/ui';
 import { useTranslations } from 'next-intl';
+import { LoginModal } from './auth/LoginModal';
+import { RegisterModal } from './auth/RegisterModal';
 
 interface MenuItem {
   labelKey: string;
@@ -31,6 +33,8 @@ export function Navbar() {
   const [activeDropdown, setActiveDropdown] = useState<number | null>(null);
   const [closeTimeout, setCloseTimeout] = useState<NodeJS.Timeout | null>(null);
   const [unreadCount, setUnreadCount] = useState(0);
+  const [loginModalOpen, setLoginModalOpen] = useState(false);
+  const [registerModalOpen, setRegisterModalOpen] = useState(false);
   const pathname = usePathname();
   const { user, isAuthenticated, logout } = useAuth();
   const { comparisonIds } = useComparison();
@@ -309,14 +313,19 @@ export function Navbar() {
               </>
             ) : (
               <>
-                <Link href="/auth/login">
-                  <Button variant="ghost" size="sm">
-                    {t('signIn')}
-                  </Button>
-                </Link>
-                <Link href="/auth/register">
-                  <Button size="sm">{t('register')}</Button>
-                </Link>
+                <Button
+                  variant="ghost"
+                  size="sm"
+                  onClick={() => setLoginModalOpen(true)}
+                >
+                  {t('signIn')}
+                </Button>
+                <Button
+                  size="sm"
+                  onClick={() => setRegisterModalOpen(true)}
+                >
+                  {t('register')}
+                </Button>
               </>
             )}
           </div>
@@ -443,21 +452,50 @@ export function Navbar() {
               </>
             ) : (
               <>
-                <Link href="/auth/login" onClick={() => setMobileMenuOpen(false)}>
-                  <Button variant="ghost" size="sm" className="w-full">
-                    {t('signIn')}
-                  </Button>
-                </Link>
-                <Link href="/auth/register" onClick={() => setMobileMenuOpen(false)}>
-                  <Button size="sm" className="w-full">
-                    {t('register')}
-                  </Button>
-                </Link>
+                <Button
+                  variant="ghost"
+                  size="sm"
+                  className="w-full"
+                  onClick={() => {
+                    setMobileMenuOpen(false);
+                    setLoginModalOpen(true);
+                  }}
+                >
+                  {t('signIn')}
+                </Button>
+                <Button
+                  size="sm"
+                  className="w-full"
+                  onClick={() => {
+                    setMobileMenuOpen(false);
+                    setRegisterModalOpen(true);
+                  }}
+                >
+                  {t('register')}
+                </Button>
               </>
             )}
           </div>
         </div>
       )}
+
+      {/* Auth Modals */}
+      <LoginModal
+        open={loginModalOpen}
+        onOpenChange={setLoginModalOpen}
+        onSwitchToRegister={() => {
+          setLoginModalOpen(false);
+          setRegisterModalOpen(true);
+        }}
+      />
+      <RegisterModal
+        open={registerModalOpen}
+        onOpenChange={setRegisterModalOpen}
+        onSwitchToLogin={() => {
+          setRegisterModalOpen(false);
+          setLoginModalOpen(true);
+        }}
+      />
     </nav>
   );
 }

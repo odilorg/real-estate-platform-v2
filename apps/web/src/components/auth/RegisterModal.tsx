@@ -7,14 +7,13 @@ import {
   Button,
   Input,
   Label,
-  Card,
-  CardHeader,
-  CardTitle,
-  CardDescription,
-  CardContent,
-  CardFooter,
   PhoneInput,
   OtpInput,
+  Dialog,
+  DialogContent,
+  DialogHeader,
+  DialogTitle,
+  DialogDescription,
 } from '@repo/ui';
 import {
   register,
@@ -26,11 +25,16 @@ import { useAuth } from '@/context/AuthContext';
 type RegisterMethod = 'phone' | 'email';
 type PhoneStep = 'phone' | 'otp';
 
-export default function RegisterPage() {
+interface RegisterModalProps {
+  open: boolean;
+  onOpenChange: (open: boolean) => void;
+  onSwitchToLogin?: () => void;
+}
+
+export function RegisterModal({ open, onOpenChange, onSwitchToLogin }: RegisterModalProps) {
   const t = useTranslations('auth.register');
   const tCommon = useTranslations('common');
   const { refreshUser } = useAuth();
-  const [mounted, setMounted] = useState(false);
 
   // Register method toggle
   const [registerMethod, setRegisterMethod] = useState<RegisterMethod>('phone');
@@ -55,9 +59,26 @@ export default function RegisterPage() {
   const [error, setError] = useState('');
   const [loading, setLoading] = useState(false);
 
+  // Reset form when modal closes
   useEffect(() => {
-    setMounted(true);
-  }, []);
+    if (!open) {
+      setRegisterMethod('phone');
+      setPhoneStep('phone');
+      setPhone('');
+      setFirstName('');
+      setLastName('');
+      setOtp('');
+      setOtpSent(false);
+      setResendTimer(0);
+      setEmail('');
+      setPassword('');
+      setConfirmPassword('');
+      setEmailFirstName('');
+      setEmailLastName('');
+      setError('');
+      setLoading(false);
+    }
+  }, [open]);
 
   // Resend timer countdown
   useEffect(() => {
@@ -105,6 +126,7 @@ export default function RegisterPage() {
         lastName,
       });
       await refreshUser();
+      onOpenChange(false);
       window.location.assign('/properties');
       return;
     } catch (err) {
@@ -138,6 +160,7 @@ export default function RegisterPage() {
         lastName: emailLastName,
       });
       await refreshUser();
+      onOpenChange(false);
       window.location.assign('/properties');
       return;
     } catch (err) {
@@ -175,22 +198,15 @@ export default function RegisterPage() {
     setError('');
   };
 
-  if (!mounted) {
-    return (
-      <div className="min-h-screen flex items-center justify-center p-4">
-        <div className="animate-spin rounded-full h-8 w-8 border-b-2 border-primary" />
-      </div>
-    );
-  }
-
   return (
-    <div className="min-h-screen flex items-center justify-center p-4">
-      <Card className="w-full max-w-md">
-        <CardHeader className="text-center">
-          <CardTitle className="text-2xl">{t('title')}</CardTitle>
-          <CardDescription>{t('description')}</CardDescription>
-        </CardHeader>
-        <CardContent>
+    <Dialog open={open} onOpenChange={onOpenChange}>
+      <DialogContent className="sm:max-w-md">
+        <DialogHeader>
+          <DialogTitle className="text-2xl">{t('title')}</DialogTitle>
+          <DialogDescription>{t('description')}</DialogDescription>
+        </DialogHeader>
+
+        <div className="mt-4">
           {error && (
             <div className="p-3 mb-4 text-sm text-red-500 bg-red-50 rounded-md">
               {error}
@@ -371,7 +387,7 @@ export default function RegisterPage() {
                   setError('');
                   setPhoneStep('phone');
                 }}
-                className="bg-card px-2 text-primary hover:underline"
+                className="bg-background px-2 text-primary hover:underline"
               >
                 {registerMethod === 'phone'
                   ? t('useEmail') || 'Use email instead'
@@ -407,16 +423,28 @@ export default function RegisterPage() {
             </svg>
             {t('continueWithGoogle')}
           </Button>
-        </CardContent>
-        <CardFooter className="justify-center">
-          <p className="text-sm text-muted-foreground">
-            {t('hasAccount')}{' '}
-            <Link href="/auth/login" className="text-primary hover:underline">
-              {t('signInLink')}
-            </Link>
-          </p>
-        </CardFooter>
-      </Card>
-    </div>
+
+          {/* Switch to Login */}
+          <div className="mt-6 text-center">
+            <p className="text-sm text-muted-foreground">
+              {t('hasAccount')}{' '}
+              {onSwitchToLogin ? (
+                <button
+                  type="button"
+                  onClick={onSwitchToLogin}
+                  className="text-primary hover:underline"
+                >
+                  {t('signInLink')}
+                </button>
+              ) : (
+                <Link href="/auth/login" className="text-primary hover:underline">
+                  {t('signInLink')}
+                </Link>
+              )}
+            </p>
+          </div>
+        </div>
+      </DialogContent>
+    </Dialog>
   );
 }

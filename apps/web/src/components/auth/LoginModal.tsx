@@ -7,57 +7,68 @@ import {
   Button,
   Input,
   Label,
-  Card,
-  CardHeader,
-  CardTitle,
-  CardDescription,
-  CardContent,
-  CardFooter,
   PhoneInput,
   OtpInput,
+  Dialog,
+  DialogContent,
+  DialogHeader,
+  DialogTitle,
+  DialogDescription,
 } from '@repo/ui';
 import {
-  register,
-  requestPhoneRegistrationOtp,
-  verifyPhoneRegistration,
+  login,
+  requestPhoneLoginOtp,
+  verifyPhoneLogin,
 } from '@/lib/auth';
 import { useAuth } from '@/context/AuthContext';
 
-type RegisterMethod = 'phone' | 'email';
+type LoginMethod = 'phone' | 'email';
 type PhoneStep = 'phone' | 'otp';
 
-export default function RegisterPage() {
-  const t = useTranslations('auth.register');
+interface LoginModalProps {
+  open: boolean;
+  onOpenChange: (open: boolean) => void;
+  onSwitchToRegister?: () => void;
+}
+
+export function LoginModal({ open, onOpenChange, onSwitchToRegister }: LoginModalProps) {
+  const t = useTranslations('auth.login');
   const tCommon = useTranslations('common');
   const { refreshUser } = useAuth();
-  const [mounted, setMounted] = useState(false);
 
-  // Register method toggle
-  const [registerMethod, setRegisterMethod] = useState<RegisterMethod>('phone');
+  // Login method toggle
+  const [loginMethod, setLoginMethod] = useState<LoginMethod>('phone');
 
-  // Phone registration state
+  // Phone login state
   const [phoneStep, setPhoneStep] = useState<PhoneStep>('phone');
   const [phone, setPhone] = useState('');
-  const [firstName, setFirstName] = useState('');
-  const [lastName, setLastName] = useState('');
   const [otp, setOtp] = useState('');
   const [otpSent, setOtpSent] = useState(false);
   const [resendTimer, setResendTimer] = useState(0);
 
-  // Email registration state
+  // Email login state
   const [email, setEmail] = useState('');
   const [password, setPassword] = useState('');
-  const [confirmPassword, setConfirmPassword] = useState('');
-  const [emailFirstName, setEmailFirstName] = useState('');
-  const [emailLastName, setEmailLastName] = useState('');
 
   // Common state
   const [error, setError] = useState('');
   const [loading, setLoading] = useState(false);
 
+  // Reset form when modal closes
   useEffect(() => {
-    setMounted(true);
-  }, []);
+    if (!open) {
+      setLoginMethod('phone');
+      setPhoneStep('phone');
+      setPhone('');
+      setOtp('');
+      setOtpSent(false);
+      setResendTimer(0);
+      setEmail('');
+      setPassword('');
+      setError('');
+      setLoading(false);
+    }
+  }, [open]);
 
   // Resend timer countdown
   useEffect(() => {
@@ -67,87 +78,62 @@ export default function RegisterPage() {
     }
   }, [resendTimer]);
 
-  // Phone Registration: Request OTP
+  // Phone Login: Request OTP
   const handlePhoneSubmit = async (e: React.FormEvent) => {
     e.preventDefault();
     setError('');
-
-    if (!firstName.trim() || !lastName.trim()) {
-      setError(t('nameRequired') || 'First name and last name are required');
-      return;
-    }
-
     setLoading(true);
 
     try {
-      await requestPhoneRegistrationOtp({ phone });
+      await requestPhoneLoginOtp({ phone });
       setOtpSent(true);
       setPhoneStep('otp');
       setResendTimer(60);
     } catch (err) {
-      setError(err instanceof Error ? err.message : t('sendOtpFailed') || 'Failed to send verification code');
+      setError(err instanceof Error ? err.message : t('sendOtpFailed'));
     } finally {
       setLoading(false);
     }
   };
 
-  // Phone Registration: Verify OTP
+  // Phone Login: Verify OTP
   const handleOtpSubmit = async (e: React.FormEvent) => {
     e.preventDefault();
     setError('');
     setLoading(true);
 
     try {
-      await verifyPhoneRegistration({
-        phone,
-        code: otp,
-        firstName,
-        lastName,
-      });
+      await verifyPhoneLogin({ phone, code: otp });
       await refreshUser();
+      onOpenChange(false);
       window.location.assign('/properties');
       return;
     } catch (err) {
-      setError(err instanceof Error ? err.message : t('registrationFailed') || 'Registration failed');
+      setError(err instanceof Error ? err.message : t('loginFailed'));
       setLoading(false);
     }
   };
 
-  // Email Registration
+  // Email Login
   const handleEmailSubmit = async (e: React.FormEvent) => {
     e.preventDefault();
     setError('');
-
-    if (password !== confirmPassword) {
-      setError(t('passwordMismatch') || 'Passwords do not match');
-      return;
-    }
-
-    if (password.length < 8) {
-      setError(t('passwordTooShort') || 'Password must be at least 8 characters');
-      return;
-    }
-
     setLoading(true);
 
     try {
-      await register({
-        email,
-        password,
-        firstName: emailFirstName,
-        lastName: emailLastName,
-      });
+      await login({ email, password });
       await refreshUser();
+      onOpenChange(false);
       window.location.assign('/properties');
       return;
     } catch (err) {
-      setError(err instanceof Error ? err.message : t('registrationFailed') || 'Registration failed');
+      setError(err instanceof Error ? err.message : t('loginFailed'));
       setLoading(false);
     }
   };
 
-  // Google Registration
-  const handleGoogleRegister = () => {
+  // Google Login
+  const handleGoogleLogin = () => {
     window.location.href = `${process.env.NEXT_PUBLIC_API_URL || 'http://localhost:3001/api'}/auth/google`;
   };
 
@@ -159,10 +145,10 @@ export default function RegisterPage() {
     setLoading(true);
 
     try {
-      await requestPhoneRegistrationOtp({ phone });
+      await requestPhoneLoginOtp({ phone });
       setResendTimer(60);
     } catch (err) {
-      setError(err instanceof Error ? err.message : t('sendOtpFailed') || 'Failed to send verification code');
+      setError(err instanceof Error ? err.message : t('sendOtpFailed'));
     } finally {
       setLoading(false);
     }
@@ -175,58 +161,26 @@ export default function RegisterPage() {
     setError('');
   };
 
-  if (!mounted) {
-    return (
-      <div className="min-h-screen flex items-center justify-center p-4">
-        <div className="animate-spin rounded-full h-8 w-8 border-b-2 border-primary" />
-      </div>
-    );
-  }
-
   return (
-    <div className="min-h-screen flex items-center justify-center p-4">
-      <Card className="w-full max-w-md">
-        <CardHeader className="text-center">
-          <CardTitle className="text-2xl">{t('title')}</CardTitle>
-          <CardDescription>{t('description')}</CardDescription>
-        </CardHeader>
-        <CardContent>
+    <Dialog open={open} onOpenChange={onOpenChange}>
+      <DialogContent className="sm:max-w-md">
+        <DialogHeader>
+          <DialogTitle className="text-2xl">{t('title')}</DialogTitle>
+          <DialogDescription>{t('description')}</DialogDescription>
+        </DialogHeader>
+
+        <div className="mt-4">
           {error && (
             <div className="p-3 mb-4 text-sm text-red-500 bg-red-50 rounded-md">
               {error}
             </div>
           )}
 
-          {registerMethod === 'phone' ? (
-            // Phone Registration Flow
+          {loginMethod === 'phone' ? (
+            // Phone Login Flow
             phoneStep === 'phone' ? (
-              // Step 1: Enter Phone Number and Name
+              // Step 1: Enter Phone Number
               <form onSubmit={handlePhoneSubmit} className="space-y-4">
-                <div className="grid grid-cols-2 gap-4">
-                  <div className="space-y-2">
-                    <Label htmlFor="firstName">{tCommon('firstName')}</Label>
-                    <Input
-                      id="firstName"
-                      placeholder={t('firstNamePlaceholder')}
-                      value={firstName}
-                      onChange={(e) => setFirstName(e.target.value)}
-                      disabled={loading}
-                      required
-                    />
-                  </div>
-                  <div className="space-y-2">
-                    <Label htmlFor="lastName">{tCommon('lastName')}</Label>
-                    <Input
-                      id="lastName"
-                      placeholder={t('lastNamePlaceholder')}
-                      value={lastName}
-                      onChange={(e) => setLastName(e.target.value)}
-                      disabled={loading}
-                      required
-                    />
-                  </div>
-                </div>
-
                 <PhoneInput
                   label={t('phoneLabel') || 'Phone Number'}
                   value={phone}
@@ -235,7 +189,6 @@ export default function RegisterPage() {
                   disabled={loading}
                   required
                 />
-
                 <Button type="submit" className="w-full" disabled={loading}>
                   {loading ? t('submitting') : t('continueButton') || 'Continue'}
                 </Button>
@@ -246,9 +199,6 @@ export default function RegisterPage() {
                 <div className="text-center mb-4">
                   <p className="text-sm text-muted-foreground">
                     {t('otpSentTo') || 'Code sent to'} {phone}
-                  </p>
-                  <p className="text-sm font-medium mt-1">
-                    {firstName} {lastName}
                   </p>
                 </div>
 
@@ -266,7 +216,7 @@ export default function RegisterPage() {
                   className="w-full"
                   disabled={loading || otp.length !== 6}
                 >
-                  {loading ? t('submitting') : t('createAccountButton') || 'Create Account'}
+                  {loading ? t('submitting') : t('verifyButton') || 'Verify'}
                 </Button>
 
                 <div className="flex items-center justify-between text-sm">
@@ -291,31 +241,8 @@ export default function RegisterPage() {
               </form>
             )
           ) : (
-            // Email Registration Flow
+            // Email Login Flow
             <form onSubmit={handleEmailSubmit} className="space-y-4">
-              <div className="grid grid-cols-2 gap-4">
-                <div className="space-y-2">
-                  <Label htmlFor="emailFirstName">{tCommon('firstName')}</Label>
-                  <Input
-                    id="emailFirstName"
-                    placeholder={t('firstNamePlaceholder')}
-                    value={emailFirstName}
-                    onChange={(e) => setEmailFirstName(e.target.value)}
-                    required
-                  />
-                </div>
-                <div className="space-y-2">
-                  <Label htmlFor="emailLastName">{tCommon('lastName')}</Label>
-                  <Input
-                    id="emailLastName"
-                    placeholder={t('lastNamePlaceholder')}
-                    value={emailLastName}
-                    onChange={(e) => setEmailLastName(e.target.value)}
-                    required
-                  />
-                </div>
-              </div>
-
               <div className="space-y-2">
                 <Label htmlFor="email">{tCommon('email')}</Label>
                 <Input
@@ -327,7 +254,6 @@ export default function RegisterPage() {
                   required
                 />
               </div>
-
               <div className="space-y-2">
                 <Label htmlFor="password">{tCommon('password')}</Label>
                 <Input
@@ -339,19 +265,6 @@ export default function RegisterPage() {
                   required
                 />
               </div>
-
-              <div className="space-y-2">
-                <Label htmlFor="confirmPassword">{tCommon('confirmPassword')}</Label>
-                <Input
-                  id="confirmPassword"
-                  type="password"
-                  placeholder={t('confirmPasswordPlaceholder')}
-                  value={confirmPassword}
-                  onChange={(e) => setConfirmPassword(e.target.value)}
-                  required
-                />
-              </div>
-
               <Button type="submit" className="w-full" disabled={loading}>
                 {loading ? t('submitting') : t('submitButton')}
               </Button>
@@ -367,13 +280,13 @@ export default function RegisterPage() {
               <button
                 type="button"
                 onClick={() => {
-                  setRegisterMethod(registerMethod === 'phone' ? 'email' : 'phone');
+                  setLoginMethod(loginMethod === 'phone' ? 'email' : 'phone');
                   setError('');
                   setPhoneStep('phone');
                 }}
-                className="bg-card px-2 text-primary hover:underline"
+                className="bg-background px-2 text-primary hover:underline"
               >
-                {registerMethod === 'phone'
+                {loginMethod === 'phone'
                   ? t('useEmail') || 'Use email instead'
                   : t('usePhone') || 'Use phone instead'}
               </button>
@@ -385,7 +298,7 @@ export default function RegisterPage() {
             type="button"
             variant="outline"
             className="w-full"
-            onClick={handleGoogleRegister}
+            onClick={handleGoogleLogin}
           >
             <svg className="w-5 h-5 mr-2" viewBox="0 0 24 24">
               <path
@@ -407,16 +320,28 @@ export default function RegisterPage() {
             </svg>
             {t('continueWithGoogle')}
           </Button>
-        </CardContent>
-        <CardFooter className="justify-center">
-          <p className="text-sm text-muted-foreground">
-            {t('hasAccount')}{' '}
-            <Link href="/auth/login" className="text-primary hover:underline">
-              {t('signInLink')}
-            </Link>
-          </p>
-        </CardFooter>
-      </Card>
-    </div>
+
+          {/* Switch to Register */}
+          <div className="mt-6 text-center">
+            <p className="text-sm text-muted-foreground">
+              {t('noAccount')}{' '}
+              {onSwitchToRegister ? (
+                <button
+                  type="button"
+                  onClick={onSwitchToRegister}
+                  className="text-primary hover:underline"
+                >
+                  {t('signUpLink')}
+                </button>
+              ) : (
+                <Link href="/auth/register" className="text-primary hover:underline">
+                  {t('signUpLink')}
+                </Link>
+              )}
+            </p>
+          </div>
+        </div>
+      </DialogContent>
+    </Dialog>
   );
 }

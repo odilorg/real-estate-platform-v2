@@ -2,7 +2,7 @@
 
 import { useState, useEffect } from 'react';
 import { useTranslations } from 'next-intl';
-import { Link, useRouter } from '@/i18n/routing';
+import { Link } from '@/i18n/routing';
 import {
   Button,
   Input,
@@ -13,18 +13,40 @@ import {
   CardDescription,
   CardContent,
   CardFooter,
+  PhoneInput,
+  OtpInput,
 } from '@repo/ui';
-import { login } from '@/lib/auth';
+import {
+  login,
+  requestPhoneLoginOtp,
+  verifyPhoneLogin,
+} from '@/lib/auth';
 import { useAuth } from '@/context/AuthContext';
+
+type LoginMethod = 'phone' | 'email';
+type PhoneStep = 'phone' | 'otp';
 
 export default function LoginPage() {
   const t = useTranslations('auth.login');
   const tCommon = useTranslations('common');
-  const router = useRouter();
   const { refreshUser } = useAuth();
   const [mounted, setMounted] = useState(false);
+
+  // Login method toggle
+  const [loginMethod, setLoginMethod] = useState<LoginMethod>('phone');
+
+  // Phone login state
+  const [phoneStep, setPhoneStep] = useState<PhoneStep>('phone');
+  const [phone, setPhone] = useState('');
+  const [otp, setOtp] = useState('');
+  const [otpSent, setOtpSent] = useState(false);
+  const [resendTimer, setResendTimer] = useState(0);
+
+  // Email login state
   const [email, setEmail] = useState('');
   const [password, setPassword] = useState('');
+
+  // Common state
   const [error, setError] = useState('');
   const [loading, setLoading] = useState(false);
 
@@ -32,7 +54,51 @@ export default function LoginPage() {
     setMounted(true);
   }, []);
 
-  const handleSubmit = async (e: React.FormEvent) => {
+  // Resend timer countdown
+  useEffect(() => {
+    if (resendTimer > 0) {
+      const timeout = setTimeout(() => setResendTimer(resendTimer - 1), 1000);
+      return () => clearTimeout(timeout);
+    }
+  }, [resendTimer]);
+
+  // Phone Login: Request OTP
+  const handlePhoneSubmit = async (e: React.FormEvent) => {
+    e.preventDefault();
+    setError('');
+    setLoading(true);
+
+    try {
+      await requestPhoneLoginOtp({ phone });
+      setOtpSent(true);
+      setPhoneStep('otp');
+      setResendTimer(60);
+    } catch (err) {
+      setError(err instanceof Error ? err.message : t('sendOtpFailed'));
+    } finally {
+      setLoading(false);
+    }
+  };
+
+  // Phone Login: Verify OTP
+  const handleOtpSubmit = async (e: React.FormEvent) => {
+    e.preventDefault();
+    setError('');
+    setLoading(true);
+
+    try {
+      await verifyPhoneLogin({ phone, code: otp });
+      await refreshUser();
+      window.location.assign('/properties');
+      return;
+    } catch (err) {
+      setError(err instanceof Error ? err.message : t('loginFailed'));
+      setLoading(false);
+    }
+  };
+
+  // Email Login
+  const handleEmailSubmit = async (e: React.FormEvent) => {
     e.preventDefault();
     setError('');
     setLoading(true);
@@ -40,17 +106,41 @@ export default function LoginPage() {
     try {
       await login({ email, password });
       await refreshUser();
-      // Force redirect to properties page
       window.location.assign('/properties');
-      return; // Don't execute finally
+      return;
     } catch (err) {
       setError(err instanceof Error ? err.message : t('loginFailed'));
       setLoading(false);
     }
   };
 
+  // Google Login
   const handleGoogleLogin = () => {
     window.location.href = `${process.env.NEXT_PUBLIC_API_URL || 'http://localhost:3001/api'}/auth/google`;
+  };
+
+  // Resend OTP
+  const handleResendOtp = async () => {
+    if (resendTimer > 0) return;
+
+    setError('');
+    setLoading(true);
+
+    try {
+      await requestPhoneLoginOtp({ phone });
+      setResendTimer(60);
+    } catch (err) {
+      setError(err instanceof Error ? err.message : t('sendOtpFailed'));
+    } finally {
+      setLoading(false);
+    }
+  };
+
+  // Change phone number
+  const handleChangePhone = () => {
+    setPhoneStep('phone');
+    setOtp('');
+    setError('');
   };
 
   if (!mounted) {
@@ -69,50 +159,130 @@ export default function LoginPage() {
           <CardDescription>{t('description')}</CardDescription>
         </CardHeader>
         <CardContent>
-          <form onSubmit={handleSubmit} className="space-y-4">
-            {error && (
-              <div className="p-3 text-sm text-red-500 bg-red-50 rounded-md">
-                {error}
-              </div>
-            )}
-            <div className="space-y-2">
-              <Label htmlFor="email">{tCommon('email')}</Label>
-              <Input
-                id="email"
-                type="email"
-                placeholder={t('emailPlaceholder')}
-                value={email}
-                onChange={(e) => setEmail(e.target.value)}
-                required
-              />
+          {error && (
+            <div className="p-3 mb-4 text-sm text-red-500 bg-red-50 rounded-md">
+              {error}
             </div>
-            <div className="space-y-2">
-              <Label htmlFor="password">{tCommon('password')}</Label>
-              <Input
-                id="password"
-                type="password"
-                placeholder={t('passwordPlaceholder')}
-                value={password}
-                onChange={(e) => setPassword(e.target.value)}
-                required
-              />
-            </div>
-            <Button type="submit" className="w-full" disabled={loading}>
-              {loading ? t('submitting') : t('submitButton')}
-            </Button>
-          </form>
+          )}
 
+          {loginMethod === 'phone' ? (
+            // Phone Login Flow
+            phoneStep === 'phone' ? (
+              // Step 1: Enter Phone Number
+              <form onSubmit={handlePhoneSubmit} className="space-y-4">
+                <PhoneInput
+                  label={t('phoneLabel') || 'Phone Number'}
+                  value={phone}
+                  onChange={setPhone}
+                  error={error}
+                  disabled={loading}
+                  required
+                />
+                <Button type="submit" className="w-full" disabled={loading}>
+                  {loading ? t('submitting') : t('continueButton') || 'Continue'}
+                </Button>
+              </form>
+            ) : (
+              // Step 2: Enter OTP
+              <form onSubmit={handleOtpSubmit} className="space-y-4">
+                <div className="text-center mb-4">
+                  <p className="text-sm text-muted-foreground">
+                    {t('otpSentTo') || 'Code sent to'} {phone}
+                  </p>
+                </div>
+
+                <OtpInput
+                  label={t('otpLabel') || 'Verification Code'}
+                  value={otp}
+                  onChange={setOtp}
+                  error={error}
+                  disabled={loading}
+                  length={6}
+                />
+
+                <Button
+                  type="submit"
+                  className="w-full"
+                  disabled={loading || otp.length !== 6}
+                >
+                  {loading ? t('submitting') : t('verifyButton') || 'Verify'}
+                </Button>
+
+                <div className="flex items-center justify-between text-sm">
+                  <button
+                    type="button"
+                    onClick={handleResendOtp}
+                    disabled={resendTimer > 0}
+                    className="text-primary hover:underline disabled:text-muted-foreground disabled:no-underline"
+                  >
+                    {resendTimer > 0
+                      ? `${t('resendIn') || 'Resend in'} ${resendTimer}s`
+                      : t('resendCode') || 'Resend code'}
+                  </button>
+                  <button
+                    type="button"
+                    onClick={handleChangePhone}
+                    className="text-primary hover:underline"
+                  >
+                    {t('changePhone') || 'Change number'}
+                  </button>
+                </div>
+              </form>
+            )
+          ) : (
+            // Email Login Flow
+            <form onSubmit={handleEmailSubmit} className="space-y-4">
+              <div className="space-y-2">
+                <Label htmlFor="email">{tCommon('email')}</Label>
+                <Input
+                  id="email"
+                  type="email"
+                  placeholder={t('emailPlaceholder')}
+                  value={email}
+                  onChange={(e) => setEmail(e.target.value)}
+                  required
+                />
+              </div>
+              <div className="space-y-2">
+                <Label htmlFor="password">{tCommon('password')}</Label>
+                <Input
+                  id="password"
+                  type="password"
+                  placeholder={t('passwordPlaceholder')}
+                  value={password}
+                  onChange={(e) => setPassword(e.target.value)}
+                  required
+                />
+              </div>
+              <Button type="submit" className="w-full" disabled={loading}>
+                {loading ? t('submitting') : t('submitButton')}
+              </Button>
+            </form>
+          )}
+
+          {/* Method Toggle */}
           <div className="relative my-6">
             <div className="absolute inset-0 flex items-center">
               <div className="w-full border-t" />
             </div>
             <div className="relative flex justify-center text-sm">
-              <span className="bg-card px-2 text-muted-foreground">
-                {t('orContinueWith')}
-              </span>
+              <button
+                type="button"
+                onClick={() => {
+                  setLoginMethod(loginMethod === 'phone' ? 'email' : 'phone');
+                  setError('');
+                  setPhoneStep('phone');
+                }}
+                className="bg-card px-2 text-primary hover:underline"
+              >
+                {loginMethod === 'phone'
+                  ? t('useEmail') || 'Use email instead'
+                  : t('usePhone') || 'Use phone instead'}
+              </button>
             </div>
           </div>
 
+          {/* Google OAuth */}
           <Button
             type="button"
             variant="outline"
