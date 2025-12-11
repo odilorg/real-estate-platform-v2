@@ -3,7 +3,7 @@
 import * as React from 'react';
 import { Input } from '../primitives/input';
 import { Label } from '../primitives/label';
-import { cn } from '../lib/utils';
+import { cn } from '../utils/cn';
 
 export interface OtpInputProps {
   label?: string;
@@ -136,7 +136,9 @@ export const OtpInput = React.forwardRef<HTMLDivElement, OtpInputProps>(
           {Array.from({ length }).map((_, index) => (
             <Input
               key={index}
-              ref={(el) => (inputRefs.current[index] = el)}
+              ref={(el) => {
+                inputRefs.current[index] = el;
+              }}
               type="text"
               inputMode="numeric"
               maxLength={1}

@@ -3,7 +3,7 @@
 import * as React from 'react';
 import { Input } from '../primitives/input';
 import { Label } from '../primitives/label';
-import { cn } from '../lib/utils';
+import { cn } from '../utils/cn';
 
 export interface PhoneInputProps
   extends Omit<React.InputHTMLAttributes<HTMLInputElement>, 'onChange'> {
