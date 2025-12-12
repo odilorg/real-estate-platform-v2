@@ -144,7 +144,8 @@ export function PropertyFiltersModern({
 
   const isFilterActive = (value: string, type: string) => {
     if (type === 'bedrooms') {
-      return values.bedrooms?.toString() === value || (value === 'studio' && values.bedrooms === 0);
+      const bedroomValue = value === 'studio' ? 0 : parseInt(value);
+      return values.bedrooms?.includes(bedroomValue) || false;
     }
     return activeFilters.includes(value);
   };
@@ -152,9 +153,16 @@ export function PropertyFiltersModern({
   const toggleFilter = (value: string, type: string) => {
     if (type === 'bedrooms') {
       const newValue = value === 'studio' ? 0 : parseInt(value);
+      const currentBedrooms = values.bedrooms || [];
+      const isActive = currentBedrooms.includes(newValue);
+
+      const newBedrooms = isActive
+        ? currentBedrooms.filter((b) => b !== newValue)
+        : [...currentBedrooms, newValue];
+
       onChange({
         ...values,
-        bedrooms: values.bedrooms === newValue ? undefined : newValue,
+        bedrooms: newBedrooms.length > 0 ? newBedrooms : undefined,
       });
     } else {
       const newActiveFilters = isFilterActive(value, type)
@@ -248,24 +256,27 @@ export function PropertyFiltersModern({
       </div>
 
       {/* Active Filters Bar (if any) */}
-      {(values.bedrooms !== undefined || activeFilters.length > 0) && (
+      {((values.bedrooms && values.bedrooms.length > 0) || activeFilters.length > 0) && (
         <div className="px-6 py-3 bg-blue-50 border-b border-blue-100">
           <div className="flex items-center justify-between">
             <div className="flex items-center gap-2 flex-wrap">
               <span className="text-sm text-gray-600">{t('selected')}</span>
-              {values.bedrooms !== undefined && (
-                <span className="inline-flex items-center px-2.5 py-1 rounded bg-blue-600 text-white text-sm">
-                  {values.bedrooms === 0
+              {values.bedrooms && values.bedrooms.map((bedroom) => (
+                <span key={bedroom} className="inline-flex items-center px-2.5 py-1 rounded bg-blue-600 text-white text-sm">
+                  {bedroom === 0
                     ? tProperty('studio').charAt(0).toUpperCase() + tProperty('studio').slice(1)
-                    : `${values.bedrooms} ${t('roomsShort')}`}
+                    : `${bedroom} ${t('roomsShort')}`}
                   <button
-                    onClick={() => onChange({ ...values, bedrooms: undefined })}
+                    onClick={() => {
+                      const newBedrooms = values.bedrooms?.filter((b) => b !== bedroom);
+                      onChange({ ...values, bedrooms: newBedrooms && newBedrooms.length > 0 ? newBedrooms : undefined });
+                    }}
                     className="ml-1.5 hover:bg-blue-700 rounded-sm"
                   >
                     <X className="h-3.5 w-3.5" />
                   </button>
                 </span>
-              )}
+              ))}
               {activeFilters.map((filter) => {
                 const filterData = quickFilters.find((f) => f.value === filter);
                 const label = filterData?.value === 'studio'
