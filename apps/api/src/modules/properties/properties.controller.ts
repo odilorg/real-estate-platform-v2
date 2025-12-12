@@ -72,6 +72,7 @@ export class PropertiesController {
       // Property type
       propertyType: query.propertyType || undefined,
       listingType: query.listingType || undefined,
+      marketType: query.marketType || undefined,
       status: query.status || undefined,
 
       // Price range
