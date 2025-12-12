@@ -307,23 +307,35 @@ export default function PropertyDetailPage({
     }
 
     const token = getAuthToken();
-    if (!token) return;
+    if (!token) {
+      console.error('No auth token found');
+      return;
+    }
 
     setFavoriteLoading(true);
     try {
       const method = isFavorite ? 'DELETE' : 'POST';
+      console.log(`Toggling favorite: ${method} ${apiUrl}/favorites/${id}`);
+
       const response = await fetch(`${apiUrl}/favorites/${id}`, {
         method,
         headers: {
+          'Content-Type': 'application/json',
           Authorization: `Bearer ${token}`,
         },
       });
 
+      console.log('Favorite response status:', response.status);
+
       if (response.ok) {
         setIsFavorite(!isFavorite);
+        console.log('Favorite toggled successfully:', !isFavorite);
+      } else {
+        const errorData = await response.text();
+        console.error('Failed to toggle favorite:', response.status, errorData);
       }
-    } catch {
-      // Ignore errors
+    } catch (error) {
+      console.error('Error toggling favorite:', error);
     } finally {
       setFavoriteLoading(false);
     }
