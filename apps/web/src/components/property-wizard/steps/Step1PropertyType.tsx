@@ -69,6 +69,21 @@ const LISTING_TYPES = [
   },
 ];
 
+const MARKET_TYPES = [
+  {
+    value: 'NEW_BUILDING',
+    label: 'Новостройка',
+    description: 'Первичный рынок, новое строительство',
+    color: 'blue',
+  },
+  {
+    value: 'SECONDARY',
+    label: 'Вторичка',
+    description: 'Вторичный рынок, готовое жилье',
+    color: 'green',
+  },
+];
+
 export default function Step1PropertyType({
   formData,
   updateFormData,
@@ -226,6 +241,82 @@ export default function Step1PropertyType({
           <p className="mt-2 text-sm text-red-600">{errors.listingType}</p>
         )}
       </div>
+
+      {/* Market Type Selection (only for apartments) */}
+      {formData.propertyType === 'APARTMENT' && (
+        <div>
+          <h3 className="text-lg font-semibold mb-4">Тип жилья</h3>
+          <div className="grid grid-cols-1 md:grid-cols-2 gap-4">
+            {MARKET_TYPES.map((type) => {
+              const isSelected = formData.marketType === type.value;
+              const colorClasses = {
+                blue: {
+                  border: 'border-blue-600',
+                  bg: 'bg-blue-50',
+                  iconBg: 'bg-blue-100',
+                  text: 'text-blue-600',
+                  hover: 'hover:border-blue-300',
+                },
+                green: {
+                  border: 'border-green-600',
+                  bg: 'bg-green-50',
+                  iconBg: 'bg-green-100',
+                  text: 'text-green-600',
+                  hover: 'hover:border-green-300',
+                },
+              };
+
+              const colors = colorClasses[type.color as keyof typeof colorClasses];
+
+              return (
+                <button
+                  key={type.value}
+                  type="button"
+                  onClick={() => updateFormData({ marketType: type.value })}
+                  className={`p-5 rounded-lg border-2 transition-all text-center hover:shadow-md ${
+                    isSelected
+                      ? `${colors.border} ${colors.bg} shadow-md`
+                      : `border-gray-200 bg-white ${colors.hover}`
+                  }`}
+                >
+                  <div className="space-y-2">
+                    <div
+                      className={`text-lg font-bold ${
+                        isSelected ? colors.text : 'text-gray-900'
+                      }`}
+                    >
+                      {type.label}
+                    </div>
+                    <div className="text-sm text-gray-500">{type.description}</div>
+                    {isSelected && (
+                      <div className="pt-2">
+                        <div
+                          className={`inline-flex w-5 h-5 ${colors.iconBg} rounded-full items-center justify-center`}
+                        >
+                          <svg
+                            className={`w-3 h-3 ${colors.text}`}
+                            fill="none"
+                            strokeLinecap="round"
+                            strokeLinejoin="round"
+                            strokeWidth="2"
+                            viewBox="0 0 24 24"
+                            stroke="currentColor"
+                          >
+                            <path d="M5 13l4 4L19 7"></path>
+                          </svg>
+                        </div>
+                      </div>
+                    )}
+                  </div>
+                </button>
+              );
+            })}
+          </div>
+          {errors.marketType && (
+            <p className="mt-2 text-sm text-red-600">{errors.marketType}</p>
+          )}
+        </div>
+      )}
 
       {/* Helpful Tips */}
       <div className="bg-blue-50 border border-blue-200 rounded-lg p-4">

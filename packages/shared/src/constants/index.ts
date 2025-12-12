@@ -25,6 +25,13 @@ export const ListingType = {
 } as const;
 export type ListingType = (typeof ListingType)[keyof typeof ListingType];
 
+// Market Type (New Building vs Secondary)
+export const MarketType = {
+  NEW_BUILDING: 'NEW_BUILDING', // Новостройка - Primary market
+  SECONDARY: 'SECONDARY',       // Вторичка - Secondary market
+} as const;
+export type MarketType = (typeof MarketType)[keyof typeof MarketType];
+
 // Property Status
 export const PropertyStatus = {
   ACTIVE: 'ACTIVE',

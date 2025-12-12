@@ -16,6 +16,7 @@ export interface WizardFormData {
   // Step 1: Property Type
   propertyType: string;
   listingType: string;
+  marketType: string; // NEW_BUILDING or SECONDARY (mainly for apartments)
 
   // Step 2: Location
   address: string;
@@ -104,6 +105,7 @@ export default function PropertyCreationWizard() {
   const getInitialFormData = (): WizardFormData => ({
     propertyType: '',
     listingType: 'SALE',
+    marketType: '',
     address: '',
     city: t('defaultCity'),
     district: '',
@@ -387,6 +389,7 @@ export default function PropertyCreationWizard() {
       const payload = {
         propertyType: formData.propertyType,
         listingType: formData.listingType,
+        marketType: cleanValue(formData.marketType),
         title: formData.title,
         description: formData.description,
         price: parseFloat(formData.price),

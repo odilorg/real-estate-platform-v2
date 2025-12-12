@@ -253,6 +253,8 @@ export default function PropertiesPage() {
         params.append('propertyType', filters.propertyTypes.join(','));
       if (filters.listingTypes.length > 0)
         params.append('listingType', filters.listingTypes.join(','));
+      if (filters.marketType)
+        params.append('marketType', filters.marketType);
 
       // Price range
       if (filters.minPrice) params.append('minPrice', filters.minPrice.toString());
@@ -726,19 +728,14 @@ export default function PropertiesPage() {
           }}
           onChange={(extendedFilters) => {
             // Convert extended filters to modern filter format
-            const propertyTypes: string[] = [];
-            if (extendedFilters.propertyType && extendedFilters.propertyType !== 'ALL') {
-              // Map property type to appropriate values
-              if (extendedFilters.propertyType === 'NEW_BUILDING') {
-                propertyTypes.push('APARTMENT'); // Can add more types if needed
-              } else if (extendedFilters.propertyType === 'SECONDARY') {
-                propertyTypes.push('APARTMENT');
-              }
-            }
+            const marketType = extendedFilters.propertyType && extendedFilters.propertyType !== 'ALL'
+              ? extendedFilters.propertyType
+              : undefined;
 
             const newFilters: ModernFilterValues = {
-              propertyTypes,
+              propertyTypes: [], // Empty for now, can be set from a different filter if needed
               listingTypes: extendedFilters.listingType ? [extendedFilters.listingType] : [],
+              marketType,
               amenities: extendedFilters.amenities || [],
               bedrooms: extendedFilters.bedrooms[0],
               minPrice: extendedFilters.minPrice,

@@ -86,6 +86,7 @@ model Property {
   currency    Currency      @default(YE)
   propertyType PropertyType
   listingType ListingType
+  marketType  MarketType?   // NEW_BUILDING or SECONDARY (optional for non-apartments)
   status      PropertyStatus @default(ACTIVE)
 
   // Location details
@@ -190,6 +191,11 @@ enum ListingType {
   SALE
   RENT_LONG
   RENT_DAILY
+}
+
+enum MarketType {
+  NEW_BUILDING  // Новостройка - Primary market
+  SECONDARY     // Вторичка - Secondary market
 }
 
 enum Currency {

@@ -89,6 +89,9 @@ export class PropertyQueryBuilder {
     if (this.filters.listingType) {
       this.where.listingType = this.filters.listingType;
     }
+    if (this.filters.marketType) {
+      this.where.marketType = this.filters.marketType;
+    }
   }
 
   private applyPriceFilter(): void {

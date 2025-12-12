@@ -2,6 +2,7 @@ import { z } from 'zod';
 import {
   PropertyType,
   ListingType,
+  MarketType,
   PropertyStatus,
   BuildingType,
   BuildingClass,
@@ -81,6 +82,7 @@ export const CreatePropertyDto = z.object({
   currency: z.nativeEnum(Currency).default(Currency.YE),
   propertyType: z.nativeEnum(PropertyType),
   listingType: z.nativeEnum(ListingType),
+  marketType: z.nativeEnum(MarketType).optional(), // NEW_BUILDING or SECONDARY (mainly for apartments)
 
   // Location
   address: z.string().min(5),
@@ -156,6 +158,7 @@ export const PropertyFilterDto = z.object({
   // Property type filters
   propertyType: z.nativeEnum(PropertyType).optional(),
   listingType: z.nativeEnum(ListingType).optional(),
+  marketType: z.nativeEnum(MarketType).optional(), // Filter by NEW_BUILDING or SECONDARY
   status: z.nativeEnum(PropertyStatus).optional(),
 
   // Price range

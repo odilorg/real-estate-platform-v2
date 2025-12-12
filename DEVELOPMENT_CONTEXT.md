@@ -22,22 +22,34 @@ ssh -i /home/odil/projects/id_rsa -p 2222 root@62.72.22.205
 
 **WE WORK DIRECTLY ON THE VPS SERVER, NOT LOCALLY!**
 
-This is the established development workflow:
+This is the established development workflow to save time and see results immediately:
 - **Primary development environment:** VPS at `/var/www/realestate-staging`
-- **Changes are made, tested, and deployed directly on VPS**
-- **Local environment** (`/home/odil/projects/real-estate-platform-v2`) is used only for:
-  - Git operations (commit, push)
-  - Code editing when convenient
-  - Quick reference
+- **All changes are made, tested, and deployed directly on VPS**
+- **Local environment** (`/home/odil/projects/real-estate-platform-v2`) is used ONLY for:
+  - Pulling completed features from VPS for git commits
+  - Final git operations before pushing to repository
+  - Quick reference/reading code
 
-**Typical Workflow:**
+**Correct Workflow (saves time, see results immediately on staging):**
 1. SSH to VPS: `ssh -i /home/odil/projects/id_rsa -p 2222 root@62.72.22.205`
-2. Make changes on VPS at `/var/www/realestate-staging`
-3. Test directly on staging: https://staging.jahongir-app.uz
-4. When satisfied, commit locally and push to git
-5. Pull changes on VPS to keep in sync
+2. Make ALL changes directly on VPS at `/var/www/realestate-staging`
+3. Test immediately on staging: https://staging.jahongir-app.uz
+4. When feature is COMPLETE and working:
+   - Pull changes to local: `cd /home/odil/projects/real-estate-platform-v2 && git pull`
+   - Commit locally: `git add . && git commit -m "message"`
+   - Push to repository: `git push origin develop`
+5. VPS already has the changes (no need to pull again)
 
-**DO NOT assume local testing is required. VPS is the primary dev environment.**
+**Why this workflow?**
+- ✅ See results immediately on staging URL
+- ✅ No need to commit/push/pull cycle during development
+- ✅ Faster iteration - test directly where it will run
+- ✅ Only use local machine for final git operations
+
+**DO NOT:**
+- ❌ Make changes locally and then deploy to VPS (waste of time)
+- ❌ Run local dev server for testing (unless specifically needed)
+- ❌ Commit incomplete features from local environment
 
 ### Environment Structure
 

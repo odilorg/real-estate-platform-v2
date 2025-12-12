@@ -8,6 +8,7 @@ export interface ModernFilterValues {
   bedrooms?: number;
   propertyTypes: string[];
   listingTypes: string[];
+  marketType?: string; // NEW_BUILDING or SECONDARY
   amenities: string[];
   city?: string;
   district?: string;
