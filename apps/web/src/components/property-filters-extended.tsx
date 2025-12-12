@@ -1,6 +1,6 @@
 'use client';
 
-import { useState } from 'react';
+import { useState, useEffect, useRef } from 'react';
 import { Search, ChevronDown, Heart, SlidersHorizontal, X } from 'lucide-react';
 import { useTranslations } from 'next-intl';
 import { Button } from '@repo/ui';
@@ -42,6 +42,29 @@ export function PropertyFiltersExtended({
   const [showRegionDropdown, setShowRegionDropdown] = useState(false);
   const [showDistrictDropdown, setShowDistrictDropdown] = useState(false);
   const [showMetroDropdown, setShowMetroDropdown] = useState(false);
+
+  // Refs for click-outside detection
+  const bedroomsRef = useRef<HTMLDivElement>(null);
+  const priceRef = useRef<HTMLDivElement>(null);
+  const propertyTypeRef = useRef<HTMLDivElement>(null);
+
+  // Close dropdowns when clicking outside
+  useEffect(() => {
+    const handleClickOutside = (event: MouseEvent) => {
+      if (bedroomsRef.current && !bedroomsRef.current.contains(event.target as Node)) {
+        setShowMoreFilters(false);
+      }
+      if (priceRef.current && !priceRef.current.contains(event.target as Node)) {
+        setShowPriceDropdown(false);
+      }
+      if (propertyTypeRef.current && !propertyTypeRef.current.contains(event.target as Node)) {
+        setShowRegionDropdown(false);
+      }
+    };
+
+    document.addEventListener('mousedown', handleClickOutside);
+    return () => document.removeEventListener('mousedown', handleClickOutside);
+  }, []);
 
   const handleListingTypeChange = (type: 'SALE' | 'RENT_LONG' | 'RENT_DAILY') => {
     onChange({ ...values, listingType: type });
@@ -127,7 +150,7 @@ export function PropertyFiltersExtended({
           </div>
 
           {/* Property Type Dropdown */}
-          <div className="relative">
+          <div ref={propertyTypeRef} className="relative">
             <button
               className="flex items-center gap-2 px-4 py-2 border border-gray-300 rounded-lg hover:border-gray-400 bg-white text-sm"
               onClick={() => setShowRegionDropdown(!showRegionDropdown)}
@@ -175,7 +198,7 @@ export function PropertyFiltersExtended({
           </div>
 
           {/* Number of Rooms */}
-          <div className="relative">
+          <div ref={bedroomsRef} className="relative">
             <button
               className="flex items-center gap-2 px-4 py-2 border border-gray-300 rounded-lg hover:border-gray-400 bg-white text-sm"
               onClick={() => setShowMoreFilters(!showMoreFilters)}
@@ -219,7 +242,7 @@ export function PropertyFiltersExtended({
           </div>
 
           {/* Price Range */}
-          <div className="relative">
+          <div ref={priceRef} className="relative">
             <button
               className="flex items-center gap-2 px-4 py-2 border border-gray-300 rounded-lg hover:border-gray-400 bg-white text-sm"
               onClick={() => setShowPriceDropdown(!showPriceDropdown)}
