@@ -4,7 +4,7 @@ import { useState, useEffect, use } from 'react';
 import Link from 'next/link';
 import { useRouter } from 'next/navigation';
 import { Button, Badge, Card, CardContent } from '@repo/ui';
-import { ImageGallery, MortgageCalculator, PropertyKeyFacts, PropertyDetailedInfo, PropertyLocationMap, PropertyAmenities, PriceHistoryChart, NearbyPOIs, PropertyReviews, SocialShare } from '@/components';
+import { ImageGallery, MortgageCalculator, PropertyKeyFacts, PropertyDetailedInfo, PropertyLocationMap, PropertyAmenities, PriceHistoryChart, NearbyPOIs, PropertyReviews, SocialShare, LoginModal } from '@/components';
 import { useAuth } from '@/context/AuthContext';
 import { useTranslations } from 'next-intl';
 import {
@@ -141,6 +141,7 @@ export default function PropertyDetailPage({
   const [error, setError] = useState<string | null>(null);
   const [isFavorite, setIsFavorite] = useState(false);
   const [favoriteLoading, setFavoriteLoading] = useState(false);
+  const [showLoginModal, setShowLoginModal] = useState(false);
   const [showMessageForm, setShowMessageForm] = useState(false);
   const [message, setMessage] = useState('');
   const [sendingMessage, setSendingMessage] = useState(false);
@@ -301,7 +302,7 @@ export default function PropertyDetailPage({
 
   const handleToggleFavorite = async () => {
     if (!isAuthenticated) {
-      router.push('/auth/login');
+      setShowLoginModal(true);
       return;
     }
 
@@ -788,6 +789,12 @@ export default function PropertyDetailPage({
           </div>
         </div>
       </main>
+
+      {/* Login Modal for unauthenticated users */}
+      <LoginModal
+        open={showLoginModal}
+        onClose={() => setShowLoginModal(false)}
+      />
     </div>
   );
 }
