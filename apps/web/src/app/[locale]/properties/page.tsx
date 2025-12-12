@@ -580,7 +580,7 @@ export default function PropertiesPage() {
         throw new Error('Ошибка сохранения поиска');
       }
 
-      alert('Поиск успешно сохранен!');
+      // Close modal without showing alert
       setShowSaveSearchModal(false);
       setSearchName('');
     } catch (err) {
