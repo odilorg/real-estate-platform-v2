@@ -245,33 +245,7 @@ export type CreateViewingDto = z.infer<typeof CreateViewingDto>;
 // Saved Search DTOs
 export const CreateSavedSearchDto = z.object({
   name: z.string().min(1).max(100),
-  filters: z.object({
-    // Location filters
-    city: z.string().optional(),
-    district: z.string().optional(),
-    mahalla: z.string().optional(),
-
-    // Property type filters
-    propertyType: z.nativeEnum(PropertyType).optional(),
-    listingType: z.nativeEnum(ListingType).optional(),
-
-    // Price range
-    minPrice: z.number().optional(),
-    maxPrice: z.number().optional(),
-
-    // Area range
-    minArea: z.number().optional(),
-    maxArea: z.number().optional(),
-
-    // Rooms
-    minBedrooms: z.number().optional(),
-    maxBedrooms: z.number().optional(),
-
-    // Building filters
-    buildingClass: z.nativeEnum(BuildingClass).optional(),
-    buildingType: z.nativeEnum(BuildingType).optional(),
-    renovation: z.nativeEnum(RenovationType).optional(),
-  }),
+  filters: z.record(z.any()), // Allow flexible filter structure from frontend
   notificationsEnabled: z.boolean().default(false),
 });
 export type CreateSavedSearchDto = z.infer<typeof CreateSavedSearchDto>;
