@@ -76,10 +76,17 @@ export default function SavedSearchesPage() {
 
     try {
       const token = localStorage.getItem('token');
+      const headers: Record<string, string> = {};
+
+      // Add Authorization header if token exists (phone/email login)
+      // For OAuth logins, authentication works via HTTP-only cookies
+      if (token) {
+        headers.Authorization = `Bearer ${token}`;
+      }
+
       const response = await fetch(`${apiUrl}/saved-searches`, {
-        headers: {
-          Authorization: `Bearer ${token}`,
-        },
+        headers,
+        credentials: 'include', // Include cookies for OAuth authentication
       });
 
       if (!response.ok) {
@@ -104,11 +111,18 @@ export default function SavedSearchesPage() {
 
     try {
       const token = localStorage.getItem('token');
+      const headers: Record<string, string> = {};
+
+      // Add Authorization header if token exists (phone/email login)
+      // For OAuth logins, authentication works via HTTP-only cookies
+      if (token) {
+        headers.Authorization = `Bearer ${token}`;
+      }
+
       const response = await fetch(`${apiUrl}/saved-searches/${id}`, {
         method: 'DELETE',
-        headers: {
-          Authorization: `Bearer ${token}`,
-        },
+        headers,
+        credentials: 'include', // Include cookies for OAuth authentication
       });
 
       if (!response.ok) {
@@ -128,12 +142,20 @@ export default function SavedSearchesPage() {
 
     try {
       const token = localStorage.getItem('token');
+      const headers: Record<string, string> = {
+        'Content-Type': 'application/json',
+      };
+
+      // Add Authorization header if token exists (phone/email login)
+      // For OAuth logins, authentication works via HTTP-only cookies
+      if (token) {
+        headers.Authorization = `Bearer ${token}`;
+      }
+
       const response = await fetch(`${apiUrl}/saved-searches/${id}/notifications`, {
         method: 'PATCH',
-        headers: {
-          Authorization: `Bearer ${token}`,
-          'Content-Type': 'application/json',
-        },
+        headers,
+        credentials: 'include', // Include cookies for OAuth authentication
         body: JSON.stringify({ enabled }),
       });
 
