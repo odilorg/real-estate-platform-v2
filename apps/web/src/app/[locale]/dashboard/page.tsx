@@ -98,12 +98,15 @@ export default function DashboardPage() {
   const fetchUnreadCount = async () => {
     try {
       const token = localStorage.getItem('token');
-      if (!token) return;
+      const headers: Record<string, string> = {};
+
+      if (token) {
+        headers.Authorization = `Bearer ${token}`;
+      }
 
       const response = await fetch(`${apiUrl}/messages/unread`, {
-        headers: {
-          Authorization: `Bearer ${token}`,
-        },
+        headers,
+        credentials: 'include', // Include cookies for OAuth authentication
       });
 
       if (response.ok) {
@@ -119,12 +122,15 @@ export default function DashboardPage() {
     setAnalyticsLoading(true);
     try {
       const token = localStorage.getItem('token');
-      if (!token) return;
+      const headers: Record<string, string> = {};
+
+      if (token) {
+        headers.Authorization = `Bearer ${token}`;
+      }
 
       const response = await fetch(`${apiUrl}/properties/my/analytics?days=30`, {
-        headers: {
-          Authorization: `Bearer ${token}`,
-        },
+        headers,
+        credentials: 'include', // Include cookies for OAuth authentication
       });
 
       if (response.ok) {
@@ -144,10 +150,17 @@ export default function DashboardPage() {
 
     try {
       const token = localStorage.getItem('token');
+      const headers: Record<string, string> = {};
+
+      // Add Authorization header if token exists (phone/email login)
+      // For OAuth logins, authentication works via HTTP-only cookies
+      if (token) {
+        headers.Authorization = `Bearer ${token}`;
+      }
+
       const response = await fetch(`${apiUrl}/properties/my`, {
-        headers: {
-          Authorization: `Bearer ${token}`,
-        },
+        headers,
+        credentials: 'include', // Include cookies for OAuth authentication
       });
 
       if (!response.ok) {
