@@ -793,7 +793,7 @@ export default function PropertyDetailPage({
       {/* Login Modal for unauthenticated users */}
       <LoginModal
         open={showLoginModal}
-        onClose={() => setShowLoginModal(false)}
+        onOpenChange={setShowLoginModal}
       />
     </div>
   );
