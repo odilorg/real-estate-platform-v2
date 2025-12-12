@@ -5,6 +5,7 @@ import { Card, CardContent, Button } from '@repo/ui';
 interface PropertyDetailedInfoProps {
   // Property type and areas
   propertyType: string;
+  marketType?: string | null; // NEW_BUILDING or SECONDARY
   area: number;
   livingArea?: number | null;
   kitchenArea?: number | null;
@@ -54,6 +55,11 @@ const BUILDING_CLASS_LABELS: Record<string, string> = {
   ELITE: 'Элитный',
 };
 
+const MARKET_TYPE_LABELS: Record<string, string> = {
+  NEW_BUILDING: 'Новостройка',
+  SECONDARY: 'Вторичка',
+};
+
 const RENOVATION_LABELS: Record<string, string> = {
   NONE: 'Без ремонта',
   COSMETIC: 'Косметический',
@@ -72,6 +78,7 @@ const PARKING_TYPE_LABELS: Record<string, string> = {
 export function PropertyDetailedInfo(props: PropertyDetailedInfoProps) {
   const {
     propertyType,
+    marketType,
     area,
     livingArea,
     kitchenArea,
@@ -145,6 +152,7 @@ export function PropertyDetailedInfo(props: PropertyDetailedInfoProps) {
           </div>
           <div className="p-6">
             <InfoRow label="Год постройки" value={yearBuilt} />
+            <InfoRow label="Тип жилья" value={marketType ? MARKET_TYPE_LABELS[marketType] || marketType : null} />
             <InfoRow
               label="Количество лифтов"
               value={

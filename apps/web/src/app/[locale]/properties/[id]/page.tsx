@@ -71,6 +71,7 @@ interface Property {
   price: number;
   listingType: 'SALE' | 'RENT_LONG' | 'RENT_DAILY';
   propertyType: string;
+  marketType: string | null;
   status: string;
   bedrooms: number | null;
   bathrooms: number | null;
@@ -650,6 +651,7 @@ export default function PropertyDetailPage({
             {/* Detailed Information */}
             <PropertyDetailedInfo
               propertyType={property.propertyType}
+              marketType={property.marketType}
               area={property.area}
               livingArea={property.livingArea}
               kitchenArea={property.kitchenArea}
