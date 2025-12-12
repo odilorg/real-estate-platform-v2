@@ -70,12 +70,37 @@ export class FavoritesService {
       return existing;
     }
 
-    return this.prisma.favorite.create({
+    const favorite = await this.prisma.favorite.create({
       data: {
         userId,
         propertyId,
       },
     });
+
+    // Track favorite addition in analytics
+    const today = new Date();
+    today.setHours(0, 0, 0, 0);
+
+    await this.prisma.propertyAnalytics.upsert({
+      where: {
+        propertyId_date: {
+          propertyId,
+          date: today,
+        },
+      },
+      create: {
+        propertyId,
+        date: today,
+        favorites: 1,
+      },
+      update: {
+        favorites: {
+          increment: 1,
+        },
+      },
+    });
+
+    return favorite;
   }
 
   async removeFavorite(userId: string, propertyId: string) {
@@ -94,6 +119,29 @@ export class FavoritesService {
 
     await this.prisma.favorite.delete({
       where: { id: favorite.id },
+    });
+
+    // Track favorite removal in analytics
+    const today = new Date();
+    today.setHours(0, 0, 0, 0);
+
+    await this.prisma.propertyAnalytics.upsert({
+      where: {
+        propertyId_date: {
+          propertyId,
+          date: today,
+        },
+      },
+      create: {
+        propertyId,
+        date: today,
+        unfavorites: 1,
+      },
+      update: {
+        unfavorites: {
+          increment: 1,
+        },
+      },
     });
 
     return { success: true };

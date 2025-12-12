@@ -234,6 +234,9 @@ export class AnalyticsService {
     totalViews: number;
     totalFavorites: number;
     totalContacts: number;
+    viewsTrend: number;
+    favoritesTrend: number;
+    contactsTrend: number;
     propertyPerformance: PropertyPerformance[];
   }> {
     const startDate = new Date();
@@ -262,6 +265,9 @@ export class AnalyticsService {
           gte: startDate,
         },
       },
+      orderBy: {
+        date: 'asc',
+      },
     });
 
     // Get last view for each property
@@ -288,6 +294,53 @@ export class AnalyticsService {
       0,
     );
     const totalContacts = analytics.reduce((sum, a) => sum + a.contacts, 0);
+
+    // Calculate trends (compare last 7 days vs previous 7 days)
+    const last7Days = analytics.slice(-7);
+    const previous7Days = analytics.slice(-14, -7);
+
+    const last7ViewsTotal = last7Days.reduce((sum, a) => sum + a.views, 0);
+    const previous7ViewsTotal = previous7Days.reduce(
+      (sum, a) => sum + a.views,
+      0,
+    );
+
+    const viewsTrend =
+      previous7ViewsTotal > 0
+        ? ((last7ViewsTotal - previous7ViewsTotal) / previous7ViewsTotal) * 100
+        : 0;
+
+    const last7FavoritesTotal = last7Days.reduce(
+      (sum, a) => sum + a.favorites - a.unfavorites,
+      0,
+    );
+    const previous7FavoritesTotal = previous7Days.reduce(
+      (sum, a) => sum + a.favorites - a.unfavorites,
+      0,
+    );
+
+    const favoritesTrend =
+      previous7FavoritesTotal > 0
+        ? ((last7FavoritesTotal - previous7FavoritesTotal) /
+            previous7FavoritesTotal) *
+          100
+        : 0;
+
+    const last7ContactsTotal = last7Days.reduce(
+      (sum, a) => sum + a.contacts,
+      0,
+    );
+    const previous7ContactsTotal = previous7Days.reduce(
+      (sum, a) => sum + a.contacts,
+      0,
+    );
+
+    const contactsTrend =
+      previous7ContactsTotal > 0
+        ? ((last7ContactsTotal - previous7ContactsTotal) /
+            previous7ContactsTotal) *
+          100
+        : 0;
 
     // Calculate per-property performance
     const propertyPerformance: PropertyPerformance[] = properties.map(
@@ -326,6 +379,9 @@ export class AnalyticsService {
       totalViews,
       totalFavorites,
       totalContacts,
+      viewsTrend: Math.round(viewsTrend * 10) / 10,
+      favoritesTrend: Math.round(favoritesTrend * 10) / 10,
+      contactsTrend: Math.round(contactsTrend * 10) / 10,
       propertyPerformance,
     };
   }
