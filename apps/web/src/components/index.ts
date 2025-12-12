@@ -3,6 +3,7 @@ export { ImageGallery } from './image-gallery';
 export { HomePage } from './home-page';
 export { AdvancedFilters, type AdvancedFilterValues } from './advanced-filters';
 export { PropertyFiltersModern, type ModernFilterValues } from './property-filters-modern';
+export { PropertyFiltersExtended, type ExtendedFilterValues } from './property-filters-extended';
 export { PropertyMap, type PropertyMapMarker, type PropertyMapProps } from './property-map';
 export { Navbar } from './navbar';
 export { PropertyListItem } from './property-list-item';

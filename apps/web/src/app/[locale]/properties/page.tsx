@@ -4,7 +4,7 @@ import { useState, useEffect, useRef, useCallback } from 'react';
 import Link from 'next/link';
 import { useRouter, useSearchParams } from 'next/navigation';
 import { PropertyCard, Button, Select, SelectContent, SelectItem, SelectTrigger, SelectValue } from '@repo/ui';
-import { PropertyFiltersModern, type ModernFilterValues, PropertyMap, type PropertyMapMarker, PropertyListItem } from '@/components';
+import { PropertyFiltersModern, PropertyFiltersExtended, type ModernFilterValues, type ExtendedFilterValues, PropertyMap, type PropertyMapMarker, PropertyListItem } from '@/components';
 import { Search, Plus, Loader2, User, LogOut, MapPin, ArrowUpDown, Grid3X3, Map as MapIcon, List, Bookmark, X } from 'lucide-react';
 import { useAuth } from '@/context/AuthContext';
 
@@ -706,36 +706,46 @@ export default function PropertiesPage() {
           )}
         </div>
 
-        {/* Modern Filters */}
-        <div className="mb-6">
-          <PropertyFiltersModern
-            values={filters}
-            onChange={(newFilters) => {
-              setFilters(newFilters);
-              setCurrentPage(1);
-            }}
-            totalResults={pagination?.total || properties.length}
-            viewMode={viewMode}
-            onViewModeChange={(mode) => setViewMode(mode as ViewMode)}
-            sortBy={sortBy}
-            onSortChange={setSortBy}
-            sortOptions={SORT_OPTIONS}
-          />
-        </div>
-
-        {/* Save Search Button */}
-        {isAuthenticated && (
-          <div className="mb-4 flex justify-end">
-            <Button
-              variant="outline"
-              size="sm"
-              onClick={() => setShowSaveSearchModal(true)}
-            >
-              <Bookmark className="h-4 w-4 mr-2" />
-              Сохранить поиск
-            </Button>
-          </div>
-        )}
+        {/* Extended Filters */}
+        <PropertyFiltersExtended
+          values={{
+            listingType: filters.listingTypes[0] as any || 'SALE',
+            propertyType: 'ALL',
+            bedrooms: filters.bedrooms ? [filters.bedrooms] : [],
+            minPrice: filters.minPrice,
+            maxPrice: filters.maxPrice,
+            city: filters.city,
+            district: filters.district,
+            searchQuery: searchQuery,
+            amenities: filters.amenities,
+            buildingClass: filters.buildingClasses?.[0],
+            minArea: filters.minArea,
+            maxArea: filters.maxArea,
+            minFloor: filters.minFloor,
+            maxFloor: filters.maxFloor,
+          }}
+          onChange={(extendedFilters) => {
+            setFilters({
+              ...filters,
+              listingTypes: extendedFilters.listingType ? [extendedFilters.listingType] : [],
+              bedrooms: extendedFilters.bedrooms[0],
+              minPrice: extendedFilters.minPrice,
+              maxPrice: extendedFilters.maxPrice,
+              city: extendedFilters.city,
+              district: extendedFilters.district,
+              amenities: extendedFilters.amenities || [],
+              buildingClasses: extendedFilters.buildingClass ? [extendedFilters.buildingClass] : undefined,
+              minArea: extendedFilters.minArea,
+              maxArea: extendedFilters.maxArea,
+              minFloor: extendedFilters.minFloor,
+              maxFloor: extendedFilters.maxFloor,
+            });
+            setSearchQuery(extendedFilters.searchQuery || '');
+            setCurrentPage(1);
+          }}
+          onSaveSearch={() => setShowSaveSearchModal(true)}
+          isAuthenticated={isAuthenticated}
+        />
 
         {/* Save Search Modal */}
         {showSaveSearchModal && (
