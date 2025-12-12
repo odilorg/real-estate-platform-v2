@@ -748,7 +748,7 @@ export default function PropertiesPage() {
               listingTypes: extendedFilters.listingType ? [extendedFilters.listingType] : [],
               marketType,
               amenities: extendedFilters.amenities || [],
-              bedrooms: extendedFilters.bedrooms[0],
+              bedrooms: extendedFilters.bedrooms || [],
               minPrice: extendedFilters.minPrice,
               maxPrice: extendedFilters.maxPrice,
               city: extendedFilters.city,
