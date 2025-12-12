@@ -21,3 +21,5 @@ export { ComparisonBar } from './comparison-bar';
 export { PropertyReviews } from './property-reviews';
 export { SocialShare } from './social-share';
 export { default as PropertyCreationWizard } from './property-wizard/PropertyCreationWizard';
+export { LoginModal } from './auth/LoginModal';
+export { RegisterModal } from './auth/RegisterModal';
