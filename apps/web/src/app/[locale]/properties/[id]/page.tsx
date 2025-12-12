@@ -306,23 +306,26 @@ export default function PropertyDetailPage({
       return;
     }
 
-    const token = getAuthToken();
-    if (!token) {
-      console.error('No auth token found');
-      return;
-    }
-
     setFavoriteLoading(true);
     try {
       const method = isFavorite ? 'DELETE' : 'POST';
       console.log(`Toggling favorite: ${method} ${apiUrl}/favorites/${id}`);
 
+      const token = getAuthToken();
+      const headers: Record<string, string> = {
+        'Content-Type': 'application/json',
+      };
+
+      // Add Authorization header if token exists (phone/email login)
+      // For OAuth logins, authentication works via HTTP-only cookies
+      if (token) {
+        headers.Authorization = `Bearer ${token}`;
+      }
+
       const response = await fetch(`${apiUrl}/favorites/${id}`, {
         method,
-        headers: {
-          'Content-Type': 'application/json',
-          Authorization: `Bearer ${token}`,
-        },
+        headers,
+        credentials: 'include', // Include cookies for OAuth authentication
       });
 
       console.log('Favorite response status:', response.status);
