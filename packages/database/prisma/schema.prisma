@@ -23,6 +23,10 @@ model User {
   createdAt     DateTime  @default(now())
   updatedAt     DateTime  @updatedAt
 
+  // 🆕 Developer membership (optional)
+  developerId   String?
+  developer     Developer? @relation("DeveloperSalesTeam", fields: [developerId], references: [id])
+
   // Relations
   properties    Property[]
   favorites     Favorite[]
@@ -48,6 +52,8 @@ enum UserRole {
   USER
   AGENT
   ADMIN
+  DEVELOPER_ADMIN         // 🆕 Developer company owner
+  DEVELOPER_SALES_AGENT   // 🆕 Sales person at developer
 }
 
 // OTP codes for phone authentication
@@ -137,6 +143,33 @@ model Property {
   windowView    String?
   bathroomType  String?
   furnished     String?
+
+  // 🆕 Developer ownership (alternative to userId for developer units)
+  developerId        String?
+  developer          Developer? @relation(fields: [developerId], references: [id])
+  developerProjectId String?
+  developerProject   DeveloperProject? @relation(fields: [developerProjectId], references: [id])
+
+  // 🆕 Unit-specific fields (for developer properties)
+  buildingBlock      String?   // "Block A", "Tower 1"
+  unitNumber         String?   // "305", "A-12"
+  entrance           String?   // Entrance number
+  unitStatus         UnitStatus? @default(AVAILABLE)
+
+  // 🆕 Reservation
+  reservedUntil      DateTime? // Reservation expiry
+  reservedBy         String?   // Lead ID or name
+
+  // 🆕 Payment plan (for new builds)
+  paymentPlanAvailable Boolean @default(false)
+  downPaymentPercent   Int?    // e.g., 30
+  installmentMonths    Int?    // e.g., 12, 24, 36
+  paymentPlanDetails   String? @db.Text
+
+  // 🆕 Delivery timeline
+  estimatedDelivery  DateTime? // When unit ready
+  isReadyToMoveIn    Boolean   @default(false)
+  handoverDate       DateTime? // When keys given
 
   // Metadata
   views       Int           @default(0)
@@ -239,6 +272,13 @@ enum ParkingType {
   UNDERGROUND
   GARAGE
   MULTI_LEVEL
+}
+
+enum UnitStatus {
+  AVAILABLE     // For sale
+  RESERVED      // Temporarily held (24-48 hours)
+  SOLD          // Contract signed
+  HANDED_OVER   // Keys given to buyer
 }
 
 // Property images
@@ -674,4 +714,252 @@ model PropertyStatusHistory {
   @@index([propertyId])
   @@index([createdAt])
   @@index([propertyId, createdAt])
+}
+
+// ==========================================
+// 🆕 DEVELOPER CRM MODELS
+// ==========================================
+
+// Location hierarchy (used by both agencies and developers)
+model City {
+  id         String     @id @default(cuid())
+  nameRu     String
+  nameUz     String
+  country    String     @default("Uzbekistan")
+  latitude   Float?
+  longitude  Float?
+
+  districts  District[]
+  projects   DeveloperProject[]
+
+  createdAt  DateTime   @default(now())
+
+  @@index([nameRu])
+  @@index([nameUz])
+}
+
+model District {
+  id       String    @id @default(cuid())
+  cityId   String
+  city     City      @relation(fields: [cityId], references: [id])
+  nameRu   String
+  nameUz   String
+
+  mahallas   Mahalla[]
+  projects   DeveloperProject[]
+
+  createdAt  DateTime  @default(now())
+
+  @@index([cityId])
+  @@index([nameRu])
+}
+
+model Mahalla {
+  id         String     @id @default(cuid())
+  districtId String
+  district   District   @relation(fields: [districtId], references: [id])
+  nameRu     String
+  nameUz     String
+
+  projects   DeveloperProject[]
+
+  createdAt  DateTime   @default(now())
+
+  @@index([districtId])
+  @@index([nameRu])
+}
+
+// Developer company (Zastroyshik)
+model Developer {
+  id              String    @id @default(cuid())
+
+  // Basic Info
+  name            String    // Russian name
+  nameUz          String?   // Uzbek name
+  slug            String    @unique
+  logo            String?
+
+  // Description (bilingual)
+  descriptionRu   String?   @db.Text
+  descriptionUz   String?   @db.Text
+
+  // Legal
+  licenseNumber   String?
+  innTin          String?   // Tax ID
+  legalEntity     String?   // OOO, AO, etc.
+  legalAddress    String?
+  establishedYear Int?
+
+  // Contact
+  phone           String
+  email           String?
+  website         String?
+  telegram        String?   // @username
+  whatsapp        String?
+
+  // Location
+  city            String    // Tashkent, Samarkand
+  officeAddress   String?
+
+  // Branding
+  primaryColor    String    @default("#3B82F6")
+  secondaryColor  String    @default("#1E40AF")
+
+  // Status
+  verified        Boolean   @default(false)
+  featured        Boolean   @default(false)
+  subscriptionTier String   @default("FREE")
+  subscriptionExpiry DateTime?
+
+  // Auto-updated stats
+  totalProjects   Int       @default(0)
+  totalUnits      Int       @default(0)
+  unitsSold       Int       @default(0)
+  unitsAvailable  Int       @default(0)
+  rating          Float     @default(0)
+  reviewCount     Int       @default(0)
+
+  // Relations
+  projects        DeveloperProject[]
+  properties      Property[]
+  salesTeam       User[]    @relation("DeveloperSalesTeam")
+
+  createdAt       DateTime  @default(now())
+  updatedAt       DateTime  @updatedAt
+
+  @@index([slug])
+  @@index([city])
+  @@index([verified])
+}
+
+// Residential project (complex, building)
+model DeveloperProject {
+  id              String    @id @default(cuid())
+  developerId     String
+  developer       Developer @relation(fields: [developerId], references: [id], onDelete: Cascade)
+
+  // Basic Info
+  name            String    // Russian name
+  nameUz          String?   // Uzbek name
+  slug            String    @unique
+
+  // Description (bilingual)
+  descriptionRu   String?   @db.Text
+  descriptionUz   String?   @db.Text
+
+  // Location
+  cityId          String
+  city            City      @relation(fields: [cityId], references: [id])
+  districtId      String
+  district        District  @relation(fields: [districtId], references: [id])
+  mahallaId       String?
+  mahalla         Mahalla?  @relation(fields: [mahallaId], references: [id])
+  address         String
+  latitude        Float?
+  longitude       Float?
+
+  // Building Details
+  buildingClass   BuildingClass?  // ECONOMY, COMFORT, BUSINESS, ELITE
+  buildingType    BuildingType?   // BRICK, PANEL, MONOLITHIC
+  totalUnits      Int
+  totalFloors     Int?
+  totalBlocks     Int       @default(1)  // Number of buildings/towers
+  parkingSpaces   Int?
+
+  // Timeline
+  constructionStartDate DateTime?
+  completionDate  DateTime
+  deliveryStages  Json?     // { "Block A": "2025-06-01", "Block B": "2025-12-01" }
+
+  // Features & Amenities
+  amenities       String[]  // pool, gym, playground, kindergarten, etc.
+  hasGatedArea    Boolean   @default(false)
+  hasConcierge    Boolean   @default(false)
+  hasGreenArea    Boolean   @default(false)
+  hasKindergarten Boolean   @default(false)
+  hasCommercial   Boolean   @default(false)
+
+  // Infrastructure
+  heating         String?   // Centralized, Individual
+  gasSupply       Boolean   @default(true)
+  waterSupply     String?   // Centralized
+  elevator        Boolean   @default(true)
+  elevatorCount   Int?
+
+  // Media
+  masterPlanImage String?
+  siteLayoutImage String?
+  virtualTourUrl  String?
+  images          ProjectImage[]
+  videos          ProjectVideo[]
+
+  // Status
+  status          ProjectStatus @default(PLANNING)
+  featured        Boolean   @default(false)
+
+  // Auto-updated stats
+  unitsTotal      Int       @default(0)
+  unitsAvailable  Int       @default(0)
+  unitsReserved   Int       @default(0)
+  unitsSold       Int       @default(0)
+
+  // Relations
+  properties      Property[]  // All units in this project
+
+  createdAt       DateTime  @default(now())
+  updatedAt       DateTime  @updatedAt
+
+  @@index([developerId])
+  @@index([status])
+  @@index([cityId])
+  @@index([districtId])
+  @@index([completionDate])
+}
+
+enum ProjectStatus {
+  PLANNING            // Project announced
+  UNDER_CONSTRUCTION  // Actively building
+  COMPLETED           // Construction done
+  HANDED_OVER         // All units delivered
+  CANCELLED           // Project cancelled
+}
+
+// Project images
+model ProjectImage {
+  id        String           @id @default(cuid())
+  projectId String
+  project   DeveloperProject @relation(fields: [projectId], references: [id], onDelete: Cascade)
+  url       String
+  type      ProjectImageType @default(EXTERIOR)
+  caption   String?
+  order     Int              @default(0)
+  createdAt DateTime         @default(now())
+
+  @@index([projectId])
+  @@index([projectId, order])
+}
+
+enum ProjectImageType {
+  EXTERIOR        // Building exterior
+  INTERIOR        // Lobby, common areas
+  AMENITY         // Pool, gym, playground
+  FLOOR_PLAN      // Unit layouts
+  MASTER_PLAN     // Site plan
+  CONSTRUCTION    // Progress photos
+  INFRASTRUCTURE  // Roads, landscaping
+}
+
+// Project videos
+model ProjectVideo {
+  id          String           @id @default(cuid())
+  projectId   String
+  project     DeveloperProject @relation(fields: [projectId], references: [id], onDelete: Cascade)
+  url         String
+  thumbnail   String?
+  title       String?
+  duration    Int?             // seconds
+  order       Int              @default(0)
+  createdAt   DateTime         @default(now())
+
+  @@index([projectId])
 }
