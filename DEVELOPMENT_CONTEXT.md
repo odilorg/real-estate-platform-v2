@@ -1,7 +1,7 @@
 # Real Estate Platform v2 - Development Context
 
-**Last Updated:** December 11, 2025
-**Current Feature:** Phone Authentication with SMS OTP
+**Last Updated:** December 12, 2025
+**Current Feature:** OAuth Cookie Authentication Fixes + Phone Authentication
 
 ---
 
@@ -383,10 +383,12 @@ https://github.com/odilorg/real-estate-platform-v2/actions
 ---
 
 **Last Session Work:**
-- ✅ Completed phone authentication with OTP and modal UI
-- ✅ Integrated Eskiz SMS API (test mode active)
-- ✅ Deployed to staging via direct VPS work
-- ✅ All changes committed and pushed to git
-- 📋 **Current Status:** Phone auth live on staging at https://staging.jahongir-app.uz
-- 📋 **Eskiz Test Mode:** Sends "Bu Eskiz dan test" SMS, OTP codes logged in PM2 logs
-- 📋 **To exit test mode:** Top up Eskiz balance to send custom OTP messages
+- ✅ Fixed OAuth cookie authentication across multiple pages
+- ✅ Property detail page favorite button now works for Google OAuth users
+- ✅ Dashboard page OAuth authentication fixed (fetchMyProperties, fetchUnreadCount, fetchAnalytics)
+- ✅ Favorites page OAuth authentication fixed (fetchFavorites, handleRemoveFavorite)
+- ✅ All changes committed and pushed to git (commits: 042a690, 7158062)
+- 📋 **Current Status:** Phone auth + OAuth fixes ready for deployment
+- 📋 **SMS Provider:** Switched to "mock" temporarily - Eskiz needs template approval
+- 📋 **Pending:** Deploy OAuth fixes to staging VPS at https://staging.jahongir-app.uz
+- 📋 **Eskiz Action Required:** Add "Kod: {code}" template at https://my.eskiz.uz for production SMS
