@@ -137,7 +137,12 @@ export class PropertyQueryBuilder {
   private applyBedroomsFilter(): void {
     const { bedrooms, minBedrooms, maxBedrooms } = this.filters;
     if (bedrooms !== undefined) {
-      this.where.bedrooms = bedrooms;
+      // Support both single value and array of values
+      if (Array.isArray(bedrooms)) {
+        this.where.bedrooms = { in: bedrooms };
+      } else {
+        this.where.bedrooms = bedrooms;
+      }
     } else if (minBedrooms !== undefined || maxBedrooms !== undefined) {
       this.where.bedrooms = {};
       if (minBedrooms !== undefined) this.where.bedrooms.gte = minBedrooms;

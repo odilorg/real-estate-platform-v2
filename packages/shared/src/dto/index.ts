@@ -171,7 +171,7 @@ export const PropertyFilterDto = z.object({
   maxArea: z.number().optional(),
 
   // Rooms
-  bedrooms: z.number().optional(),
+  bedrooms: z.union([z.number(), z.array(z.number())]).optional(),
   minBedrooms: z.number().optional(),
   maxBedrooms: z.number().optional(),
   rooms: z.number().optional(),

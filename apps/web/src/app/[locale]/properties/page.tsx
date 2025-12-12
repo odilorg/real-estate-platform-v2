@@ -142,10 +142,12 @@ export default function PropertiesPage() {
     if (minPrice) initialFilters.minPrice = Number(minPrice);
     if (maxPrice) initialFilters.maxPrice = Number(maxPrice);
 
-    // Parse bedrooms
+    // Parse bedrooms (supports both single value and comma-separated array)
     const bedrooms = searchParams.get('bedrooms');
     if (bedrooms) {
-      initialFilters.bedrooms = Number(bedrooms);
+      initialFilters.bedrooms = bedrooms.includes(',')
+        ? bedrooms.split(',').map(Number)
+        : [Number(bedrooms)];
     }
 
     // Parse area
@@ -264,9 +266,9 @@ export default function PropertiesPage() {
       if (filters.minPrice) params.append('minPrice', filters.minPrice.toString());
       if (filters.maxPrice) params.append('maxPrice', filters.maxPrice.toString());
 
-      // Bedrooms
-      if (filters.bedrooms !== undefined) {
-        params.append('bedrooms', filters.bedrooms.toString());
+      // Bedrooms (handles both single value and array)
+      if (filters.bedrooms && filters.bedrooms.length > 0) {
+        params.append('bedrooms', filters.bedrooms.join(','));
       }
 
       // Area
@@ -425,9 +427,9 @@ export default function PropertiesPage() {
     if (filters.minPrice) params.set('minPrice', filters.minPrice.toString());
     if (filters.maxPrice) params.set('maxPrice', filters.maxPrice.toString());
 
-    // Bedrooms
-    if (filters.bedrooms !== undefined) {
-      params.set('bedrooms', filters.bedrooms.toString());
+    // Bedrooms (handles both single value and array)
+    if (filters.bedrooms && filters.bedrooms.length > 0) {
+      params.set('bedrooms', filters.bedrooms.join(','));
     }
 
     // Area
@@ -722,7 +724,7 @@ export default function PropertiesPage() {
           values={{
             listingType: filters.listingTypes[0] as any || 'SALE',
             propertyType: (filters.marketType || 'ALL') as any,
-            bedrooms: filters.bedrooms ? [filters.bedrooms] : [],
+            bedrooms: filters.bedrooms || [],
             minPrice: filters.minPrice,
             maxPrice: filters.maxPrice,
             city: filters.city,

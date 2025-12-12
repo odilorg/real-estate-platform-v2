@@ -5,7 +5,7 @@ import { X } from 'lucide-react';
 import { useTranslations } from 'next-intl';
 
 export interface ModernFilterValues {
-  bedrooms?: number;
+  bedrooms?: number[];
   propertyTypes: string[];
   listingTypes: string[];
   marketType?: string; // NEW_BUILDING or SECONDARY

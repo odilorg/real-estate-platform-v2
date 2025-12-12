@@ -84,7 +84,11 @@ export class PropertiesController {
       maxArea: query.maxArea ? parseFloat(query.maxArea) : undefined,
 
       // Rooms
-      bedrooms: query.bedrooms ? parseInt(query.bedrooms) : undefined,
+      bedrooms: query.bedrooms
+        ? query.bedrooms.includes(',')
+          ? query.bedrooms.split(',').map((b) => parseInt(b.trim()))
+          : parseInt(query.bedrooms)
+        : undefined,
       minBedrooms: query.minBedrooms ? parseInt(query.minBedrooms) : undefined,
       maxBedrooms: query.maxBedrooms ? parseInt(query.maxBedrooms) : undefined,
       rooms: query.rooms ? parseInt(query.rooms) : undefined,
