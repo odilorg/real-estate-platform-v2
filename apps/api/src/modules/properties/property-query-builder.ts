@@ -91,6 +91,11 @@ export class PropertyQueryBuilder {
     }
     if (this.filters.marketType) {
       this.where.marketType = this.filters.marketType;
+      // When marketType is selected, only show APARTMENT and CONDO properties
+      // (marketType only applies to apartments and condos, not houses or land)
+      if (!this.filters.propertyType) {
+        this.where.propertyType = { in: ['APARTMENT', 'CONDO'] };
+      }
     }
   }
 
