@@ -368,7 +368,7 @@ export function PropertyFiltersExtended({
       </div>
 
       {/* Active Filters Pills */}
-      {(values.bedrooms.length > 0 || values.minPrice || values.maxPrice) && (
+      {(values.bedrooms.length > 0 || values.minPrice || values.maxPrice || (values.propertyType && values.propertyType !== 'ALL')) && (
         <div className="container mx-auto px-4 pb-3">
           <div className="flex items-center gap-2 flex-wrap">
             {values.bedrooms.map((bedroom) => (
@@ -385,6 +385,17 @@ export function PropertyFiltersExtended({
                 </button>
               </span>
             ))}
+            {values.propertyType && values.propertyType !== 'ALL' && (
+              <span className="inline-flex items-center gap-1 px-3 py-1 bg-blue-100 text-blue-700 rounded-full text-sm">
+                {values.propertyType === 'NEW_BUILDING' ? t('newBuilding') : t('secondary')}
+                <button
+                  onClick={() => onChange({ ...values, propertyType: 'ALL' })}
+                  className="hover:bg-blue-200 rounded-full p-0.5"
+                >
+                  <X className="h-3 w-3" />
+                </button>
+              </span>
+            )}
             {(values.minPrice || values.maxPrice) && (
               <span className="inline-flex items-center gap-1 px-3 py-1 bg-blue-100 text-blue-700 rounded-full text-sm">
                 ${values.minPrice?.toLocaleString() || '0'} - $

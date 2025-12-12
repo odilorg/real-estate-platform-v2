@@ -721,7 +721,7 @@ export default function PropertiesPage() {
         <PropertyFiltersExtended
           values={{
             listingType: filters.listingTypes[0] as any || 'SALE',
-            propertyType: 'ALL',
+            propertyType: (filters.marketType || 'ALL') as any,
             bedrooms: filters.bedrooms ? [filters.bedrooms] : [],
             minPrice: filters.minPrice,
             maxPrice: filters.maxPrice,
