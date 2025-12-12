@@ -5,7 +5,7 @@ import Link from 'next/link';
 import { useRouter, useSearchParams } from 'next/navigation';
 import { PropertyCard, Button, Select, SelectContent, SelectItem, SelectTrigger, SelectValue } from '@repo/ui';
 import { PropertyFiltersModern, type ModernFilterValues, PropertyMap, type PropertyMapMarker, PropertyListItem } from '@/components';
-import { Search, Plus, Loader2, User, LogOut, MapPin, ArrowUpDown, Grid3X3, Map as MapIcon, List } from 'lucide-react';
+import { Search, Plus, Loader2, User, LogOut, MapPin, ArrowUpDown, Grid3X3, Map as MapIcon, List, Bookmark, X } from 'lucide-react';
 import { useAuth } from '@/context/AuthContext';
 
 interface PropertyImage {
@@ -98,6 +98,9 @@ export default function PropertiesPage() {
   const [viewMode, setViewMode] = useState<ViewMode>('grid');
   const [selectedPropertyId, setSelectedPropertyId] = useState<string | null>(null);
   const [filtersInitialized, setFiltersInitialized] = useState(false);
+  const [showSaveSearchModal, setShowSaveSearchModal] = useState(false);
+  const [searchName, setSearchName] = useState('');
+  const [savingSearch, setSavingSearch] = useState(false);
   const searchInputRef = useRef<HTMLInputElement>(null);
   const suggestionsRef = useRef<HTMLDivElement>(null);
   const router = useRouter();
@@ -533,6 +536,60 @@ export default function PropertiesPage() {
     window.scrollTo({ top: 0, behavior: 'smooth' });
   };
 
+  const handleSaveSearch = async () => {
+    if (!searchName.trim()) {
+      alert('Пожалуйста, введите название поиска');
+      return;
+    }
+
+    if (!isAuthenticated) {
+      alert('Войдите, чтобы сохранить поиск');
+      router.push('/auth/login');
+      return;
+    }
+
+    setSavingSearch(true);
+
+    try {
+      const token = localStorage.getItem('token');
+      const headers: Record<string, string> = {
+        'Content-Type': 'application/json',
+      };
+
+      // Add Authorization header if token exists (phone/email login)
+      // For OAuth logins, authentication works via HTTP-only cookies
+      if (token) {
+        headers.Authorization = `Bearer ${token}`;
+      }
+
+      const response = await fetch(`${apiUrl}/saved-searches`, {
+        method: 'POST',
+        headers,
+        credentials: 'include', // Include cookies for OAuth authentication
+        body: JSON.stringify({
+          name: searchName.trim(),
+          filters: {
+            ...filters,
+            searchQuery: searchQuery || undefined,
+            sortBy: sortBy || undefined,
+          },
+        }),
+      });
+
+      if (!response.ok) {
+        throw new Error('Ошибка сохранения поиска');
+      }
+
+      alert('Поиск успешно сохранен!');
+      setShowSaveSearchModal(false);
+      setSearchName('');
+    } catch (err) {
+      alert(err instanceof Error ? err.message : 'Ошибка сохранения поиска');
+    } finally {
+      setSavingSearch(false);
+    }
+  };
+
   // Update URL when filters, search, or sort changes
   useEffect(() => {
     if (filtersInitialized) {
@@ -665,6 +722,83 @@ export default function PropertiesPage() {
             sortOptions={SORT_OPTIONS}
           />
         </div>
+
+        {/* Save Search Button */}
+        {isAuthenticated && (
+          <div className="mb-4 flex justify-end">
+            <Button
+              variant="outline"
+              size="sm"
+              onClick={() => setShowSaveSearchModal(true)}
+            >
+              <Bookmark className="h-4 w-4 mr-2" />
+              Сохранить поиск
+            </Button>
+          </div>
+        )}
+
+        {/* Save Search Modal */}
+        {showSaveSearchModal && (
+          <div className="fixed inset-0 bg-black bg-opacity-50 z-50 flex items-center justify-center p-4">
+            <div className="bg-white rounded-lg max-w-md w-full p-6">
+              <div className="flex items-center justify-between mb-4">
+                <h3 className="text-lg font-semibold">Сохранить поиск</h3>
+                <button
+                  onClick={() => {
+                    setShowSaveSearchModal(false);
+                    setSearchName('');
+                  }}
+                  className="text-gray-400 hover:text-gray-600"
+                >
+                  <X className="h-5 w-5" />
+                </button>
+              </div>
+              <p className="text-sm text-gray-600 mb-4">
+                Введите название для вашего поиска. Мы уведомим вас о новых объектах, соответствующих вашим критериям.
+              </p>
+              <input
+                type="text"
+                placeholder="Например: 2-комн в центре до $100k"
+                value={searchName}
+                onChange={(e) => setSearchName(e.target.value)}
+                onKeyDown={(e) => {
+                  if (e.key === 'Enter' && !savingSearch) {
+                    handleSaveSearch();
+                  }
+                }}
+                className="w-full px-4 py-2 border border-gray-300 rounded-lg focus:ring-2 focus:ring-blue-500 focus:border-transparent mb-4"
+                autoFocus
+              />
+              <div className="flex gap-3">
+                <Button
+                  variant="outline"
+                  onClick={() => {
+                    setShowSaveSearchModal(false);
+                    setSearchName('');
+                  }}
+                  className="flex-1"
+                  disabled={savingSearch}
+                >
+                  Отмена
+                </Button>
+                <Button
+                  onClick={handleSaveSearch}
+                  className="flex-1"
+                  disabled={savingSearch}
+                >
+                  {savingSearch ? (
+                    <>
+                      <Loader2 className="h-4 w-4 mr-2 animate-spin" />
+                      Сохранение...
+                    </>
+                  ) : (
+                    'Сохранить'
+                  )}
+                </Button>
+              </div>
+            </div>
+          </div>
+        )}
 
         {/* Results Header with Sorting and View Mode - Removed as it's now in the filter component */}
         <div className="mb-4 flex flex-col sm:flex-row sm:items-center sm:justify-between gap-4 hidden">
