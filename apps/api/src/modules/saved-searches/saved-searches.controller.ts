@@ -7,7 +7,6 @@ import {
   Body,
   Param,
   UseGuards,
-  UsePipes,
   Patch,
 } from '@nestjs/common';
 import { SavedSearchesService } from './saved-searches.service';
@@ -33,10 +32,9 @@ export class SavedSearchesController {
   ) {}
 
   @Post()
-  @UsePipes(new ZodValidationPipe(CreateSavedSearchDto))
   create(
     @CurrentUser() user: User,
-    @Body() dto: CreateSavedSearchDto,
+    @Body(new ZodValidationPipe(CreateSavedSearchDto)) dto: CreateSavedSearchDto,
   ): Promise<SavedSearch> {
     return this.savedSearchesService.create(user.id, dto);
   }
@@ -55,11 +53,10 @@ export class SavedSearchesController {
   }
 
   @Put(':id')
-  @UsePipes(new ZodValidationPipe(UpdateSavedSearchDto))
   update(
     @Param('id') id: string,
     @CurrentUser() user: User,
-    @Body() dto: UpdateSavedSearchDto,
+    @Body(new ZodValidationPipe(UpdateSavedSearchDto)) dto: UpdateSavedSearchDto,
   ): Promise<SavedSearch> {
     return this.savedSearchesService.update(id, user.id, dto);
   }
@@ -73,11 +70,10 @@ export class SavedSearchesController {
   }
 
   @Patch(':id/notifications')
-  @UsePipes(new ZodValidationPipe(ToggleNotificationsDto))
   toggleNotifications(
     @Param('id') id: string,
     @CurrentUser() user: User,
-    @Body() dto: ToggleNotificationsDto,
+    @Body(new ZodValidationPipe(ToggleNotificationsDto)) dto: ToggleNotificationsDto,
   ): Promise<SavedSearch> {
     return this.savedSearchesService.toggleNotifications(
       id,
