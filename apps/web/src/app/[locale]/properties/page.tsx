@@ -188,6 +188,10 @@ export default function PropertiesPage() {
     const amenities = searchParams.get('amenities');
     if (amenities) initialFilters.amenities = amenities.split(',');
 
+    // Parse market type (NEW_BUILDING or SECONDARY)
+    const marketType = searchParams.get('marketType');
+    if (marketType) initialFilters.marketType = marketType;
+
     // Parse boolean features
     if (searchParams.get('hasBalcony') === 'true') initialFilters.hasBalcony = true;
     if (searchParams.get('hasConcierge') === 'true') initialFilters.hasConcierge = true;
