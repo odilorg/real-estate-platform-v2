@@ -68,17 +68,22 @@ export default function FavoritesPage() {
     const fetchFavorites = async () => {
       if (!isAuthenticated) return;
 
-      const token = getAuthToken();
-      if (!token) return;
-
       setLoading(true);
       setError(null);
 
       try {
+        const token = getAuthToken();
+        const headers: Record<string, string> = {};
+
+        // Add Authorization header if token exists (phone/email login)
+        // For OAuth logins, authentication works via HTTP-only cookies
+        if (token) {
+          headers.Authorization = `Bearer ${token}`;
+        }
+
         const response = await fetch(`${apiUrl}/favorites`, {
-          headers: {
-            Authorization: `Bearer ${token}`,
-          },
+          headers,
+          credentials: 'include', // Include cookies for OAuth authentication
         });
 
         if (!response.ok) {
@@ -98,16 +103,21 @@ export default function FavoritesPage() {
   }, [isAuthenticated, apiUrl]);
 
   const handleRemoveFavorite = async (propertyId: string) => {
-    const token = getAuthToken();
-    if (!token) return;
-
     setRemovingId(propertyId);
     try {
+      const token = getAuthToken();
+      const headers: Record<string, string> = {};
+
+      // Add Authorization header if token exists (phone/email login)
+      // For OAuth logins, authentication works via HTTP-only cookies
+      if (token) {
+        headers.Authorization = `Bearer ${token}`;
+      }
+
       const response = await fetch(`${apiUrl}/favorites/${propertyId}`, {
         method: 'DELETE',
-        headers: {
-          Authorization: `Bearer ${token}`,
-        },
+        headers,
+        credentials: 'include', // Include cookies for OAuth authentication
       });
 
       if (response.ok) {
