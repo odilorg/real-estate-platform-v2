@@ -412,6 +412,11 @@ export default function PropertiesPage() {
       params.set('listingType', filters.listingTypes.join(','));
     }
 
+    // Market type (NEW_BUILDING or SECONDARY)
+    if (filters.marketType) {
+      params.set('marketType', filters.marketType);
+    }
+
     // Price range
     if (filters.minPrice) params.set('minPrice', filters.minPrice.toString());
     if (filters.maxPrice) params.set('maxPrice', filters.maxPrice.toString());
