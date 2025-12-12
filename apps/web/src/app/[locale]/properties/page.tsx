@@ -725,21 +725,34 @@ export default function PropertiesPage() {
             maxFloor: filters.maxFloor,
           }}
           onChange={(extendedFilters) => {
-            setFilters({
-              ...filters,
+            // Convert extended filters to modern filter format
+            const propertyTypes: string[] = [];
+            if (extendedFilters.propertyType && extendedFilters.propertyType !== 'ALL') {
+              // Map property type to appropriate values
+              if (extendedFilters.propertyType === 'NEW_BUILDING') {
+                propertyTypes.push('APARTMENT'); // Can add more types if needed
+              } else if (extendedFilters.propertyType === 'SECONDARY') {
+                propertyTypes.push('APARTMENT');
+              }
+            }
+
+            const newFilters: ModernFilterValues = {
+              propertyTypes,
               listingTypes: extendedFilters.listingType ? [extendedFilters.listingType] : [],
+              amenities: extendedFilters.amenities || [],
               bedrooms: extendedFilters.bedrooms[0],
               minPrice: extendedFilters.minPrice,
               maxPrice: extendedFilters.maxPrice,
               city: extendedFilters.city,
               district: extendedFilters.district,
-              amenities: extendedFilters.amenities || [],
               buildingClasses: extendedFilters.buildingClass ? [extendedFilters.buildingClass] : undefined,
               minArea: extendedFilters.minArea,
               maxArea: extendedFilters.maxArea,
               minFloor: extendedFilters.minFloor,
               maxFloor: extendedFilters.maxFloor,
-            });
+            };
+
+            setFilters(newFilters);
             setSearchQuery(extendedFilters.searchQuery || '');
             setCurrentPage(1);
           }}
