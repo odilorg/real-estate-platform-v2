@@ -92,6 +92,7 @@ export function PropertyFiltersExtended({
   };
 
   const clearFilters = () => {
+    setLocalBedrooms([]); // Reset local state
     onChange({
       listingType: 'SALE',
       propertyType: 'ALL',
