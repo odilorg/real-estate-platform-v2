@@ -1,9 +1,9 @@
 'use client';
 
-import { useState, useEffect } from 'react';
+import { useState, useEffect, useRef } from 'react';
 import { useRouter } from 'next/navigation';
 import { Card, CardContent, Button } from '@repo/ui';
-import { ArrowLeft, ArrowRight, Save, Check, Trash2 } from 'lucide-react';
+import { ArrowLeft, ArrowRight, Save, Check, Trash2, ChevronDown } from 'lucide-react';
 import { useTranslations } from 'next-intl';
 import Step1PropertyType from './steps/Step1PropertyType';
 import Step2Location from './steps/Step2Location';
@@ -154,6 +154,8 @@ export default function PropertyCreationWizard() {
   const [validationErrors, setValidationErrors] = useState<Array<{ step: number; field: string; message: string }>>([]);
   const [showSuccessModal, setShowSuccessModal] = useState(false);
   const [createdPropertyId, setCreatedPropertyId] = useState<string>('');
+  const [showDraftDropdown, setShowDraftDropdown] = useState(false);
+  const dropdownRef = useRef<HTMLDivElement>(null);
 
   // Load draft from localStorage on mount
   useEffect(() => {
@@ -220,6 +222,20 @@ export default function PropertyCreationWizard() {
 
     return () => clearInterval(interval);
   }, [formData, currentStep]);
+
+  // Close dropdown when clicking outside
+  useEffect(() => {
+    const handleClickOutside = (event: MouseEvent) => {
+      if (dropdownRef.current && !dropdownRef.current.contains(event.target as Node)) {
+        setShowDraftDropdown(false);
+      }
+    };
+
+    if (showDraftDropdown) {
+      document.addEventListener('mousedown', handleClickOutside);
+      return () => document.removeEventListener('mousedown', handleClickOutside);
+    }
+  }, [showDraftDropdown]);
 
   const saveDraft = () => {
     const draftKey = getDraftStorageKey();
@@ -605,80 +621,84 @@ export default function PropertyCreationWizard() {
           </CardContent>
         </Card>
 
-        {/* Navigation Buttons */}
-        <div className="space-y-3">
-          {/* Back button - full width on mobile */}
-          <div className="md:hidden">
-            <Button
-              variant="outline"
-              onClick={handleBack}
-              disabled={currentStep === 1}
-              className="w-full gap-2"
-            >
-              <ArrowLeft className="h-4 w-4" />
-              Назад
-            </Button>
-          </div>
+        {/* Navigation Buttons - Single Row Design */}
+        <div className="flex items-center gap-2 md:gap-3">
+          {/* Back Button */}
+          <Button
+            variant="outline"
+            onClick={handleBack}
+            disabled={currentStep === 1}
+            className="gap-2 px-3 md:px-4"
+          >
+            <ArrowLeft className="h-4 w-4" />
+            <span className="hidden sm:inline">Назад</span>
+          </Button>
 
-          {/* Secondary actions row */}
-          <div className="flex gap-2">
+          {/* Draft Actions Dropdown */}
+          <div className="relative" ref={dropdownRef}>
             <button
               type="button"
-              onClick={clearDraft}
-              className="flex-1 md:flex-none inline-flex items-center justify-center gap-2 px-3 md:px-4 py-2 text-sm text-red-600 border border-red-300 hover:bg-red-50 rounded-lg transition-colors"
-            >
-              <Trash2 className="h-4 w-4" />
-              <span className="hidden sm:inline">Удалить черновик</span>
-              <span className="sm:hidden">Удалить</span>
-            </button>
-
-            <button
-              type="button"
-              onClick={saveDraft}
-              className="flex-1 md:flex-none inline-flex items-center justify-center gap-2 px-3 md:px-4 py-2 text-sm text-gray-700 border border-gray-300 hover:bg-gray-50 rounded-lg transition-colors"
+              onClick={() => setShowDraftDropdown(!showDraftDropdown)}
+              className="inline-flex items-center justify-center gap-1.5 px-3 md:px-4 py-2 text-sm font-medium text-gray-700 border border-gray-300 hover:bg-gray-50 rounded-lg transition-colors"
             >
               <Save className="h-4 w-4" />
-              <span className="hidden sm:inline">Сохранить черновик</span>
-              <span className="sm:hidden">Сохранить</span>
+              <span className="hidden sm:inline">Черновик</span>
+              <ChevronDown className={`h-4 w-4 transition-transform ${showDraftDropdown ? 'rotate-180' : ''}`} />
             </button>
-          </div>
 
-          {/* Primary action - full width on mobile */}
-          <div className="flex gap-3">
-            {/* Back button for desktop */}
-            <Button
-              variant="outline"
-              onClick={handleBack}
-              disabled={currentStep === 1}
-              className="hidden md:flex gap-2"
-            >
-              <ArrowLeft className="h-4 w-4" />
-              Назад
-            </Button>
-
-            {/* Next/Submit button */}
-            {currentStep < STEPS.length ? (
-              <Button onClick={handleNext} className="flex-1 md:flex-none gap-2 py-3 md:py-2">
-                Далее
-                <ArrowRight className="h-4 w-4" />
-              </Button>
-            ) : (
-              <Button
-                onClick={handleSubmit}
-                disabled={saving}
-                className="flex-1 md:flex-none gap-2 py-3 md:py-2 bg-green-600 hover:bg-green-700"
-              >
-                {saving ? (
-                  <>Публикация...</>
-                ) : (
-                  <>
-                    <Check className="h-4 w-4" />
-                    Опубликовать
-                  </>
-                )}
-              </Button>
+            {/* Dropdown Menu */}
+            {showDraftDropdown && (
+              <div className="absolute left-0 mt-2 w-48 bg-white rounded-lg shadow-lg border border-gray-200 z-10 animate-in fade-in slide-in-from-top-1 duration-200">
+                <button
+                  type="button"
+                  onClick={() => {
+                    saveDraft();
+                    setShowDraftDropdown(false);
+                  }}
+                  className="w-full flex items-center gap-2 px-4 py-2.5 text-sm text-gray-700 hover:bg-gray-50 transition-colors first:rounded-t-lg"
+                >
+                  <Save className="h-4 w-4" />
+                  Сохранить
+                </button>
+                <button
+                  type="button"
+                  onClick={() => {
+                    clearDraft();
+                    setShowDraftDropdown(false);
+                  }}
+                  className="w-full flex items-center gap-2 px-4 py-2.5 text-sm text-red-600 hover:bg-red-50 transition-colors last:rounded-b-lg border-t border-gray-100"
+                >
+                  <Trash2 className="h-4 w-4" />
+                  Удалить
+                </button>
+              </div>
             )}
           </div>
+
+          {/* Next/Submit Button */}
+          {currentStep < STEPS.length ? (
+            <Button onClick={handleNext} className="flex-1 md:flex-auto gap-2 ml-auto">
+              <span className="hidden sm:inline">Далее</span>
+              <span className="sm:hidden">→</span>
+              <ArrowRight className="h-4 w-4 hidden sm:inline" />
+            </Button>
+          ) : (
+            <Button
+              onClick={handleSubmit}
+              disabled={saving}
+              className="flex-1 md:flex-auto gap-2 ml-auto bg-green-600 hover:bg-green-700"
+            >
+              {saving ? (
+                <>Публикация...</>
+              ) : (
+                <>
+                  <Check className="h-4 w-4" />
+                  <span className="hidden sm:inline">Опубликовать</span>
+                  <span className="sm:hidden">✓</span>
+                </>
+              )}
+            </Button>
+          )}
         </div>
 
         {/* Clear Draft Confirmation Modal */}
