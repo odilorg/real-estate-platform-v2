@@ -51,10 +51,15 @@ export function PropertyFiltersExtended({
   const priceRef = useRef<HTMLDivElement>(null);
   const propertyTypeRef = useRef<HTMLDivElement>(null);
 
-  // Sync local state with prop changes
+  // Sync local state with prop changes only when values actually differ
+  // This prevents overwriting local state during parent re-renders
   useEffect(() => {
-    setLocalBedrooms(values.bedrooms || []);
-  }, [values.bedrooms]);
+    const propsSet = JSON.stringify([...(values.bedrooms || [])].sort());
+    const localSet = JSON.stringify([...localBedrooms].sort());
+    if (propsSet !== localSet) {
+      setLocalBedrooms(values.bedrooms || []);
+    }
+  }, [values.bedrooms]); // eslint-disable-line react-hooks/exhaustive-deps
 
   // Close dropdowns when clicking outside
   useEffect(() => {
