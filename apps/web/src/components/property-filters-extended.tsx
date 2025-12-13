@@ -51,14 +51,11 @@ export function PropertyFiltersExtended({
   const priceRef = useRef<HTMLDivElement>(null);
   const propertyTypeRef = useRef<HTMLDivElement>(null);
 
-  // Only sync local state when props indicate a reset (empty array from clearFilters)
-  // Don't sync on every prop change to avoid overwriting user's rapid clicks
+  // Sync local state with props ONLY when props change (one-way sync from parent to child)
+  // Do NOT include localBedrooms in dependencies to avoid race conditions
   useEffect(() => {
-    // Only reset if props are empty (indicating a clear filters action)
-    if ((values.bedrooms || []).length === 0 && localBedrooms.length > 0) {
-      setLocalBedrooms([]);
-    }
-  }, [values.bedrooms, localBedrooms]);
+    setLocalBedrooms(values.bedrooms || []);
+  }, [values.bedrooms]);
 
   // Close dropdowns when clicking outside
   useEffect(() => {
