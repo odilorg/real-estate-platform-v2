@@ -51,10 +51,23 @@ export function PropertyFiltersExtended({
   const priceRef = useRef<HTMLDivElement>(null);
   const propertyTypeRef = useRef<HTMLDivElement>(null);
 
-  // Sync local state with props ONLY when props change (one-way sync from parent to child)
-  // Do NOT include localBedrooms in dependencies to avoid race conditions
+  // Sync local state with props only when values actually differ (deep comparison)
+  // Use ref to track previous values to prevent unnecessary updates
+  const prevBedroomsRef = useRef<number[]>([]);
+
   useEffect(() => {
-    setLocalBedrooms(values.bedrooms || []);
+    const currentBedrooms = values.bedrooms || [];
+    const prevBedrooms = prevBedroomsRef.current;
+
+    // Only update if values actually changed (deep comparison)
+    const hasChanged = currentBedrooms.length !== prevBedrooms.length ||
+      currentBedrooms.some(b => !prevBedrooms.includes(b)) ||
+      prevBedrooms.some(b => !currentBedrooms.includes(b));
+
+    if (hasChanged) {
+      setLocalBedrooms(currentBedrooms);
+      prevBedroomsRef.current = currentBedrooms;
+    }
   }, [values.bedrooms]);
 
   // Close dropdowns when clicking outside
