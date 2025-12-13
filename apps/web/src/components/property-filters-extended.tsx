@@ -51,15 +51,14 @@ export function PropertyFiltersExtended({
   const priceRef = useRef<HTMLDivElement>(null);
   const propertyTypeRef = useRef<HTMLDivElement>(null);
 
-  // Sync local state with prop changes only when values actually differ
-  // This prevents overwriting local state during parent re-renders
+  // Only sync local state when props indicate a reset (empty array from clearFilters)
+  // Don't sync on every prop change to avoid overwriting user's rapid clicks
   useEffect(() => {
-    const propsSet = JSON.stringify([...(values.bedrooms || [])].sort());
-    const localSet = JSON.stringify([...localBedrooms].sort());
-    if (propsSet !== localSet) {
-      setLocalBedrooms(values.bedrooms || []);
+    // Only reset if props are empty (indicating a clear filters action)
+    if ((values.bedrooms || []).length === 0 && localBedrooms.length > 0) {
+      setLocalBedrooms([]);
     }
-  }, [values.bedrooms]); // eslint-disable-line react-hooks/exhaustive-deps
+  }, [values.bedrooms, localBedrooms]);
 
   // Close dropdowns when clicking outside
   useEffect(() => {
