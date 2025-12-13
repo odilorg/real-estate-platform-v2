@@ -29,14 +29,25 @@ export function AuthProvider({ children }: { children: ReactNode }) {
       // Try to get user data - works with both localStorage token and HTTP-only cookie
       const userData = await getMe();
       setUser(userData);
-    } catch {
+      console.log('AuthContext: User refreshed successfully', userData.id);
+    } catch (error: any) {
       // Not authenticated (no valid token in localStorage or cookie)
       const token = getToken();
-      if (token) {
-        // Had a token in localStorage but it's invalid
-        authLogout();
+      console.error('AuthContext: Failed to refresh user', error);
+
+      // Only clear token if we get a 401 Unauthorized
+      if (error?.message?.includes('401') || error?.status === 401) {
+        if (token) {
+          console.warn('AuthContext: Invalid token found, logging out');
+          authLogout();
+        }
+        setUser(null);
+      } else {
+        // For other errors (network, 500, etc), don't log out immediately
+        // allowing retries or keeping the optimistic state if possible
+        console.warn('AuthContext: Non-401 error, keeping token if present');
+        setUser(null);
       }
-      setUser(null);
     } finally {
       setLoading(false);
     }
@@ -44,11 +55,15 @@ export function AuthProvider({ children }: { children: ReactNode }) {
 
   useEffect(() => {
     refreshUser();
-  }, [refreshUser]);
+  }, []);
 
   const logout = useCallback(() => {
     authLogout();
     setUser(null);
+    // Redirect to home page after logout
+    if (typeof window !== 'undefined') {
+      window.location.href = '/';
+    }
   }, []);
 
   return (
