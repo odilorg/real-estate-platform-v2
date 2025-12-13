@@ -660,12 +660,17 @@ export default function PropertyCreationWizard() {
                   type="button"
                   onClick={() => {
                     saveDraft();
-                    setShowDraftDropdown(false);
+                    // Delay closing to show the "Saved" feedback
+                    setTimeout(() => setShowDraftDropdown(false), 800);
                   }}
-                  className="w-full flex items-center gap-2 px-4 py-2.5 text-sm text-gray-700 hover:bg-gray-50 transition-colors first:rounded-t-lg"
+                  className={`w-full flex items-center gap-2 px-4 py-2.5 text-sm transition-colors first:rounded-t-lg ${
+                    draftSaved
+                      ? 'bg-green-50 text-green-700 font-medium'
+                      : 'text-gray-700 hover:bg-gray-50'
+                  }`}
                 >
                   <Save className="h-4 w-4" />
-                  Сохранить
+                  {draftSaved ? '✓ Сохранено!' : 'Сохранить'}
                 </button>
                 <button
                   type="button"
