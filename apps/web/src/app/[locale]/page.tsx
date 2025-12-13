@@ -103,29 +103,29 @@ export default function Home() {
   return (
     <div className="min-h-screen bg-gray-50">
       {/* Hero Section */}
-      <section className="bg-gradient-to-r from-blue-600 to-blue-700 text-white py-20">
+      <section className="bg-gradient-to-r from-blue-600 to-blue-700 text-white py-12 md:py-20">
         <div className="container mx-auto px-4">
           <div className="max-w-3xl mx-auto text-center">
-            <h1 className="text-4xl md:text-5xl font-bold mb-4">
+            <h1 className="text-3xl md:text-5xl font-bold mb-4">
               {t('title')}
             </h1>
-            <p className="text-xl text-blue-100 mb-8">
+            <p className="text-lg md:text-xl text-blue-100 mb-6 md:mb-8">
               {t('description')}
             </p>
 
             {/* Search Form */}
             <form onSubmit={handleSearch} className="bg-white rounded-lg p-2 flex gap-2">
               <div className="flex-1 relative">
-                <Search className="absolute left-3 top-1/2 -translate-y-1/2 h-5 w-5 text-gray-400" />
+                <MapPin className="absolute left-3 top-1/2 -translate-y-1/2 h-5 w-5 text-gray-400" />
                 <input
                   type="text"
                   placeholder={t('searchPlaceholder')}
                   value={searchQuery}
                   onChange={(e) => setSearchQuery(e.target.value)}
-                  className="w-full pl-10 pr-4 py-3 rounded-lg text-gray-800 focus:outline-none focus:ring-2 focus:ring-blue-500"
+                  className="w-full pl-10 pr-4 py-3 min-h-[44px] rounded-lg text-sm md:text-base text-gray-800 focus:outline-none focus:ring-2 focus:ring-blue-500"
                 />
               </div>
-              <Button type="submit" size="lg">
+              <Button type="submit" size="lg" className="min-h-[44px] px-6 md:px-8">
                 {t('searchButton')}
               </Button>
             </form>
@@ -146,7 +146,7 @@ export default function Home() {
                 <Link
                   key={cityKey}
                   href={`/properties?city=${encodeURIComponent(CITY_NAME_MAP[cityKey])}`}
-                  className="px-4 py-2 bg-white/10 hover:bg-white/20 rounded-full text-sm transition"
+                  className="px-4 py-2 min-h-[44px] flex items-center bg-white/20 hover:bg-white/30 border-2 border-white/30 hover:border-white/50 rounded-full text-sm md:text-base font-medium transition-all"
                 >
                   {t(`cities.${cityKey}` as any)}
                 </Link>

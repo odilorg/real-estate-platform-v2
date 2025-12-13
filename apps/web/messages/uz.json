@@ -29,7 +29,7 @@
     "description": "O'zbekistonda ideal mulkingizni toping",
     "signInButton": "Kirish",
     "createAccountButton": "Hisob yaratish",
-    "searchPlaceholder": "Manzil, tuman, shahar bo'yicha qidirish...",
+    "searchPlaceholder": "Manzil, tuman...",
     "searchButton": "Qidirish",
     "cities": {
       "tashkent": "Toshkent",

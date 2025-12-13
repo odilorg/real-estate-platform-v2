@@ -29,7 +29,7 @@
     "description": "Найдите идеальную недвижимость в Узбекистане",
     "signInButton": "Войти",
     "createAccountButton": "Создать аккаунт",
-    "searchPlaceholder": "Поиск по адресу, району, городу...",
+    "searchPlaceholder": "Адрес, район...",
     "searchButton": "Найти",
     "cities": {
       "tashkent": "Ташкент",
