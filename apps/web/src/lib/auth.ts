@@ -38,8 +38,17 @@ export async function getMe(): Promise<User> {
   return api.get<User>('/auth/me');
 }
 
-export function logout(): void {
-  localStorage.removeItem('token');
+export async function logout(): Promise<void> {
+  try {
+    // Call backend to clear HTTP-only cookie
+    await api.post('/auth/logout', {});
+  } catch (error) {
+    console.error('Failed to call logout endpoint:', error);
+    // Continue with logout even if API call fails
+  } finally {
+    // Always clear localStorage token
+    localStorage.removeItem('token');
+  }
 }
 
 export function getToken(): string | null {

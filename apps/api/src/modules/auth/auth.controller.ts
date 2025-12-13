@@ -84,6 +84,20 @@ export class AuthController {
   }
 
   @Public()
+  @Post('logout')
+  @HttpCode(HttpStatus.OK)
+  logout(@Res() res: Response) {
+    // Clear the HTTP-only auth cookie
+    res.clearCookie('auth_token', {
+      httpOnly: true,
+      secure: process.env.NODE_ENV === 'production',
+      sameSite: 'lax',
+      path: '/',
+    });
+    return res.json({ success: true });
+  }
+
+  @Public()
   @Get('google')
   @UseGuards(AuthGuard('google'))
   googleAuth() {

@@ -14,7 +14,7 @@ interface AuthContextType {
   user: User | null;
   loading: boolean;
   isAuthenticated: boolean;
-  logout: () => void;
+  logout: () => Promise<void>;
   refreshUser: () => Promise<void>;
 }
 
@@ -57,8 +57,8 @@ export function AuthProvider({ children }: { children: ReactNode }) {
     refreshUser();
   }, []);
 
-  const logout = useCallback(() => {
-    authLogout();
+  const logout = useCallback(async () => {
+    await authLogout();
     setUser(null);
     // Redirect to home page after logout
     if (typeof window !== 'undefined') {
