@@ -134,7 +134,8 @@
       "changePhone": "Raqamni o'zgartirish",
       "useEmail": "Email orqali ro'yxatdan o'tish",
       "usePhone": "Telefon orqali ro'yxatdan o'tish",
-      "nameRequired": "Ism va familiya majburiy"
+      "nameRequired": "Ism va familiya majburiy",
+      "continueWithGoogle": "Google orqali davom etish"
     },
     "callback": {
       "completing": "Kirish yakunlanmoqda..."
@@ -573,6 +574,295 @@
     "errors": {
       "notFound": "Agentlik topilmadi",
       "loadError": "Yuklashda xatolik"
+    }
+  },
+  "developer": {
+    "dashboard": "Boshqaruv paneli",
+    "projects": "Loyihalar",
+    "leads": "Mijozlar",
+    "team": "Jamoa",
+    "analytics": "Analitika",
+    "settings": "Sozlamalar",
+    "settings": {
+      "title": "Kompaniya sozlamalari",
+      "subtitle": "Kompaniya profilingizni va sozlamalarni boshqaring",
+      "successMessage": "Kompaniya profili muvaffaqiyatli yaratildi! Yo'naltirish...",
+      "save": "O'zgarishlarni saqlash",
+      "saving": "Saqlanmoqda...",
+      "cancel": "Bekor qilish",
+      "basicInfo": {
+        "title": "Asosiy ma'lumotlar",
+        "name": "Kompaniya nomi (Ruscha)",
+        "nameUz": "Kompaniya nomi (O'zbekcha)",
+        "slug": "URL manzil (slug)",
+        "slugHelper": "Kompaniyangizning noyob manzili (faqat lotin harflari, raqamlar va defis)",
+        "descriptionRu": "Tavsif (Ruscha)",
+        "descriptionUz": "Tavsif (O'zbekcha)"
+      },
+      "contact": {
+        "title": "Aloqa ma'lumotlari",
+        "phone": "Telefon raqami",
+        "email": "Email",
+        "website": "Veb-sayt",
+        "telegram": "Telegram",
+        "officeAddress": "Ofis manzili"
+      },
+      "legal": {
+        "title": "Yuridik ma'lumotlar",
+        "city": "Shahar",
+        "selectCity": "Shaharni tanlang",
+        "legalEntity": "Tashkiliy-huquqiy shakl",
+        "selectLegalEntity": "Shaklni tanlang",
+        "licenseNumber": "Litsenziya raqami",
+        "innTin": "INN",
+        "establishedYear": "Ta'sis yili",
+        "legalAddress": "Yuridik manzil"
+      }
+    },
+    "team": {
+      "title": "Jamoa",
+      "subtitle": "Sotuv bo'limi xodimlarini boshqarish",
+      "addMember": "Xodim qo'shish",
+      "empty": {
+        "title": "Sizda hali xodimlar yo'q",
+        "description": "Leadlar va bitimlarni boshqarish uchun sotuv menejerlari qo'shing",
+        "button": "Birinchi xodimni qo'shish"
+      },
+      "roles": {
+        "admin": "Administrator",
+        "agent": "Sotuv menejeri"
+      },
+      "joinedAt": "Qo'shildi",
+      "addModal": {
+        "description": "Yangi xodimga taklifnoma yuboring",
+        "email": "Xodim emaili",
+        "role": "Rol",
+        "send": "Taklifnoma yuborish"
+      },
+      "cancel": "Bekor qilish"
+    },
+    "leads": {
+      "title": "Leadlar",
+      "subtitle": "Potentsial xaridorlarni boshqarish",
+      "stats": {
+        "new": "Yangi",
+        "qualified": "Malakali",
+        "negotiating": "Muzokarada",
+        "conversionRate": "Konversiya"
+      },
+      "statuses": {
+        "new": "Yangi",
+        "contacted": "Aloqaga chiqdik",
+        "qualified": "Malakali",
+        "negotiating": "Muzokara",
+        "won": "Bitim",
+        "lost": "Yo'qotilgan"
+      },
+      "sources": {
+        "website": "Veb-sayt",
+        "phone": "Telefon",
+        "referral": "Tavsiya",
+        "social": "Ijtimoiy tarmoq"
+      },
+      "filters": {
+        "all": "Barcha holatlar",
+        "more": "Ko'proq filtrlar"
+      },
+      "search": "Ism, telefon bo'yicha qidirish...",
+      "empty": {
+        "title": "Sizda hali leadlar yo'q",
+        "description": "Potentsial xaridorlar sizning loyihalaringiz bo'yicha murojaat qilganda leadlar paydo bo'ladi"
+      },
+      "table": {
+        "contact": "Aloqa",
+        "project": "Loyiha",
+        "status": "Holat",
+        "source": "Manba",
+        "date": "Sana",
+        "assigned": "Tayinlangan",
+        "unassigned": "Tayinlanmagan"
+      },
+      "actions": {
+        "view": "Ko'rish"
+      }
+    },
+    "analytics": {
+      "title": "Analitika",
+      "subtitle": "Sotuv va loyihalar samaradorligini kuzating",
+      "timeRanges": {
+        "7d": "7 kun",
+        "30d": "30 kun",
+        "90d": "90 kun",
+        "1y": "1 yil",
+        "all": "Barcha vaqt"
+      },
+      "metrics": {
+        "totalRevenue": "Umumiy daromad",
+        "totalLeads": "Jami leadlar",
+        "conversionRate": "Konversiya",
+        "averageDealSize": "O'rtacha bitim",
+        "vsLastPeriod": "vs oldingi davr"
+      },
+      "charts": {
+        "salesTrend": "Sotuv dinamikasi",
+        "leadSources": "Lead manbalari",
+        "noData": "Ko'rsatish uchun ma'lumot yo'q"
+      },
+      "projectPerformance": {
+        "title": "Loyihalar samaradorligi",
+        "noData": "Loyihalar haqida ma'lumot yo'q",
+        "project": "Loyiha",
+        "totalUnits": "Jami kvartiralar",
+        "unitsSold": "Sotilgan",
+        "salesRate": "% sotuv",
+        "revenue": "Daromad",
+        "leads": "Leadlar"
+      }
+    },
+    "projectsList": {
+      "title": "Loyihalar",
+      "subtitle": "Turar-joy majmualaringizni boshqaring",
+      "createProject": "Loyiha yaratish",
+      "empty": {
+        "title": "Loyihalar yo'q",
+        "description": "Birinchi loyihangizni yarating va kvartiralarni boshqarishni boshlang",
+        "button": "Birinchi loyiha yaratish"
+      }
+    },
+    "projectDetail": {
+      "loading": "Loyiha yuklanmoqda...",
+      "completionDate": "Topshirish muddati",
+      "error": {
+        "title": "Yuklashda xatolik",
+        "notFound": "Loyiha topilmadi"
+      },
+      "actions": {
+        "edit": "Tahrirlash",
+        "backToProjects": "Loyihalarga qaytish"
+      },
+      "stats": {
+        "totalUnits": "Jami kvartiralar",
+        "unitsSold": "Sotilgan",
+        "sold": "sotilgan",
+        "unitsAvailable": "Mavjud",
+        "available": "mavjud",
+        "revenue": "Daromad"
+      },
+      "tabs": {
+        "details": "Tafsilotlar",
+        "units": "Kvartiralar",
+        "leads": "Leadlar",
+        "media": "Media",
+        "analytics": "Analitika"
+      },
+      "details": {
+        "title": "Loyiha haqida ma'lumot",
+        "description": "Tavsif",
+        "address": "Manzil",
+        "priceRange": "Narx oralig'i",
+        "floors": "Qavatlar",
+        "entrances": "Podyezdlar",
+        "parking": "Avtoturargoh joylari",
+        "amenities": "Qulayliklar"
+      },
+      "units": {
+        "title": "Kvartiralar",
+        "addUnit": "Kvartira qo'shish",
+        "noUnits": "Kvartiralar yo'q",
+        "noUnitsDescription": "Loyihangizga kvartiralar qo'shing",
+        "addFirstUnit": "Birinchi kvartira qo'shish",
+        "table": {
+          "number": "Raqam",
+          "type": "Turi",
+          "floor": "Qavat",
+          "area": "Maydoni",
+          "price": "Narxi",
+          "status": "Holati",
+          "rooms": "xona",
+          "sqm": "m²"
+        }
+      },
+      "leads": {
+        "title": "Loyiha leadlari",
+        "noLeads": "Leadlar yo'q",
+        "noLeadsDescription": "Ushbu loyiha uchun leadlar bu yerda ko'rsatiladi",
+        "table": {
+          "contact": "Aloqa",
+          "status": "Holati",
+          "source": "Manba",
+          "date": "Sana"
+        }
+      },
+      "media": {
+        "title": "Media fayllar",
+        "uploadMedia": "Media yuklash",
+        "noMedia": "Media fayllar yo'q",
+        "noMediaDescription": "Loyiha rasmlar va videolarni yuklang"
+      },
+      "analytics": {
+        "title": "Loyiha analitikasi",
+        "comingSoon": "Tez orada",
+        "comingSoonDescription": "Loyiha analitikasi ishlab chiqilmoqda"
+      }
+    },
+    "projectEdit": {
+      "loading": "Loyiha yuklanmoqda...",
+      "title": "Loyihani tahrirlash",
+      "subtitle": "Loyihangiz haqidagi ma'lumotlarni yangilang",
+      "successMessage": "Loyiha muvaffaqiyatli yangilandi! Yo'naltirish...",
+      "save": "O'zgarishlarni saqlash",
+      "saving": "Saqlanmoqda...",
+      "cancel": "Bekor qilish",
+      "error": {
+        "title": "Yuklashda xatolik",
+        "backToProjects": "Loyihalarga qaytish"
+      },
+      "basicInfo": {
+        "title": "Asosiy ma'lumotlar",
+        "name": "Loyiha nomi (Ruscha)",
+        "nameUz": "Loyiha nomi (O'zbekcha)",
+        "slug": "URL manzil (slug)",
+        "slugHelper": "Loyihangizning noyob manzili (faqat lotin harflari, raqamlar va defis)",
+        "description": "Tavsif (Ruscha)",
+        "descriptionUz": "Tavsif (O'zbekcha)"
+      },
+      "location": {
+        "title": "Joylashuv",
+        "city": "Shahar",
+        "selectCity": "Shaharni tanlang",
+        "district": "Tuman",
+        "selectDistrict": "Tumanni tanlang",
+        "address": "Manzil (Ruscha)",
+        "addressUz": "Manzil (O'zbekcha)"
+      },
+      "details": {
+        "title": "Loyiha tafsilotlari",
+        "status": "Holati",
+        "completionDate": "Tugash sanasi",
+        "totalUnits": "Jami kvartiralar soni",
+        "floors": "Qavatlar",
+        "entrances": "Podyezdlar",
+        "parkingSpaces": "Avtoturargoh joylari",
+        "statuses": {
+          "planning": "Rejalashtirilmoqda",
+          "underConstruction": "Qurilmoqda",
+          "completed": "Tugallangan",
+          "handedOver": "Topshirilgan",
+          "cancelled": "Bekor qilingan"
+        }
+      },
+      "pricing": {
+        "title": "Narxlar",
+        "priceFrom": "Narx dan ($)",
+        "priceTo": "Narx gacha ($)"
+      },
+      "amenities": {
+        "title": "Qulayliklar",
+        "helper": "Qulayliklarni vergul bilan ajrating",
+        "amenities": "Qulayliklar (Ruscha)",
+        "amenitiesUz": "Qulayliklar (O'zbekcha)",
+        "placeholder": "Bolalar maydoni, Sport zali, Avtomashina turargoh..."
+      }
     }
   }
 }

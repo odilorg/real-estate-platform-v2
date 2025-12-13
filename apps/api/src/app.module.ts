@@ -17,6 +17,8 @@ import { ReviewsModule } from './modules/reviews/reviews.module';
 import { SavedSearchesModule } from './modules/saved-searches/saved-searches.module';
 import { AgentsModule } from './modules/agents/agents.module';
 import { AgenciesModule } from './modules/agencies/agencies.module';
+import { DevelopersModule } from './modules/developers/developers.module';
+import { DeveloperProjectsModule } from './modules/developer-projects/developer-projects.module';
 import { EmailModule } from './modules/email/email.module';
 import { SearchModule } from './modules/search/search.module';
 import { JwtAuthGuard } from './common/guards/jwt-auth.guard';
@@ -49,6 +51,8 @@ import { RequestIdMiddleware } from './common/middleware/request-id.middleware';
     SavedSearchesModule,
     AgentsModule,
     AgenciesModule,
+    DevelopersModule,
+    DeveloperProjectsModule,
     EmailModule,
     SearchModule,
   ],
