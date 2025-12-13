@@ -155,6 +155,7 @@ export default function PropertyCreationWizard() {
   const [showSuccessModal, setShowSuccessModal] = useState(false);
   const [createdPropertyId, setCreatedPropertyId] = useState<string>('');
   const [showDraftDropdown, setShowDraftDropdown] = useState(false);
+  const [draftSaved, setDraftSaved] = useState(false);
   const dropdownRef = useRef<HTMLDivElement>(null);
 
   // Load draft from localStorage on mount
@@ -250,6 +251,10 @@ export default function PropertyCreationWizard() {
           savedAt: new Date().toISOString(),
         })
       );
+
+      // Show saved indicator
+      setDraftSaved(true);
+      setTimeout(() => setDraftSaved(false), 2000); // Hide after 2 seconds
     } catch (e) {
       // Silently fail - localStorage might be full or disabled
     }
@@ -642,7 +647,9 @@ export default function PropertyCreationWizard() {
               className="inline-flex items-center justify-center gap-1.5 px-3 md:px-4 py-2 text-sm font-medium text-gray-700 border border-gray-300 hover:bg-gray-50 rounded-lg transition-colors"
             >
               <Save className="h-4 w-4" />
-              <span className="hidden sm:inline">Черновик</span>
+              <span className="hidden sm:inline">
+                {draftSaved ? 'Сохранено ✓' : 'Черновик'}
+              </span>
               <ChevronDown className={`h-4 w-4 transition-transform ${showDraftDropdown ? 'rotate-180' : ''}`} />
             </button>
 
