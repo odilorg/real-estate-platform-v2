@@ -43,10 +43,18 @@ export function PropertyFiltersExtended({
   const [showDistrictDropdown, setShowDistrictDropdown] = useState(false);
   const [showMetroDropdown, setShowMetroDropdown] = useState(false);
 
+  // Local state for bedrooms to handle rapid clicks without race conditions
+  const [localBedrooms, setLocalBedrooms] = useState<number[]>(values.bedrooms || []);
+
   // Refs for click-outside detection
   const bedroomsRef = useRef<HTMLDivElement>(null);
   const priceRef = useRef<HTMLDivElement>(null);
   const propertyTypeRef = useRef<HTMLDivElement>(null);
+
+  // Sync local state with prop changes
+  useEffect(() => {
+    setLocalBedrooms(values.bedrooms || []);
+  }, [values.bedrooms]);
 
   // Close dropdowns when clicking outside
   useEffect(() => {
@@ -75,9 +83,11 @@ export function PropertyFiltersExtended({
   };
 
   const toggleBedroom = (count: number) => {
-    const bedrooms = values.bedrooms.includes(count)
-      ? values.bedrooms.filter((b) => b !== count)
-      : [...values.bedrooms, count];
+    // Use local state to prevent race conditions with rapid clicks
+    const bedrooms = localBedrooms.includes(count)
+      ? localBedrooms.filter((b) => b !== count)
+      : [...localBedrooms, count];
+    setLocalBedrooms(bedrooms);
     onChange({ ...values, bedrooms });
   };
 
@@ -98,7 +108,7 @@ export function PropertyFiltersExtended({
 
   const activeFiltersCount = () => {
     let count = 0;
-    if (values.bedrooms.length > 0) count++;
+    if (localBedrooms.length > 0) count++;
     if (values.minPrice || values.maxPrice) count++;
     if (values.city) count++;
     if (values.district) count++;
@@ -204,11 +214,11 @@ export function PropertyFiltersExtended({
               onClick={() => setShowMoreFilters(!showMoreFilters)}
             >
               <span>
-                {values.bedrooms.length === 0
+                {localBedrooms.length === 0
                   ? t('rooms')
-                  : values.bedrooms.length === 1
-                    ? `${values.bedrooms[0]} ${t('room')}`
-                    : `${values.bedrooms.length} ${t('selected')}`}
+                  : localBedrooms.length === 1
+                    ? `${localBedrooms[0]} ${t('room')}`
+                    : `${localBedrooms.length} ${t('selected')}`}
               </span>
               <ChevronDown className="h-4 w-4" />
             </button>
@@ -229,7 +239,7 @@ export function PropertyFiltersExtended({
                     >
                       <input
                         type="checkbox"
-                        checked={values.bedrooms.includes(option.value)}
+                        checked={localBedrooms.includes(option.value)}
                         onChange={() => toggleBedroom(option.value)}
                         className="w-4 h-4 text-blue-600 rounded border-gray-300 focus:ring-blue-500"
                       />
@@ -391,10 +401,10 @@ export function PropertyFiltersExtended({
       </div>
 
       {/* Active Filters Pills */}
-      {(values.bedrooms.length > 0 || values.minPrice || values.maxPrice || (values.propertyType && values.propertyType !== 'ALL')) && (
+      {(localBedrooms.length > 0 || values.minPrice || values.maxPrice || (values.propertyType && values.propertyType !== 'ALL')) && (
         <div className="container mx-auto px-4 pb-3">
           <div className="flex items-center gap-2 flex-wrap">
-            {values.bedrooms.map((bedroom) => (
+            {localBedrooms.map((bedroom) => (
               <span
                 key={bedroom}
                 className="inline-flex items-center gap-1 px-3 py-1 bg-blue-100 text-blue-700 rounded-full text-sm"

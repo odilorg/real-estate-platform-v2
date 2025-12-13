@@ -738,29 +738,32 @@ export default function PropertiesPage() {
             maxFloor: filters.maxFloor,
           }}
           onChange={(extendedFilters) => {
-            // Convert extended filters to modern filter format
-            const marketType = extendedFilters.propertyType && extendedFilters.propertyType !== 'ALL'
-              ? extendedFilters.propertyType
-              : undefined;
+            // Use functional setState to prevent race conditions with rapid filter changes
+            setFilters((prevFilters) => {
+              // Convert extended filters to modern filter format
+              const marketType = extendedFilters.propertyType && extendedFilters.propertyType !== 'ALL'
+                ? extendedFilters.propertyType
+                : undefined;
 
-            const newFilters: ModernFilterValues = {
-              propertyTypes: [], // Empty for now, can be set from a different filter if needed
-              listingTypes: extendedFilters.listingType ? [extendedFilters.listingType] : [],
-              marketType,
-              amenities: extendedFilters.amenities || [],
-              bedrooms: extendedFilters.bedrooms || [],
-              minPrice: extendedFilters.minPrice,
-              maxPrice: extendedFilters.maxPrice,
-              city: extendedFilters.city,
-              district: extendedFilters.district,
-              buildingClasses: extendedFilters.buildingClass ? [extendedFilters.buildingClass] : undefined,
-              minArea: extendedFilters.minArea,
-              maxArea: extendedFilters.maxArea,
-              minFloor: extendedFilters.minFloor,
-              maxFloor: extendedFilters.maxFloor,
-            };
+              const newFilters: ModernFilterValues = {
+                propertyTypes: [], // Empty for now, can be set from a different filter if needed
+                listingTypes: extendedFilters.listingType ? [extendedFilters.listingType] : [],
+                marketType,
+                amenities: extendedFilters.amenities || [],
+                bedrooms: extendedFilters.bedrooms || [],
+                minPrice: extendedFilters.minPrice,
+                maxPrice: extendedFilters.maxPrice,
+                city: extendedFilters.city,
+                district: extendedFilters.district,
+                buildingClasses: extendedFilters.buildingClass ? [extendedFilters.buildingClass] : undefined,
+                minArea: extendedFilters.minArea,
+                maxArea: extendedFilters.maxArea,
+                minFloor: extendedFilters.minFloor,
+                maxFloor: extendedFilters.maxFloor,
+              };
 
-            setFilters(newFilters);
+              return newFilters;
+            });
             setSearchQuery(extendedFilters.searchQuery || '');
             setCurrentPage(1);
           }}
