@@ -83,12 +83,15 @@ export function PropertyFiltersExtended({
   };
 
   const toggleBedroom = (count: number) => {
-    // Use local state to prevent race conditions with rapid clicks
-    const bedrooms = localBedrooms.includes(count)
-      ? localBedrooms.filter((b) => b !== count)
-      : [...localBedrooms, count];
-    setLocalBedrooms(bedrooms);
-    onChange({ ...values, bedrooms });
+    // Use functional setState to get the latest state on rapid clicks
+    setLocalBedrooms((prev) => {
+      const bedrooms = prev.includes(count)
+        ? prev.filter((b) => b !== count)
+        : [...prev, count];
+      // Call onChange with the new bedrooms array
+      onChange({ ...values, bedrooms });
+      return bedrooms;
+    });
   };
 
   const clearFilters = () => {
