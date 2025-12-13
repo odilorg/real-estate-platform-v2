@@ -13,6 +13,7 @@
     "test:coverage": "vitest --coverage"
   },
   "dependencies": {
+    "@hookform/resolvers": "^5.2.2",
     "@repo/shared": "workspace:*",
     "@repo/ui": "workspace:*",
     "@types/leaflet": "^1.9.21",
@@ -24,9 +25,11 @@
     "react": "^19.0.0",
     "react-dom": "^19.0.0",
     "react-dropzone": "^14.3.8",
+    "react-hook-form": "^7.68.0",
     "react-leaflet": "^5.0.0",
     "socket.io-client": "^4.8.1",
-    "tailwind-merge": "^2.6.0"
+    "tailwind-merge": "^2.6.0",
+    "zod": "^4.1.13"
   },
   "devDependencies": {
     "@eslint/eslintrc": "^3.2.0",

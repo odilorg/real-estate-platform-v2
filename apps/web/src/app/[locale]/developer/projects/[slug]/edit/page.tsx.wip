@@ -1,0 +1,570 @@
+'use client';
+
+import { useState, useEffect } from 'react';
+import { useTranslations } from 'next-intl';
+import { useRouter } from 'next/navigation';
+import Link from 'next/link';
+import { useForm } from 'react-hook-form';
+import { zodResolver } from '@hookform/resolvers/zod';
+import { z } from 'zod';
+import { ArrowLeft, Loader2, XCircle } from 'lucide-react';
+
+const projectSchema = z.object({
+  name: z.string().min(3, 'Name must be at least 3 characters'),
+  nameUz: z.string().optional(),
+  slug: z.string().min(3, 'Slug is required').regex(/^[a-z0-9-]+$/, 'Slug must contain only lowercase letters, numbers, and hyphens'),
+  description: z.string().min(20, 'Description must be at least 20 characters'),
+  descriptionUz: z.string().optional(),
+  address: z.string().min(5, 'Address is required'),
+  addressUz: z.string().optional(),
+  cityId: z.string().min(1, 'City is required'),
+  districtId: z.string().min(1, 'District is required'),
+  status: z.enum(['PLANNING', 'UNDER_CONSTRUCTION', 'COMPLETED', 'HANDED_OVER', 'CANCELLED']),
+  completionDate: z.string().min(1, 'Completion date is required'),
+  totalUnits: z.number().min(1, 'At least 1 unit is required'),
+  priceFrom: z.number().min(1, 'Price from is required'),
+  priceTo: z.number().min(1, 'Price to is required'),
+  floors: z.number().min(1, 'At least 1 floor is required'),
+  entrances: z.number().min(1, 'At least 1 entrance is required'),
+  parkingSpaces: z.number().min(0),
+  amenities: z.string().optional(),
+  amenitiesUz: z.string().optional(),
+});
+
+type ProjectFormData = z.infer<typeof projectSchema>;
+
+export default function ProjectEditPage({ params }: { params: { slug: string; locale: string } }) {
+  const t = useTranslations('developer.projectEdit');
+  const router = useRouter();
+  const [project, setProject] = useState<any>(null);
+  const [loading, setLoading] = useState(true);
+  const [isSubmitting, setIsSubmitting] = useState(false);
+  const [error, setError] = useState('');
+  const [success, setSuccess] = useState(false);
+
+  const {
+    register,
+    handleSubmit,
+    reset,
+    formState: { errors },
+  } = useForm<ProjectFormData>({
+    resolver: zodResolver(projectSchema),
+  });
+
+  // Fetch project data from API
+  useEffect(() => {
+    const fetchProject = async () => {
+      try {
+        setLoading(true);
+        const response = await fetch(`/api/developer-projects/slug/${params.slug}`);
+
+        if (!response.ok) {
+          throw new Error('Failed to fetch project');
+        }
+
+        const data = await response.json();
+        setProject(data);
+
+        // Populate form with fetched data
+        reset({
+          name: data.name || '',
+          nameUz: data.nameUz || '',
+          slug: data.slug || '',
+          description: data.descriptionRu || '',
+          descriptionUz: data.descriptionUz || '',
+          address: data.address || '',
+          addressUz: data.addressUz || '',
+          cityId: data.cityId || '',
+          districtId: data.districtId || '',
+          status: data.status || 'PLANNING',
+          completionDate: data.completionDate ? new Date(data.completionDate).toISOString().split('T')[0] : '',
+          totalUnits: data.totalUnits || 0,
+          priceFrom: data.priceFrom || 0,
+          priceTo: data.priceTo || 0,
+          floors: data.totalFloors || 0,
+          entrances: data.totalBlocks || 0,
+          parkingSpaces: data.parkingSpaces || 0,
+          amenities: data.amenities?.join(', ') || '',
+          amenitiesUz: data.amenitiesUz?.join(', ') || '',
+        });
+      } catch (err) {
+        setError(err instanceof Error ? err.message : 'Failed to load project');
+      } finally {
+        setLoading(false);
+      }
+    };
+
+    fetchProject();
+  }, [params.slug, reset]);
+
+  const onSubmit = async (data: ProjectFormData) => {
+    if (!project) return;
+
+    setIsSubmitting(true);
+    setError('');
+
+    try {
+      const response = await fetch(`/api/developer-projects/${project.id}`, {
+        method: 'PUT',
+        headers: {
+          'Content-Type': 'application/json',
+        },
+        credentials: 'include',
+        body: JSON.stringify({
+          name: data.name,
+          nameUz: data.nameUz || null,
+          descriptionRu: data.description,
+          descriptionUz: data.descriptionUz || null,
+          address: data.address,
+          cityId: data.cityId,
+          districtId: data.districtId,
+          status: data.status,
+          completionDate: new Date(data.completionDate),
+          totalUnits: Number(data.totalUnits),
+          totalFloors: Number(data.floors),
+          totalBlocks: Number(data.entrances),
+          parkingSpaces: Number(data.parkingSpaces),
+          amenities: data.amenities ? data.amenities.split(',').map(a => a.trim()) : [],
+        }),
+      });
+
+      if (!response.ok) {
+        const errorData = await response.json();
+        throw new Error(errorData.message || 'Failed to update project');
+      }
+
+      setSuccess(true);
+      setTimeout(() => {
+        router.push(`/${params.locale}/developer/projects/${data.slug}`);
+      }, 2000);
+    } catch (err: any) {
+      setError(err.message || 'An error occurred while updating the project');
+    } finally {
+      setIsSubmitting(false);
+    }
+  };
+
+  // Loading state
+  if (loading) {
+    return (
+      <div className="flex items-center justify-center h-96">
+        <div className="flex flex-col items-center gap-3">
+          <Loader2 className="w-8 h-8 text-blue-600 animate-spin" />
+          <p className="text-gray-600">{t('loading')}</p>
+        </div>
+      </div>
+    );
+  }
+
+  // Error state
+  if (error && !project) {
+    return (
+      <div className="bg-red-50 border border-red-200 rounded-lg p-6">
+        <div className="flex items-start gap-3">
+          <XCircle className="w-6 h-6 text-red-600 flex-shrink-0 mt-0.5" />
+          <div>
+            <h3 className="text-lg font-semibold text-red-900">{t('error.title')}</h3>
+            <p className="text-red-700 mt-1">{error}</p>
+            <Link
+              href={`/${params.locale}/developer/projects`}
+              className="inline-flex items-center gap-2 mt-4 text-sm text-red-600 hover:text-red-800 font-medium"
+            >
+              <ArrowLeft className="w-4 h-4" />
+              {t('error.backToProjects')}</Link>
+          </div>
+        </div>
+      </div>
+    );
+  }
+
+  return (
+    <div className="space-y-6">
+      {/* Header */}
+      <div className="flex items-center gap-4">
+        <Link
+          href={`/${params.locale}/developer/projects/${params.slug}`}
+          className="p-2 hover:bg-gray-100 rounded-lg transition-colors"
+        >
+          <ArrowLeft className="w-5 h-5 text-gray-600" />
+        </Link>
+        <div>
+          <h1 className="text-2xl font-bold text-gray-900">{t('title')}</h1>
+          <p className="mt-1 text-sm text-gray-500">{t('subtitle')}</p>
+        </div>
+      </div>
+
+      {/* Success Message */}
+      {success && (
+        <div className="bg-green-50 border border-green-200 rounded-md p-4">
+          <p className="text-sm text-green-800">{t('successMessage')}</p>
+        </div>
+      )}
+
+      {/* Error Message */}
+      {error && (
+        <div className="bg-red-50 border border-red-200 rounded-md p-4">
+          <p className="text-sm text-red-800">{error}</p>
+        </div>
+      )}
+
+      {/* Form */}
+      <form onSubmit={handleSubmit(onSubmit)} className="space-y-6">
+        {/* Basic Information */}
+        <div className="bg-white shadow rounded-lg p-6">
+          <h2 className="text-lg font-medium text-gray-900 mb-4">{t('basicInfo.title')}</h2>
+
+          <div className="grid grid-cols-1 gap-6 sm:grid-cols-2">
+            {/* Name (Russian) */}
+            <div>
+              <label htmlFor="name" className="block text-sm font-medium text-gray-700">
+                {t('basicInfo.name')}
+              </label>
+              <input
+                type="text"
+                id="name"
+                {...register('name')}
+                className="mt-1 block w-full rounded-md border-gray-300 shadow-sm focus:border-blue-500 focus:ring-blue-500 sm:text-sm"
+              />
+              {errors.name && (
+                <p className="mt-1 text-sm text-red-600">{errors.name.message}</p>
+              )}
+            </div>
+
+            {/* Name (Uzbek) */}
+            <div>
+              <label htmlFor="nameUz" className="block text-sm font-medium text-gray-700">
+                {t('basicInfo.nameUz')}
+              </label>
+              <input
+                type="text"
+                id="nameUz"
+                {...register('nameUz')}
+                className="mt-1 block w-full rounded-md border-gray-300 shadow-sm focus:border-blue-500 focus:ring-blue-500 sm:text-sm"
+              />
+            </div>
+
+            {/* Slug */}
+            <div className="sm:col-span-2">
+              <label htmlFor="slug" className="block text-sm font-medium text-gray-700">
+                {t('basicInfo.slug')}
+              </label>
+              <input
+                type="text"
+                id="slug"
+                {...register('slug')}
+                className="mt-1 block w-full rounded-md border-gray-300 shadow-sm focus:border-blue-500 focus:ring-blue-500 sm:text-sm"
+              />
+              <p className="mt-1 text-sm text-gray-500">{t('basicInfo.slugHelper')}</p>
+              {errors.slug && (
+                <p className="mt-1 text-sm text-red-600">{errors.slug.message}</p>
+              )}
+            </div>
+
+            {/* Description (Russian) */}
+            <div className="sm:col-span-2">
+              <label htmlFor="description" className="block text-sm font-medium text-gray-700">
+                {t('basicInfo.description')}
+              </label>
+              <textarea
+                id="description"
+                rows={4}
+                {...register('description')}
+                className="mt-1 block w-full rounded-md border-gray-300 shadow-sm focus:border-blue-500 focus:ring-blue-500 sm:text-sm"
+              />
+              {errors.description && (
+                <p className="mt-1 text-sm text-red-600">{errors.description.message}</p>
+              )}
+            </div>
+
+            {/* Description (Uzbek) */}
+            <div className="sm:col-span-2">
+              <label htmlFor="descriptionUz" className="block text-sm font-medium text-gray-700">
+                {t('basicInfo.descriptionUz')}
+              </label>
+              <textarea
+                id="descriptionUz"
+                rows={4}
+                {...register('descriptionUz')}
+                className="mt-1 block w-full rounded-md border-gray-300 shadow-sm focus:border-blue-500 focus:ring-blue-500 sm:text-sm"
+              />
+            </div>
+          </div>
+        </div>
+
+        {/* Location */}
+        <div className="bg-white shadow rounded-lg p-6">
+          <h2 className="text-lg font-medium text-gray-900 mb-4">{t('location.title')}</h2>
+
+          <div className="grid grid-cols-1 gap-6 sm:grid-cols-2">
+            {/* City */}
+            <div>
+              <label htmlFor="cityId" className="block text-sm font-medium text-gray-700">
+                {t('location.city')}
+              </label>
+              <select
+                id="cityId"
+                {...register('cityId')}
+                className="mt-1 block w-full rounded-md border-gray-300 shadow-sm focus:border-blue-500 focus:ring-blue-500 sm:text-sm"
+              >
+                <option value="">{t('location.selectCity')}</option>
+                <option value="1">Ташкент</option>
+                <option value="2">Самарканд</option>
+                <option value="3">Бухара</option>
+              </select>
+              {errors.cityId && (
+                <p className="mt-1 text-sm text-red-600">{errors.cityId.message}</p>
+              )}
+            </div>
+
+            {/* District */}
+            <div>
+              <label htmlFor="districtId" className="block text-sm font-medium text-gray-700">
+                {t('location.district')}
+              </label>
+              <select
+                id="districtId"
+                {...register('districtId')}
+                className="mt-1 block w-full rounded-md border-gray-300 shadow-sm focus:border-blue-500 focus:ring-blue-500 sm:text-sm"
+              >
+                <option value="">{t('location.selectDistrict')}</option>
+                <option value="1">Яшнабадский</option>
+                <option value="2">Мирабадский</option>
+                <option value="3">Юнусабадский</option>
+              </select>
+              {errors.districtId && (
+                <p className="mt-1 text-sm text-red-600">{errors.districtId.message}</p>
+              )}
+            </div>
+
+            {/* Address (Russian) */}
+            <div>
+              <label htmlFor="address" className="block text-sm font-medium text-gray-700">
+                {t('location.address')}
+              </label>
+              <input
+                type="text"
+                id="address"
+                {...register('address')}
+                className="mt-1 block w-full rounded-md border-gray-300 shadow-sm focus:border-blue-500 focus:ring-blue-500 sm:text-sm"
+              />
+              {errors.address && (
+                <p className="mt-1 text-sm text-red-600">{errors.address.message}</p>
+              )}
+            </div>
+
+            {/* Address (Uzbek) */}
+            <div>
+              <label htmlFor="addressUz" className="block text-sm font-medium text-gray-700">
+                {t('location.addressUz')}
+              </label>
+              <input
+                type="text"
+                id="addressUz"
+                {...register('addressUz')}
+                className="mt-1 block w-full rounded-md border-gray-300 shadow-sm focus:border-blue-500 focus:ring-blue-500 sm:text-sm"
+              />
+            </div>
+          </div>
+        </div>
+
+        {/* Project Details */}
+        <div className="bg-white shadow rounded-lg p-6">
+          <h2 className="text-lg font-medium text-gray-900 mb-4">{t('details.title')}</h2>
+
+          <div className="grid grid-cols-1 gap-6 sm:grid-cols-2">
+            {/* Status */}
+            <div>
+              <label htmlFor="status" className="block text-sm font-medium text-gray-700">
+                {t('details.status')}
+              </label>
+              <select
+                id="status"
+                {...register('status')}
+                className="mt-1 block w-full rounded-md border-gray-300 shadow-sm focus:border-blue-500 focus:ring-blue-500 sm:text-sm"
+              >
+                <option value="PLANNING">{t('details.statuses.planning')}</option>
+                <option value="UNDER_CONSTRUCTION">{t('details.statuses.underConstruction')}</option>
+                <option value="COMPLETED">{t('details.statuses.completed')}</option>
+                <option value="HANDED_OVER">{t('details.statuses.handedOver')}</option>
+                <option value="CANCELLED">{t('details.statuses.cancelled')}</option>
+              </select>
+              {errors.status && (
+                <p className="mt-1 text-sm text-red-600">{errors.status.message}</p>
+              )}
+            </div>
+
+            {/* Completion Date */}
+            <div>
+              <label htmlFor="completionDate" className="block text-sm font-medium text-gray-700">
+                {t('details.completionDate')}
+              </label>
+              <input
+                type="date"
+                id="completionDate"
+                {...register('completionDate')}
+                className="mt-1 block w-full rounded-md border-gray-300 shadow-sm focus:border-blue-500 focus:ring-blue-500 sm:text-sm"
+              />
+              {errors.completionDate && (
+                <p className="mt-1 text-sm text-red-600">{errors.completionDate.message}</p>
+              )}
+            </div>
+
+            {/* Total Units */}
+            <div>
+              <label htmlFor="totalUnits" className="block text-sm font-medium text-gray-700">
+                {t('details.totalUnits')}
+              </label>
+              <input
+                type="number"
+                id="totalUnits"
+                {...register('totalUnits', { valueAsNumber: true })}
+                className="mt-1 block w-full rounded-md border-gray-300 shadow-sm focus:border-blue-500 focus:ring-blue-500 sm:text-sm"
+              />
+              {errors.totalUnits && (
+                <p className="mt-1 text-sm text-red-600">{errors.totalUnits.message}</p>
+              )}
+            </div>
+
+            {/* Floors */}
+            <div>
+              <label htmlFor="floors" className="block text-sm font-medium text-gray-700">
+                {t('details.floors')}
+              </label>
+              <input
+                type="number"
+                id="floors"
+                {...register('floors', { valueAsNumber: true })}
+                className="mt-1 block w-full rounded-md border-gray-300 shadow-sm focus:border-blue-500 focus:ring-blue-500 sm:text-sm"
+              />
+              {errors.floors && (
+                <p className="mt-1 text-sm text-red-600">{errors.floors.message}</p>
+              )}
+            </div>
+
+            {/* Entrances */}
+            <div>
+              <label htmlFor="entrances" className="block text-sm font-medium text-gray-700">
+                {t('details.entrances')}
+              </label>
+              <input
+                type="number"
+                id="entrances"
+                {...register('entrances', { valueAsNumber: true })}
+                className="mt-1 block w-full rounded-md border-gray-300 shadow-sm focus:border-blue-500 focus:ring-blue-500 sm:text-sm"
+              />
+              {errors.entrances && (
+                <p className="mt-1 text-sm text-red-600">{errors.entrances.message}</p>
+              )}
+            </div>
+
+            {/* Parking Spaces */}
+            <div>
+              <label htmlFor="parkingSpaces" className="block text-sm font-medium text-gray-700">
+                {t('details.parkingSpaces')}
+              </label>
+              <input
+                type="number"
+                id="parkingSpaces"
+                {...register('parkingSpaces', { valueAsNumber: true })}
+                className="mt-1 block w-full rounded-md border-gray-300 shadow-sm focus:border-blue-500 focus:ring-blue-500 sm:text-sm"
+              />
+            </div>
+          </div>
+        </div>
+
+        {/* Pricing */}
+        <div className="bg-white shadow rounded-lg p-6">
+          <h2 className="text-lg font-medium text-gray-900 mb-4">{t('pricing.title')}</h2>
+
+          <div className="grid grid-cols-1 gap-6 sm:grid-cols-2">
+            {/* Price From */}
+            <div>
+              <label htmlFor="priceFrom" className="block text-sm font-medium text-gray-700">
+                {t('pricing.priceFrom')}
+              </label>
+              <input
+                type="number"
+                id="priceFrom"
+                {...register('priceFrom', { valueAsNumber: true })}
+                className="mt-1 block w-full rounded-md border-gray-300 shadow-sm focus:border-blue-500 focus:ring-blue-500 sm:text-sm"
+              />
+              {errors.priceFrom && (
+                <p className="mt-1 text-sm text-red-600">{errors.priceFrom.message}</p>
+              )}
+            </div>
+
+            {/* Price To */}
+            <div>
+              <label htmlFor="priceTo" className="block text-sm font-medium text-gray-700">
+                {t('pricing.priceTo')}
+              </label>
+              <input
+                type="number"
+                id="priceTo"
+                {...register('priceTo', { valueAsNumber: true })}
+                className="mt-1 block w-full rounded-md border-gray-300 shadow-sm focus:border-blue-500 focus:ring-blue-500 sm:text-sm"
+              />
+              {errors.priceTo && (
+                <p className="mt-1 text-sm text-red-600">{errors.priceTo.message}</p>
+              )}
+            </div>
+          </div>
+        </div>
+
+        {/* Amenities */}
+        <div className="bg-white shadow rounded-lg p-6">
+          <h2 className="text-lg font-medium text-gray-900 mb-4">{t('amenities.title')}</h2>
+          <p className="text-sm text-gray-500 mb-4">{t('amenities.helper')}</p>
+
+          <div className="grid grid-cols-1 gap-6 sm:grid-cols-2">
+            {/* Amenities (Russian) */}
+            <div>
+              <label htmlFor="amenities" className="block text-sm font-medium text-gray-700">
+                {t('amenities.amenities')}
+              </label>
+              <textarea
+                id="amenities"
+                rows={4}
+                {...register('amenities')}
+                placeholder={t('amenities.placeholder')}
+                className="mt-1 block w-full rounded-md border-gray-300 shadow-sm focus:border-blue-500 focus:ring-blue-500 sm:text-sm"
+              />
+            </div>
+
+            {/* Amenities (Uzbek) */}
+            <div>
+              <label htmlFor="amenitiesUz" className="block text-sm font-medium text-gray-700">
+                {t('amenities.amenitiesUz')}
+              </label>
+              <textarea
+                id="amenitiesUz"
+                rows={4}
+                {...register('amenitiesUz')}
+                placeholder={t('amenities.placeholder')}
+                className="mt-1 block w-full rounded-md border-gray-300 shadow-sm focus:border-blue-500 focus:ring-blue-500 sm:text-sm"
+              />
+            </div>
+          </div>
+        </div>
+
+        {/* Form Actions */}
+        <div className="flex items-center justify-end gap-4">
+          <Link
+            href={`/${params.locale}/developer/projects/${params.slug}`}
+            className="px-4 py-2 border border-gray-300 rounded-md shadow-sm text-sm font-medium text-gray-700 bg-white hover:bg-gray-50"
+          >
+            {t('cancel')}
+          </Link>
+          <button
+            type="submit"
+            disabled={isSubmitting || success}
+            className="inline-flex items-center px-4 py-2 border border-transparent rounded-md shadow-sm text-sm font-medium text-white bg-blue-600 hover:bg-blue-700 disabled:opacity-50 disabled:cursor-not-allowed"
+          >
+            {isSubmitting && <Loader2 className="w-4 h-4 mr-2 animate-spin" />}
+            {isSubmitting ? t('saving') : t('save')}
+          </button>
+        </div>
+      </form>
+    </div>
+  );
+}

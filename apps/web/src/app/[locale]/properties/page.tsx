@@ -621,7 +621,7 @@ export default function PropertiesPage() {
               <input
                 ref={searchInputRef}
                 type="text"
-                placeholder="Поиск по адресу, району, названию..."
+                placeholder="Адрес, ЖК..."
                 value={searchQuery}
                 onChange={(e) => setSearchQuery(e.target.value)}
                 onFocus={() => setShowSuggestions(true)}
@@ -630,7 +630,7 @@ export default function PropertiesPage() {
                     handleSearchSubmit();
                   }
                 }}
-                className="w-full pl-10 pr-4 py-3 border rounded-lg focus:ring-2 focus:ring-blue-500 focus:border-blue-500"
+                className="w-full pl-10 pr-4 py-3 min-h-[44px] border rounded-lg text-sm md:text-base focus:ring-2 focus:ring-blue-500 focus:border-blue-500"
               />
 
               {/* Search Suggestions Dropdown */}
