@@ -114,14 +114,14 @@ export function PropertyFiltersExtended({
     <div className="bg-white border-b border-gray-200 sticky top-0 z-40 shadow-sm">
       {/* Main Filter Bar */}
       <div className="container mx-auto px-4 py-3">
-        <div className="flex items-center gap-3 flex-wrap">
-          {/* Listing Type Tabs */}
-          <div className="flex bg-gray-100 rounded-lg p-1">
+        <div className="flex items-center gap-2 md:gap-3 flex-wrap">
+          {/* Listing Type Tabs - Enhanced mobile UX */}
+          <div className="flex bg-gray-100 rounded-lg p-1 w-full sm:w-auto">
             <button
               onClick={() => handleListingTypeChange('SALE')}
-              className={`px-4 py-2 rounded-md text-sm font-medium transition-colors ${
+              className={`flex-1 sm:flex-none px-4 sm:px-5 py-3 min-h-[44px] rounded-md text-sm sm:text-base font-medium transition-colors ${
                 values.listingType === 'SALE'
-                  ? 'bg-white text-blue-600 shadow-sm'
+                  ? 'bg-white text-blue-600 shadow-sm font-bold border-b-2 border-blue-600'
                   : 'text-gray-600 hover:text-gray-900'
               }`}
             >
@@ -129,9 +129,9 @@ export function PropertyFiltersExtended({
             </button>
             <button
               onClick={() => handleListingTypeChange('RENT_LONG')}
-              className={`px-4 py-2 rounded-md text-sm font-medium transition-colors ${
+              className={`flex-1 sm:flex-none px-4 sm:px-5 py-3 min-h-[44px] rounded-md text-sm sm:text-base font-medium transition-colors ${
                 values.listingType === 'RENT_LONG'
-                  ? 'bg-white text-blue-600 shadow-sm'
+                  ? 'bg-white text-blue-600 shadow-sm font-bold border-b-2 border-blue-600'
                   : 'text-gray-600 hover:text-gray-900'
               }`}
             >
@@ -139,9 +139,9 @@ export function PropertyFiltersExtended({
             </button>
             <button
               onClick={() => handleListingTypeChange('RENT_DAILY')}
-              className={`px-4 py-2 rounded-md text-sm font-medium transition-colors ${
+              className={`flex-1 sm:flex-none px-4 sm:px-5 py-3 min-h-[44px] rounded-md text-sm sm:text-base font-medium transition-colors ${
                 values.listingType === 'RENT_DAILY'
-                  ? 'bg-white text-blue-600 shadow-sm'
+                  ? 'bg-white text-blue-600 shadow-sm font-bold border-b-2 border-blue-600'
                   : 'text-gray-600 hover:text-gray-900'
               }`}
             >
@@ -149,10 +149,10 @@ export function PropertyFiltersExtended({
             </button>
           </div>
 
-          {/* Property Type Dropdown */}
-          <div ref={propertyTypeRef} className="relative">
+          {/* Property Type Dropdown - Hidden on mobile, shown in More Filters */}
+          <div ref={propertyTypeRef} className="relative hidden sm:block">
             <button
-              className="flex items-center gap-2 px-4 py-2 border border-gray-300 rounded-lg hover:border-gray-400 bg-white text-sm"
+              className="flex items-center gap-2 px-4 md:px-5 py-3 min-h-[44px] border border-gray-300 rounded-lg hover:border-gray-400 bg-white text-sm md:text-base"
               onClick={() => setShowRegionDropdown(!showRegionDropdown)}
             >
               <span>
@@ -197,10 +197,10 @@ export function PropertyFiltersExtended({
             )}
           </div>
 
-          {/* Number of Rooms */}
-          <div ref={bedroomsRef} className="relative">
+          {/* Number of Rooms - Hidden on mobile */}
+          <div ref={bedroomsRef} className="relative hidden md:block">
             <button
-              className="flex items-center gap-2 px-4 py-2 border border-gray-300 rounded-lg hover:border-gray-400 bg-white text-sm"
+              className="flex items-center gap-2 px-4 md:px-5 py-3 min-h-[44px] border border-gray-300 rounded-lg hover:border-gray-400 bg-white text-sm md:text-base"
               onClick={() => setShowMoreFilters(!showMoreFilters)}
             >
               <span>
@@ -241,13 +241,13 @@ export function PropertyFiltersExtended({
             )}
           </div>
 
-          {/* Price Range */}
-          <div ref={priceRef} className="relative">
+          {/* Price Range - Hidden on mobile */}
+          <div ref={priceRef} className="relative hidden md:block">
             <button
-              className="flex items-center gap-2 px-4 py-2 border border-gray-300 rounded-lg hover:border-gray-400 bg-white text-sm"
+              className="flex items-center gap-2 px-4 md:px-5 py-3 min-h-[44px] border border-gray-300 rounded-lg hover:border-gray-400 bg-white text-sm md:text-base"
               onClick={() => setShowPriceDropdown(!showPriceDropdown)}
             >
-              <span>
+              <span className="whitespace-nowrap">
                 {values.minPrice || values.maxPrice
                   ? `${values.minPrice ? `$${values.minPrice.toLocaleString()}` : ''} - ${values.maxPrice ? `$${values.maxPrice.toLocaleString()}` : ''}`
                   : t('price')}
@@ -302,40 +302,40 @@ export function PropertyFiltersExtended({
             )}
           </div>
 
-          {/* More Filters Button */}
+          {/* More Filters Button - Prominent on mobile */}
           <button
             onClick={() => setShowMoreFilters(!showMoreFilters)}
-            className="flex items-center gap-2 px-4 py-2 border border-gray-300 rounded-lg hover:border-gray-400 bg-white text-sm"
+            className="flex items-center gap-2 px-4 md:px-5 py-3 min-h-[44px] border-2 border-blue-600 rounded-lg hover:bg-blue-50 bg-white text-sm md:text-base font-medium text-blue-600"
           >
-            <SlidersHorizontal className="h-4 w-4" />
+            <SlidersHorizontal className="h-5 w-5" />
             <span>{t('moreFilters')}</span>
             {activeFiltersCount() > 0 && (
-              <span className="bg-blue-600 text-white text-xs px-2 py-0.5 rounded-full">
+              <span className="bg-blue-600 text-white text-xs px-2 py-1 rounded-full min-w-[20px] text-center">
                 {activeFiltersCount()}
               </span>
             )}
           </button>
 
-          {/* Search Box */}
-          <div className="flex-1 min-w-[300px]">
+          {/* Search Box - Shorter placeholder on mobile */}
+          <div className="flex-1 min-w-[200px] md:min-w-[300px] hidden md:block">
             <div className="relative">
-              <Search className="absolute left-3 top-1/2 -translate-y-1/2 h-4 w-4 text-gray-400" />
+              <Search className="absolute left-3 top-1/2 -translate-y-1/2 h-4 w-4 md:h-5 md:w-5 text-gray-400" />
               <input
                 type="text"
                 value={values.searchQuery || ''}
                 onChange={(e) => onChange({ ...values, searchQuery: e.target.value })}
                 placeholder={t('searchPlaceholder')}
-                className="w-full pl-10 pr-4 py-2 border border-gray-300 rounded-lg text-sm focus:ring-2 focus:ring-blue-500 focus:border-transparent"
+                className="w-full pl-10 pr-4 py-3 min-h-[44px] border border-gray-300 rounded-lg text-sm md:text-base focus:ring-2 focus:ring-blue-500 focus:border-transparent"
               />
             </div>
           </div>
 
-          {/* Location Filters */}
-          <div className="flex items-center gap-2">
+          {/* Location Filters - Hidden on mobile */}
+          <div className="hidden lg:flex items-center gap-2">
             {/* Region */}
             <div className="relative">
               <button
-                className="flex items-center gap-1 px-3 py-2 text-sm text-blue-600 hover:text-blue-700 font-medium"
+                className="flex items-center gap-1 px-4 py-3 min-h-[44px] text-sm md:text-base text-blue-600 hover:text-blue-700 font-medium"
                 onClick={() => setShowRegionDropdown(!showRegionDropdown)}
               >
                 {values.city || t('region')}
@@ -346,7 +346,7 @@ export function PropertyFiltersExtended({
             {/* District */}
             <div className="relative">
               <button
-                className="flex items-center gap-1 px-3 py-2 text-sm text-blue-600 hover:text-blue-700 font-medium"
+                className="flex items-center gap-1 px-4 py-3 min-h-[44px] text-sm md:text-base text-blue-600 hover:text-blue-700 font-medium"
                 onClick={() => setShowDistrictDropdown(!showDistrictDropdown)}
               >
                 {values.district || t('district')}
@@ -357,7 +357,7 @@ export function PropertyFiltersExtended({
             {/* Metro */}
             <div className="relative">
               <button
-                className="flex items-center gap-1 px-3 py-2 text-sm text-blue-600 hover:text-blue-700 font-medium"
+                className="flex items-center gap-1 px-4 py-3 min-h-[44px] text-sm md:text-base text-blue-600 hover:text-blue-700 font-medium"
                 onClick={() => setShowMetroDropdown(!showMetroDropdown)}
               >
                 {values.metro || t('metro')}
@@ -366,25 +366,25 @@ export function PropertyFiltersExtended({
             </div>
           </div>
 
-          {/* Save Search Button */}
+          {/* Save Search Button - Hidden on small mobile */}
           {isAuthenticated && onSaveSearch && (
             <button
               onClick={onSaveSearch}
-              className="flex items-center gap-2 px-4 py-2 text-blue-600 hover:bg-blue-50 rounded-lg text-sm font-medium"
+              className="hidden sm:flex items-center gap-2 px-4 md:px-5 py-3 min-h-[44px] text-blue-600 hover:bg-blue-50 rounded-lg text-sm md:text-base font-medium"
             >
-              <Heart className="h-4 w-4" />
-              <span>{t('saveSearch')}</span>
+              <Heart className="h-4 w-4 md:h-5 md:w-5" />
+              <span className="hidden md:inline">{t('saveSearch')}</span>
             </button>
           )}
 
-          {/* Clear Filters */}
+          {/* Clear Filters - Improved touch target */}
           {activeFiltersCount() > 0 && (
             <button
               onClick={clearFilters}
-              className="flex items-center gap-1 px-3 py-2 text-sm text-gray-600 hover:text-gray-900"
+              className="flex items-center gap-1 px-3 md:px-4 py-3 min-h-[44px] text-sm md:text-base text-gray-600 hover:text-gray-900 font-medium"
             >
-              <X className="h-4 w-4" />
-              {t('clear')}
+              <X className="h-4 w-4 md:h-5 md:w-5" />
+              <span className="hidden sm:inline">{t('clear')}</span>
             </button>
           )}
         </div>
