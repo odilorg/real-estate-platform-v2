@@ -14,6 +14,15 @@ const nextConfig: NextConfig = {
       },
       {
         protocol: 'https',
+        hostname: 'staging.jahongir-app.uz',
+      },
+      {
+        protocol: 'https',
+        hostname: 'staging.jahongir-app.uz',
+        port: '3001',
+      },
+      {
+        protocol: 'https',
         hostname: 'picsum.photos',
       },
       {
