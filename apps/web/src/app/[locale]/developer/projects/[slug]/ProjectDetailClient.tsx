@@ -25,7 +25,11 @@ import {
   Loader2,
 } from 'lucide-react';
 
-export default function ProjectDetailPage({ params }: { params: { slug: string; locale: string } }) {
+interface ProjectDetailClientProps {
+  params: { slug: string; locale: string };
+}
+
+export default function ProjectDetailClient({ params }: ProjectDetailClientProps) {
   const t = useTranslations('developer.projectDetail');
   const [activeTab, setActiveTab] = useState<'details' | 'units' | 'leads' | 'media' | 'analytics'>('details');
   const [project, setProject] = useState<any>(null);
