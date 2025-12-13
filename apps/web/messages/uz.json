@@ -262,6 +262,7 @@
     "housesAndLand": "Uylar va yer",
     "commercial": "Tijorat",
     "agents": "Agentlar",
+    "developers": "Quruvchilar",
     "apartments": "Kvartiralar",
     "houses": "Uylar",
     "condos": "Kondominiumlar",
@@ -574,6 +575,63 @@
     "errors": {
       "notFound": "Agentlik topilmadi",
       "loadError": "Yuklashda xatolik"
+    }
+  },
+  "developers": {
+    "title": "Quruvchilar",
+    "backToDevelopers": "Quruvchilar ro'yxatiga qaytish",
+    "verified": "Tasdiqlangan",
+    "featured": "Tavsiya qilamiz",
+    "reviews": "sharh",
+    "projects": "Loyihalar",
+    "units": "Kvartiralar",
+    "unitsSold": "Sotilgan",
+    "unitsAvailable": "Mavjud",
+    "establishedYear": "Tashkil etilgan yil",
+    "license": "Litsenziya",
+    "inn": "INN",
+    "emailDeveloper": "Xabar yozish",
+    "callDeveloper": "Qo'ng'iroq qilish",
+    "about": "Kompaniya haqida",
+    "legalInfo": "Yuridik ma'lumot",
+    "contactInfo": "Aloqa ma'lumotlari",
+    "ourProjects": "Bizning loyihalarimiz",
+    "salesTeam": "Savdo bo'limi",
+    "customerReviews": "Mijozlar sharhlari",
+    "noProjects": "Quruvchida hali loyihalar yo'q",
+    "noReviews": "Hali sharhlar yo'q",
+    "writeReview": "Sharh yozish",
+    "findDeveloper": "Quruvchi topish",
+    "allDevelopers": "Barcha quruvchilar",
+    "filter": {
+      "city": "Shahar",
+      "verified": "Faqat tasdiqlangan",
+      "featured": "Tavsiya etilgan"
+    },
+    "sortBy": {
+      "label": "Saralash",
+      "rating": "Reytingga ko'ra",
+      "projects": "Loyihalarga ko'ra",
+      "units": "Kvartiralarga ko'ra",
+      "established": "Tashkil etilgan yilga ko'ra",
+      "newest": "Avval yangilari"
+    },
+    "empty": {
+      "title": "Quruvchilar topilmadi",
+      "description": "Qidiruv parametrlarini o'zgartirib ko'ring",
+      "button": "Filtrlarni tozalash"
+    },
+    "errors": {
+      "notFound": "Quruvchi topilmadi",
+      "loadError": "Yuklashda xatolik"
+    },
+    "stats": {
+      "totalProjects": "Jami loyihalar",
+      "activeProjects": "Faol loyihalar",
+      "completedProjects": "Tugallangan loyihalar",
+      "totalUnits": "Jami kvartiralar",
+      "unitsSold": "Sotilgan",
+      "unitsAvailable": "Mavjud"
     }
   },
   "developer": {

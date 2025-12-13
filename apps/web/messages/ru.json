@@ -262,6 +262,7 @@
     "housesAndLand": "Дома и участки",
     "commercial": "Коммерческая",
     "agents": "Агенты",
+    "developers": "Застройщики",
     "apartments": "Квартиры",
     "houses": "Дома",
     "condos": "Кондоминиумы",
@@ -574,6 +575,63 @@
     "errors": {
       "notFound": "Агентство не найдено",
       "loadError": "Ошибка загрузки"
+    }
+  },
+  "developers": {
+    "title": "Застройщики",
+    "backToDevelopers": "К списку застройщиков",
+    "verified": "Проверен",
+    "featured": "Рекомендуем",
+    "reviews": "отзывов",
+    "projects": "Проектов",
+    "units": "Квартир",
+    "unitsSold": "Продано",
+    "unitsAvailable": "Доступно",
+    "establishedYear": "Год основания",
+    "license": "Лицензия",
+    "inn": "ИНН",
+    "emailDeveloper": "Написать",
+    "callDeveloper": "Позвонить",
+    "about": "О компании",
+    "legalInfo": "Юридическая информация",
+    "contactInfo": "Контактная информация",
+    "ourProjects": "Наши проекты",
+    "salesTeam": "Отдел продаж",
+    "customerReviews": "Отзывы клиентов",
+    "noProjects": "У застройщика пока нет проектов",
+    "noReviews": "Пока нет отзывов",
+    "writeReview": "Написать отзыв",
+    "findDeveloper": "Найти застройщика",
+    "allDevelopers": "Все застройщики",
+    "filter": {
+      "city": "Город",
+      "verified": "Только проверенные",
+      "featured": "Рекомендуемые"
+    },
+    "sortBy": {
+      "label": "Сортировка",
+      "rating": "По рейтингу",
+      "projects": "По проектам",
+      "units": "По квартирам",
+      "established": "По году основания",
+      "newest": "Сначала новые"
+    },
+    "empty": {
+      "title": "Застройщиков не найдено",
+      "description": "Попробуйте изменить параметры поиска",
+      "button": "Сбросить фильтры"
+    },
+    "errors": {
+      "notFound": "Застройщик не найден",
+      "loadError": "Ошибка загрузки"
+    },
+    "stats": {
+      "totalProjects": "Всего проектов",
+      "activeProjects": "Активных проектов",
+      "completedProjects": "Завершённых проектов",
+      "totalUnits": "Всего квартир",
+      "unitsSold": "Продано",
+      "unitsAvailable": "Доступно"
     }
   },
   "developer": {

@@ -117,6 +117,10 @@ export function Navbar() {
       labelKey: 'agents',
       href: '/agents',
     },
+    {
+      labelKey: 'developers',
+      href: '/developers',
+    },
   ];
 
   // Fetch unread messages count
