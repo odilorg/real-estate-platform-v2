@@ -447,12 +447,18 @@ export default function PropertyCreationWizard() {
         Object.entries(payload).filter(([_, v]) => v !== undefined)
       );
 
+      // Build headers - include Authorization header only if token exists
+      const headers: HeadersInit = {
+        'Content-Type': 'application/json',
+      };
+      if (token) {
+        headers['Authorization'] = `Bearer ${token}`;
+      }
+
       const response = await fetch(`${apiUrl}/properties`, {
         method: 'POST',
-        headers: {
-          'Content-Type': 'application/json',
-          Authorization: `Bearer ${token}`,
-        },
+        headers,
+        credentials: 'include', // Include cookies for OAuth authentication
         body: JSON.stringify(cleanPayload),
       });
 
