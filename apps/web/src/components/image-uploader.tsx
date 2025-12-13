@@ -48,17 +48,26 @@ export function ImageUploader({ images, onChange, maxImages = 20 }: ImageUploade
 
     try {
       const token = getAuthToken();
+
+      // Build headers - include Authorization header only if token exists
+      const headers: HeadersInit = {};
+      if (token) {
+        headers['Authorization'] = `Bearer ${token}`;
+      }
+
       const response = await fetch(`${apiUrl}/upload/images`, {
         method: 'POST',
-        headers: {
-          Authorization: `Bearer ${token}`,
-        },
+        headers,
+        credentials: 'include', // Include cookies for OAuth authentication
         body: formData,
       });
 
       if (!response.ok) {
-        const data = await response.json();
-        throw new Error(data.message || 'Ошибка загрузки');
+        if (response.status === 401) {
+          throw new Error('Сессия истекла. Пожалуйста, войдите заново.');
+        }
+        const data = await response.json().catch(() => ({ message: 'Ошибка сервера' }));
+        throw new Error(data.message || `Ошибка загрузки (${response.status})`);
       }
 
       const uploadedImages: UploadedImage[] = await response.json();
@@ -66,6 +75,7 @@ export function ImageUploader({ images, onChange, maxImages = 20 }: ImageUploade
       onChange([...images, ...newUrls]);
     } catch (err) {
       setError(err instanceof Error ? err.message : 'Ошибка загрузки');
+      console.error('Upload error:', err);
     } finally {
       setUploading(false);
     }
@@ -89,9 +99,17 @@ export function ImageUploader({ images, onChange, maxImages = 20 }: ImageUploade
     try {
       const token = getAuthToken();
       const key = new URL(imageUrl).pathname.slice(1);
+
+      // Build headers - include Authorization header only if token exists
+      const headers: HeadersInit = {};
+      if (token) {
+        headers['Authorization'] = `Bearer ${token}`;
+      }
+
       await fetch(`${apiUrl}/upload/${encodeURIComponent(key)}`, {
         method: 'DELETE',
-        headers: { Authorization: `Bearer ${token}` },
+        headers,
+        credentials: 'include', // Include cookies for OAuth authentication
       });
     } catch (err) {
       // Silently fail - file may already be deleted

@@ -600,58 +600,79 @@ export default function PropertyCreationWizard() {
         </Card>
 
         {/* Navigation Buttons */}
-        <div className="flex items-center justify-between">
-          <Button
-            variant="outline"
-            onClick={handleBack}
-            disabled={currentStep === 1}
-            className="gap-2"
-          >
-            <ArrowLeft className="h-4 w-4" />
-            Назад
-          </Button>
+        <div className="space-y-3">
+          {/* Back button - full width on mobile */}
+          <div className="md:hidden">
+            <Button
+              variant="outline"
+              onClick={handleBack}
+              disabled={currentStep === 1}
+              className="w-full gap-2"
+            >
+              <ArrowLeft className="h-4 w-4" />
+              Назад
+            </Button>
+          </div>
 
+          {/* Secondary actions row */}
           <div className="flex gap-2">
             <button
               type="button"
               onClick={clearDraft}
-              className="inline-flex items-center gap-2 px-4 py-2 text-red-600 hover:text-red-700 hover:bg-red-50 rounded-md transition-colors"
+              className="flex-1 md:flex-none inline-flex items-center justify-center gap-2 px-3 md:px-4 py-2 text-sm text-red-600 border border-red-300 hover:bg-red-50 rounded-lg transition-colors"
             >
               <Trash2 className="h-4 w-4" />
-              Удалить черновик
+              <span className="hidden sm:inline">Удалить черновик</span>
+              <span className="sm:hidden">Удалить</span>
             </button>
 
             <button
               type="button"
               onClick={saveDraft}
-              className="inline-flex items-center gap-2 px-4 py-2 text-gray-700 hover:bg-gray-100 rounded-md transition-colors"
+              className="flex-1 md:flex-none inline-flex items-center justify-center gap-2 px-3 md:px-4 py-2 text-sm text-gray-700 border border-gray-300 hover:bg-gray-50 rounded-lg transition-colors"
             >
               <Save className="h-4 w-4" />
-              Сохранить черновик
+              <span className="hidden sm:inline">Сохранить черновик</span>
+              <span className="sm:hidden">Сохранить</span>
             </button>
           </div>
 
-          {currentStep < STEPS.length ? (
-            <Button onClick={handleNext} className="gap-2">
-              Далее
-              <ArrowRight className="h-4 w-4" />
-            </Button>
-          ) : (
+          {/* Primary action - full width on mobile */}
+          <div className="flex gap-3">
+            {/* Back button for desktop */}
             <Button
-              onClick={handleSubmit}
-              disabled={saving}
-              className="gap-2 bg-green-600 hover:bg-green-700"
+              variant="outline"
+              onClick={handleBack}
+              disabled={currentStep === 1}
+              className="hidden md:flex gap-2"
             >
-              {saving ? (
-                <>Публикация...</>
-              ) : (
-                <>
-                  <Check className="h-4 w-4" />
-                  Опубликовать
-                </>
-              )}
+              <ArrowLeft className="h-4 w-4" />
+              Назад
             </Button>
-          )}
+
+            {/* Next/Submit button */}
+            {currentStep < STEPS.length ? (
+              <Button onClick={handleNext} className="flex-1 md:flex-none gap-2 py-3 md:py-2">
+                Далее
+                <ArrowRight className="h-4 w-4" />
+              </Button>
+            ) : (
+              <Button
+                onClick={handleSubmit}
+                disabled={saving}
+                className="flex-1 md:flex-none gap-2 py-3 md:py-2 bg-green-600 hover:bg-green-700"
+              >
+                {saving ? (
+                  <>Публикация...</>
+                ) : (
+                  <>
+                    <Check className="h-4 w-4" />
+                    Опубликовать
+                  </>
+                )}
+              </Button>
+            )}
+          </div>
         </div>
 
         {/* Clear Draft Confirmation Modal */}

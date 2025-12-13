@@ -16,6 +16,7 @@ import {
   ChevronRight,
   User,
   LogOut,
+  Plus,
 } from 'lucide-react';
 
 interface PropertyImage {
@@ -128,6 +129,16 @@ export default function Home() {
                 {t('searchButton')}
               </Button>
             </form>
+
+            {/* Post Listing CTA */}
+            <div className="mt-4">
+              <Link href={isAuthenticated ? '/properties/new' : '/auth/register'}>
+                <button className="w-full sm:w-auto px-8 py-4 bg-white text-blue-600 rounded-lg shadow-lg hover:shadow-xl hover:scale-105 transition-all duration-200 flex items-center justify-center gap-2 font-semibold text-lg">
+                  <Plus className="h-6 w-6" />
+                  {t('footer.postListing')}
+                </button>
+              </Link>
+            </div>
 
             {/* Quick Links */}
             <div className="mt-6 flex flex-wrap justify-center gap-2">

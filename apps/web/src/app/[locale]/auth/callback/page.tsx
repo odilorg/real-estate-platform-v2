@@ -23,7 +23,6 @@ function CallbackHandler() {
       } else {
         // Handle cookie-based auth (current implementation)
         // The token is already in an HTTP-only cookie set by the backend
-        // Just refresh the user session and redirect
         try {
           await refreshUser();
           window.location.assign('/properties');
