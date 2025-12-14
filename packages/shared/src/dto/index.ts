@@ -472,3 +472,95 @@ export const PaginatedResponseDto = <T extends z.ZodTypeAny>(itemSchema: T) =>
     limit: z.number(),
     totalPages: z.number(),
   });
+
+// Analytics DTOs
+export const AnalyticsQueryDto = z.object({
+  days: z.number().int().min(1).max(365).default(30),
+  projectId: z.string().optional(),
+});
+export type AnalyticsQueryDto = z.infer<typeof AnalyticsQueryDto>;
+
+export const UnitsPipelineDto = z.object({
+  available: z.number(),
+  reserved: z.number(),
+  sold: z.number(),
+  handedOver: z.number(),
+});
+export type UnitsPipelineDto = z.infer<typeof UnitsPipelineDto>;
+
+export const ViewsDataPointDto = z.object({
+  date: z.string(),
+  views: z.number(),
+});
+export type ViewsDataPointDto = z.infer<typeof ViewsDataPointDto>;
+
+export const DeveloperAnalyticsOverviewDto = z.object({
+  totalRevenue: z.number(),
+  revenueTrend: z.number(),
+  totalLeads: z.number(),
+  leadsTrend: z.number(),
+  conversionRate: z.number(),
+  conversionTrend: z.number(),
+  avgDealSize: z.number(),
+  dealSizeTrend: z.number(),
+  totalViews: z.number(),
+  viewsTrend: z.number(),
+  unitsPipeline: UnitsPipelineDto,
+  viewsOverTime: z.array(ViewsDataPointDto),
+});
+export type DeveloperAnalyticsOverviewDto = z.infer<typeof DeveloperAnalyticsOverviewDto>;
+
+export const LeadFunnelDto = z.object({
+  new: z.number(),
+  contacted: z.number(),
+  qualified: z.number(),
+  negotiating: z.number(),
+  converted: z.number(),
+  lost: z.number(),
+});
+export type LeadFunnelDto = z.infer<typeof LeadFunnelDto>;
+
+export const LeadSourceDto = z.object({
+  source: z.string(),
+  count: z.number(),
+  percentage: z.number(),
+});
+export type LeadSourceDto = z.infer<typeof LeadSourceDto>;
+
+export const LeadAnalyticsDto = z.object({
+  funnel: LeadFunnelDto,
+  sources: z.array(LeadSourceDto),
+  recentLeads: z.array(LeadResponseDto),
+});
+export type LeadAnalyticsDto = z.infer<typeof LeadAnalyticsDto>;
+
+export const TopPropertyDto = z.object({
+  id: z.string(),
+  title: z.string(),
+  views: z.number(),
+  leads: z.number(),
+  status: z.string(),
+  projectName: z.string().optional(),
+});
+export type TopPropertyDto = z.infer<typeof TopPropertyDto>;
+
+export const PropertyPerformanceDto = z.object({
+  topByViews: z.array(TopPropertyDto),
+  topByLeads: z.array(TopPropertyDto),
+});
+export type PropertyPerformanceDto = z.infer<typeof PropertyPerformanceDto>;
+
+export const AgentStatsDto = z.object({
+  id: z.string(),
+  name: z.string(),
+  leadsAssigned: z.number(),
+  leadsConverted: z.number(),
+  conversionRate: z.number(),
+  totalRevenue: z.number(),
+});
+export type AgentStatsDto = z.infer<typeof AgentStatsDto>;
+
+export const AgentPerformanceDto = z.object({
+  agents: z.array(AgentStatsDto),
+});
+export type AgentPerformanceDto = z.infer<typeof AgentPerformanceDto>;

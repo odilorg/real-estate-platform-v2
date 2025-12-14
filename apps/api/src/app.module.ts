@@ -24,6 +24,7 @@ import { LeadsModule } from './modules/leads/leads.module';
 import { MediaModule } from './modules/media/media.module';
 import { EmailModule } from './modules/email/email.module';
 import { SearchModule } from './modules/search/search.module';
+import { AnalyticsModule } from './modules/analytics/analytics.module';
 import { JwtAuthGuard } from './common/guards/jwt-auth.guard';
 import { RequestIdMiddleware } from './common/middleware/request-id.middleware';
 
@@ -61,6 +62,7 @@ import { RequestIdMiddleware } from './common/middleware/request-id.middleware';
     MediaModule,
     EmailModule,
     SearchModule,
+    AnalyticsModule,
   ],
   controllers: [AppController],
   providers: [
