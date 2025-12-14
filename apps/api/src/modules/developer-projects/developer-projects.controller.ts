@@ -8,6 +8,14 @@ import {
   Param,
   UseGuards,
 } from '@nestjs/common';
+import {
+  IsString,
+  IsOptional,
+  IsNumber,
+  IsBoolean,
+  IsArray,
+  IsDateString,
+} from 'class-validator';
 import { DeveloperProjectsService } from './developer-projects.service';
 import { JwtAuthGuard } from '../../common/guards/jwt-auth.guard';
 import { RolesGuard } from '../../common/guards/roles.guard';
@@ -18,76 +26,270 @@ import { User, DeveloperProject } from '@repo/database';
 
 // Temporary DTOs (will be moved to @repo/shared later)
 class CreateProjectDto {
+  @IsString()
   name!: string;
+
+  @IsString()
+  @IsOptional()
   nameUz?: string;
+
+  @IsString()
+  @IsOptional()
   descriptionRu?: string;
+
+  @IsString()
+  @IsOptional()
   descriptionUz?: string;
+
+  @IsString()
   cityId!: string;
+
+  @IsString()
   districtId!: string;
+
+  @IsString()
+  @IsOptional()
   mahallaId?: string;
+
+  @IsString()
   address!: string;
+
+  @IsNumber()
+  @IsOptional()
   latitude?: number;
+
+  @IsNumber()
+  @IsOptional()
   longitude?: number;
+
+  @IsString()
+  @IsOptional()
   buildingClass?: string;
+
+  @IsString()
+  @IsOptional()
   buildingType?: string;
+
+  @IsNumber()
   totalUnits!: number;
+
+  @IsNumber()
+  @IsOptional()
   totalFloors?: number;
+
+  @IsNumber()
+  @IsOptional()
   totalBlocks?: number;
+
+  @IsNumber()
+  @IsOptional()
   parkingSpaces?: number;
-  constructionStartDate?: Date;
-  completionDate!: Date;
+
+  @IsDateString()
+  @IsOptional()
+  constructionStartDate?: string;
+
+  @IsDateString()
+  completionDate!: string;
+
+  @IsOptional()
   deliveryStages?: any;
+
+  @IsArray()
+  @IsOptional()
   amenities?: string[];
+
+  @IsBoolean()
+  @IsOptional()
   hasGatedArea?: boolean;
+
+  @IsBoolean()
+  @IsOptional()
   hasConcierge?: boolean;
+
+  @IsBoolean()
+  @IsOptional()
   hasGreenArea?: boolean;
+
+  @IsBoolean()
+  @IsOptional()
   hasKindergarten?: boolean;
+
+  @IsBoolean()
+  @IsOptional()
   hasCommercial?: boolean;
+
+  @IsString()
+  @IsOptional()
   heating?: string;
+
+  @IsBoolean()
+  @IsOptional()
   gasSupply?: boolean;
+
+  @IsString()
+  @IsOptional()
   waterSupply?: string;
+
+  @IsBoolean()
+  @IsOptional()
   elevator?: boolean;
+
+  @IsNumber()
+  @IsOptional()
   elevatorCount?: number;
+
+  @IsString()
+  @IsOptional()
   masterPlanImage?: string;
+
+  @IsString()
+  @IsOptional()
   siteLayoutImage?: string;
+
+  @IsString()
+  @IsOptional()
   virtualTourUrl?: string;
 }
 
 class UpdateProjectDto {
+  @IsString()
+  @IsOptional()
   name?: string;
+
+  @IsString()
+  @IsOptional()
   nameUz?: string;
+
+  @IsString()
+  @IsOptional()
   descriptionRu?: string;
+
+  @IsString()
+  @IsOptional()
   descriptionUz?: string;
+
+  @IsString()
+  @IsOptional()
   cityId?: string;
+
+  @IsString()
+  @IsOptional()
   districtId?: string;
+
+  @IsString()
+  @IsOptional()
   mahallaId?: string;
+
+  @IsString()
+  @IsOptional()
   address?: string;
+
+  @IsNumber()
+  @IsOptional()
   latitude?: number;
+
+  @IsNumber()
+  @IsOptional()
   longitude?: number;
+
+  @IsString()
+  @IsOptional()
   buildingClass?: string;
+
+  @IsString()
+  @IsOptional()
   buildingType?: string;
+
+  @IsNumber()
+  @IsOptional()
   totalUnits?: number;
+
+  @IsNumber()
+  @IsOptional()
   totalFloors?: number;
+
+  @IsNumber()
+  @IsOptional()
   totalBlocks?: number;
+
+  @IsNumber()
+  @IsOptional()
   parkingSpaces?: number;
-  constructionStartDate?: Date;
-  completionDate?: Date;
+
+  @IsDateString()
+  @IsOptional()
+  constructionStartDate?: string;
+
+  @IsDateString()
+  @IsOptional()
+  completionDate?: string;
+
+  @IsOptional()
   deliveryStages?: any;
+
+  @IsArray()
+  @IsOptional()
   amenities?: string[];
+
+  @IsBoolean()
+  @IsOptional()
   hasGatedArea?: boolean;
+
+  @IsBoolean()
+  @IsOptional()
   hasConcierge?: boolean;
+
+  @IsBoolean()
+  @IsOptional()
   hasGreenArea?: boolean;
+
+  @IsBoolean()
+  @IsOptional()
   hasKindergarten?: boolean;
+
+  @IsBoolean()
+  @IsOptional()
   hasCommercial?: boolean;
+
+  @IsString()
+  @IsOptional()
   heating?: string;
+
+  @IsBoolean()
+  @IsOptional()
   gasSupply?: boolean;
+
+  @IsString()
+  @IsOptional()
   waterSupply?: string;
+
+  @IsBoolean()
+  @IsOptional()
   elevator?: boolean;
+
+  @IsNumber()
+  @IsOptional()
   elevatorCount?: number;
+
+  @IsString()
+  @IsOptional()
   masterPlanImage?: string;
+
+  @IsString()
+  @IsOptional()
   siteLayoutImage?: string;
+
+  @IsString()
+  @IsOptional()
   virtualTourUrl?: string;
+
+  @IsString()
+  @IsOptional()
   status?: string;
+
+  @IsBoolean()
+  @IsOptional()
   featured?: boolean;
 }
 

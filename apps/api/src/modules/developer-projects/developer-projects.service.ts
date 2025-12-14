@@ -20,8 +20,8 @@ interface CreateProjectDto {
   totalFloors?: number;
   totalBlocks?: number;
   parkingSpaces?: number;
-  constructionStartDate?: Date;
-  completionDate: Date;
+  constructionStartDate?: string;
+  completionDate: string;
   deliveryStages?: any;
   amenities?: string[];
   hasGatedArea?: boolean;
@@ -56,8 +56,8 @@ interface UpdateProjectDto {
   totalFloors?: number;
   totalBlocks?: number;
   parkingSpaces?: number;
-  constructionStartDate?: Date;
-  completionDate?: Date;
+  constructionStartDate?: string;
+  completionDate?: string;
   deliveryStages?: any;
   amenities?: string[];
   hasGatedArea?: boolean;
