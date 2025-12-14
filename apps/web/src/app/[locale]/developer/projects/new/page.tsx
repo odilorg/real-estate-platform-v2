@@ -14,10 +14,12 @@ import {
   Globe,
   Home
 } from 'lucide-react';
+import { api } from '@/lib/api';
 
 export default function NewProjectPage() {
   const router = useRouter();
   const [loading, setLoading] = useState(false);
+  const [error, setError] = useState<string | null>(null);
   const [formData, setFormData] = useState({
     name: '',
     nameUz: '',
@@ -31,19 +33,23 @@ export default function NewProjectPage() {
   const handleSubmit = async (e: React.FormEvent) => {
     e.preventDefault();
     setLoading(true);
+    setError(null);
 
     try {
-      // TODO: Implement API call
-      console.log('Creating project:', formData);
+      await api.post('/developer-projects', {
+        name: formData.name,
+        nameUz: formData.nameUz || undefined,
+        address: formData.address,
+        cityId: formData.cityId,
+        districtId: formData.districtId,
+        totalUnits: parseInt(formData.totalUnits, 10),
+        completionDate: new Date(formData.completionDate).toISOString(),
+      });
 
-      // Simulate API call
-      await new Promise(resolve => setTimeout(resolve, 1000));
-
-      alert('Проект создан успешно!');
       router.push('/developer/projects');
-    } catch (error) {
-      console.error('Error creating project:', error);
-      alert('Ошибка при создании проекта');
+    } catch (err) {
+      console.error('Error creating project:', err);
+      setError(err instanceof Error ? err.message : 'Ошибка при создании проекта');
     } finally {
       setLoading(false);
     }
@@ -79,6 +85,13 @@ export default function NewProjectPage() {
           </div>
         </div>
       </div>
+
+      {/* Error Message */}
+      {error && (
+        <div className="bg-red-50 border border-red-200 rounded-lg p-4">
+          <p className="text-sm text-red-600">{error}</p>
+        </div>
+      )}
 
       {/* Form */}
       <form onSubmit={handleSubmit} className="space-y-6">
@@ -171,10 +184,10 @@ export default function NewProjectPage() {
                   style={{ backgroundImage: `url("data:image/svg+xml,%3csvg xmlns='http://www.w3.org/2000/svg' fill='none' viewBox='0 0 20 20'%3e%3cpath stroke='%236b7280' stroke-linecap='round' stroke-linejoin='round' stroke-width='1.5' d='M6 8l4 4 4-4'/%3e%3c/svg%3e")`, backgroundPosition: 'right 0.5rem center', backgroundRepeat: 'no-repeat', backgroundSize: '1.5em 1.5em', paddingRight: '2.5rem' }}
                 >
                   <option value="">Выберите город</option>
-                  <option value="city-1">Ташкент</option>
-                  <option value="city-2">Самарканд</option>
-                  <option value="city-3">Бухара</option>
-                  <option value="city-4">Наманган</option>
+                  <option value="city-tashkent">Ташкент</option>
+                  <option value="city-samarkand">Самарканд</option>
+                  <option value="city-bukhara">Бухара</option>
+                  <option value="city-namangan">Наманган</option>
                 </select>
               </div>
 
@@ -192,10 +205,15 @@ export default function NewProjectPage() {
                   style={{ backgroundImage: `url("data:image/svg+xml,%3csvg xmlns='http://www.w3.org/2000/svg' fill='none' viewBox='0 0 20 20'%3e%3cpath stroke='%236b7280' stroke-linecap='round' stroke-linejoin='round' stroke-width='1.5' d='M6 8l4 4 4-4'/%3e%3c/svg%3e")`, backgroundPosition: 'right 0.5rem center', backgroundRepeat: 'no-repeat', backgroundSize: '1.5em 1.5em', paddingRight: '2.5rem' }}
                 >
                   <option value="">Выберите район</option>
-                  <option value="district-1">Юнусабад</option>
-                  <option value="district-2">Чиланзар</option>
-                  <option value="district-3">Мирзо Улугбек</option>
-                  <option value="district-4">Яккасарай</option>
+                  {formData.cityId === 'city-tashkent' && (
+                    <>
+                      <option value="district-yunusabad">Юнусабад</option>
+                      <option value="district-chilanzar">Чиланзар</option>
+                      <option value="district-mirzo">Мирзо Улугбек</option>
+                      <option value="district-yakkasaray">Яккасарай</option>
+                      <option value="district-sergeli">Сергели</option>
+                    </>
+                  )}
                 </select>
               </div>
             </div>
