@@ -182,6 +182,8 @@ model Property {
   // Relations
   user        User          @relation(fields: [userId], references: [id], onDelete: Cascade)
   images      PropertyImage[]
+  videos      PropertyVideo[]
+  tours360    Property360Tour[]
   amenities   PropertyAmenity[]
   favorites   Favorite[]
   collections CollectionProperty[]
@@ -287,8 +289,46 @@ model PropertyImage {
   id          String    @id @default(cuid())
   propertyId  String
   url         String
+  thumbnailUrl String?
+  caption     String?
+  roomType    String?   // e.g., "LIVING_ROOM", "BEDROOM", "KITCHEN"
+  fileSize    Int?      // bytes
   order       Int       @default(0)
   isPrimary   Boolean   @default(false)
+  createdAt   DateTime  @default(now())
+
+  property    Property  @relation(fields: [propertyId], references: [id], onDelete: Cascade)
+
+  @@index([propertyId])
+  @@index([propertyId, isPrimary])
+}
+
+// Property videos
+model PropertyVideo {
+  id          String    @id @default(cuid())
+  propertyId  String
+  url         String
+  thumbnailUrl String?
+  title       String?
+  duration    Int?      // seconds
+  type        String    @default("UPLOADED") // UPLOADED, YOUTUBE, VIMEO
+  fileSize    Int?      // bytes (for uploaded videos)
+  order       Int       @default(0)
+  createdAt   DateTime  @default(now())
+
+  property    Property  @relation(fields: [propertyId], references: [id], onDelete: Cascade)
+
+  @@index([propertyId])
+}
+
+// Property 360° panoramic tours
+model Property360Tour {
+  id          String    @id @default(cuid())
+  propertyId  String
+  url         String    // URL to panoramic image
+  roomName    String?   // e.g., "Living Room", "Master Bedroom"
+  description String?   @db.Text
+  order       Int       @default(0)
   createdAt   DateTime  @default(now())
 
   property    Property  @relation(fields: [propertyId], references: [id], onDelete: Cascade)

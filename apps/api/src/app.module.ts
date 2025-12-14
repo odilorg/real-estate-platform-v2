@@ -21,6 +21,7 @@ import { DevelopersModule } from './modules/developers/developers.module';
 import { DeveloperProjectsModule } from './modules/developer-projects/developer-projects.module';
 import { UnitsModule } from './modules/units/units.module';
 import { LeadsModule } from './modules/leads/leads.module';
+import { MediaModule } from './modules/media/media.module';
 import { EmailModule } from './modules/email/email.module';
 import { SearchModule } from './modules/search/search.module';
 import { JwtAuthGuard } from './common/guards/jwt-auth.guard';
@@ -57,6 +58,7 @@ import { RequestIdMiddleware } from './common/middleware/request-id.middleware';
     DeveloperProjectsModule,
     UnitsModule,
     LeadsModule,
+    MediaModule,
     EmailModule,
     SearchModule,
   ],

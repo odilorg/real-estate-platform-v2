@@ -29,14 +29,23 @@ class ApiClient {
       console.warn('ApiClient: No token found for request', endpoint);
     }
 
+    let fetchBody: any = undefined;
+
     if (body) {
-      headers['Content-Type'] = 'application/json';
+      // Handle FormData separately (don't set Content-Type)
+      if (body instanceof FormData) {
+        fetchBody = body;
+        // Don't set Content-Type header for FormData
+      } else {
+        headers['Content-Type'] = 'application/json';
+        fetchBody = JSON.stringify(body);
+      }
     }
 
     const response = await fetch(`${this.baseUrl}${endpoint}`, {
       method,
       headers,
-      body: body ? JSON.stringify(body) : undefined,
+      body: fetchBody,
       credentials: 'include', // Include cookies for OAuth authentication
     });
 
@@ -52,8 +61,8 @@ class ApiClient {
     return this.request<T>(endpoint, { method: 'GET' });
   }
 
-  post<T>(endpoint: string, body: unknown) {
-    return this.request<T>(endpoint, { method: 'POST', body });
+  post<T>(endpoint: string, body: unknown, options?: RequestOptions) {
+    return this.request<T>(endpoint, { method: 'POST', body, ...options });
   }
 
   put<T>(endpoint: string, body: unknown) {
@@ -64,7 +73,7 @@ class ApiClient {
     return this.request<T>(endpoint, { method: 'DELETE' });
   }
 
-  patch<T>(endpoint: string, body: unknown) {
+  patch<T>(endpoint: string, body?: unknown) {
     return this.request<T>(endpoint, { method: 'PATCH', body });
   }
 }

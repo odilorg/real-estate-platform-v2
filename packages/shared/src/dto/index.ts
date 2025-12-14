@@ -393,6 +393,76 @@ export const LeadResponseDto = z.object({
 });
 export type LeadResponseDto = z.infer<typeof LeadResponseDto>;
 
+// Media DTOs
+export const UploadPropertyImageDto = z.object({
+  caption: z.string().max(500).optional(),
+  roomType: z.string().optional(), // e.g., LIVING_ROOM, BEDROOM, KITCHEN
+  isPrimary: z.boolean().default(false),
+});
+export type UploadPropertyImageDto = z.infer<typeof UploadPropertyImageDto>;
+
+export const PropertyImageResponseDto = z.object({
+  id: z.string(),
+  propertyId: z.string(),
+  url: z.string(),
+  thumbnailUrl: z.string().optional(),
+  caption: z.string().optional(),
+  roomType: z.string().optional(),
+  fileSize: z.number().optional(),
+  order: z.number(),
+  isPrimary: z.boolean(),
+  createdAt: z.date(),
+});
+export type PropertyImageResponseDto = z.infer<typeof PropertyImageResponseDto>;
+
+export const UploadPropertyVideoDto = z.object({
+  title: z.string().max(200).optional(),
+  type: z.enum(['UPLOADED', 'YOUTUBE', 'VIMEO']).default('UPLOADED'),
+  duration: z.number().int().optional(), // seconds
+});
+export type UploadPropertyVideoDto = z.infer<typeof UploadPropertyVideoDto>;
+
+export const PropertyVideoResponseDto = z.object({
+  id: z.string(),
+  propertyId: z.string(),
+  url: z.string(),
+  thumbnailUrl: z.string().optional(),
+  title: z.string().optional(),
+  duration: z.number().optional(),
+  type: z.string(),
+  fileSize: z.number().optional(),
+  order: z.number(),
+  createdAt: z.date(),
+});
+export type PropertyVideoResponseDto = z.infer<typeof PropertyVideoResponseDto>;
+
+export const Upload360TourDto = z.object({
+  roomName: z.string().optional(),
+  description: z.string().max(500).optional(),
+});
+export type Upload360TourDto = z.infer<typeof Upload360TourDto>;
+
+export const Property360TourResponseDto = z.object({
+  id: z.string(),
+  propertyId: z.string(),
+  url: z.string(),
+  roomName: z.string().optional(),
+  description: z.string().optional(),
+  order: z.number(),
+  createdAt: z.date(),
+});
+export type Property360TourResponseDto = z.infer<typeof Property360TourResponseDto>;
+
+export const ReorderMediaDto = z.object({
+  order: z.number().int().min(0),
+});
+export type ReorderMediaDto = z.infer<typeof ReorderMediaDto>;
+
+export const SetPrimaryImageDto = z.object({
+  imageId: z.string(),
+});
+export type SetPrimaryImageDto = z.infer<typeof SetPrimaryImageDto>;
+
 // Pagination Response
 export const PaginatedResponseDto = <T extends z.ZodTypeAny>(itemSchema: T) =>
   z.object({
