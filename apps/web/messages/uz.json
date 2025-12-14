@@ -746,7 +746,11 @@
     },
     "analytics": {
       "title": "Analitika",
-      "subtitle": "Sotuv va loyihalar samaradorligini kuzating",
+      "subtitle": "Ko'rsatkichlarni kuzating va ma'lumotlarga asoslangan qarorlar qabul qiling",
+      "loading": "Analitika yuklanmoqda...",
+      "error": "Analitikani yuklashda xatolik",
+      "tryAgain": "Qayta urinish",
+      "refresh": "Ma'lumotlarni yangilash",
       "timeRanges": {
         "7d": "7 kun",
         "30d": "30 kun",
@@ -754,17 +758,65 @@
         "1y": "1 yil",
         "all": "Barcha vaqt"
       },
-      "metrics": {
+      "kpi": {
         "totalRevenue": "Umumiy daromad",
         "totalLeads": "Jami leadlar",
         "conversionRate": "Konversiya",
-        "averageDealSize": "O'rtacha bitim",
-        "vsLastPeriod": "vs oldingi davr"
+        "avgDealSize": "O'rtacha bitim",
+        "propertyViews": "Ko'rishlar",
+        "unitsSold": "Sotilgan kvartiralar",
+        "reserved": "band qilingan"
       },
       "charts": {
-        "salesTrend": "Sotuv dinamikasi",
+        "viewsOverTime": "Davr bo'yicha ko'rishlar",
+        "leadFunnel": "Lead voronkasi",
         "leadSources": "Lead manbalari",
-        "noData": "Ko'rsatish uchun ma'lumot yo'q"
+        "agentPerformance": "Agentlar samaradorligi",
+        "noData": "Ko'rsatish uchun ma'lumot yo'q",
+        "total": "Jami",
+        "average": "O'rtacha",
+        "perDay": "/kun"
+      },
+      "funnel": {
+        "new": "Yangi",
+        "contacted": "Aloqaga chiqildi",
+        "qualified": "Malakali",
+        "negotiating": "Muzokara",
+        "converted": "Konvert qilingan",
+        "lost": "Yo'qotilgan"
+      },
+      "sources": {
+        "WEBSITE": "Veb-sayt",
+        "PHONE_CALL": "Qo'ng'iroq",
+        "SOCIAL_MEDIA": "Ijtimoiy tarmoq",
+        "REFERRAL": "Tavsiya",
+        "AGENT": "Agent",
+        "WALK_IN": "Tashrif",
+        "OTHER": "Boshqa"
+      },
+      "tables": {
+        "topProperties": "Ko'rishlar bo'yicha eng yaxshi mulklar",
+        "recentLeads": "So'nggi leadlar",
+        "property": "Mulk",
+        "views": "Ko'rishlar",
+        "leads": "Leadlar",
+        "status": "Holat",
+        "project": "Loyiha",
+        "contact": "Aloqa",
+        "source": "Manba",
+        "date": "Sana",
+        "assigned": "Tayinlangan",
+        "unassigned": "Tayinlanmagan",
+        "viewAll": "Barchasini ko'rish"
+      },
+      "agents": {
+        "title": "Agentlar samaradorligi",
+        "name": "Ism",
+        "assigned": "Tayinlangan",
+        "converted": "Konvert qilingan",
+        "conversion": "Konversiya",
+        "revenue": "Daromad",
+        "noAgents": "Agentlar haqida ma'lumot yo'q"
       },
       "projectPerformance": {
         "title": "Loyihalar samaradorligi",

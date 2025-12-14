@@ -746,7 +746,11 @@
     },
     "analytics": {
       "title": "Аналитика",
-      "subtitle": "Отслеживайте эффективность продаж и проектов",
+      "subtitle": "Отслеживайте показатели и принимайте решения на основе данных",
+      "loading": "Загрузка аналитики...",
+      "error": "Не удалось загрузить аналитику",
+      "tryAgain": "Попробовать снова",
+      "refresh": "Обновить данные",
       "timeRanges": {
         "7d": "7 дней",
         "30d": "30 дней",
@@ -754,17 +758,65 @@
         "1y": "1 год",
         "all": "Все время"
       },
-      "metrics": {
+      "kpi": {
         "totalRevenue": "Общая выручка",
         "totalLeads": "Всего лидов",
         "conversionRate": "Конверсия",
-        "averageDealSize": "Средний чек",
-        "vsLastPeriod": "vs прошлый период"
+        "avgDealSize": "Средний чек",
+        "propertyViews": "Просмотры",
+        "unitsSold": "Продано квартир",
+        "reserved": "забронировано"
       },
       "charts": {
-        "salesTrend": "Динамика продаж",
+        "viewsOverTime": "Просмотры за период",
+        "leadFunnel": "Воронка лидов",
         "leadSources": "Источники лидов",
-        "noData": "Нет данных для отображения"
+        "agentPerformance": "Эффективность агентов",
+        "noData": "Нет данных для отображения",
+        "total": "Всего",
+        "average": "Среднее",
+        "perDay": "/день"
+      },
+      "funnel": {
+        "new": "Новые",
+        "contacted": "Связались",
+        "qualified": "Квалифицированы",
+        "negotiating": "Переговоры",
+        "converted": "Конвертированы",
+        "lost": "Потеряны"
+      },
+      "sources": {
+        "WEBSITE": "Сайт",
+        "PHONE_CALL": "Звонок",
+        "SOCIAL_MEDIA": "Соцсети",
+        "REFERRAL": "Рекомендация",
+        "AGENT": "Агент",
+        "WALK_IN": "Визит",
+        "OTHER": "Другое"
+      },
+      "tables": {
+        "topProperties": "Лучшие объекты по просмотрам",
+        "recentLeads": "Последние лиды",
+        "property": "Объект",
+        "views": "Просмотры",
+        "leads": "Лиды",
+        "status": "Статус",
+        "project": "Проект",
+        "contact": "Контакт",
+        "source": "Источник",
+        "date": "Дата",
+        "assigned": "Назначен",
+        "unassigned": "Не назначен",
+        "viewAll": "Смотреть все"
+      },
+      "agents": {
+        "title": "Эффективность агентов",
+        "name": "Имя",
+        "assigned": "Назначено",
+        "converted": "Конвертировано",
+        "conversion": "Конверсия",
+        "revenue": "Выручка",
+        "noAgents": "Нет данных об агентах"
       },
       "projectPerformance": {
         "title": "Эффективность проектов",
