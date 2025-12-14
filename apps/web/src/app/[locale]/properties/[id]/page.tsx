@@ -4,7 +4,7 @@ import { useState, useEffect, use } from 'react';
 import Link from 'next/link';
 import { useRouter } from 'next/navigation';
 import { Button, Badge, Card, CardContent } from '@repo/ui';
-import { ImageGallery, MortgageCalculator, PropertyKeyFacts, PropertyDetailedInfo, PropertyLocationMap, PropertyAmenities, PriceHistoryChart, NearbyPOIs, PropertyReviews, SocialShare, LoginModal } from '@/components';
+import { ImageGallery, MortgageCalculator, PropertyKeyFacts, PropertyDetailedInfo, PropertyLocationMap, PropertyAmenities, PriceHistoryChart, NearbyPOIs, PropertyReviews, SocialShare, LoginModal, PropertyMediaGallery, PropertyVideoPlayer, Property360Viewer } from '@/components';
 import { useAuth } from '@/context/AuthContext';
 import { useTranslations } from 'next-intl';
 import {
@@ -103,6 +103,18 @@ interface Property {
   balcony: number | null;
   loggia: number | null;
   images: PropertyImage[];
+  videos?: Array<{
+    id: string;
+    url: string;
+    title?: string;
+    type: 'UPLOADED' | 'YOUTUBE' | 'VIMEO';
+  }>;
+  tours360?: Array<{
+    id: string;
+    url: string;
+    roomName?: string;
+    description?: string;
+  }>;
   user: PropertyUser;
   views: number;
   featured: boolean;
@@ -546,9 +558,38 @@ export default function PropertyDetailPage({
 
         <div className="grid grid-cols-1 lg:grid-cols-3 gap-8">
           {/* Main Content */}
-          <div className="lg:col-span-2 space-y-6">
+          <div className="lg:col-span-2 space-y-8">
             {/* Image Gallery */}
             <ImageGallery images={imageUrls} alt={property.title} />
+
+            {/* Property Media - Images, Videos, 360 Tours */}
+            {(property.images?.length > 0 || property.videos?.length > 0 || property.tours360?.length > 0) && (
+              <div className="space-y-6">
+                {/* Enhanced Image Gallery */}
+                {property.images && property.images.length > 0 && (
+                  <div>
+                    <h2 className="text-xl font-bold mb-4">Photo Gallery</h2>
+                    <PropertyMediaGallery images={property.images} />
+                  </div>
+                )}
+
+                {/* Video Player */}
+                {property.videos && property.videos.length > 0 && (
+                  <div>
+                    <h2 className="text-xl font-bold mb-4">Videos</h2>
+                    <PropertyVideoPlayer videos={property.videos} />
+                  </div>
+                )}
+
+                {/* 360 Panoramic Tours */}
+                {property.tours360 && property.tours360.length > 0 && (
+                  <div>
+                    <h2 className="text-xl font-bold mb-4">360° Virtual Tour</h2>
+                    <Property360Viewer tours={property.tours360} />
+                  </div>
+                )}
+              </div>
+            )}
 
             {/* Title & Price */}
             <div>

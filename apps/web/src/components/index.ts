@@ -24,3 +24,6 @@ export { SocialShare } from './social-share';
 export { default as PropertyCreationWizard } from './property-wizard/PropertyCreationWizard';
 export { LoginModal } from './auth/LoginModal';
 export { RegisterModal } from './auth/RegisterModal';
+export { PropertyMediaGallery } from './PropertyMediaGallery';
+export { PropertyVideoPlayer } from './PropertyVideoPlayer';
+export { Property360Viewer } from './Property360Viewer';
