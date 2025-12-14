@@ -24,6 +24,9 @@ class ApiClient {
     const token = this.getToken();
     if (token) {
       headers['Authorization'] = `Bearer ${token}`;
+      // console.debug('ApiClient: Attaching token to request', endpoint);
+    } else {
+      console.warn('ApiClient: No token found for request', endpoint);
     }
 
     if (body) {
@@ -59,6 +62,10 @@ class ApiClient {
 
   delete<T>(endpoint: string) {
     return this.request<T>(endpoint, { method: 'DELETE' });
+  }
+
+  patch<T>(endpoint: string, body: unknown) {
+    return this.request<T>(endpoint, { method: 'PATCH', body });
   }
 }
 

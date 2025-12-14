@@ -329,6 +329,70 @@ export const AddPropertyToCollectionDto = z.object({
 });
 export type AddPropertyToCollectionDto = z.infer<typeof AddPropertyToCollectionDto>;
 
+// Lead DTOs
+export const CreateLeadDto = z.object({
+  firstName: z.string().min(1).max(100),
+  lastName: z.string().min(1).max(100),
+  phone: z.string().min(5).max(20),
+  email: z.string().email().optional().nullable(),
+  projectId: z.string().optional().nullable(),
+  propertyType: z.enum(['APARTMENT', 'HOUSE', 'COMMERCIAL', 'LAND']).optional(),
+  budget: z.number().positive().optional().nullable(),
+  currency: z.enum(['UZS', 'YE']).optional(),
+  bedrooms: z.number().int().min(0).max(10).optional(),
+  source: z.enum(['WEBSITE', 'PHONE_CALL', 'SOCIAL_MEDIA', 'REFERRAL', 'AGENT', 'WALK_IN', 'OTHER']).default('WEBSITE'),
+  priority: z.number().int().min(0).max(5).default(0),
+  notes: z.string().max(2000).optional(),
+});
+export type CreateLeadDto = z.infer<typeof CreateLeadDto>;
+
+export const UpdateLeadDto = CreateLeadDto.partial().omit({ source: true });
+export type UpdateLeadDto = z.infer<typeof UpdateLeadDto>;
+
+export const AssignLeadDto = z.object({
+  assignedToId: z.string().optional().nullable(),
+});
+export type AssignLeadDto = z.infer<typeof AssignLeadDto>;
+
+export const UpdateLeadStatusDto = z.object({
+  status: z.enum(['NEW', 'CONTACTED', 'QUALIFIED', 'NEGOTIATING', 'CONVERTED', 'LOST']),
+});
+export type UpdateLeadStatusDto = z.infer<typeof UpdateLeadStatusDto>;
+
+export const ConvertLeadDto = z.object({
+  conversionType: z.enum(['VIEWING', 'BOOKING', 'PURCHASE', 'LEASE']),
+  conversionValue: z.number().positive().optional(),
+});
+export type ConvertLeadDto = z.infer<typeof ConvertLeadDto>;
+
+export const LeadResponseDto = z.object({
+  id: z.string(),
+  developerId: z.string(),
+  firstName: z.string(),
+  lastName: z.string(),
+  phone: z.string(),
+  email: z.string().optional().nullable(),
+  projectId: z.string().optional().nullable(),
+  propertyType: z.string().optional(),
+  budget: z.number().optional().nullable(),
+  currency: z.string().optional(),
+  bedrooms: z.number().optional(),
+  source: z.string(),
+  status: z.string(),
+  priority: z.number(),
+  notes: z.string().optional(),
+  assignedToId: z.string().optional().nullable(),
+  lastContactedAt: z.date().optional(),
+  nextFollowUpAt: z.date().optional(),
+  totalContacts: z.number(),
+  convertedAt: z.date().optional().nullable(),
+  conversionType: z.string().optional(),
+  conversionValue: z.number().optional().nullable(),
+  createdAt: z.date(),
+  updatedAt: z.date(),
+});
+export type LeadResponseDto = z.infer<typeof LeadResponseDto>;
+
 // Pagination Response
 export const PaginatedResponseDto = <T extends z.ZodTypeAny>(itemSchema: T) =>
   z.object({

@@ -42,6 +42,7 @@ model User {
   priceChanges  PriceHistory[]
   statusChanges PropertyStatusHistory[]
   otpCodes      OtpCode[]
+  assignedLeads Lead[]    @relation("LeadAssignedAgent")
 
   @@index([email])
   @@index([phone])
@@ -823,6 +824,7 @@ model Developer {
   projects        DeveloperProject[]
   properties      Property[]
   salesTeam       User[]    @relation("DeveloperSalesTeam")
+  leads           Lead[]
 
   createdAt       DateTime  @default(now())
   updatedAt       DateTime  @updatedAt
@@ -905,6 +907,7 @@ model DeveloperProject {
 
   // Relations
   properties      Property[]  // All units in this project
+  leads           Lead[]      // Leads interested in this project
 
   createdAt       DateTime  @default(now())
   updatedAt       DateTime  @updatedAt
@@ -962,4 +965,81 @@ model ProjectVideo {
   createdAt   DateTime         @default(now())
 
   @@index([projectId])
+}
+
+// Lead management for developers (potential buyers/renters)
+model Lead {
+  id              String    @id @default(cuid())
+  developerId     String
+  developer       Developer @relation(fields: [developerId], references: [id], onDelete: Cascade)
+
+  // Basic Info
+  firstName       String
+  lastName        String
+  phone           String
+  email           String?
+
+  // Interest Details
+  projectId       String?
+  project         DeveloperProject? @relation(fields: [projectId], references: [id], onDelete: SetNull)
+  propertyType    PropertyType?     // APARTMENT, HOUSE, etc.
+  budget          Float?            // Budget in their preferred currency
+  currency        Currency?
+  bedrooms        Int?              // Preferred number of bedrooms
+
+  // Source & Status
+  source          LeadSource        @default(WEBSITE)  // Where lead came from
+  status          LeadStatus        @default(NEW)      // NEW, CONTACTED, QUALIFIED, CONVERTED, LOST
+  priority        Int               @default(0)        // 1 (high) to 5 (low)
+  notes           String?           @db.Text
+
+  // Sales Agent Assignment
+  assignedToId    String?           // User (DEVELOPER_SALES_AGENT) assigned to this lead
+  assignedTo      User?             @relation("LeadAssignedAgent", fields: [assignedToId], references: [id], onDelete: SetNull)
+
+  // Interaction Tracking
+  lastContactedAt DateTime?
+  nextFollowUpAt  DateTime?
+  totalContacts   Int               @default(0)
+
+  // Conversion
+  convertedAt     DateTime?
+  conversionType  ConversionType?   // BOOKING, VIEWING, PURCHASE, etc.
+  conversionValue Float?            // Amount if purchase
+
+  createdAt       DateTime          @default(now())
+  updatedAt       DateTime          @updatedAt
+
+  @@index([developerId])
+  @@index([projectId])
+  @@index([status])
+  @@index([priority])
+  @@index([assignedToId])
+  @@index([createdAt])
+}
+
+enum LeadSource {
+  WEBSITE           // From website inquiry
+  PHONE_CALL        // Incoming phone call
+  SOCIAL_MEDIA      // Facebook, Instagram, Telegram
+  REFERRAL          // Referred by friend
+  AGENT             // Agent brought lead
+  WALK_IN           // Office visit
+  OTHER
+}
+
+enum LeadStatus {
+  NEW               // Just created, not yet contacted
+  CONTACTED         // Agent has reached out
+  QUALIFIED         // Confirmed interest
+  NEGOTIATING       // In active negotiation
+  CONVERTED         // Became a customer
+  LOST              // Lost the lead
+}
+
+enum ConversionType {
+  VIEWING           // Scheduled viewing
+  BOOKING           // Booking made
+  PURCHASE          // Property purchased
+  LEASE             // Lease signed
 }

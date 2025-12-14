@@ -19,6 +19,8 @@ import { AgentsModule } from './modules/agents/agents.module';
 import { AgenciesModule } from './modules/agencies/agencies.module';
 import { DevelopersModule } from './modules/developers/developers.module';
 import { DeveloperProjectsModule } from './modules/developer-projects/developer-projects.module';
+import { UnitsModule } from './modules/units/units.module';
+import { LeadsModule } from './modules/leads/leads.module';
 import { EmailModule } from './modules/email/email.module';
 import { SearchModule } from './modules/search/search.module';
 import { JwtAuthGuard } from './common/guards/jwt-auth.guard';
@@ -36,7 +38,7 @@ import { RequestIdMiddleware } from './common/middleware/request-id.middleware';
     ThrottlerModule.forRoot([
       {
         ttl: 60000,
-        limit: 60,
+        limit: 1000,
       },
     ]),
     PrismaModule,
@@ -53,6 +55,8 @@ import { RequestIdMiddleware } from './common/middleware/request-id.middleware';
     AgenciesModule,
     DevelopersModule,
     DeveloperProjectsModule,
+    UnitsModule,
+    LeadsModule,
     EmailModule,
     SearchModule,
   ],

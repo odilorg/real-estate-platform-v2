@@ -104,8 +104,16 @@ export default function LoginPage() {
     setLoading(true);
 
     try {
-      await login({ email, password });
+      console.log('LoginPage: Attempting login...');
+      const response = await login({ email, password });
+      console.log('LoginPage: Login response received', response);
+
+      if (!response.accessToken) {
+        throw new Error('No access token received');
+      }
+
       await refreshUser();
+      console.log('LoginPage: User refreshed, redirecting...');
       window.location.assign('/properties');
       return;
     } catch (err) {
