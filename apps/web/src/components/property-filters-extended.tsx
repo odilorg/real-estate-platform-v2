@@ -50,6 +50,9 @@ export function PropertyFiltersExtended({
   const bedroomsRef = useRef<HTMLDivElement>(null);
   const priceRef = useRef<HTMLDivElement>(null);
   const propertyTypeRef = useRef<HTMLDivElement>(null);
+  const regionRef = useRef<HTMLDivElement>(null);
+  const districtRef = useRef<HTMLDivElement>(null);
+  const metroRef = useRef<HTMLDivElement>(null);
 
   // Sync local state with props only when values actually differ (deep comparison)
   // Use ref to track previous values to prevent unnecessary updates
@@ -81,6 +84,15 @@ export function PropertyFiltersExtended({
       }
       if (propertyTypeRef.current && !propertyTypeRef.current.contains(event.target as Node)) {
         setShowRegionDropdown(false);
+      }
+      if (regionRef.current && !regionRef.current.contains(event.target as Node)) {
+        setShowRegionDropdown(false);
+      }
+      if (districtRef.current && !districtRef.current.contains(event.target as Node)) {
+        setShowDistrictDropdown(false);
+      }
+      if (metroRef.current && !metroRef.current.contains(event.target as Node)) {
+        setShowMetroDropdown(false);
       }
     };
 
@@ -361,7 +373,7 @@ export function PropertyFiltersExtended({
           {/* Location Filters - Hidden on mobile */}
           <div className="hidden lg:flex items-center gap-2">
             {/* Region */}
-            <div className="relative">
+            <div ref={regionRef} className="relative">
               <button
                 className="flex items-center gap-1 px-4 py-3 min-h-[44px] text-sm md:text-base text-blue-600 hover:text-blue-700 font-medium"
                 onClick={() => setShowRegionDropdown(!showRegionDropdown)}
@@ -369,10 +381,37 @@ export function PropertyFiltersExtended({
                 {values.city || t('region')}
                 <ChevronDown className="h-4 w-4" />
               </button>
+              {showRegionDropdown && (
+                <div className="absolute top-full mt-1 left-0 bg-white border border-gray-200 rounded-lg shadow-lg p-2 min-w-[200px] z-50">
+                  {['Ташкент', 'Самарканд', 'Бухара', 'Андижан', 'Фергана', 'Навои', 'Наманган', 'Карши', 'Термез'].map((city) => (
+                    <button
+                      key={city}
+                      onClick={() => {
+                        onChange({ ...values, city, district: undefined, metro: undefined });
+                        setShowRegionDropdown(false);
+                      }}
+                      className={`w-full text-left px-3 py-2 hover:bg-gray-100 rounded text-sm ${values.city === city ? 'bg-blue-50 text-blue-600' : ''}`}
+                    >
+                      {city}
+                    </button>
+                  ))}
+                  {values.city && (
+                    <button
+                      onClick={() => {
+                        onChange({ ...values, city: undefined, district: undefined, metro: undefined });
+                        setShowRegionDropdown(false);
+                      }}
+                      className="w-full text-left px-3 py-2 hover:bg-gray-100 rounded text-sm text-red-600 border-t mt-1"
+                    >
+                      Сбросить
+                    </button>
+                  )}
+                </div>
+              )}
             </div>
 
             {/* District */}
-            <div className="relative">
+            <div ref={districtRef} className="relative">
               <button
                 className="flex items-center gap-1 px-4 py-3 min-h-[44px] text-sm md:text-base text-blue-600 hover:text-blue-700 font-medium"
                 onClick={() => setShowDistrictDropdown(!showDistrictDropdown)}
@@ -380,10 +419,41 @@ export function PropertyFiltersExtended({
                 {values.district || t('district')}
                 <ChevronDown className="h-4 w-4" />
               </button>
+              {showDistrictDropdown && (
+                <div className="absolute top-full mt-1 left-0 bg-white border border-gray-200 rounded-lg shadow-lg p-2 min-w-[200px] z-50">
+                  {values.city === 'Ташкент' ? (
+                    ['Юнусабад', 'Чиланзар', 'Сергели', 'Мирзо-Улугбек', 'Яккасарай', 'Алмазар', 'Шайхантахур', 'Учтепа', 'Бектемир', 'Мирабад', 'Яшнабад'].map((district) => (
+                      <button
+                        key={district}
+                        onClick={() => {
+                          onChange({ ...values, district });
+                          setShowDistrictDropdown(false);
+                        }}
+                        className={`w-full text-left px-3 py-2 hover:bg-gray-100 rounded text-sm ${values.district === district ? 'bg-blue-50 text-blue-600' : ''}`}
+                      >
+                        {district}
+                      </button>
+                    ))
+                  ) : (
+                    <div className="px-3 py-2 text-sm text-gray-500">Сначала выберите город</div>
+                  )}
+                  {values.district && (
+                    <button
+                      onClick={() => {
+                        onChange({ ...values, district: undefined });
+                        setShowDistrictDropdown(false);
+                      }}
+                      className="w-full text-left px-3 py-2 hover:bg-gray-100 rounded text-sm text-red-600 border-t mt-1"
+                    >
+                      Сбросить
+                    </button>
+                  )}
+                </div>
+              )}
             </div>
 
             {/* Metro */}
-            <div className="relative">
+            <div ref={metroRef} className="relative">
               <button
                 className="flex items-center gap-1 px-4 py-3 min-h-[44px] text-sm md:text-base text-blue-600 hover:text-blue-700 font-medium"
                 onClick={() => setShowMetroDropdown(!showMetroDropdown)}
@@ -391,6 +461,37 @@ export function PropertyFiltersExtended({
                 {values.metro || t('metro')}
                 <ChevronDown className="h-4 w-4" />
               </button>
+              {showMetroDropdown && (
+                <div className="absolute top-full mt-1 left-0 bg-white border border-gray-200 rounded-lg shadow-lg p-2 min-w-[200px] z-50 max-h-[400px] overflow-y-auto">
+                  {values.city === 'Ташкент' ? (
+                    ['Алайский базар', 'Амир Темур', 'Буюк Ипак Йули', 'Чиланзар', 'Космонавтов', 'Минг Урик', 'Мустакиллик Майдони', 'Новза', 'Олмазор', 'Паксу', 'Пушкин', 'Сергели', 'Ташкент', 'Тинчлик', 'Хамид Алимжан', 'Юнус Раджаби'].map((station) => (
+                      <button
+                        key={station}
+                        onClick={() => {
+                          onChange({ ...values, metro: station });
+                          setShowMetroDropdown(false);
+                        }}
+                        className={`w-full text-left px-3 py-2 hover:bg-gray-100 rounded text-sm ${values.metro === station ? 'bg-blue-50 text-blue-600' : ''}`}
+                      >
+                        {station}
+                      </button>
+                    ))
+                  ) : (
+                    <div className="px-3 py-2 text-sm text-gray-500">Метро только в Ташкенте</div>
+                  )}
+                  {values.metro && (
+                    <button
+                      onClick={() => {
+                        onChange({ ...values, metro: undefined });
+                        setShowMetroDropdown(false);
+                      }}
+                      className="w-full text-left px-3 py-2 hover:bg-gray-100 rounded text-sm text-red-600 border-t mt-1"
+                    >
+                      Сбросить
+                    </button>
+                  )}
+                </div>
+              )}
             </div>
           </div>
 
