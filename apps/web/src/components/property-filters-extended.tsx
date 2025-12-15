@@ -1035,6 +1035,374 @@ export function PropertyFiltersExtended({
           </div>
         </>
       )}
+
+      {/* Mobile Individual Modals (Cian-style) */}
+
+      {/* Property Type Modal */}
+      {showMobilePropertyTypeModal && (
+        <div className="fixed inset-0 bg-white z-50 md:hidden">
+          <div className="flex flex-col h-full">
+            {/* Header */}
+            <div className="flex items-center justify-between px-4 py-4 border-b border-gray-200">
+              <h2 className="text-xl font-semibold text-gray-900">{t('propertyType')}</h2>
+              <button
+                onClick={() => setShowMobilePropertyTypeModal(false)}
+                className="p-2 hover:bg-gray-100 rounded-full"
+              >
+                <X className="h-6 w-6 text-gray-600" />
+              </button>
+            </div>
+
+            {/* Content */}
+            <div className="flex-1 overflow-y-auto px-4 py-6 space-y-6">
+              {/* Section: All */}
+              <div>
+                <h3 className="text-sm font-medium text-gray-500 mb-3">Все типы</h3>
+                <label className="flex items-center justify-between p-4 bg-white border-2 border-gray-200 rounded-lg hover:border-blue-300 cursor-pointer">
+                  <span className="text-base text-gray-900">{t('all')}</span>
+                  <input
+                    type="radio"
+                    name="propertyType"
+                    checked={values.propertyType === 'ALL'}
+                    onChange={() => onChange({ ...values, propertyType: 'ALL' })}
+                    className="w-5 h-5 text-blue-600"
+                  />
+                </label>
+              </div>
+
+              {/* Section: Property Types */}
+              <div>
+                <h3 className="text-sm font-medium text-gray-500 mb-3">Квартиры</h3>
+                <div className="space-y-3">
+                  <label className="flex items-center justify-between p-4 bg-white border-2 border-gray-200 rounded-lg hover:border-blue-300 cursor-pointer">
+                    <span className="text-base text-gray-900">{t('newBuilding')}</span>
+                    <input
+                      type="radio"
+                      name="propertyType"
+                      checked={values.propertyType === 'NEW_BUILDING'}
+                      onChange={() => onChange({ ...values, propertyType: 'NEW_BUILDING' })}
+                      className="w-5 h-5 text-blue-600"
+                    />
+                  </label>
+                  <label className="flex items-center justify-between p-4 bg-white border-2 border-gray-200 rounded-lg hover:border-blue-300 cursor-pointer">
+                    <span className="text-base text-gray-900">{t('secondary')}</span>
+                    <input
+                      type="radio"
+                      name="propertyType"
+                      checked={values.propertyType === 'SECONDARY'}
+                      onChange={() => onChange({ ...values, propertyType: 'SECONDARY' })}
+                      className="w-5 h-5 text-blue-600"
+                    />
+                  </label>
+                </div>
+              </div>
+            </div>
+
+            {/* Apply Button */}
+            <div className="border-t border-gray-200 p-4">
+              <button
+                onClick={() => setShowMobilePropertyTypeModal(false)}
+                className="w-full py-4 bg-blue-600 text-white rounded-lg font-semibold text-lg hover:bg-blue-700"
+              >
+                Применить
+              </button>
+            </div>
+          </div>
+        </div>
+      )}
+
+      {/* Rooms Modal */}
+      {showMobileRoomsModal && (
+        <div className="fixed inset-0 bg-white z-50 md:hidden">
+          <div className="flex flex-col h-full">
+            {/* Header */}
+            <div className="flex items-center justify-between px-4 py-4 border-b border-gray-200">
+              <h2 className="text-xl font-semibold text-gray-900">{t('rooms')}</h2>
+              <button
+                onClick={() => setShowMobileRoomsModal(false)}
+                className="p-2 hover:bg-gray-100 rounded-full"
+              >
+                <X className="h-6 w-6 text-gray-600" />
+              </button>
+            </div>
+
+            {/* Content */}
+            <div className="flex-1 overflow-y-auto px-4 py-6">
+              <div className="grid grid-cols-3 gap-3">
+                {[
+                  { value: 0, label: t('studio') },
+                  { value: 1, label: '1' },
+                  { value: 2, label: '2' },
+                  { value: 3, label: '3' },
+                  { value: 4, label: '4' },
+                  { value: 5, label: '5+' },
+                ].map((option) => (
+                  <button
+                    key={option.value}
+                    onClick={() => toggleBedroom(option.value)}
+                    className={`p-6 rounded-lg border-2 text-lg font-semibold transition-all ${
+                      localBedrooms.includes(option.value)
+                        ? 'border-blue-600 bg-blue-50 text-blue-600'
+                        : 'border-gray-300 bg-white text-gray-700 hover:border-gray-400'
+                    }`}
+                  >
+                    {option.label}
+                  </button>
+                ))}
+              </div>
+            </div>
+
+            {/* Apply Button */}
+            <div className="border-t border-gray-200 p-4">
+              <button
+                onClick={() => setShowMobileRoomsModal(false)}
+                className="w-full py-4 bg-blue-600 text-white rounded-lg font-semibold text-lg hover:bg-blue-700"
+              >
+                Применить {localBedrooms.length > 0 && `(${localBedrooms.length})`}
+              </button>
+            </div>
+          </div>
+        </div>
+      )}
+
+      {/* Price Modal */}
+      {showMobilePriceModal && (
+        <div className="fixed inset-0 bg-white z-50 md:hidden">
+          <div className="flex flex-col h-full">
+            {/* Header */}
+            <div className="flex items-center justify-between px-4 py-4 border-b border-gray-200">
+              <h2 className="text-xl font-semibold text-gray-900">{t('priceRange')}</h2>
+              <button
+                onClick={() => setShowMobilePriceModal(false)}
+                className="p-2 hover:bg-gray-100 rounded-full"
+              >
+                <X className="h-6 w-6 text-gray-600" />
+              </button>
+            </div>
+
+            {/* Content */}
+            <div className="flex-1 overflow-y-auto px-4 py-6 space-y-6">
+              <div>
+                <label className="block text-base font-medium text-gray-700 mb-3">
+                  Цена от ($)
+                </label>
+                <input
+                  type="number"
+                  placeholder="0"
+                  value={values.minPrice || ''}
+                  onChange={(e) =>
+                    onChange({
+                      ...values,
+                      minPrice: e.target.value ? Number(e.target.value) : undefined,
+                    })
+                  }
+                  className="w-full px-4 py-4 text-lg border-2 border-gray-300 rounded-lg focus:outline-none focus:ring-2 focus:ring-blue-500"
+                />
+              </div>
+              <div>
+                <label className="block text-base font-medium text-gray-700 mb-3">
+                  Цена до ($)
+                </label>
+                <input
+                  type="number"
+                  placeholder="∞"
+                  value={values.maxPrice || ''}
+                  onChange={(e) =>
+                    onChange({
+                      ...values,
+                      maxPrice: e.target.value ? Number(e.target.value) : undefined,
+                    })
+                  }
+                  className="w-full px-4 py-4 text-lg border-2 border-gray-300 rounded-lg focus:outline-none focus:ring-2 focus:ring-blue-500"
+                />
+              </div>
+
+              {/* Quick Price Ranges */}
+              <div>
+                <h3 className="text-sm font-medium text-gray-500 mb-3">Быстрый выбор</h3>
+                <div className="grid grid-cols-2 gap-3">
+                  {[
+                    { label: 'До $50k', min: 0, max: 50000 },
+                    { label: '$50k - $100k', min: 50000, max: 100000 },
+                    { label: '$100k - $200k', min: 100000, max: 200000 },
+                    { label: 'Более $200k', min: 200000, max: undefined },
+                  ].map((range) => (
+                    <button
+                      key={range.label}
+                      onClick={() =>
+                        onChange({
+                          ...values,
+                          minPrice: range.min,
+                          maxPrice: range.max,
+                        })
+                      }
+                      className={`p-3 rounded-lg border-2 text-sm font-medium transition-all ${
+                        values.minPrice === range.min && values.maxPrice === range.max
+                          ? 'border-blue-600 bg-blue-50 text-blue-600'
+                          : 'border-gray-300 bg-white text-gray-700 hover:border-gray-400'
+                      }`}
+                    >
+                      {range.label}
+                    </button>
+                  ))}
+                </div>
+              </div>
+            </div>
+
+            {/* Apply Button */}
+            <div className="border-t border-gray-200 p-4">
+              <button
+                onClick={() => setShowMobilePriceModal(false)}
+                className="w-full py-4 bg-blue-600 text-white rounded-lg font-semibold text-lg hover:bg-blue-700"
+              >
+                Применить
+              </button>
+            </div>
+          </div>
+        </div>
+      )}
+
+      {/* Region Modal */}
+      {showMobileRegionModal && (
+        <div className="fixed inset-0 bg-white z-50 md:hidden">
+          <div className="flex flex-col h-full">
+            {/* Header */}
+            <div className="flex items-center justify-between px-4 py-4 border-b border-gray-200">
+              <h2 className="text-xl font-semibold text-gray-900">Регион</h2>
+              <button
+                onClick={() => setShowMobileRegionModal(false)}
+                className="p-2 hover:bg-gray-100 rounded-full"
+              >
+                <X className="h-6 w-6 text-gray-600" />
+              </button>
+            </div>
+
+            {/* Content */}
+            <div className="flex-1 overflow-y-auto px-4 py-6 space-y-6">
+              {/* Cities */}
+              <div>
+                <h3 className="text-sm font-medium text-gray-500 mb-3">Город</h3>
+                <div className="space-y-2">
+                  {['Ташкент', 'Самарканд', 'Бухара', 'Андижан', 'Фергана', 'Навои', 'Наманган', 'Карши', 'Термез'].map((city) => (
+                    <label
+                      key={city}
+                      className={`flex items-center justify-between p-4 bg-white border-2 rounded-lg hover:border-blue-300 cursor-pointer ${
+                        values.city === (CITY_NAME_MAP[city] || city)
+                          ? 'border-blue-600 bg-blue-50'
+                          : 'border-gray-200'
+                      }`}
+                    >
+                      <span className={`text-base ${
+                        values.city === (CITY_NAME_MAP[city] || city)
+                          ? 'text-blue-600 font-semibold'
+                          : 'text-gray-900'
+                      }`}>
+                        {city}
+                      </span>
+                      <input
+                        type="radio"
+                        name="city"
+                        checked={values.city === (CITY_NAME_MAP[city] || city)}
+                        onChange={() => {
+                          const englishCity = CITY_NAME_MAP[city] || city;
+                          onChange({ ...values, city: englishCity, district: undefined, metro: undefined });
+                        }}
+                        className="w-5 h-5 text-blue-600"
+                      />
+                    </label>
+                  ))}
+                </div>
+              </div>
+
+              {/* Districts (if Tashkent selected) */}
+              {values.city === 'Tashkent' && (
+                <div>
+                  <h3 className="text-sm font-medium text-gray-500 mb-3">Район</h3>
+                  <div className="space-y-2">
+                    {['Юнусабад', 'Чиланзар', 'Сергели', 'Мирзо-Улугбек', 'Яшнабад', 'Алмазар', 'Шайхантахур', 'Яккасарай', 'Бектемир', 'Учтепа', 'Мирабад'].map((district) => (
+                      <label
+                        key={district}
+                        className={`flex items-center justify-between p-4 bg-white border-2 rounded-lg hover:border-blue-300 cursor-pointer ${
+                          values.district === district
+                            ? 'border-blue-600 bg-blue-50'
+                            : 'border-gray-200'
+                        }`}
+                      >
+                        <span className={`text-base ${
+                          values.district === district
+                            ? 'text-blue-600 font-semibold'
+                            : 'text-gray-900'
+                        }`}>
+                          {district}
+                        </span>
+                        <input
+                          type="checkbox"
+                          checked={values.district === district}
+                          onChange={() => {
+                            onChange({
+                              ...values,
+                              district: values.district === district ? undefined : district,
+                            });
+                          }}
+                          className="w-5 h-5 text-blue-600 rounded"
+                        />
+                      </label>
+                    ))}
+                  </div>
+                </div>
+              )}
+
+              {/* Metro (if Tashkent selected) */}
+              {values.city === 'Tashkent' && (
+                <div>
+                  <h3 className="text-sm font-medium text-gray-500 mb-3">Метро</h3>
+                  <div className="space-y-2">
+                    {['Алайский базар', 'Амир Темур', 'Буюк Ипак Йули', 'Чиланзар', 'Космонавтов', 'Минг Урик', 'Мустакиллик Майдони', 'Новза', 'Олмазор', 'Паксу', 'Пушкин', 'Сергели', 'Ташкент', 'Тинчлик', 'Хамид Алимжан', 'Юнус Раджаби'].map((station) => (
+                      <label
+                        key={station}
+                        className={`flex items-center justify-between p-4 bg-white border-2 rounded-lg hover:border-blue-300 cursor-pointer ${
+                          values.metro === station
+                            ? 'border-blue-600 bg-blue-50'
+                            : 'border-gray-200'
+                        }`}
+                      >
+                        <span className={`text-base ${
+                          values.metro === station
+                            ? 'text-blue-600 font-semibold'
+                            : 'text-gray-900'
+                        }`}>
+                          {station}
+                        </span>
+                        <input
+                          type="checkbox"
+                          checked={values.metro === station}
+                          onChange={() => {
+                            onChange({
+                              ...values,
+                              metro: values.metro === station ? undefined : station,
+                            });
+                          }}
+                          className="w-5 h-5 text-blue-600 rounded"
+                        />
+                      </label>
+                    ))}
+                  </div>
+                </div>
+              )}
+            </div>
+
+            {/* Apply Button */}
+            <div className="border-t border-gray-200 p-4">
+              <button
+                onClick={() => setShowMobileRegionModal(false)}
+                className="w-full py-4 bg-blue-600 text-white rounded-lg font-semibold text-lg hover:bg-blue-700"
+              >
+                Применить
+              </button>
+            </div>
+          </div>
+        </div>
+      )}
     </div>
   );
 }
