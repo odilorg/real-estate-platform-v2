@@ -3,7 +3,7 @@
 import { useState, useEffect, useRef, useCallback } from 'react';
 import Link from 'next/link';
 import { useRouter, useSearchParams } from 'next/navigation';
-import { PropertyCard, Button, Select, SelectContent, SelectItem, SelectTrigger, SelectValue } from '@repo/ui';
+import { PropertyCard, PropertyCardSkeletonGrid, Button, Select, SelectContent, SelectItem, SelectTrigger, SelectValue } from '@repo/ui';
 import { PropertyFiltersModern, PropertyFiltersExtended, type ModernFilterValues, type ExtendedFilterValues, PropertyMap, type PropertyMapMarker, PropertyListItem, PropertyQuickView, SaveSearchModal, SavedSearchesDropdown } from '@/components';
 import { Search, Plus, Loader2, User, LogOut, MapPin, ArrowUpDown, Grid3X3, Map as MapIcon, List, Bookmark, X, Eye, Save } from 'lucide-react';
 import { useAuth } from '@/context/AuthContext';
@@ -1048,8 +1048,12 @@ export default function PropertiesPage() {
 
             {/* Grid View (default) */}
             {viewMode === 'grid' && (
-              <div className="grid grid-cols-1 md:grid-cols-2 lg:grid-cols-3 gap-6">
-                {properties.map((property) => (
+              <>
+                {loading ? (
+                  <PropertyCardSkeletonGrid count={6} />
+                ) : (
+                  <div className="grid grid-cols-1 md:grid-cols-2 lg:grid-cols-3 gap-6">
+                    {properties.map((property) => (
                   <div key={property.id} className="relative group">
                     {/* Quick View Button */}
                     <button
@@ -1078,9 +1082,11 @@ export default function PropertiesPage() {
                         reviewCount={property.reviewCount}
                       />
                     </Link>
+                      </div>
+                    ))}
                   </div>
-                ))}
-              </div>
+                )}
+              </>
             )}
 
             {/* Pagination (for grid and list views) */}
