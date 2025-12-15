@@ -1098,11 +1098,11 @@ export function PropertyFiltersExtended({
               </div>
             </div>
 
-            {/* Apply Button */}
-            <div className="border-t border-gray-200 p-4">
+            {/* Apply Button - Sticky at bottom with safe area */}
+            <div className="sticky bottom-0 bg-white border-t border-gray-200 p-4 pb-6 shadow-[0_-4px_6px_-1px_rgba(0,0,0,0.1)]">
               <button
                 onClick={() => setShowMobilePropertyTypeModal(false)}
-                className="w-full py-4 bg-blue-600 text-white rounded-lg font-semibold text-lg hover:bg-blue-700"
+                className="w-full py-4 bg-blue-600 text-white rounded-xl font-bold text-lg hover:bg-blue-700 active:bg-blue-800 shadow-lg"
               >
                 Применить
               </button>
@@ -1152,11 +1152,11 @@ export function PropertyFiltersExtended({
               </div>
             </div>
 
-            {/* Apply Button */}
-            <div className="border-t border-gray-200 p-4">
+            {/* Apply Button - Sticky at bottom with safe area */}
+            <div className="sticky bottom-0 bg-white border-t border-gray-200 p-4 pb-6 shadow-[0_-4px_6px_-1px_rgba(0,0,0,0.1)]">
               <button
                 onClick={() => setShowMobileRoomsModal(false)}
-                className="w-full py-4 bg-blue-600 text-white rounded-lg font-semibold text-lg hover:bg-blue-700"
+                className="w-full py-4 bg-blue-600 text-white rounded-xl font-bold text-lg hover:bg-blue-700 active:bg-blue-800 shadow-lg"
               >
                 Применить {localBedrooms.length > 0 && `(${localBedrooms.length})`}
               </button>
@@ -1249,11 +1249,11 @@ export function PropertyFiltersExtended({
               </div>
             </div>
 
-            {/* Apply Button */}
-            <div className="border-t border-gray-200 p-4">
+            {/* Apply Button - Sticky at bottom with safe area */}
+            <div className="sticky bottom-0 bg-white border-t border-gray-200 p-4 pb-6 shadow-[0_-4px_6px_-1px_rgba(0,0,0,0.1)]">
               <button
                 onClick={() => setShowMobilePriceModal(false)}
-                className="w-full py-4 bg-blue-600 text-white rounded-lg font-semibold text-lg hover:bg-blue-700"
+                className="w-full py-4 bg-blue-600 text-white rounded-xl font-bold text-lg hover:bg-blue-700 active:bg-blue-800 shadow-lg"
               >
                 Применить
               </button>
@@ -1391,11 +1391,11 @@ export function PropertyFiltersExtended({
               )}
             </div>
 
-            {/* Apply Button */}
-            <div className="border-t border-gray-200 p-4">
+            {/* Apply Button - Sticky at bottom with safe area */}
+            <div className="sticky bottom-0 bg-white border-t border-gray-200 p-4 pb-6 shadow-[0_-4px_6px_-1px_rgba(0,0,0,0.1)]">
               <button
                 onClick={() => setShowMobileRegionModal(false)}
-                className="w-full py-4 bg-blue-600 text-white rounded-lg font-semibold text-lg hover:bg-blue-700"
+                className="w-full py-4 bg-blue-600 text-white rounded-xl font-bold text-lg hover:bg-blue-700 active:bg-blue-800 shadow-lg"
               >
                 Применить
               </button>
