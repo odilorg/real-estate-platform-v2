@@ -4,6 +4,7 @@ import type { ReactNode } from 'react';
 import { AuthProvider } from './AuthContext';
 import { ComparisonProvider } from './ComparisonContext';
 import { Navbar, ComparisonBar } from '@/components';
+import { MobileBottomNav } from '@/components/MobileBottomNav';
 
 export function Providers({ children }: { children: ReactNode }) {
   return (
@@ -12,6 +13,7 @@ export function Providers({ children }: { children: ReactNode }) {
         <Navbar />
         {children}
         <ComparisonBar />
+        <MobileBottomNav />
       </ComparisonProvider>
     </AuthProvider>
   );

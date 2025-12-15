@@ -27,3 +27,4 @@ export { RegisterModal } from './auth/RegisterModal';
 export { PropertyMediaGallery } from './PropertyMediaGallery';
 export { PropertyVideoPlayer } from './PropertyVideoPlayer';
 export { Property360Viewer } from './Property360Viewer';
+export { MobileBottomNav } from './MobileBottomNav';
