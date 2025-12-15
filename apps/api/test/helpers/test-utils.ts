@@ -1,7 +1,6 @@
 import { INestApplication } from '@nestjs/common';
-import { Test, TestingModule } from '@nestjs/testing';
 import { PrismaService } from '../../src/common/prisma/prisma.service';
-import * as request from 'supertest';
+import request from 'supertest';
 import { JwtService } from '@nestjs/jwt';
 
 /**
@@ -51,10 +50,9 @@ export const createAuthenticatedUser = async (
   const user = await prisma.user.create({
     data: {
       email: `test${Date.now()}@example.com`,
-      password: hashedPassword,
+      passwordHash: hashedPassword,
       firstName: 'Test',
       lastName: 'User',
-      verified: true,
       ...userOverrides,
     },
   });

@@ -4,8 +4,8 @@ import { useState, useEffect, useRef, useCallback } from 'react';
 import Link from 'next/link';
 import { useRouter, useSearchParams } from 'next/navigation';
 import { PropertyCard, Button, Select, SelectContent, SelectItem, SelectTrigger, SelectValue } from '@repo/ui';
-import { PropertyFiltersModern, PropertyFiltersExtended, type ModernFilterValues, type ExtendedFilterValues, PropertyMap, type PropertyMapMarker, PropertyListItem } from '@/components';
-import { Search, Plus, Loader2, User, LogOut, MapPin, ArrowUpDown, Grid3X3, Map as MapIcon, List, Bookmark, X } from 'lucide-react';
+import { PropertyFiltersModern, PropertyFiltersExtended, type ModernFilterValues, type ExtendedFilterValues, PropertyMap, type PropertyMapMarker, PropertyListItem, PropertyQuickView } from '@/components';
+import { Search, Plus, Loader2, User, LogOut, MapPin, ArrowUpDown, Grid3X3, Map as MapIcon, List, Bookmark, X, Eye } from 'lucide-react';
 import { useAuth } from '@/context/AuthContext';
 
 interface PropertyImage {
@@ -97,6 +97,7 @@ export default function PropertiesPage() {
   const [searchRadius, setSearchRadius] = useState<number | null>(null);
   const [viewMode, setViewMode] = useState<ViewMode>('grid');
   const [selectedPropertyId, setSelectedPropertyId] = useState<string | null>(null);
+  const [quickViewPropertyId, setQuickViewPropertyId] = useState<string | null>(null);
   const [filtersInitialized, setFiltersInitialized] = useState(false);
   const [showSaveSearchModal, setShowSaveSearchModal] = useState(false);
   const [searchName, setSearchName] = useState('');
@@ -1039,7 +1040,7 @@ export default function PropertiesPage() {
                     {properties.map((property) => (
                       <div
                         key={property.id}
-                        className={`cursor-pointer transition-all ${
+                        className={`cursor-pointer transition-all relative group ${
                           selectedPropertyId === property.id
                             ? 'ring-2 ring-blue-500 rounded-lg'
                             : ''
@@ -1047,6 +1048,19 @@ export default function PropertiesPage() {
                         onMouseEnter={() => setSelectedPropertyId(property.id)}
                         onMouseLeave={() => setSelectedPropertyId(null)}
                       >
+                        {/* Quick View Button */}
+                        <button
+                          onClick={(e) => {
+                            e.preventDefault();
+                            e.stopPropagation();
+                            setQuickViewPropertyId(property.id);
+                          }}
+                          className="absolute top-2 right-2 p-2 bg-white hover:bg-blue-600 text-gray-700 hover:text-white rounded-full shadow-lg opacity-0 group-hover:opacity-100 transition-all duration-200 z-10"
+                          title="Быстрый просмотр"
+                        >
+                          <Eye className="h-4 w-4" />
+                        </button>
+
                         <Link href={`/properties/${property.id}`}>
                           <PropertyCard
                             title={property.title}
@@ -1124,20 +1138,35 @@ export default function PropertiesPage() {
             {viewMode === 'grid' && (
               <div className="grid grid-cols-1 md:grid-cols-2 lg:grid-cols-3 gap-6">
                 {properties.map((property) => (
-                  <Link key={property.id} href={`/properties/${property.id}`}>
-                    <PropertyCard
-                      title={property.title}
-                      price={property.price}
-                      listingType={property.listingType}
-                      address={`${property.address}, ${property.city}`}
-                      bedrooms={property.bedrooms ?? undefined}
-                      bathrooms={property.bathrooms ?? undefined}
-                      area={property.area}
-                      imageUrl={property.images?.[0]?.url}
-                      rating={property.averageRating ?? undefined}
-                      reviewCount={property.reviewCount}
-                    />
-                  </Link>
+                  <div key={property.id} className="relative group">
+                    {/* Quick View Button */}
+                    <button
+                      onClick={(e) => {
+                        e.preventDefault();
+                        e.stopPropagation();
+                        setQuickViewPropertyId(property.id);
+                      }}
+                      className="absolute top-2 right-2 p-2 bg-white hover:bg-blue-600 text-gray-700 hover:text-white rounded-full shadow-lg opacity-0 group-hover:opacity-100 transition-all duration-200 z-10"
+                      title="Быстрый просмотр"
+                    >
+                      <Eye className="h-4 w-4" />
+                    </button>
+
+                    <Link href={`/properties/${property.id}`}>
+                      <PropertyCard
+                        title={property.title}
+                        price={property.price}
+                        listingType={property.listingType}
+                        address={`${property.address}, ${property.city}`}
+                        bedrooms={property.bedrooms ?? undefined}
+                        bathrooms={property.bathrooms ?? undefined}
+                        area={property.area}
+                        imageUrl={property.images?.[0]?.url}
+                        rating={property.averageRating ?? undefined}
+                        reviewCount={property.reviewCount}
+                      />
+                    </Link>
+                  </div>
                 ))}
               </div>
             )}
@@ -1200,6 +1229,16 @@ export default function PropertiesPage() {
           </>
         )}
       </main>
+
+      {/* Quick View Modal */}
+      <PropertyQuickView
+        propertyId={quickViewPropertyId}
+        onClose={() => setQuickViewPropertyId(null)}
+        onViewFull={(id) => {
+          setQuickViewPropertyId(null);
+          router.push(`/properties/${id}`);
+        }}
+      />
     </div>
   );
 }
