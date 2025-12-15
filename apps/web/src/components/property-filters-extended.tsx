@@ -507,8 +507,10 @@ export function PropertyFiltersExtended({
                         {station}
                       </button>
                     ))
-                  ) : (
+                  ) : values.city ? (
                     <div className="px-3 py-2 text-sm text-gray-500">Метро только в Ташкенте</div>
+                  ) : (
+                    <div className="px-3 py-2 text-sm text-gray-500">Сначала выберите город</div>
                   )}
                   {values.metro && (
                     <button
