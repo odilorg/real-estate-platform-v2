@@ -569,7 +569,28 @@ export default function PropertyCreationWizard() {
           </div>
         </div>
 
-        {/* Step Indicators */}
+        {/* Mobile Step Indicator - Compact */}
+        <div className="md:hidden flex items-center justify-between mb-6 px-4 py-3 bg-blue-50 rounded-lg">
+          <span className="text-sm font-medium text-blue-900">
+            Шаг {currentStep} из {STEPS.length}
+          </span>
+          <div className="flex gap-1">
+            {STEPS.map((step) => (
+              <div
+                key={step.number}
+                className={`h-2 w-2 rounded-full transition-all ${
+                  step.number === currentStep
+                    ? 'bg-blue-600 w-8'
+                    : step.number < currentStep
+                      ? 'bg-green-500'
+                      : 'bg-gray-300'
+                }`}
+              />
+            ))}
+          </div>
+        </div>
+
+        {/* Desktop Step Indicators */}
         <div className="hidden md:grid md:grid-cols-6 gap-2 mb-8">
           {STEPS.map((step) => (
             <div
@@ -636,7 +657,7 @@ export default function PropertyCreationWizard() {
             className="gap-2 px-3 md:px-4"
           >
             <ArrowLeft className="h-4 w-4" />
-            <span className="hidden sm:inline">Назад</span>
+            <span>Назад</span>
           </Button>
 
           {/* Draft Actions Dropdown */}
@@ -647,8 +668,11 @@ export default function PropertyCreationWizard() {
               className="inline-flex items-center justify-center gap-1.5 px-3 md:px-4 py-2 text-sm font-medium text-gray-700 border border-gray-300 hover:bg-gray-50 rounded-lg transition-colors"
             >
               <Save className="h-4 w-4" />
-              <span className="hidden sm:inline">
+              <span className="hidden xs:inline">
                 {draftSaved ? 'Сохранено ✓' : 'Черновик'}
+              </span>
+              <span className="xs:hidden">
+                {draftSaved ? '✓' : 'Сохр'}
               </span>
               <ChevronDown className={`h-4 w-4 transition-transform ${showDraftDropdown ? 'rotate-180' : ''}`} />
             </button>
@@ -690,9 +714,8 @@ export default function PropertyCreationWizard() {
           {/* Next/Submit Button */}
           {currentStep < STEPS.length ? (
             <Button onClick={handleNext} className="flex-1 md:flex-auto gap-2 ml-auto">
-              <span className="hidden sm:inline">Далее</span>
-              <span className="sm:hidden">→</span>
-              <ArrowRight className="h-4 w-4 hidden sm:inline" />
+              <span>Далее</span>
+              <ArrowRight className="h-4 w-4" />
             </Button>
           ) : (
             <Button
@@ -705,8 +728,7 @@ export default function PropertyCreationWizard() {
               ) : (
                 <>
                   <Check className="h-4 w-4" />
-                  <span className="hidden sm:inline">Опубликовать</span>
-                  <span className="sm:hidden">✓</span>
+                  <span>Опубликовать</span>
                 </>
               )}
             </Button>
