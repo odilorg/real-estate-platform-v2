@@ -1,6 +1,6 @@
 import { Injectable, CanActivate, ExecutionContext, ForbiddenException, SetMetadata } from '@nestjs/common';
 import { Reflector } from '@nestjs/core';
-import { AgencyRole } from '@prisma/client';
+import { AgencyRole } from '@repo/database';
 
 /**
  * AgencyPermissionGuard - Role-based access control for agency CRM

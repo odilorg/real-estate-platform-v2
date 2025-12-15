@@ -3,7 +3,6 @@ import { PrismaService } from '../../../common/prisma/prisma.service';
 import { CreateLeadDto } from './dto/create-lead.dto';
 import { UpdateLeadDto } from './dto/update-lead.dto';
 import { QueryLeadsDto } from './dto/query-leads.dto';
-import { LeadStatus } from '@prisma/client';
 
 @Injectable()
 export class LeadsService {
@@ -86,7 +85,7 @@ export class LeadsService {
     };
   }
 
-  async findOne(agencyId: string, id: string) {
+  async findOne(agencyId: string, id: string): Promise<any> {
     const lead = await this.prisma.agencyLead.findUnique({
       where: { id },
       include: {
@@ -141,7 +140,7 @@ export class LeadsService {
     });
 
     if (!lead) {
-      throw new NotFoundException(`Lead with ID ${id} not found`);
+      throw new NotFoundException();
     }
 
     // Security: verify lead belongs to this agency
@@ -198,7 +197,7 @@ export class LeadsService {
     });
 
     if (!member) {
-      throw new NotFoundException(`Member with ID ${memberId} not found or inactive`);
+      throw new NotFoundException();
     }
 
     return this.prisma.agencyLead.update({

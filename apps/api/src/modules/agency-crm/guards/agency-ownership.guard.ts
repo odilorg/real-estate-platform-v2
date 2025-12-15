@@ -16,7 +16,7 @@ import { PrismaService } from '../../../common/prisma/prisma.service';
 export class AgencyOwnershipGuard implements CanActivate {
   constructor(private prisma: PrismaService) {}
 
-  async canActivate(context: ExecutionContext): boolean {
+  async canActivate(context: ExecutionContext): Promise<boolean> {
     const request = context.switchToHttp().getRequest();
     const user = request.user;
 

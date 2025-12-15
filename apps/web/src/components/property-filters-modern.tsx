@@ -28,6 +28,8 @@ export interface ModernFilterValues {
   hasConcierge?: boolean;
   hasGatedArea?: boolean;
   mahalla?: string;
+  metroStationId?: string;
+  metroMaxDistance?: number;
 }
 
 interface PropertyFiltersModernProps {

@@ -23,19 +23,19 @@ export class LeadsController {
   constructor(private readonly leadsService: LeadsService) {}
 
   @Post()
-  async create(@Body() createLeadDto: CreateLeadDto, @Request() req) {
+  async create(@Body() createLeadDto: CreateLeadDto, @Request() req: any) {
     const agencyId = req.user.agencyId; // From AgencyOwnershipGuard
     return this.leadsService.create(agencyId, createLeadDto);
   }
 
   @Get()
-  async findAll(@Query() query: QueryLeadsDto, @Request() req) {
+  async findAll(@Query() query: QueryLeadsDto, @Request() req: any) {
     const agencyId = req.user.agencyId;
     return this.leadsService.findAll(agencyId, query);
   }
 
   @Get(':id')
-  async findOne(@Param('id') id: string, @Request() req) {
+  async findOne(@Param('id') id: string, @Request() req: any): Promise<any> {
     const agencyId = req.user.agencyId;
     return this.leadsService.findOne(agencyId, id);
   }
@@ -44,14 +44,14 @@ export class LeadsController {
   async update(
     @Param('id') id: string,
     @Body() updateLeadDto: UpdateLeadDto,
-    @Request() req,
+    @Request() req: any,
   ) {
     const agencyId = req.user.agencyId;
     return this.leadsService.update(agencyId, id, updateLeadDto);
   }
 
   @Delete(':id')
-  async remove(@Param('id') id: string, @Request() req) {
+  async remove(@Param('id') id: string, @Request() req: any) {
     const agencyId = req.user.agencyId;
     return this.leadsService.remove(agencyId, id);
   }
@@ -60,7 +60,7 @@ export class LeadsController {
   async assign(
     @Param('id') id: string,
     @Body('memberId') memberId: string,
-    @Request() req,
+    @Request() req: any,
   ) {
     const agencyId = req.user.agencyId;
     return this.leadsService.assign(agencyId, id, memberId);
