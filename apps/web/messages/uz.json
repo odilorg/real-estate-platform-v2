@@ -39,6 +39,12 @@
       "andijan": "Andijon",
       "fergana": "Farg'ona"
     },
+    "stats": {
+      "properties": "Mulklar",
+      "agents": "Agentlar",
+      "developers": "Quruvchilar",
+      "verified": "Tekshirilgan"
+    },
     "featuredTitle": "Tavsiya etiladigan mulklar",
     "featuredSubtitle": "Haftaning eng yaxshi takliflari",
     "viewAll": "Barcha e'lonlar",
@@ -253,6 +259,8 @@
     "clear": "Tozalash"
   },
   "navbar": {
+    "properties": "Ko'chmas mulk",
+    "services": "Xizmatlar",
     "rent": "Ijara",
     "longTermRent": "Uzoq muddatli ijara",
     "dailyRent": "Kunlik ijara",

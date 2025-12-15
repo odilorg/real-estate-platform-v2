@@ -39,6 +39,12 @@
       "andijan": "Андижан",
       "fergana": "Фергана"
     },
+    "stats": {
+      "properties": "Объектов",
+      "agents": "Агентов",
+      "developers": "Застройщиков",
+      "verified": "Проверенных"
+    },
     "featuredTitle": "Рекомендуемые объекты",
     "featuredSubtitle": "Лучшие предложения недели",
     "viewAll": "Все объекты",
@@ -253,6 +259,8 @@
     "clear": "Очистить"
   },
   "navbar": {
+    "properties": "Недвижимость",
+    "services": "Услуги",
     "rent": "Аренда",
     "longTermRent": "Длительная аренда",
     "dailyRent": "Посуточная аренда",
