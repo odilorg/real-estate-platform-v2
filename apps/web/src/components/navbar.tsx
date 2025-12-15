@@ -41,74 +41,27 @@ export function Navbar() {
 
   const apiUrl = process.env.NEXT_PUBLIC_API_URL || 'http://localhost:3001/api';
 
-  // Define menu structure with translation keys
+  // Define menu structure with translation keys - Simplified structure (4 main items)
   const menuItems: MenuItem[] = [
     {
-      labelKey: 'rent',
+      labelKey: 'properties',
       submenu: [
         {
-          titleKey: 'longTermRent',
           items: [
-            { labelKey: 'apartments', href: '/properties?listingType=RENT&propertyType=APARTMENT' },
-            { labelKey: 'houses', href: '/properties?listingType=RENT&propertyType=HOUSE' },
-            { labelKey: 'townhouses', href: '/properties?listingType=RENT&propertyType=TOWNHOUSE' },
-          ],
-        },
-        {
-          titleKey: 'dailyRent',
-          items: [
-            { labelKey: 'apartments', href: '/properties?listingType=RENT&propertyType=APARTMENT&rentType=DAILY' },
-            { labelKey: 'houses', href: '/properties?listingType=RENT&propertyType=HOUSE&rentType=DAILY' },
+            { labelKey: 'buy', href: '/properties?listingType=SALE' },
+            { labelKey: 'rent', href: '/properties?listingType=RENT_LONG' },
+            { labelKey: 'newBuildings', href: '/properties?propertyType=APARTMENT&minYearBuilt=2020' },
           ],
         },
       ],
     },
     {
-      labelKey: 'sale',
+      labelKey: 'services',
       submenu: [
         {
           items: [
-            { labelKey: 'apartments', href: '/properties?listingType=SALE&propertyType=APARTMENT' },
-            { labelKey: 'houses', href: '/properties?listingType=SALE&propertyType=HOUSE' },
-            { labelKey: 'condos', href: '/properties?listingType=SALE&propertyType=CONDO' },
-            { labelKey: 'townhouses', href: '/properties?listingType=SALE&propertyType=TOWNHOUSE' },
-            { labelKey: 'landPlots', href: '/properties?listingType=SALE&propertyType=LAND' },
-            { labelKey: 'commercialProperty', href: '/properties?listingType=SALE&propertyType=COMMERCIAL' },
-          ],
-        },
-      ],
-    },
-    {
-      labelKey: 'newBuildings',
-      href: '/properties?propertyType=APARTMENT&minYearBuilt=2020',
-    },
-    {
-      labelKey: 'mortgage',
-      href: '/mortgage-calculator',
-    },
-    {
-      labelKey: 'housesAndLand',
-      submenu: [
-        {
-          items: [
-            { labelKey: 'buyHouse', href: '/properties?listingType=SALE&propertyType=HOUSE' },
-            { labelKey: 'buyLand', href: '/properties?listingType=SALE&propertyType=LAND' },
-            { labelKey: 'rentHouse', href: '/properties?listingType=RENT&propertyType=HOUSE' },
-            { labelKey: 'townhouses', href: '/properties?listingType=SALE&propertyType=TOWNHOUSE' },
-          ],
-        },
-      ],
-    },
-    {
-      labelKey: 'commercial',
-      submenu: [
-        {
-          items: [
-            { labelKey: 'buy', href: '/properties?listingType=SALE&propertyType=COMMERCIAL' },
-            { labelKey: 'rent', href: '/properties?listingType=RENT&propertyType=COMMERCIAL' },
-            { labelKey: 'offices', href: '/properties?propertyType=COMMERCIAL&search=офис' },
-            { labelKey: 'retail', href: '/properties?propertyType=COMMERCIAL&search=торговое' },
-            { labelKey: 'warehouses', href: '/properties?propertyType=COMMERCIAL&search=склад' },
+            { labelKey: 'mortgage', href: '/mortgage-calculator' },
+            { labelKey: 'propertyEvaluation', href: '/properties?featured=true' },
           ],
         },
       ],
