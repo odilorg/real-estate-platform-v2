@@ -272,6 +272,63 @@ export default function DashboardPage() {
           </p>
         </div>
 
+        {/* Quick Actions */}
+        <div className="grid grid-cols-2 md:grid-cols-4 gap-4 mb-8">
+          <Link href="/dashboard/messages">
+            <Card className="hover:shadow-md transition-shadow cursor-pointer">
+              <CardContent className="p-4 flex items-center gap-3">
+                <div className="p-3 bg-blue-100 rounded-lg relative">
+                  <MessageSquare className="h-6 w-6 text-blue-600" />
+                  {unreadCount > 0 && (
+                    <span className="absolute -top-1 -right-1 bg-red-500 text-white text-xs rounded-full h-5 w-5 flex items-center justify-center font-semibold">
+                      {unreadCount > 9 ? '9+' : unreadCount}
+                    </span>
+                  )}
+                </div>
+                <div>
+                  <div className="font-semibold text-gray-900">Сообщения</div>
+                  {unreadCount > 0 && (
+                    <div className="text-xs text-blue-600">{unreadCount} новых</div>
+                  )}
+                </div>
+              </CardContent>
+            </Card>
+          </Link>
+
+          <Link href="/dashboard/favorites">
+            <Card className="hover:shadow-md transition-shadow cursor-pointer">
+              <CardContent className="p-4 flex items-center gap-3">
+                <div className="p-3 bg-pink-100 rounded-lg">
+                  <Heart className="h-6 w-6 text-pink-600" />
+                </div>
+                <div className="font-semibold text-gray-900">Избранное</div>
+              </CardContent>
+            </Card>
+          </Link>
+
+          <Link href="/dashboard/saved-searches">
+            <Card className="hover:shadow-md transition-shadow cursor-pointer">
+              <CardContent className="p-4 flex items-center gap-3">
+                <div className="p-3 bg-purple-100 rounded-lg">
+                  <BookmarkCheck className="h-6 w-6 text-purple-600" />
+                </div>
+                <div className="font-semibold text-gray-900">Сохраненные</div>
+              </CardContent>
+            </Card>
+          </Link>
+
+          <Link href="/dashboard/profile">
+            <Card className="hover:shadow-md transition-shadow cursor-pointer">
+              <CardContent className="p-4 flex items-center gap-3">
+                <div className="p-3 bg-gray-100 rounded-lg">
+                  <Settings className="h-6 w-6 text-gray-600" />
+                </div>
+                <div className="font-semibold text-gray-900">Настройки</div>
+              </CardContent>
+            </Card>
+          </Link>
+        </div>
+
         {/* Stats Cards */}
         <div className="grid grid-cols-1 md:grid-cols-2 lg:grid-cols-5 gap-6 mb-10">
           {/* Total Listings */}
