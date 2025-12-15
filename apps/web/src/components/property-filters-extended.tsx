@@ -5,6 +5,24 @@ import { Search, ChevronDown, Heart, SlidersHorizontal, X } from 'lucide-react';
 import { useTranslations } from 'next-intl';
 import { Button } from '@repo/ui';
 
+// City name mapping: Russian (UI) -> English (Database)
+const CITY_NAME_MAP: Record<string, string> = {
+  'Ташкент': 'Tashkent',
+  'Самарканд': 'Samarkand',
+  'Бухара': 'Bukhara',
+  'Андижан': 'Andijan',
+  'Фергана': 'Fergana',
+  'Навои': 'Navoiy',
+  'Наманган': 'Namangan',
+  'Карши': 'Karshi',
+  'Термез': 'Termez',
+};
+
+// Reverse mapping: English (Database) -> Russian (UI)
+const REVERSE_CITY_MAP: Record<string, string> = Object.fromEntries(
+  Object.entries(CITY_NAME_MAP).map(([ru, en]) => [en, ru])
+);
+
 export interface ExtendedFilterValues {
   listingType: 'SALE' | 'RENT_LONG' | 'RENT_DAILY';
   propertyType: 'NEW_BUILDING' | 'SECONDARY' | 'ALL';
@@ -44,9 +62,15 @@ export function PropertyFiltersExtended({
   const [showDistrictDropdown, setShowDistrictDropdown] = useState(false);
   const [showMetroDropdown, setShowMetroDropdown] = useState(false);
 
+  // Mobile-specific modal states (Cian-style individual modals)
+  const [showMobilePropertyTypeModal, setShowMobilePropertyTypeModal] = useState(false);
+  const [showMobileRoomsModal, setShowMobileRoomsModal] = useState(false);
+  const [showMobilePriceModal, setShowMobilePriceModal] = useState(false);
+  const [showMobileRegionModal, setShowMobileRegionModal] = useState(false);
+
   // Helper function to close all dropdowns
   const closeAllDropdowns = () => {
-    setShowMoreFilters(false);
+    // Note: Don't close showMoreFilters - mobile modal should only close via X or Apply button
     setShowPriceDropdown(false);
     setShowPropertyTypeDropdown(false);
     setShowRegionDropdown(false);
@@ -87,9 +111,7 @@ export function PropertyFiltersExtended({
   // Close dropdowns when clicking outside
   useEffect(() => {
     const handleClickOutside = (event: MouseEvent) => {
-      if (bedroomsRef.current && !bedroomsRef.current.contains(event.target as Node)) {
-        setShowMoreFilters(false);
-      }
+      // Note: Don't close showMoreFilters here - mobile modal should only close via X or Apply button
       if (priceRef.current && !priceRef.current.contains(event.target as Node)) {
         setShowPriceDropdown(false);
       }
@@ -198,6 +220,131 @@ export function PropertyFiltersExtended({
             >
               {t('rentDaily')}
             </button>
+          </div>
+
+          {/* Mobile: Horizontal Scrollable Filter Chips (Cian-style) */}
+          <div className="w-full md:hidden">
+            <div className="flex gap-2 overflow-x-auto pb-2 no-scrollbar">
+              {/* Property Type Chip */}
+              <button
+                onClick={() => setShowMobilePropertyTypeModal(true)}
+                className={`flex-shrink-0 flex items-center gap-1.5 px-4 py-2.5 rounded-full border-2 font-medium text-sm transition-all ${
+                  values.propertyType && values.propertyType !== 'ALL'
+                    ? 'border-blue-600 bg-blue-50 text-blue-600'
+                    : 'border-gray-300 bg-white text-gray-700'
+                }`}
+              >
+                <span>
+                  {values.propertyType === 'NEW_BUILDING'
+                    ? t('newBuilding')
+                    : values.propertyType === 'SECONDARY'
+                      ? t('secondary')
+                      : t('propertyType')}
+                </span>
+                {values.propertyType && values.propertyType !== 'ALL' && (
+                  <X
+                    className="h-4 w-4"
+                    onClick={(e) => {
+                      e.stopPropagation();
+                      onChange({ ...values, propertyType: 'ALL' });
+                    }}
+                  />
+                )}
+                {(!values.propertyType || values.propertyType === 'ALL') && (
+                  <ChevronDown className="h-4 w-4" />
+                )}
+              </button>
+
+              {/* Rooms Chip */}
+              <button
+                onClick={() => setShowMobileRoomsModal(true)}
+                className={`flex-shrink-0 flex items-center gap-1.5 px-4 py-2.5 rounded-full border-2 font-medium text-sm transition-all ${
+                  localBedrooms.length > 0
+                    ? 'border-blue-600 bg-blue-50 text-blue-600'
+                    : 'border-gray-300 bg-white text-gray-700'
+                }`}
+              >
+                <span>
+                  {localBedrooms.length === 0
+                    ? t('rooms')
+                    : localBedrooms.length === 1
+                      ? `${localBedrooms[0] === 0 ? t('studio') : localBedrooms[0]}`
+                      : `${localBedrooms.length} комн.`}
+                </span>
+                {localBedrooms.length > 0 && (
+                  <X
+                    className="h-4 w-4"
+                    onClick={(e) => {
+                      e.stopPropagation();
+                      setLocalBedrooms([]);
+                      onChange({ ...values, bedrooms: [] });
+                    }}
+                  />
+                )}
+                {localBedrooms.length === 0 && <ChevronDown className="h-4 w-4" />}
+              </button>
+
+              {/* Price Chip */}
+              <button
+                onClick={() => setShowMobilePriceModal(true)}
+                className={`flex-shrink-0 flex items-center gap-1.5 px-4 py-2.5 rounded-full border-2 font-medium text-sm transition-all ${
+                  values.minPrice || values.maxPrice
+                    ? 'border-blue-600 bg-blue-50 text-blue-600'
+                    : 'border-gray-300 bg-white text-gray-700'
+                }`}
+              >
+                <span className="whitespace-nowrap">
+                  {values.minPrice || values.maxPrice
+                    ? `${values.minPrice ? `$${(values.minPrice / 1000).toFixed(0)}k` : '0'} - ${values.maxPrice ? `$${(values.maxPrice / 1000).toFixed(0)}k` : '∞'}`
+                    : t('price')}
+                </span>
+                {(values.minPrice || values.maxPrice) && (
+                  <X
+                    className="h-4 w-4"
+                    onClick={(e) => {
+                      e.stopPropagation();
+                      onChange({ ...values, minPrice: undefined, maxPrice: undefined });
+                    }}
+                  />
+                )}
+                {!values.minPrice && !values.maxPrice && <ChevronDown className="h-4 w-4" />}
+              </button>
+
+              {/* Region Chip */}
+              <button
+                onClick={() => setShowMobileRegionModal(true)}
+                className={`flex-shrink-0 flex items-center gap-1.5 px-4 py-2.5 rounded-full border-2 font-medium text-sm transition-all ${
+                  values.city
+                    ? 'border-blue-600 bg-blue-50 text-blue-600'
+                    : 'border-gray-300 bg-white text-gray-700'
+                }`}
+              >
+                <span>
+                  {values.city ? (REVERSE_CITY_MAP[values.city] || values.city) : t('region')}
+                </span>
+                {values.city && (
+                  <X
+                    className="h-4 w-4"
+                    onClick={(e) => {
+                      e.stopPropagation();
+                      onChange({ ...values, city: undefined, district: undefined, metro: undefined });
+                    }}
+                  />
+                )}
+                {!values.city && <ChevronDown className="h-4 w-4" />}
+              </button>
+
+              {/* Clear All (only show if filters active) */}
+              {activeFiltersCount() > 0 && (
+                <button
+                  onClick={clearFilters}
+                  className="flex-shrink-0 flex items-center gap-1.5 px-4 py-2.5 rounded-full border-2 border-red-300 bg-white text-red-600 font-medium text-sm"
+                >
+                  <X className="h-4 w-4" />
+                  <span>Очистить</span>
+                </button>
+              )}
+            </div>
           </div>
 
           {/* Property Type Dropdown - Hidden on mobile, shown in More Filters */}
@@ -362,10 +509,10 @@ export function PropertyFiltersExtended({
             )}
           </div>
 
-          {/* More Filters Button - Prominent on mobile */}
+          {/* Desktop: More Filters Button */}
           <button
             onClick={() => setShowMoreFilters(!showMoreFilters)}
-            className="flex items-center gap-2 px-4 md:px-5 py-3 min-h-[44px] border-2 border-blue-600 rounded-lg hover:bg-blue-50 bg-white text-sm md:text-base font-medium text-blue-600"
+            className="hidden md:flex items-center gap-2 px-4 md:px-5 py-3 min-h-[44px] border-2 border-blue-600 rounded-lg hover:bg-blue-50 bg-white text-sm md:text-base font-medium text-blue-600"
           >
             <SlidersHorizontal className="h-5 w-5" />
             <span>{t('moreFilters')}</span>
@@ -401,7 +548,7 @@ export function PropertyFiltersExtended({
                   setShowRegionDropdown(!showRegionDropdown);
                 }}
               >
-                {values.city || t('region')}
+                {values.city ? (REVERSE_CITY_MAP[values.city] || values.city) : t('region')}
                 <ChevronDown className="h-4 w-4" />
               </button>
               {showRegionDropdown && (
@@ -410,10 +557,11 @@ export function PropertyFiltersExtended({
                     <button
                       key={city}
                       onClick={() => {
-                        onChange({ ...values, city, district: undefined, metro: undefined });
+                        const englishCity = CITY_NAME_MAP[city] || city;
+                        onChange({ ...values, city: englishCity, district: undefined, metro: undefined });
                         setShowRegionDropdown(false);
                       }}
-                      className={`w-full text-left px-3 py-2 hover:bg-gray-100 rounded text-sm ${values.city === city ? 'bg-blue-50 text-blue-600' : ''}`}
+                      className={`w-full text-left px-3 py-2 hover:bg-gray-100 rounded text-sm ${values.city === (CITY_NAME_MAP[city] || city) ? 'bg-blue-50 text-blue-600' : ''}`}
                     >
                       {city}
                     </button>
@@ -597,6 +745,295 @@ export function PropertyFiltersExtended({
             )}
           </div>
         </div>
+      )}
+
+      {/* Mobile Bottom Sheet Modal */}
+      {showMoreFilters && (
+        <>
+          {/* Backdrop - No click handler to prevent accidental closes */}
+          <div className="fixed inset-0 bg-black/50 z-40 md:hidden pointer-events-none" />
+
+          {/* Bottom Sheet */}
+          <div
+            className="fixed inset-x-0 bottom-0 z-50 bg-white rounded-t-2xl shadow-2xl max-h-[85vh] overflow-y-auto md:hidden animate-slide-up pointer-events-auto"
+          >
+            {/* Swipe Handle */}
+            <div className="flex justify-center pt-3 pb-2">
+              <div className="w-12 h-1.5 bg-gray-300 rounded-full" />
+            </div>
+
+            {/* Header */}
+            <div className="flex items-center justify-between px-4 py-3 border-b border-gray-200">
+              <h3 className="text-lg font-semibold text-gray-900">{t('filters')}</h3>
+              <button
+                onClick={() => setShowMoreFilters(false)}
+                className="p-2 hover:bg-gray-100 rounded-full"
+              >
+                <X className="h-5 w-5 text-gray-600" />
+              </button>
+            </div>
+
+            {/* Filter Content */}
+            <div className="px-4 py-4 space-y-5">
+              {/* Region */}
+              <div>
+                <label className="block text-sm font-medium text-gray-700 mb-2">
+                  📍 {t('region')}
+                </label>
+                <div className="relative">
+                  <button
+                    onClick={() => {
+                      setShowRegionDropdown(!showRegionDropdown);
+                      setShowDistrictDropdown(false);
+                      setShowMetroDropdown(false);
+                    }}
+                    className="w-full px-4 py-3 text-left bg-white border border-gray-300 rounded-lg hover:border-gray-400 flex items-center justify-between"
+                  >
+                    <span className={values.city ? 'text-gray-900' : 'text-gray-500'}>
+                      {values.city ? (REVERSE_CITY_MAP[values.city] || values.city) : t('selectCity')}
+                    </span>
+                    <ChevronDown className="h-4 w-4 text-gray-600" />
+                  </button>
+                  {showRegionDropdown && (
+                    <div className="absolute top-full mt-1 left-0 right-0 bg-white border border-gray-200 rounded-lg shadow-lg p-2 z-[60] max-h-[300px] overflow-y-auto">
+                      {['Ташкент', 'Самарканд', 'Бухара', 'Андижан', 'Фергана', 'Навои', 'Наманган', 'Карши', 'Термез'].map((city) => (
+                        <button
+                          key={city}
+                          onClick={() => {
+                            const englishCity = CITY_NAME_MAP[city] || city;
+                            onChange({ ...values, city: englishCity, district: undefined, metro: undefined });
+                            setShowRegionDropdown(false);
+                          }}
+                          className={`w-full text-left px-3 py-2 hover:bg-gray-100 rounded text-sm ${values.city === (CITY_NAME_MAP[city] || city) ? 'bg-blue-50 text-blue-600 font-medium' : ''}`}
+                        >
+                          {city}
+                        </button>
+                      ))}
+                    </div>
+                  )}
+                </div>
+              </div>
+
+              {/* District */}
+              <div>
+                <label className="block text-sm font-medium text-gray-700 mb-2">
+                  🏘️ {t('district')}
+                </label>
+                <div className="relative">
+                  <button
+                    onClick={() => {
+                      if (!values.city) return;
+                      setShowDistrictDropdown(!showDistrictDropdown);
+                      setShowRegionDropdown(false);
+                      setShowMetroDropdown(false);
+                    }}
+                    disabled={!values.city}
+                    className={`w-full px-4 py-3 text-left bg-white border border-gray-300 rounded-lg hover:border-gray-400 flex items-center justify-between ${!values.city ? 'opacity-50 cursor-not-allowed' : ''}`}
+                  >
+                    <span className={values.district ? 'text-gray-900' : 'text-gray-500'}>
+                      {values.district || t('selectDistrict')}
+                    </span>
+                    <ChevronDown className="h-4 w-4 text-gray-600" />
+                  </button>
+                  {showDistrictDropdown && values.city === 'Tashkent' && (
+                    <div className="absolute top-full mt-1 left-0 right-0 bg-white border border-gray-200 rounded-lg shadow-lg p-2 z-[60] max-h-[300px] overflow-y-auto">
+                      {['Юнусабад', 'Чиланзар', 'Сергели', 'Мирзо-Улугбек', 'Яшнабад', 'Алмазар', 'Шайхантахур', 'Яккасарай', 'Бектемир', 'Учтепа', 'Мирабад'].map((district) => (
+                        <button
+                          key={district}
+                          onClick={() => {
+                            onChange({ ...values, district });
+                            setShowDistrictDropdown(false);
+                          }}
+                          className={`w-full text-left px-3 py-2 hover:bg-gray-100 rounded text-sm ${values.district === district ? 'bg-blue-50 text-blue-600 font-medium' : ''}`}
+                        >
+                          {district}
+                        </button>
+                      ))}
+                    </div>
+                  )}
+                </div>
+                {!values.city && (
+                  <p className="text-xs text-gray-500 mt-1">Сначала выберите город</p>
+                )}
+              </div>
+
+              {/* Metro */}
+              <div>
+                <label className="block text-sm font-medium text-gray-700 mb-2">
+                  🚇 {t('metro')}
+                </label>
+                <div className="relative">
+                  <button
+                    onClick={() => {
+                      if (values.city !== 'Tashkent') return;
+                      setShowMetroDropdown(!showMetroDropdown);
+                      setShowRegionDropdown(false);
+                      setShowDistrictDropdown(false);
+                    }}
+                    disabled={values.city !== 'Tashkent'}
+                    className={`w-full px-4 py-3 text-left bg-white border border-gray-300 rounded-lg hover:border-gray-400 flex items-center justify-between ${values.city !== 'Tashkent' ? 'opacity-50 cursor-not-allowed' : ''}`}
+                  >
+                    <span className={values.metro ? 'text-gray-900' : 'text-gray-500'}>
+                      {values.metro || t('selectStation')}
+                    </span>
+                    <ChevronDown className="h-4 w-4 text-gray-600" />
+                  </button>
+                  {showMetroDropdown && values.city === 'Tashkent' && (
+                    <div className="absolute top-full mt-1 left-0 right-0 bg-white border border-gray-200 rounded-lg shadow-lg p-2 z-[60] max-h-[300px] overflow-y-auto">
+                      {['Алайский базар', 'Амир Темур', 'Буюк Ипак Йули', 'Чиланзар', 'Космонавтов', 'Минг Урик', 'Мустакиллик Майдони', 'Новза', 'Олмазор', 'Паксу', 'Пушкин', 'Сергели', 'Ташкент', 'Тинчлик', 'Хамид Алимжан', 'Юнус Раджаби'].map((station) => (
+                        <button
+                          key={station}
+                          onClick={() => {
+                            onChange({ ...values, metro: station });
+                            setShowMetroDropdown(false);
+                          }}
+                          className={`w-full text-left px-3 py-2 hover:bg-gray-100 rounded text-sm ${values.metro === station ? 'bg-blue-50 text-blue-600 font-medium' : ''}`}
+                        >
+                          {station}
+                        </button>
+                      ))}
+                    </div>
+                  )}
+                </div>
+                {values.city !== 'Tashkent' && (
+                  <p className="text-xs text-gray-500 mt-1">
+                    {values.city ? 'Метро только в Ташкенте' : 'Сначала выберите Ташкент'}
+                  </p>
+                )}
+              </div>
+
+              {/* Bedrooms */}
+              <div>
+                <label className="block text-sm font-medium text-gray-700 mb-2">
+                  🛏️ {t('rooms')}
+                </label>
+                <div className="flex flex-wrap gap-2">
+                  {[
+                    { value: 0, label: t('studio') },
+                    { value: 1, label: '1' },
+                    { value: 2, label: '2' },
+                    { value: 3, label: '3' },
+                    { value: 4, label: '4' },
+                    { value: 5, label: '5+' },
+                  ].map((option) => (
+                    <button
+                      key={option.value}
+                      onClick={() => toggleBedroom(option.value)}
+                      className={`flex-1 min-w-[60px] px-4 py-3 rounded-lg border-2 text-sm font-medium transition-all ${
+                        localBedrooms.includes(option.value)
+                          ? 'border-blue-600 bg-blue-50 text-blue-600'
+                          : 'border-gray-300 bg-white text-gray-700 hover:border-gray-400'
+                      }`}
+                    >
+                      {option.label}
+                    </button>
+                  ))}
+                </div>
+              </div>
+
+              {/* Price Range */}
+              <div>
+                <label className="block text-sm font-medium text-gray-700 mb-2">
+                  💰 {t('priceRange')}
+                </label>
+                <div className="flex gap-3">
+                  <div className="flex-1">
+                    <input
+                      type="number"
+                      placeholder={t('from')}
+                      value={values.minPrice || ''}
+                      onChange={(e) =>
+                        onChange({
+                          ...values,
+                          minPrice: e.target.value ? Number(e.target.value) : undefined,
+                        })
+                      }
+                      className="w-full px-4 py-3 border border-gray-300 rounded-lg focus:outline-none focus:ring-2 focus:ring-blue-500"
+                    />
+                  </div>
+                  <div className="flex-1">
+                    <input
+                      type="number"
+                      placeholder={t('to')}
+                      value={values.maxPrice || ''}
+                      onChange={(e) =>
+                        onChange({
+                          ...values,
+                          maxPrice: e.target.value ? Number(e.target.value) : undefined,
+                        })
+                      }
+                      className="w-full px-4 py-3 border border-gray-300 rounded-lg focus:outline-none focus:ring-2 focus:ring-blue-500"
+                    />
+                  </div>
+                </div>
+              </div>
+
+              {/* Property Type */}
+              <div>
+                <label className="block text-sm font-medium text-gray-700 mb-2">
+                  🏢 {t('propertyType')}
+                </label>
+                <div className="flex gap-2">
+                  {[
+                    { value: 'ALL', label: t('all') },
+                    { value: 'NEW_BUILDING', label: t('newBuilding') },
+                    { value: 'SECONDARY', label: t('secondary') },
+                  ].map((option) => (
+                    <button
+                      key={option.value}
+                      onClick={() =>
+                        onChange({
+                          ...values,
+                          propertyType: option.value as 'NEW_BUILDING' | 'SECONDARY' | 'ALL',
+                        })
+                      }
+                      className={`flex-1 px-4 py-3 rounded-lg border-2 text-sm font-medium transition-all ${
+                        values.propertyType === option.value
+                          ? 'border-blue-600 bg-blue-50 text-blue-600'
+                          : 'border-gray-300 bg-white text-gray-700 hover:border-gray-400'
+                      }`}
+                    >
+                      {option.label}
+                    </button>
+                  ))}
+                </div>
+              </div>
+
+              {/* Search */}
+              <div>
+                <label className="block text-sm font-medium text-gray-700 mb-2">
+                  🔍 {t('search')}
+                </label>
+                <div className="relative">
+                  <Search className="absolute left-3 top-1/2 -translate-y-1/2 h-5 w-5 text-gray-400" />
+                  <input
+                    type="text"
+                    placeholder={t('searchPlaceholder')}
+                    value={values.searchQuery || ''}
+                    onChange={(e) => onChange({ ...values, searchQuery: e.target.value })}
+                    className="w-full pl-10 pr-4 py-3 border border-gray-300 rounded-lg focus:outline-none focus:ring-2 focus:ring-blue-500"
+                  />
+                </div>
+              </div>
+            </div>
+
+            {/* Action Buttons */}
+            <div className="sticky bottom-0 bg-white border-t border-gray-200 px-4 py-4 flex gap-3">
+              <button
+                onClick={clearFilters}
+                className="flex-1 px-6 py-3 border-2 border-gray-300 rounded-lg text-gray-700 font-medium hover:bg-gray-50"
+              >
+                {t('reset')}
+              </button>
+              <button
+                onClick={() => setShowMoreFilters(false)}
+                className="flex-1 px-6 py-3 bg-blue-600 text-white rounded-lg font-medium hover:bg-blue-700"
+              >
+                {t('apply')} {activeFiltersCount() > 0 && `(${activeFiltersCount()})`}
+              </button>
+            </div>
+          </div>
+        </>
       )}
     </div>
   );

@@ -256,7 +256,16 @@
     "district": "Tuman",
     "metro": "Metro",
     "saveSearch": "Qidiruvni saqlash",
-    "clear": "Tozalash"
+    "clear": "Tozalash",
+    "filters": "Filtrlar",
+    "selectCity": "Shaharni tanlang",
+    "selectDistrict": "Tumanni tanlang",
+    "selectStation": "Stansiyani tanlang",
+    "priceRange": "Narx oralig'i",
+    "propertyType": "Mulk turi",
+    "all": "Hammasi",
+    "search": "Qidiruv",
+    "reset": "Tozalash"
   },
   "navbar": {
     "properties": "Ko'chmas mulk",

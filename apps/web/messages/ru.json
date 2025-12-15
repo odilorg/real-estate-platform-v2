@@ -256,7 +256,16 @@
     "district": "Район",
     "metro": "Метро",
     "saveSearch": "Сохранить поиск",
-    "clear": "Очистить"
+    "clear": "Очистить",
+    "filters": "Фильтры",
+    "selectCity": "Выберите город",
+    "selectDistrict": "Выберите район",
+    "selectStation": "Выберите станцию",
+    "priceRange": "Диапазон цен",
+    "propertyType": "Тип недвижимости",
+    "all": "Все",
+    "search": "Поиск",
+    "reset": "Сбросить"
   },
   "navbar": {
     "properties": "Недвижимость",
