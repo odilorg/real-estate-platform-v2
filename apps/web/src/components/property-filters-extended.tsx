@@ -39,9 +39,20 @@ export function PropertyFiltersExtended({
   const t = useTranslations('filters');
   const [showMoreFilters, setShowMoreFilters] = useState(false);
   const [showPriceDropdown, setShowPriceDropdown] = useState(false);
+  const [showPropertyTypeDropdown, setShowPropertyTypeDropdown] = useState(false);
   const [showRegionDropdown, setShowRegionDropdown] = useState(false);
   const [showDistrictDropdown, setShowDistrictDropdown] = useState(false);
   const [showMetroDropdown, setShowMetroDropdown] = useState(false);
+
+  // Helper function to close all dropdowns
+  const closeAllDropdowns = () => {
+    setShowMoreFilters(false);
+    setShowPriceDropdown(false);
+    setShowPropertyTypeDropdown(false);
+    setShowRegionDropdown(false);
+    setShowDistrictDropdown(false);
+    setShowMetroDropdown(false);
+  };
 
   // Local state for bedrooms to handle rapid clicks without race conditions
   const [localBedrooms, setLocalBedrooms] = useState<number[]>(values.bedrooms || []);
@@ -83,7 +94,7 @@ export function PropertyFiltersExtended({
         setShowPriceDropdown(false);
       }
       if (propertyTypeRef.current && !propertyTypeRef.current.contains(event.target as Node)) {
-        setShowRegionDropdown(false);
+        setShowPropertyTypeDropdown(false);
       }
       if (regionRef.current && !regionRef.current.contains(event.target as Node)) {
         setShowRegionDropdown(false);
@@ -193,7 +204,10 @@ export function PropertyFiltersExtended({
           <div ref={propertyTypeRef} className="relative hidden sm:block">
             <button
               className="flex items-center gap-2 px-4 md:px-5 py-3 min-h-[44px] border border-gray-300 rounded-lg hover:border-gray-400 bg-white text-sm md:text-base"
-              onClick={() => setShowRegionDropdown(!showRegionDropdown)}
+              onClick={() => {
+                closeAllDropdowns();
+                setShowPropertyTypeDropdown(!showPropertyTypeDropdown);
+              }}
             >
               <span>
                 {values.propertyType === 'NEW_BUILDING'
@@ -204,7 +218,7 @@ export function PropertyFiltersExtended({
               </span>
               <ChevronDown className="h-4 w-4" />
             </button>
-            {showRegionDropdown && (
+            {showPropertyTypeDropdown && (
               <div className="absolute top-full mt-1 left-0 bg-white border border-gray-200 rounded-lg shadow-lg p-2 min-w-[200px] z-50">
                 <button
                   onClick={() => {
@@ -241,7 +255,10 @@ export function PropertyFiltersExtended({
           <div ref={bedroomsRef} className="relative hidden md:block">
             <button
               className="flex items-center gap-2 px-4 md:px-5 py-3 min-h-[44px] border border-gray-300 rounded-lg hover:border-gray-400 bg-white text-sm md:text-base"
-              onClick={() => setShowMoreFilters(!showMoreFilters)}
+              onClick={() => {
+                closeAllDropdowns();
+                setShowMoreFilters(!showMoreFilters);
+              }}
             >
               <span>
                 {localBedrooms.length === 0
@@ -285,7 +302,10 @@ export function PropertyFiltersExtended({
           <div ref={priceRef} className="relative hidden md:block">
             <button
               className="flex items-center gap-2 px-4 md:px-5 py-3 min-h-[44px] border border-gray-300 rounded-lg hover:border-gray-400 bg-white text-sm md:text-base"
-              onClick={() => setShowPriceDropdown(!showPriceDropdown)}
+              onClick={() => {
+                closeAllDropdowns();
+                setShowPriceDropdown(!showPriceDropdown);
+              }}
             >
               <span className="whitespace-nowrap">
                 {values.minPrice || values.maxPrice
@@ -376,7 +396,10 @@ export function PropertyFiltersExtended({
             <div ref={regionRef} className="relative">
               <button
                 className="flex items-center gap-1 px-4 py-3 min-h-[44px] text-sm md:text-base text-blue-600 hover:text-blue-700 font-medium"
-                onClick={() => setShowRegionDropdown(!showRegionDropdown)}
+                onClick={() => {
+                  closeAllDropdowns();
+                  setShowRegionDropdown(!showRegionDropdown);
+                }}
               >
                 {values.city || t('region')}
                 <ChevronDown className="h-4 w-4" />
@@ -414,7 +437,10 @@ export function PropertyFiltersExtended({
             <div ref={districtRef} className="relative">
               <button
                 className="flex items-center gap-1 px-4 py-3 min-h-[44px] text-sm md:text-base text-blue-600 hover:text-blue-700 font-medium"
-                onClick={() => setShowDistrictDropdown(!showDistrictDropdown)}
+                onClick={() => {
+                  closeAllDropdowns();
+                  setShowDistrictDropdown(!showDistrictDropdown);
+                }}
               >
                 {values.district || t('district')}
                 <ChevronDown className="h-4 w-4" />
@@ -456,7 +482,10 @@ export function PropertyFiltersExtended({
             <div ref={metroRef} className="relative">
               <button
                 className="flex items-center gap-1 px-4 py-3 min-h-[44px] text-sm md:text-base text-blue-600 hover:text-blue-700 font-medium"
-                onClick={() => setShowMetroDropdown(!showMetroDropdown)}
+                onClick={() => {
+                  closeAllDropdowns();
+                  setShowMetroDropdown(!showMetroDropdown);
+                }}
               >
                 {values.metro || t('metro')}
                 <ChevronDown className="h-4 w-4" />
