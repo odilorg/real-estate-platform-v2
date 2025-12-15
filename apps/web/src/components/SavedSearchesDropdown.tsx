@@ -119,7 +119,7 @@ export function SavedSearchesDropdown({ onLoadSearch }: SavedSearchesDropdownPro
             <div className="p-4 text-center text-gray-500 text-sm">
               <Bookmark className="h-8 w-8 text-gray-300 mx-auto mb-2" />
               <p>У вас пока нет сохраненных поисков</p>
-              <p className="text-xs mt-1">Используйте кнопку "Сохранить поиск" для сохранения текущих фильтров</p>
+              <p className="text-xs mt-1">Используйте кнопку &quot;Сохранить поиск&quot; для сохранения текущих фильтров</p>
             </div>
           ) : (
             <div className="py-2">
