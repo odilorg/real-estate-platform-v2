@@ -113,7 +113,21 @@ export function PropertyCard({
   const displayRooms = rooms || bedrooms;
   const displayLocation = address || (city ? (district ? `${city}, ${district}` : city) : '');
   const CardWrapper = href ? 'a' : 'div';
-  const wrapperProps = href ? { href } : { onClick };
+
+  // Generate accessible label
+  const ariaLabel = `${title}, ${formatPrice(price)} у.е.${priceLabel || getListingTypeLabel(listingType)}, ${displayLocation}${displayRooms ? `, ${displayRooms} комн.` : ''}${area ? `, ${area} м²` : ''}`;
+
+  const wrapperProps = href
+    ? {
+        href,
+        'aria-label': ariaLabel,
+      }
+    : {
+        onClick,
+        role: 'button' as const,
+        'aria-label': ariaLabel,
+        tabIndex: 0,
+      };
 
   const handleImageError = () => {
     setImageError(true);
