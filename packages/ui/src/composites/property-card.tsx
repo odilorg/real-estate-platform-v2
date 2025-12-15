@@ -122,7 +122,14 @@ export function PropertyCard({
   return (
     <Card
       className={cn(
-        'overflow-hidden transition-all hover:shadow-lg cursor-pointer group',
+        'overflow-hidden cursor-pointer group',
+        // Smooth transitions for all state changes
+        'transition-all duration-300 ease-out',
+        // Hover effects: lift card and increase shadow
+        'hover:shadow-xl hover:-translate-y-1',
+        // Active state for mobile tap feedback
+        'active:scale-[0.98]',
+        // Featured card styling
         featured && 'ring-2 ring-yellow-400',
         className,
       )}
@@ -133,7 +140,11 @@ export function PropertyCard({
             <img
               src={imageUrl}
               alt={title}
-              className="object-cover w-full h-full transition-transform group-hover:scale-105"
+              className={cn(
+                'object-cover w-full h-full',
+                // Smooth image zoom on card hover
+                'transition-transform duration-300 ease-out group-hover:scale-110'
+              )}
               onError={handleImageError}
             />
           ) : (
