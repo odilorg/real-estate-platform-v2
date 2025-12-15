@@ -460,6 +460,8 @@ export function PropertyFiltersExtended({
                         {district}
                       </button>
                     ))
+                  ) : values.city ? (
+                    <div className="px-3 py-2 text-sm text-gray-500">Районы доступны только для Ташкента</div>
                   ) : (
                     <div className="px-3 py-2 text-sm text-gray-500">Сначала выберите город</div>
                   )}
