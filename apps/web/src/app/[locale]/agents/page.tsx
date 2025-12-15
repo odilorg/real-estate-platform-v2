@@ -364,7 +364,7 @@ export default function AgentsPage() {
 
                       {/* Specializations */}
                       {agent.specializations.length > 0 && (
-                        <div className="flex flex-wrap gap-1">
+                        <div className="flex flex-wrap gap-1 mb-4">
                           {agent.specializations.slice(0, 3).map((spec) => (
                             <Badge key={spec} variant="outline" className="text-xs">
                               {spec}
@@ -377,6 +377,28 @@ export default function AgentsPage() {
                           )}
                         </div>
                       )}
+
+                      {/* Contact Buttons */}
+                      <div className="flex gap-2 mt-4">
+                        {agent.phone && (
+                          <a
+                            href={`tel:${agent.phone}`}
+                            onClick={(e) => e.stopPropagation()}
+                            className="flex-1 py-2 px-4 bg-blue-600 hover:bg-blue-700 text-white text-sm font-medium rounded-lg transition-colors flex items-center justify-center gap-2"
+                          >
+                            📞 {t('contact.call')}
+                          </a>
+                        )}
+                        {agent.email && (
+                          <a
+                            href={`mailto:${agent.email}`}
+                            onClick={(e) => e.stopPropagation()}
+                            className="flex-1 py-2 px-4 bg-gray-600 hover:bg-gray-700 text-white text-sm font-medium rounded-lg transition-colors flex items-center justify-center gap-2"
+                          >
+                            📧 {t('contact.email')}
+                          </a>
+                        )}
+                      </div>
                     </CardContent>
                   </Card>
                 </Link>
