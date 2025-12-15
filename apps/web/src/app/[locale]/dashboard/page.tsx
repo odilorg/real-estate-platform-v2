@@ -23,6 +23,10 @@ import {
   TrendingDown,
   Minus,
   BookmarkCheck,
+  FileText,
+  CheckCircle,
+  Star,
+  Mail,
 } from 'lucide-react';
 
 interface PropertyImage {
@@ -207,23 +211,26 @@ export default function DashboardPage() {
   const renderTrend = (trend: number) => {
     if (trend > 0) {
       return (
-        <div className="flex items-center text-green-600 text-sm mt-1">
+        <div className="flex items-center text-green-600 text-sm mt-2">
           <TrendingUp className="h-4 w-4 mr-1" />
-          +{trend.toFixed(1)}%
+          <span className="font-medium">+{trend.toFixed(1)}%</span>
+          <span className="text-xs text-gray-500 ml-1">vs прошлый период</span>
         </div>
       );
     } else if (trend < 0) {
       return (
-        <div className="flex items-center text-red-600 text-sm mt-1">
+        <div className="flex items-center text-red-600 text-sm mt-2">
           <TrendingDown className="h-4 w-4 mr-1" />
-          {trend.toFixed(1)}%
+          <span className="font-medium">{trend.toFixed(1)}%</span>
+          <span className="text-xs text-gray-500 ml-1">vs прошлый период</span>
         </div>
       );
     } else {
       return (
-        <div className="flex items-center text-gray-500 text-sm mt-1">
+        <div className="flex items-center text-gray-500 text-sm mt-2">
           <Minus className="h-4 w-4 mr-1" />
-          0%
+          <span className="font-medium">0%</span>
+          <span className="text-xs text-gray-500 ml-1">без изменений</span>
         </div>
       );
     }
@@ -244,9 +251,17 @@ export default function DashboardPage() {
   return (
     <div className="min-h-screen bg-gray-50">
       <main className="container mx-auto px-4 py-8">
-        {/* Dashboard Navigation */}
-        <div className="mb-6 flex items-center justify-between">
-          <h1 className="text-2xl font-bold text-gray-900">Личный кабинет</h1>
+        {/* Dashboard Header */}
+        <div className="mb-8">
+          <div className="flex items-center justify-between mb-6">
+            <h1 className="text-3xl font-bold text-gray-900">Личный кабинет</h1>
+            <Link href="/properties/new">
+              <Button size="lg" className="bg-blue-600 hover:bg-blue-700">
+                <Plus className="h-5 w-5 mr-2" />
+                Создать объявление
+              </Button>
+            </Link>
+          </div>
           <div className="flex items-center gap-2">
             <Link href="/dashboard/favorites">
               <Button variant="ghost" size="sm">
@@ -288,74 +303,108 @@ export default function DashboardPage() {
           </div>
         </div>
 
-        {/* User Info */}
-        <div className="mb-8">
-          <h1 className="text-2xl font-bold mb-2">
-            Добро пожаловать, {user?.firstName}!
-          </h1>
-          <p className="text-gray-600">
-            Здесь вы можете управлять своими объявлениями
+        {/* Welcome Message */}
+        <div className="mb-8 bg-gradient-to-r from-blue-50 to-indigo-50 rounded-xl p-6 border border-blue-100">
+          <h2 className="text-xl font-semibold text-gray-800 mb-1">
+            Добро пожаловать, <span className="text-blue-600">{user?.firstName}</span>!
+          </h2>
+          <p className="text-base text-gray-600">
+            Здесь вы можете управлять своими объявлениями и отслеживать статистику
           </p>
         </div>
 
-        {/* Stats */}
-        <div className="grid grid-cols-1 md:grid-cols-2 lg:grid-cols-5 gap-4 mb-8">
-          <Card>
+        {/* Stats Cards */}
+        <div className="grid grid-cols-1 md:grid-cols-2 lg:grid-cols-5 gap-6 mb-10">
+          {/* Total Listings */}
+          <Card className="hover:shadow-lg transition-shadow">
             <CardContent className="p-6">
-              <div className="text-3xl font-bold text-blue-600">
+              <div className="flex items-center justify-between mb-3">
+                <div className="p-3 bg-blue-100 rounded-lg">
+                  <FileText className="h-6 w-6 text-blue-600" />
+                </div>
+              </div>
+              <div className="text-4xl font-bold text-gray-900 mb-1">
                 {properties.length}
               </div>
-              <div className="text-sm text-gray-500">Всего объявлений</div>
+              <div className="text-sm font-medium text-gray-600">Всего объявлений</div>
             </CardContent>
           </Card>
-          <Card>
+
+          {/* Active Listings */}
+          <Card className="hover:shadow-lg transition-shadow">
             <CardContent className="p-6">
-              <div className="text-3xl font-bold text-green-600">
+              <div className="flex items-center justify-between mb-3">
+                <div className="p-3 bg-green-100 rounded-lg">
+                  <CheckCircle className="h-6 w-6 text-green-600" />
+                </div>
+              </div>
+              <div className="text-4xl font-bold text-gray-900 mb-1">
                 {properties.filter((p) => p.status === 'ACTIVE').length}
               </div>
-              <div className="text-sm text-gray-500">Активных</div>
+              <div className="text-sm font-medium text-gray-600">Активных</div>
             </CardContent>
           </Card>
-          <Card>
+
+          {/* Views */}
+          <Card className="hover:shadow-lg transition-shadow">
             <CardContent className="p-6">
               {analyticsLoading ? (
                 <Loader2 className="h-8 w-8 animate-spin text-gray-400" />
               ) : (
                 <>
-                  <div className="text-3xl font-bold text-purple-600">
+                  <div className="flex items-center justify-between mb-3">
+                    <div className="p-3 bg-purple-100 rounded-lg">
+                      <Eye className="h-6 w-6 text-purple-600" />
+                    </div>
+                  </div>
+                  <div className="text-4xl font-bold text-gray-900 mb-1">
                     {analytics?.totalViews.toLocaleString() || 0}
                   </div>
-                  <div className="text-sm text-gray-500">Просмотры (30 дн)</div>
+                  <div className="text-sm font-medium text-gray-600">Просмотров (30 дн)</div>
                   {analytics && renderTrend(analytics.viewsTrend)}
                 </>
               )}
             </CardContent>
           </Card>
-          <Card>
+
+          {/* Favorites */}
+          <Card className="hover:shadow-lg transition-shadow">
             <CardContent className="p-6">
               {analyticsLoading ? (
                 <Loader2 className="h-8 w-8 animate-spin text-gray-400" />
               ) : (
                 <>
-                  <div className="text-3xl font-bold text-pink-600">
+                  <div className="flex items-center justify-between mb-3">
+                    <div className="p-3 bg-pink-100 rounded-lg">
+                      <Star className="h-6 w-6 text-pink-600" />
+                    </div>
+                  </div>
+                  <div className="text-4xl font-bold text-gray-900 mb-1">
                     {analytics?.totalFavorites.toLocaleString() || 0}
                   </div>
-                  <div className="text-sm text-gray-500">В избранном (30 дн)</div>
+                  <div className="text-sm font-medium text-gray-600">Избранное (30 дн)</div>
                   {analytics && renderTrend(analytics.favoritesTrend)}
                 </>
               )}
             </CardContent>
           </Card>
-          <Card>
+
+          {/* Contacts */}
+          <Card className="hover:shadow-lg transition-shadow">
             <CardContent className="p-6">
               {analyticsLoading ? (
                 <Loader2 className="h-8 w-8 animate-spin text-gray-400" />
               ) : (
                 <>
-                  <div className="text-3xl font-bold text-orange-600">
+                  <div className="flex items-center justify-between mb-3">
+                    <div className="p-3 bg-orange-100 rounded-lg">
+                      <Mail className="h-6 w-6 text-orange-600" />
+                    </div>
+                  </div>
+                  <div className="text-4xl font-bold text-gray-900 mb-1">
                     {analytics?.totalContacts.toLocaleString() || 0}
                   </div>
-                  <div className="text-sm text-gray-500">Обращения (30 дн)</div>
+                  <div className="text-sm font-medium text-gray-600">Обращений (30 дн)</div>
                   {analytics && renderTrend(analytics.contactsTrend)}
                 </>
               )}
@@ -363,9 +412,12 @@ export default function DashboardPage() {
           </Card>
         </div>
 
-        {/* Properties Section */}
-        <div className="mb-4 flex items-center justify-between">
-          <h2 className="text-xl font-semibold">Мои объявления</h2>
+        {/* Properties Section Header */}
+        <div className="mb-6 flex items-center justify-between">
+          <h2 className="text-2xl font-bold text-gray-900">Мои объявления</h2>
+          <div className="text-sm text-gray-500">
+            {properties.length} {properties.length === 1 ? 'объявление' : 'объявлений'}
+          </div>
         </div>
 
         {/* Error State */}
@@ -384,18 +436,20 @@ export default function DashboardPage() {
 
         {/* Empty State */}
         {!loading && !error && properties.length === 0 && (
-          <Card>
-            <CardContent className="p-12 text-center">
-              <Building2 className="h-16 w-16 mx-auto text-gray-300 mb-4" />
-              <h3 className="text-lg font-semibold mb-2">
+          <Card className="border-2 border-dashed border-gray-300">
+            <CardContent className="p-16 text-center">
+              <div className="inline-flex items-center justify-center w-20 h-20 bg-gray-100 rounded-full mb-6">
+                <Building2 className="h-10 w-10 text-gray-400" />
+              </div>
+              <h3 className="text-xl font-bold text-gray-900 mb-2">
                 У вас пока нет объявлений
               </h3>
-              <p className="text-gray-600 mb-6">
-                Создайте своё первое объявление прямо сейчас
+              <p className="text-base text-gray-600 mb-8 max-w-md mx-auto">
+                Создайте своё первое объявление прямо сейчас и начните получать запросы от клиентов
               </p>
               <Link href="/properties/new">
-                <Button>
-                  <Plus className="h-4 w-4 mr-2" />
+                <Button size="lg" className="bg-blue-600 hover:bg-blue-700">
+                  <Plus className="h-5 w-5 mr-2" />
                   Создать объявление
                 </Button>
               </Link>
@@ -442,17 +496,17 @@ export default function DashboardPage() {
                               property.listingType}
                           </Badge>
                         </div>
-                        <h3 className="font-semibold text-lg mb-1">
+                        <h3 className="font-semibold text-base mb-2 text-gray-900 line-clamp-2">
                           {property.title}
                         </h3>
-                        <div className="flex items-center text-sm text-gray-500 mb-2">
-                          <MapPin className="h-4 w-4 mr-1" />
-                          {property.address}, {property.city}
+                        <div className="flex items-center text-sm text-gray-600 mb-3">
+                          <MapPin className="h-4 w-4 mr-1 flex-shrink-0" />
+                          <span className="line-clamp-1">{property.address}, {property.city}</span>
                         </div>
-                        <div className="flex items-center gap-4 text-sm text-gray-500">
+                        <div className="flex items-center gap-4 text-xs text-gray-500">
                           <span className="flex items-center">
                             <Eye className="h-4 w-4 mr-1" />
-                            {property.views} просмотров
+                            {property.views}
                           </span>
                           <span className="flex items-center">
                             <Calendar className="h-4 w-4 mr-1" />
@@ -463,9 +517,9 @@ export default function DashboardPage() {
                         </div>
                       </div>
 
-                      <div className="text-right">
-                        <div className="text-xl font-bold text-blue-600 mb-2">
-                          {property.price.toLocaleString()} у.е.
+                      <div className="text-right flex flex-col items-end">
+                        <div className="text-2xl font-bold text-blue-600 mb-4">
+                          {property.price.toLocaleString()} <span className="text-sm font-normal text-gray-500">у.е.</span>
                         </div>
                         <div className="flex items-center gap-2">
                           <Link href={`/properties/${property.id}`}>
