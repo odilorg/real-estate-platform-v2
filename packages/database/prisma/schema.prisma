@@ -9,40 +9,41 @@ datasource db {
 
 // User profile with role for authentication
 model User {
-  id            String    @id @default(cuid())
-  email         String?   @unique  // Nullable for phone-only users
-  passwordHash  String?              // Nullable for passwordless auth
+  id            String   @id @default(cuid())
+  email         String?  @unique // Nullable for phone-only users
+  passwordHash  String? // Nullable for passwordless auth
   firstName     String
   lastName      String
-  phone         String?   @unique   // Unique for phone authentication
-  phoneVerified Boolean   @default(false)  // Track phone verification status
-  role          UserRole  @default(USER)
-  isOAuthUser   Boolean   @default(false)
-  banned        Boolean   @default(false)
+  phone         String?  @unique // Unique for phone authentication
+  phoneVerified Boolean  @default(false) // Track phone verification status
+  role          UserRole @default(USER)
+  isOAuthUser   Boolean  @default(false)
+  banned        Boolean  @default(false)
   banReason     String?
-  createdAt     DateTime  @default(now())
-  updatedAt     DateTime  @updatedAt
+  createdAt     DateTime @default(now())
+  updatedAt     DateTime @updatedAt
 
   // 🆕 Developer membership (optional)
-  developerId   String?
-  developer     Developer? @relation("DeveloperSalesTeam", fields: [developerId], references: [id])
+  developerId String?
+  developer   Developer? @relation("DeveloperSalesTeam", fields: [developerId], references: [id])
 
   // Relations
-  properties    Property[]
-  favorites     Favorite[]
-  collections   Collection[]
-  reviews       Review[]
-  viewingsRequested Viewing[] @relation("ViewingRequester")
-  viewingsOwned     Viewing[] @relation("ViewingOwner")
-  savedSearches SavedSearch[]
-  recentlyViewed RecentlyViewed[]
-  agent         Agent?
-  adminLogs     AdminLog[]
-  propertyViews PropertyView[]
-  priceChanges  PriceHistory[]
-  statusChanges PropertyStatusHistory[]
-  otpCodes      OtpCode[]
-  assignedLeads Lead[]    @relation("LeadAssignedAgent")
+  properties        Property[]
+  favorites         Favorite[]
+  collections       Collection[]
+  reviews           Review[]
+  viewingsRequested Viewing[]               @relation("ViewingRequester")
+  viewingsOwned     Viewing[]               @relation("ViewingOwner")
+  savedSearches     SavedSearch[]
+  recentlyViewed    RecentlyViewed[]
+  agent             Agent?
+  adminLogs         AdminLog[]
+  propertyViews     PropertyView[]
+  priceChanges      PriceHistory[]
+  statusChanges     PropertyStatusHistory[]
+  otpCodes          OtpCode[]
+  assignedLeads     Lead[]                  @relation("LeadAssignedAgent")
+  agencyMemberships AgencyMember[]
 
   @@index([email])
   @@index([phone])
@@ -53,23 +54,23 @@ enum UserRole {
   USER
   AGENT
   ADMIN
-  DEVELOPER_ADMIN         // 🆕 Developer company owner
-  DEVELOPER_SALES_AGENT   // 🆕 Sales person at developer
+  DEVELOPER_ADMIN // 🆕 Developer company owner
+  DEVELOPER_SALES_AGENT // 🆕 Sales person at developer
 }
 
 // OTP codes for phone authentication
 model OtpCode {
-  id          String      @id @default(cuid())
-  userId      String?     // Nullable for new registrations
-  phone       String      // Phone number this OTP is for
-  code        String      // 6-digit OTP code
-  purpose     OtpPurpose  // LOGIN, REGISTRATION, PASSWORD_RESET
-  expiresAt   DateTime    // Expiry time (3 minutes from creation)
-  attempts    Int         @default(0)  // Brute force protection
-  verified    Boolean     @default(false)  // Mark as used after verification
-  createdAt   DateTime    @default(now())
+  id        String     @id @default(cuid())
+  userId    String? // Nullable for new registrations
+  phone     String // Phone number this OTP is for
+  code      String // 6-digit OTP code
+  purpose   OtpPurpose // LOGIN, REGISTRATION, PASSWORD_RESET
+  expiresAt DateTime // Expiry time (3 minutes from creation)
+  attempts  Int        @default(0) // Brute force protection
+  verified  Boolean    @default(false) // Mark as used after verification
+  createdAt DateTime   @default(now())
 
-  user        User?       @relation(fields: [userId], references: [id], onDelete: Cascade)
+  user User? @relation(fields: [userId], references: [id], onDelete: Cascade)
 
   @@index([phone, purpose, verified])
   @@index([expiresAt])
@@ -84,29 +85,29 @@ enum OtpPurpose {
 
 // Property model - main listing entity
 model Property {
-  id          String        @id @default(cuid())
-  userId      String
-  title       String
-  description String
-  price       Float
-  priceUsd    Float?         // Normalized price in USD for search
-  currency    Currency      @default(YE)
+  id           String         @id @default(cuid())
+  userId       String
+  title        String
+  description  String
+  price        Float
+  priceUsd     Float? // Normalized price in USD for search
+  currency     Currency       @default(YE)
   propertyType PropertyType
-  listingType ListingType
-  marketType  MarketType?   // NEW_BUILDING or SECONDARY (optional for non-apartments)
-  status      PropertyStatus @default(ACTIVE)
+  listingType  ListingType
+  marketType   MarketType? // NEW_BUILDING or SECONDARY (optional for non-apartments)
+  status       PropertyStatus @default(ACTIVE)
 
   // Location details
-  address     String
-  city        String
-  state       String?
-  country     String        @default("Uzbekistan")
-  zipCode     String?
-  latitude    Float?
-  longitude   Float?
-  district    String?
-  mahalla     String?
-  nearestMetro String?
+  address       String
+  city          String
+  state         String?
+  country       String  @default("Uzbekistan")
+  zipCode       String?
+  latitude      Float?
+  longitude     Float?
+  district      String?
+  mahalla       String?
+  nearestMetro  String?
   metroDistance Int?
 
   // Property details - Areas
@@ -118,9 +119,9 @@ model Property {
   rooms       Int?
 
   // Property details - Building info
-  yearBuilt   Int?
-  floor       Int?
-  totalFloors Int?
+  yearBuilt     Int?
+  floor         Int?
+  totalFloors   Int?
   ceilingHeight Float?
 
   // Property details - Features
@@ -130,71 +131,72 @@ model Property {
   loggia      Int?
 
   // Building characteristics
-  buildingType  BuildingType?
-  buildingClass BuildingClass?
-  buildingName  String?
+  buildingType      BuildingType?
+  buildingClass     BuildingClass?
+  buildingName      String?
   elevatorPassenger Int?
   elevatorCargo     Int?
-  hasGarbageChute   Boolean @default(false)
-  hasConcierge      Boolean @default(false)
-  hasGatedArea      Boolean @default(false)
+  hasGarbageChute   Boolean        @default(false)
+  hasConcierge      Boolean        @default(false)
+  hasGatedArea      Boolean        @default(false)
 
   // Apartment condition
-  renovation    RenovationType?
-  windowView    String?
-  bathroomType  String?
-  furnished     String?
+  renovation   RenovationType?
+  windowView   String?
+  bathroomType String?
+  furnished    String?
 
   // 🆕 Developer ownership (alternative to userId for developer units)
   developerId        String?
-  developer          Developer? @relation(fields: [developerId], references: [id])
+  developer          Developer?        @relation(fields: [developerId], references: [id])
   developerProjectId String?
   developerProject   DeveloperProject? @relation(fields: [developerProjectId], references: [id])
 
   // 🆕 Unit-specific fields (for developer properties)
-  buildingBlock      String?   // "Block A", "Tower 1"
-  unitNumber         String?   // "305", "A-12"
-  entrance           String?   // Entrance number
-  unitStatus         UnitStatus? @default(AVAILABLE)
+  buildingBlock String? // "Block A", "Tower 1"
+  unitNumber    String? // "305", "A-12"
+  entrance      String? // Entrance number
+  unitStatus    UnitStatus? @default(AVAILABLE)
 
   // 🆕 Reservation
-  reservedUntil      DateTime? // Reservation expiry
-  reservedBy         String?   // Lead ID or name
+  reservedUntil DateTime? // Reservation expiry
+  reservedBy    String? // Lead ID or name
 
   // 🆕 Payment plan (for new builds)
   paymentPlanAvailable Boolean @default(false)
-  downPaymentPercent   Int?    // e.g., 30
-  installmentMonths    Int?    // e.g., 12, 24, 36
+  downPaymentPercent   Int? // e.g., 30
+  installmentMonths    Int? // e.g., 12, 24, 36
   paymentPlanDetails   String? @db.Text
 
   // 🆕 Delivery timeline
-  estimatedDelivery  DateTime? // When unit ready
-  isReadyToMoveIn    Boolean   @default(false)
-  handoverDate       DateTime? // When keys given
+  estimatedDelivery DateTime? // When unit ready
+  isReadyToMoveIn   Boolean   @default(false)
+  handoverDate      DateTime? // When keys given
 
   // Metadata
-  views       Int           @default(0)
-  featured    Boolean       @default(false)
-  verified    Boolean       @default(false)
-  createdAt   DateTime      @default(now())
-  updatedAt   DateTime      @updatedAt
+  views     Int      @default(0)
+  featured  Boolean  @default(false)
+  verified  Boolean  @default(false)
+  createdAt DateTime @default(now())
+  updatedAt DateTime @updatedAt
 
   // Relations
-  user        User          @relation(fields: [userId], references: [id], onDelete: Cascade)
-  images      PropertyImage[]
-  videos      PropertyVideo[]
-  tours360    Property360Tour[]
-  amenities   PropertyAmenity[]
-  favorites   Favorite[]
-  collections CollectionProperty[]
-  reviews     Review[]
-  viewings    Viewing[]
+  user          User                    @relation(fields: [userId], references: [id], onDelete: Cascade)
+  images        PropertyImage[]
+  videos        PropertyVideo[]
+  tours360      Property360Tour[]
+  amenities     PropertyAmenity[]
+  favorites     Favorite[]
+  collections   CollectionProperty[]
+  reviews       Review[]
+  viewings      Viewing[]
   conversations Conversation[]
-  analytics   PropertyAnalytics[]
+  analytics     PropertyAnalytics[]
   propertyViews PropertyView[]
-  priceHistory PriceHistory[]
-  pois        PropertyPOI[]
+  priceHistory  PriceHistory[]
+  pois          PropertyPOI[]
   statusHistory PropertyStatusHistory[]
+  agencyDeals   AgencyDeal[]
 
   @@index([userId])
   @@index([city])
@@ -230,13 +232,13 @@ enum ListingType {
 }
 
 enum MarketType {
-  NEW_BUILDING  // Новостройка - Primary market
-  SECONDARY     // Вторичка - Secondary market
+  NEW_BUILDING // Новостройка - Primary market
+  SECONDARY // Вторичка - Secondary market
 }
 
 enum Currency {
-  YE    // у.е. (conditional units - standard in Uzbekistan)
-  UZS   // Uzbek Som
+  YE // у.е. (conditional units - standard in Uzbekistan)
+  UZS // Uzbek Som
 }
 
 enum PropertyStatus {
@@ -278,26 +280,26 @@ enum ParkingType {
 }
 
 enum UnitStatus {
-  AVAILABLE     // For sale
-  RESERVED      // Temporarily held (24-48 hours)
-  SOLD          // Contract signed
-  HANDED_OVER   // Keys given to buyer
+  AVAILABLE // For sale
+  RESERVED // Temporarily held (24-48 hours)
+  SOLD // Contract signed
+  HANDED_OVER // Keys given to buyer
 }
 
 // Property images
 model PropertyImage {
-  id          String    @id @default(cuid())
-  propertyId  String
-  url         String
+  id           String   @id @default(cuid())
+  propertyId   String
+  url          String
   thumbnailUrl String?
-  caption     String?
-  roomType    String?   // e.g., "LIVING_ROOM", "BEDROOM", "KITCHEN"
-  fileSize    Int?      // bytes
-  order       Int       @default(0)
-  isPrimary   Boolean   @default(false)
-  createdAt   DateTime  @default(now())
+  caption      String?
+  roomType     String? // e.g., "LIVING_ROOM", "BEDROOM", "KITCHEN"
+  fileSize     Int? // bytes
+  order        Int      @default(0)
+  isPrimary    Boolean  @default(false)
+  createdAt    DateTime @default(now())
 
-  property    Property  @relation(fields: [propertyId], references: [id], onDelete: Cascade)
+  property Property @relation(fields: [propertyId], references: [id], onDelete: Cascade)
 
   @@index([propertyId])
   @@index([propertyId, isPrimary])
@@ -305,44 +307,44 @@ model PropertyImage {
 
 // Property videos
 model PropertyVideo {
-  id          String    @id @default(cuid())
-  propertyId  String
-  url         String
+  id           String   @id @default(cuid())
+  propertyId   String
+  url          String
   thumbnailUrl String?
-  title       String?
-  duration    Int?      // seconds
-  type        String    @default("UPLOADED") // UPLOADED, YOUTUBE, VIMEO
-  fileSize    Int?      // bytes (for uploaded videos)
-  order       Int       @default(0)
-  createdAt   DateTime  @default(now())
+  title        String?
+  duration     Int? // seconds
+  type         String   @default("UPLOADED") // UPLOADED, YOUTUBE, VIMEO
+  fileSize     Int? // bytes (for uploaded videos)
+  order        Int      @default(0)
+  createdAt    DateTime @default(now())
 
-  property    Property  @relation(fields: [propertyId], references: [id], onDelete: Cascade)
+  property Property @relation(fields: [propertyId], references: [id], onDelete: Cascade)
 
   @@index([propertyId])
 }
 
 // Property 360° panoramic tours
 model Property360Tour {
-  id          String    @id @default(cuid())
+  id          String   @id @default(cuid())
   propertyId  String
-  url         String    // URL to panoramic image
-  roomName    String?   // e.g., "Living Room", "Master Bedroom"
-  description String?   @db.Text
-  order       Int       @default(0)
-  createdAt   DateTime  @default(now())
+  url         String // URL to panoramic image
+  roomName    String? // e.g., "Living Room", "Master Bedroom"
+  description String?  @db.Text
+  order       Int      @default(0)
+  createdAt   DateTime @default(now())
 
-  property    Property  @relation(fields: [propertyId], references: [id], onDelete: Cascade)
+  property Property @relation(fields: [propertyId], references: [id], onDelete: Cascade)
 
   @@index([propertyId])
 }
 
 // Amenities/Features
 model PropertyAmenity {
-  id          String    @id @default(cuid())
-  propertyId  String
-  amenity     String
+  id         String @id @default(cuid())
+  propertyId String
+  amenity    String
 
-  property    Property  @relation(fields: [propertyId], references: [id], onDelete: Cascade)
+  property Property @relation(fields: [propertyId], references: [id], onDelete: Cascade)
 
   @@unique([propertyId, amenity])
   @@index([propertyId])
@@ -350,13 +352,13 @@ model PropertyAmenity {
 
 // Favorites/Wishlist
 model Favorite {
-  id          String    @id @default(cuid())
-  userId      String
-  propertyId  String
-  createdAt   DateTime  @default(now())
+  id         String   @id @default(cuid())
+  userId     String
+  propertyId String
+  createdAt  DateTime @default(now())
 
-  user        User      @relation(fields: [userId], references: [id], onDelete: Cascade)
-  property    Property  @relation(fields: [propertyId], references: [id], onDelete: Cascade)
+  user     User     @relation(fields: [userId], references: [id], onDelete: Cascade)
+  property Property @relation(fields: [propertyId], references: [id], onDelete: Cascade)
 
   @@unique([userId, propertyId])
   @@index([userId])
@@ -366,18 +368,18 @@ model Favorite {
 
 // Property Collections (Folders)
 model Collection {
-  id          String               @id @default(cuid())
+  id          String   @id @default(cuid())
   userId      String
   name        String
   description String?
-  isDefault   Boolean              @default(false)
-  color       String?              // Optional color for UI
-  icon        String?              // Optional icon name
-  createdAt   DateTime             @default(now())
-  updatedAt   DateTime             @updatedAt
+  isDefault   Boolean  @default(false)
+  color       String? // Optional color for UI
+  icon        String? // Optional icon name
+  createdAt   DateTime @default(now())
+  updatedAt   DateTime @updatedAt
 
-  user        User                 @relation(fields: [userId], references: [id], onDelete: Cascade)
-  properties  CollectionProperty[]
+  user       User                 @relation(fields: [userId], references: [id], onDelete: Cascade)
+  properties CollectionProperty[]
 
   @@index([userId])
   @@index([userId, createdAt])
@@ -385,14 +387,14 @@ model Collection {
 
 // Many-to-many relationship between Collections and Properties
 model CollectionProperty {
-  id           String     @id @default(cuid())
+  id           String   @id @default(cuid())
   collectionId String
   propertyId   String
-  addedAt      DateTime   @default(now())
-  notes        String?    // Optional notes about why this property is in the collection
+  addedAt      DateTime @default(now())
+  notes        String? // Optional notes about why this property is in the collection
 
-  collection   Collection @relation(fields: [collectionId], references: [id], onDelete: Cascade)
-  property     Property   @relation(fields: [propertyId], references: [id], onDelete: Cascade)
+  collection Collection @relation(fields: [collectionId], references: [id], onDelete: Cascade)
+  property   Property   @relation(fields: [propertyId], references: [id], onDelete: Cascade)
 
   @@unique([collectionId, propertyId])
   @@index([collectionId])
@@ -401,15 +403,15 @@ model CollectionProperty {
 
 // Conversation model for messaging
 model Conversation {
-  id            String    @id @default(cuid())
-  propertyId    String
+  id             String   @id @default(cuid())
+  propertyId     String
   participant1Id String
   participant2Id String
-  lastMessageAt DateTime  @default(now())
-  createdAt     DateTime  @default(now())
+  lastMessageAt  DateTime @default(now())
+  createdAt      DateTime @default(now())
 
-  property      Property  @relation(fields: [propertyId], references: [id], onDelete: Cascade)
-  messages      Message[]
+  property Property  @relation(fields: [propertyId], references: [id], onDelete: Cascade)
+  messages Message[]
 
   @@unique([propertyId, participant1Id, participant2Id])
   @@index([participant1Id])
@@ -418,15 +420,15 @@ model Conversation {
 
 // Messaging system
 model Message {
-  id             String       @id @default(cuid())
+  id             String    @id @default(cuid())
   conversationId String
   senderId       String
   content        String
-  read           Boolean      @default(false)
-  readAt         DateTime?    // Timestamp when message was read
-  createdAt      DateTime     @default(now())
+  read           Boolean   @default(false)
+  readAt         DateTime? // Timestamp when message was read
+  createdAt      DateTime  @default(now())
 
-  conversation   Conversation @relation(fields: [conversationId], references: [id], onDelete: Cascade)
+  conversation Conversation @relation(fields: [conversationId], references: [id], onDelete: Cascade)
 
   @@index([conversationId])
   @@index([senderId])
@@ -438,17 +440,17 @@ model Message {
 
 // Reviews and ratings
 model Review {
-  id          String    @id @default(cuid())
-  propertyId  String
-  userId      String
-  rating      Int
-  comment     String
-  approved    Boolean   @default(true)
-  createdAt   DateTime  @default(now())
-  updatedAt   DateTime  @updatedAt
+  id         String   @id @default(cuid())
+  propertyId String
+  userId     String
+  rating     Int
+  comment    String
+  approved   Boolean  @default(true)
+  createdAt  DateTime @default(now())
+  updatedAt  DateTime @updatedAt
 
-  property    Property  @relation(fields: [propertyId], references: [id], onDelete: Cascade)
-  user        User      @relation(fields: [userId], references: [id], onDelete: Cascade)
+  property Property @relation(fields: [propertyId], references: [id], onDelete: Cascade)
+  user     User     @relation(fields: [userId], references: [id], onDelete: Cascade)
 
   @@unique([propertyId, userId])
   @@index([propertyId])
@@ -468,7 +470,7 @@ model SavedSearch {
   createdAt            DateTime  @default(now())
   updatedAt            DateTime  @updatedAt
 
-  user                 User      @relation(fields: [userId], references: [id], onDelete: Cascade)
+  user User @relation(fields: [userId], references: [id], onDelete: Cascade)
 
   @@index([userId])
   @@index([notificationsEnabled, lastNotifiedAt])
@@ -488,9 +490,9 @@ model Viewing {
   createdAt   DateTime      @default(now())
   updatedAt   DateTime      @updatedAt
 
-  property    Property      @relation(fields: [propertyId], references: [id], onDelete: Cascade)
-  requester   User          @relation("ViewingRequester", fields: [requesterId], references: [id], onDelete: Cascade)
-  owner       User          @relation("ViewingOwner", fields: [ownerId], references: [id], onDelete: Cascade)
+  property  Property @relation(fields: [propertyId], references: [id], onDelete: Cascade)
+  requester User     @relation("ViewingRequester", fields: [requesterId], references: [id], onDelete: Cascade)
+  owner     User     @relation("ViewingOwner", fields: [ownerId], references: [id], onDelete: Cascade)
 
   @@index([propertyId])
   @@index([requesterId])
@@ -507,12 +509,12 @@ enum ViewingStatus {
 
 // Recently viewed properties
 model RecentlyViewed {
-  id          String    @id @default(cuid())
-  userId      String
-  propertyId  String
-  viewedAt    DateTime  @default(now())
+  id         String   @id @default(cuid())
+  userId     String
+  propertyId String
+  viewedAt   DateTime @default(now())
 
-  user        User      @relation(fields: [userId], references: [id], onDelete: Cascade)
+  user User @relation(fields: [userId], references: [id], onDelete: Cascade)
 
   @@unique([userId, propertyId])
   @@index([userId])
@@ -521,9 +523,9 @@ model RecentlyViewed {
 
 // Real Estate Agency
 model Agency {
-  id              String    @id @default(cuid())
+  id              String   @id @default(cuid())
   name            String
-  slug            String    @unique
+  slug            String   @unique
   logo            String?
   description     String?
   website         String?
@@ -531,12 +533,19 @@ model Agency {
   phone           String?
   address         String?
   city            String?
-  yearsOnPlatform Int       @default(0)
-  verified        Boolean   @default(false)
-  createdAt       DateTime  @default(now())
-  updatedAt       DateTime  @updatedAt
+  yearsOnPlatform Int      @default(0)
+  verified        Boolean  @default(false)
+  createdAt       DateTime @default(now())
+  updatedAt       DateTime @updatedAt
 
-  agents          Agent[]
+  agents      Agent[]
+  crmSettings AgencyCRM?
+  members     AgencyMember[]
+  leads       AgencyLead[]
+  deals       AgencyDeal[]
+  commissions AgencyCommission[]
+  activities  AgencyActivity[]
+  tasks       AgencyTask[]
 
   @@index([slug])
   @@index([city])
@@ -544,41 +553,41 @@ model Agency {
 
 // Real Estate Agent
 model Agent {
-  id              String    @id @default(cuid())
-  userId          String    @unique
-  agencyId        String?
+  id       String  @id @default(cuid())
+  userId   String  @unique
+  agencyId String?
 
-  firstName       String
-  lastName        String
-  photo           String?
-  bio             String?
-  phone           String?
-  email           String?
-  whatsapp        String?
-  telegram        String?
+  firstName String
+  lastName  String
+  photo     String?
+  bio       String?
+  phone     String?
+  email     String?
+  whatsapp  String?
+  telegram  String?
 
   licenseNumber   String?
   specializations String[]
   languages       String[]
   areasServed     String[]
 
-  yearsExperience Int       @default(0)
-  totalDeals      Int       @default(0)
-  verified        Boolean   @default(false)
-  superAgent      Boolean   @default(false)
+  yearsExperience Int     @default(0)
+  totalDeals      Int     @default(0)
+  verified        Boolean @default(false)
+  superAgent      Boolean @default(false)
   responseTime    String?
-  rating          Float     @default(0)
-  reviewCount     Int       @default(0)
+  rating          Float   @default(0)
+  reviewCount     Int     @default(0)
 
-  showPhone       Boolean   @default(true)
-  showEmail       Boolean   @default(true)
+  showPhone Boolean @default(true)
+  showEmail Boolean @default(true)
 
-  createdAt       DateTime  @default(now())
-  updatedAt       DateTime  @updatedAt
+  createdAt DateTime @default(now())
+  updatedAt DateTime @updatedAt
 
-  user            User      @relation(fields: [userId], references: [id], onDelete: Cascade)
-  agency          Agency?   @relation(fields: [agencyId], references: [id])
-  reviews         AgentReview[]
+  user    User          @relation(fields: [userId], references: [id], onDelete: Cascade)
+  agency  Agency?       @relation(fields: [agencyId], references: [id])
+  reviews AgentReview[]
 
   @@index([userId])
   @@index([agencyId])
@@ -588,16 +597,16 @@ model Agent {
 
 // Agent Reviews
 model AgentReview {
-  id          String    @id @default(cuid())
-  agentId     String
-  userId      String
-  rating      Int
-  comment     String?
-  dealType    String?
-  createdAt   DateTime  @default(now())
-  updatedAt   DateTime  @updatedAt
+  id        String   @id @default(cuid())
+  agentId   String
+  userId    String
+  rating    Int
+  comment   String?
+  dealType  String?
+  createdAt DateTime @default(now())
+  updatedAt DateTime @updatedAt
 
-  agent       Agent     @relation(fields: [agentId], references: [id], onDelete: Cascade)
+  agent Agent @relation(fields: [agentId], references: [id], onDelete: Cascade)
 
   @@unique([agentId, userId])
   @@index([agentId])
@@ -606,15 +615,15 @@ model AgentReview {
 
 // Admin action log for audit trail
 model AdminLog {
-  id          String    @id @default(cuid())
-  adminId     String
-  action      String
-  targetType  String
-  targetId    String
-  details     Json?
-  createdAt   DateTime  @default(now())
+  id         String   @id @default(cuid())
+  adminId    String
+  action     String
+  targetType String
+  targetId   String
+  details    Json?
+  createdAt  DateTime @default(now())
 
-  admin       User      @relation(fields: [adminId], references: [id])
+  admin User @relation(fields: [adminId], references: [id])
 
   @@index([adminId])
   @@index([action])
@@ -623,21 +632,21 @@ model AdminLog {
 
 // Property Analytics tracking
 model PropertyAnalytics {
-  id          String    @id @default(cuid())
-  propertyId  String
-  date        DateTime  @default(now())
+  id         String   @id @default(cuid())
+  propertyId String
+  date       DateTime @default(now())
 
   // Daily metrics
-  views       Int       @default(0)
-  favorites   Int       @default(0)
-  unfavorites Int       @default(0)
-  contacts    Int       @default(0)
+  views       Int @default(0)
+  favorites   Int @default(0)
+  unfavorites Int @default(0)
+  contacts    Int @default(0)
 
   // Price tracking
-  price       Float?
-  priceUsd    Float?
+  price    Float?
+  priceUsd Float?
 
-  property    Property  @relation(fields: [propertyId], references: [id], onDelete: Cascade)
+  property Property @relation(fields: [propertyId], references: [id], onDelete: Cascade)
 
   @@unique([propertyId, date])
   @@index([propertyId])
@@ -646,16 +655,16 @@ model PropertyAnalytics {
 
 // Property view tracking (individual views)
 model PropertyView {
-  id          String    @id @default(cuid())
-  propertyId  String
-  userId      String?
-  ipAddress   String?
-  userAgent   String?
-  referrer    String?
-  createdAt   DateTime  @default(now())
+  id         String   @id @default(cuid())
+  propertyId String
+  userId     String?
+  ipAddress  String?
+  userAgent  String?
+  referrer   String?
+  createdAt  DateTime @default(now())
 
-  property    Property  @relation(fields: [propertyId], references: [id], onDelete: Cascade)
-  user        User?     @relation(fields: [userId], references: [id], onDelete: SetNull)
+  property Property @relation(fields: [propertyId], references: [id], onDelete: Cascade)
+  user     User?    @relation(fields: [userId], references: [id], onDelete: SetNull)
 
   @@index([propertyId])
   @@index([userId])
@@ -665,15 +674,15 @@ model PropertyView {
 
 // Nearby amenities for properties
 model NearbyAmenity {
-  id          String       @id @default(cuid())
-  name        String
-  type        AmenityType
-  latitude    Float
-  longitude   Float
-  address     String?
-  city        String
-  createdAt   DateTime     @default(now())
-  updatedAt   DateTime     @updatedAt
+  id        String      @id @default(cuid())
+  name      String
+  type      AmenityType
+  latitude  Float
+  longitude Float
+  address   String?
+  city      String
+  createdAt DateTime    @default(now())
+  updatedAt DateTime    @updatedAt
 
   @@index([type])
   @@index([city])
@@ -698,16 +707,16 @@ enum AmenityType {
 
 // Price history tracking for properties
 model PriceHistory {
-  id          String    @id @default(cuid())
-  propertyId  String
-  oldPrice    Float
-  newPrice    Float
-  currency    Currency
-  changedBy   String?
-  createdAt   DateTime  @default(now())
+  id         String   @id @default(cuid())
+  propertyId String
+  oldPrice   Float
+  newPrice   Float
+  currency   Currency
+  changedBy  String?
+  createdAt  DateTime @default(now())
 
-  property    Property  @relation(fields: [propertyId], references: [id], onDelete: Cascade)
-  user        User?     @relation(fields: [changedBy], references: [id], onDelete: SetNull)
+  property Property @relation(fields: [propertyId], references: [id], onDelete: Cascade)
+  user     User?    @relation(fields: [changedBy], references: [id], onDelete: SetNull)
 
   @@index([propertyId])
   @@index([createdAt])
@@ -717,21 +726,21 @@ model PriceHistory {
 
 // Points of Interest (POI) cached for each property
 model PropertyPOI {
-  id          String    @id @default(cuid())
+  id          String   @id @default(cuid())
   propertyId  String
-  category    String    // 'metro', 'school', 'hospital', etc.
-  displayName String    // Category display name in Russian
-  name        String    // POI name
-  type        String    // OSM type (amenity, shop, leisure, etc.)
-  distance    Int       // Distance in meters
+  category    String // 'metro', 'school', 'hospital', etc.
+  displayName String // Category display name in Russian
+  name        String // POI name
+  type        String // OSM type (amenity, shop, leisure, etc.)
+  distance    Int // Distance in meters
   latitude    Float
   longitude   Float
   address     String?
-  icon        String    // Icon name for UI
-  color       String    // Color for UI
-  fetchedAt   DateTime  @default(now())
+  icon        String // Icon name for UI
+  color       String // Color for UI
+  fetchedAt   DateTime @default(now())
 
-  property    Property  @relation(fields: [propertyId], references: [id], onDelete: Cascade)
+  property Property @relation(fields: [propertyId], references: [id], onDelete: Cascade)
 
   @@index([propertyId])
   @@index([propertyId, category])
@@ -740,17 +749,17 @@ model PropertyPOI {
 
 // Property status history tracking
 model PropertyStatusHistory {
-  id          String         @id @default(cuid())
-  propertyId  String
-  oldStatus   PropertyStatus?
-  newStatus   PropertyStatus
-  changedBy   String?        // User who made the change
-  reason      String?        // Optional reason for status change
-  notes       String?        // Additional notes
-  createdAt   DateTime       @default(now())
+  id         String          @id @default(cuid())
+  propertyId String
+  oldStatus  PropertyStatus?
+  newStatus  PropertyStatus
+  changedBy  String? // User who made the change
+  reason     String? // Optional reason for status change
+  notes      String? // Additional notes
+  createdAt  DateTime        @default(now())
 
-  property    Property       @relation(fields: [propertyId], references: [id], onDelete: Cascade)
-  user        User?          @relation(fields: [changedBy], references: [id], onDelete: SetNull)
+  property Property @relation(fields: [propertyId], references: [id], onDelete: Cascade)
+  user     User?    @relation(fields: [changedBy], references: [id], onDelete: SetNull)
 
   @@index([propertyId])
   @@index([createdAt])
@@ -763,48 +772,48 @@ model PropertyStatusHistory {
 
 // Location hierarchy (used by both agencies and developers)
 model City {
-  id         String     @id @default(cuid())
-  nameRu     String
-  nameUz     String
-  country    String     @default("Uzbekistan")
-  latitude   Float?
-  longitude  Float?
+  id        String @id @default(cuid())
+  nameRu    String
+  nameUz    String
+  country   String @default("Uzbekistan")
+  latitude  Float?
+  longitude Float?
 
-  districts  District[]
-  projects   DeveloperProject[]
+  districts District[]
+  projects  DeveloperProject[]
 
-  createdAt  DateTime   @default(now())
+  createdAt DateTime @default(now())
 
   @@index([nameRu])
   @@index([nameUz])
 }
 
 model District {
-  id       String    @id @default(cuid())
-  cityId   String
-  city     City      @relation(fields: [cityId], references: [id])
-  nameRu   String
-  nameUz   String
+  id     String @id @default(cuid())
+  cityId String
+  city   City   @relation(fields: [cityId], references: [id])
+  nameRu String
+  nameUz String
 
-  mahallas   Mahalla[]
-  projects   DeveloperProject[]
+  mahallas Mahalla[]
+  projects DeveloperProject[]
 
-  createdAt  DateTime  @default(now())
+  createdAt DateTime @default(now())
 
   @@index([cityId])
   @@index([nameRu])
 }
 
 model Mahalla {
-  id         String     @id @default(cuid())
+  id         String   @id @default(cuid())
   districtId String
-  district   District   @relation(fields: [districtId], references: [id])
+  district   District @relation(fields: [districtId], references: [id])
   nameRu     String
   nameUz     String
 
-  projects   DeveloperProject[]
+  projects DeveloperProject[]
 
-  createdAt  DateTime   @default(now())
+  createdAt DateTime @default(now())
 
   @@index([districtId])
   @@index([nameRu])
@@ -812,62 +821,62 @@ model Mahalla {
 
 // Developer company (Zastroyshik)
 model Developer {
-  id              String    @id @default(cuid())
+  id String @id @default(cuid())
 
   // Basic Info
-  name            String    // Russian name
-  nameUz          String?   // Uzbek name
-  slug            String    @unique
-  logo            String?
+  name   String // Russian name
+  nameUz String? // Uzbek name
+  slug   String  @unique
+  logo   String?
 
   // Description (bilingual)
-  descriptionRu   String?   @db.Text
-  descriptionUz   String?   @db.Text
+  descriptionRu String? @db.Text
+  descriptionUz String? @db.Text
 
   // Legal
   licenseNumber   String?
-  innTin          String?   // Tax ID
-  legalEntity     String?   // OOO, AO, etc.
+  innTin          String? // Tax ID
+  legalEntity     String? // OOO, AO, etc.
   legalAddress    String?
   establishedYear Int?
 
   // Contact
-  phone           String
-  email           String?
-  website         String?
-  telegram        String?   // @username
-  whatsapp        String?
+  phone    String
+  email    String?
+  website  String?
+  telegram String? // @username
+  whatsapp String?
 
   // Location
-  city            String    // Tashkent, Samarkand
-  officeAddress   String?
+  city          String // Tashkent, Samarkand
+  officeAddress String?
 
   // Branding
-  primaryColor    String    @default("#3B82F6")
-  secondaryColor  String    @default("#1E40AF")
+  primaryColor   String @default("#3B82F6")
+  secondaryColor String @default("#1E40AF")
 
   // Status
-  verified        Boolean   @default(false)
-  featured        Boolean   @default(false)
-  subscriptionTier String   @default("FREE")
+  verified           Boolean   @default(false)
+  featured           Boolean   @default(false)
+  subscriptionTier   String    @default("FREE")
   subscriptionExpiry DateTime?
 
   // Auto-updated stats
-  totalProjects   Int       @default(0)
-  totalUnits      Int       @default(0)
-  unitsSold       Int       @default(0)
-  unitsAvailable  Int       @default(0)
-  rating          Float     @default(0)
-  reviewCount     Int       @default(0)
+  totalProjects  Int   @default(0)
+  totalUnits     Int   @default(0)
+  unitsSold      Int   @default(0)
+  unitsAvailable Int   @default(0)
+  rating         Float @default(0)
+  reviewCount    Int   @default(0)
 
   // Relations
-  projects        DeveloperProject[]
-  properties      Property[]
-  salesTeam       User[]    @relation("DeveloperSalesTeam")
-  leads           Lead[]
+  projects   DeveloperProject[]
+  properties Property[]
+  salesTeam  User[]             @relation("DeveloperSalesTeam")
+  leads      Lead[]
 
-  createdAt       DateTime  @default(now())
-  updatedAt       DateTime  @updatedAt
+  createdAt DateTime @default(now())
+  updatedAt DateTime @updatedAt
 
   @@index([slug])
   @@index([city])
@@ -876,57 +885,57 @@ model Developer {
 
 // Residential project (complex, building)
 model DeveloperProject {
-  id              String    @id @default(cuid())
-  developerId     String
-  developer       Developer @relation(fields: [developerId], references: [id], onDelete: Cascade)
+  id          String    @id @default(cuid())
+  developerId String
+  developer   Developer @relation(fields: [developerId], references: [id], onDelete: Cascade)
 
   // Basic Info
-  name            String    // Russian name
-  nameUz          String?   // Uzbek name
-  slug            String    @unique
+  name   String // Russian name
+  nameUz String? // Uzbek name
+  slug   String  @unique
 
   // Description (bilingual)
-  descriptionRu   String?   @db.Text
-  descriptionUz   String?   @db.Text
+  descriptionRu String? @db.Text
+  descriptionUz String? @db.Text
 
   // Location
-  cityId          String
-  city            City      @relation(fields: [cityId], references: [id])
-  districtId      String
-  district        District  @relation(fields: [districtId], references: [id])
-  mahallaId       String?
-  mahalla         Mahalla?  @relation(fields: [mahallaId], references: [id])
-  address         String
-  latitude        Float?
-  longitude       Float?
+  cityId     String
+  city       City     @relation(fields: [cityId], references: [id])
+  districtId String
+  district   District @relation(fields: [districtId], references: [id])
+  mahallaId  String?
+  mahalla    Mahalla? @relation(fields: [mahallaId], references: [id])
+  address    String
+  latitude   Float?
+  longitude  Float?
 
   // Building Details
-  buildingClass   BuildingClass?  // ECONOMY, COMFORT, BUSINESS, ELITE
-  buildingType    BuildingType?   // BRICK, PANEL, MONOLITHIC
-  totalUnits      Int
-  totalFloors     Int?
-  totalBlocks     Int       @default(1)  // Number of buildings/towers
-  parkingSpaces   Int?
+  buildingClass BuildingClass? // ECONOMY, COMFORT, BUSINESS, ELITE
+  buildingType  BuildingType? // BRICK, PANEL, MONOLITHIC
+  totalUnits    Int
+  totalFloors   Int?
+  totalBlocks   Int            @default(1) // Number of buildings/towers
+  parkingSpaces Int?
 
   // Timeline
   constructionStartDate DateTime?
-  completionDate  DateTime
-  deliveryStages  Json?     // { "Block A": "2025-06-01", "Block B": "2025-12-01" }
+  completionDate        DateTime
+  deliveryStages        Json? // { "Block A": "2025-06-01", "Block B": "2025-12-01" }
 
   // Features & Amenities
-  amenities       String[]  // pool, gym, playground, kindergarten, etc.
-  hasGatedArea    Boolean   @default(false)
-  hasConcierge    Boolean   @default(false)
-  hasGreenArea    Boolean   @default(false)
-  hasKindergarten Boolean   @default(false)
-  hasCommercial   Boolean   @default(false)
+  amenities       String[] // pool, gym, playground, kindergarten, etc.
+  hasGatedArea    Boolean  @default(false)
+  hasConcierge    Boolean  @default(false)
+  hasGreenArea    Boolean  @default(false)
+  hasKindergarten Boolean  @default(false)
+  hasCommercial   Boolean  @default(false)
 
   // Infrastructure
-  heating         String?   // Centralized, Individual
-  gasSupply       Boolean   @default(true)
-  waterSupply     String?   // Centralized
-  elevator        Boolean   @default(true)
-  elevatorCount   Int?
+  heating       String? // Centralized, Individual
+  gasSupply     Boolean @default(true)
+  waterSupply   String? // Centralized
+  elevator      Boolean @default(true)
+  elevatorCount Int?
 
   // Media
   masterPlanImage String?
@@ -936,21 +945,21 @@ model DeveloperProject {
   videos          ProjectVideo[]
 
   // Status
-  status          ProjectStatus @default(PLANNING)
-  featured        Boolean   @default(false)
+  status   ProjectStatus @default(PLANNING)
+  featured Boolean       @default(false)
 
   // Auto-updated stats
-  unitsTotal      Int       @default(0)
-  unitsAvailable  Int       @default(0)
-  unitsReserved   Int       @default(0)
-  unitsSold       Int       @default(0)
+  unitsTotal     Int @default(0)
+  unitsAvailable Int @default(0)
+  unitsReserved  Int @default(0)
+  unitsSold      Int @default(0)
 
   // Relations
-  properties      Property[]  // All units in this project
-  leads           Lead[]      // Leads interested in this project
+  properties Property[] // All units in this project
+  leads      Lead[] // Leads interested in this project
 
-  createdAt       DateTime  @default(now())
-  updatedAt       DateTime  @updatedAt
+  createdAt DateTime @default(now())
+  updatedAt DateTime @updatedAt
 
   @@index([developerId])
   @@index([status])
@@ -960,11 +969,11 @@ model DeveloperProject {
 }
 
 enum ProjectStatus {
-  PLANNING            // Project announced
-  UNDER_CONSTRUCTION  // Actively building
-  COMPLETED           // Construction done
-  HANDED_OVER         // All units delivered
-  CANCELLED           // Project cancelled
+  PLANNING // Project announced
+  UNDER_CONSTRUCTION // Actively building
+  COMPLETED // Construction done
+  HANDED_OVER // All units delivered
+  CANCELLED // Project cancelled
 }
 
 // Project images
@@ -983,72 +992,72 @@ model ProjectImage {
 }
 
 enum ProjectImageType {
-  EXTERIOR        // Building exterior
-  INTERIOR        // Lobby, common areas
-  AMENITY         // Pool, gym, playground
-  FLOOR_PLAN      // Unit layouts
-  MASTER_PLAN     // Site plan
-  CONSTRUCTION    // Progress photos
-  INFRASTRUCTURE  // Roads, landscaping
+  EXTERIOR // Building exterior
+  INTERIOR // Lobby, common areas
+  AMENITY // Pool, gym, playground
+  FLOOR_PLAN // Unit layouts
+  MASTER_PLAN // Site plan
+  CONSTRUCTION // Progress photos
+  INFRASTRUCTURE // Roads, landscaping
 }
 
 // Project videos
 model ProjectVideo {
-  id          String           @id @default(cuid())
-  projectId   String
-  project     DeveloperProject @relation(fields: [projectId], references: [id], onDelete: Cascade)
-  url         String
-  thumbnail   String?
-  title       String?
-  duration    Int?             // seconds
-  order       Int              @default(0)
-  createdAt   DateTime         @default(now())
+  id        String           @id @default(cuid())
+  projectId String
+  project   DeveloperProject @relation(fields: [projectId], references: [id], onDelete: Cascade)
+  url       String
+  thumbnail String?
+  title     String?
+  duration  Int? // seconds
+  order     Int              @default(0)
+  createdAt DateTime         @default(now())
 
   @@index([projectId])
 }
 
 // Lead management for developers (potential buyers/renters)
 model Lead {
-  id              String    @id @default(cuid())
-  developerId     String
-  developer       Developer @relation(fields: [developerId], references: [id], onDelete: Cascade)
+  id          String    @id @default(cuid())
+  developerId String
+  developer   Developer @relation(fields: [developerId], references: [id], onDelete: Cascade)
 
   // Basic Info
-  firstName       String
-  lastName        String
-  phone           String
-  email           String?
+  firstName String
+  lastName  String
+  phone     String
+  email     String?
 
   // Interest Details
-  projectId       String?
-  project         DeveloperProject? @relation(fields: [projectId], references: [id], onDelete: SetNull)
-  propertyType    PropertyType?     // APARTMENT, HOUSE, etc.
-  budget          Float?            // Budget in their preferred currency
-  currency        Currency?
-  bedrooms        Int?              // Preferred number of bedrooms
+  projectId    String?
+  project      DeveloperProject? @relation(fields: [projectId], references: [id], onDelete: SetNull)
+  propertyType PropertyType? // APARTMENT, HOUSE, etc.
+  budget       Float? // Budget in their preferred currency
+  currency     Currency?
+  bedrooms     Int? // Preferred number of bedrooms
 
   // Source & Status
-  source          LeadSource        @default(WEBSITE)  // Where lead came from
-  status          LeadStatus        @default(NEW)      // NEW, CONTACTED, QUALIFIED, CONVERTED, LOST
-  priority        Int               @default(0)        // 1 (high) to 5 (low)
-  notes           String?           @db.Text
+  source   LeadSource @default(WEBSITE) // Where lead came from
+  status   LeadStatus @default(NEW) // NEW, CONTACTED, QUALIFIED, CONVERTED, LOST
+  priority Int        @default(0) // 1 (high) to 5 (low)
+  notes    String?    @db.Text
 
   // Sales Agent Assignment
-  assignedToId    String?           // User (DEVELOPER_SALES_AGENT) assigned to this lead
-  assignedTo      User?             @relation("LeadAssignedAgent", fields: [assignedToId], references: [id], onDelete: SetNull)
+  assignedToId String? // User (DEVELOPER_SALES_AGENT) assigned to this lead
+  assignedTo   User?   @relation("LeadAssignedAgent", fields: [assignedToId], references: [id], onDelete: SetNull)
 
   // Interaction Tracking
   lastContactedAt DateTime?
   nextFollowUpAt  DateTime?
-  totalContacts   Int               @default(0)
+  totalContacts   Int       @default(0)
 
   // Conversion
   convertedAt     DateTime?
-  conversionType  ConversionType?   // BOOKING, VIEWING, PURCHASE, etc.
-  conversionValue Float?            // Amount if purchase
+  conversionType  ConversionType? // BOOKING, VIEWING, PURCHASE, etc.
+  conversionValue Float? // Amount if purchase
 
-  createdAt       DateTime          @default(now())
-  updatedAt       DateTime          @updatedAt
+  createdAt DateTime @default(now())
+  updatedAt DateTime @updatedAt
 
   @@index([developerId])
   @@index([projectId])
@@ -1059,27 +1068,452 @@ model Lead {
 }
 
 enum LeadSource {
-  WEBSITE           // From website inquiry
-  PHONE_CALL        // Incoming phone call
-  SOCIAL_MEDIA      // Facebook, Instagram, Telegram
-  REFERRAL          // Referred by friend
-  AGENT             // Agent brought lead
-  WALK_IN           // Office visit
+  WEBSITE // From website inquiry
+  PHONE_CALL // Incoming phone call
+  SOCIAL_MEDIA // Facebook, Instagram, Telegram
+  REFERRAL // Referred by friend
+  AGENT // Agent brought lead
+  WALK_IN // Office visit
   OTHER
 }
 
 enum LeadStatus {
-  NEW               // Just created, not yet contacted
-  CONTACTED         // Agent has reached out
-  QUALIFIED         // Confirmed interest
-  NEGOTIATING       // In active negotiation
-  CONVERTED         // Became a customer
-  LOST              // Lost the lead
+  NEW // Just created, not yet contacted
+  CONTACTED // Agent has reached out
+  QUALIFIED // Confirmed interest
+  NEGOTIATING // In active negotiation
+  CONVERTED // Became a customer
+  LOST // Lost the lead
 }
 
 enum ConversionType {
-  VIEWING           // Scheduled viewing
-  BOOKING           // Booking made
-  PURCHASE          // Property purchased
-  LEASE             // Lease signed
+  VIEWING // Scheduled viewing
+  BOOKING // Booking made
+  PURCHASE // Property purchased
+  LEASE // Lease signed
+}
+
+// ==========================================
+// 🆕 AGENCY CRM MODELS
+// ==========================================
+
+// Agency CRM subscription and settings
+model AgencyCRM {
+  id       String @id @default(cuid())
+  agencyId String @unique
+  agency   Agency @relation(fields: [agencyId], references: [id], onDelete: Cascade)
+
+  // Subscription
+  subscriptionTier  AgencyTier @default(FREE_TRIAL)
+  subscriptionStart DateTime   @default(now())
+  subscriptionEnd   DateTime?
+  maxAgents         Int        @default(1)
+
+  // Settings
+  settings Json? // { leadAutoAssign: "ROUND_ROBIN", currency: "UZS", timezone: "Asia/Tashkent" }
+
+  // Commission defaults
+  defaultCommissionRate Float @default(3.0) // 3%
+  agencyFeePercent      Float @default(0) // % agency keeps from commission
+
+  // Telegram integration
+  telegramBotToken   String?
+  telegramChannelId  String?
+  telegramWebhookUrl String?
+
+  // Features enabled
+  features Json? // { telegram: true, whatsapp: false, calendar: true }
+
+  createdAt DateTime @default(now())
+  updatedAt DateTime @updatedAt
+
+  @@index([agencyId])
+  @@index([subscriptionTier])
+}
+
+enum AgencyTier {
+  FREE_TRIAL // 1 agent, 14 days
+  SOLO // 1 agent, $29/month
+  SMALL // 3 agents, $79/month
+  GROWING // 10 agents, $149/month
+  ENTERPRISE // Unlimited, custom pricing
+}
+
+// Agency member (agent or admin)
+model AgencyMember {
+  id       String @id @default(cuid())
+  agencyId String
+  agency   Agency @relation(fields: [agencyId], references: [id], onDelete: Cascade)
+  userId   String
+  user     User   @relation(fields: [userId], references: [id], onDelete: Cascade)
+
+  // Role & Permissions
+  role        AgencyRole @default(AGENT)
+  permissions Json? // { canManageAgents: false, canViewReports: true }
+
+  // Agent Profile
+  agentType       AgentType? @default(GENERAL)
+  specializations String[] // ["RESIDENTIAL", "COMMERCIAL", "RENTAL"]
+  districts       String[] // Districts/areas they cover
+  languages       String[] // ["RUSSIAN", "UZBEK", "ENGLISH"]
+
+  // Contact
+  phone    String?
+  telegram String? // @username
+  whatsapp String?
+
+  // License (regulatory compliance)
+  licenseNumber String?
+  licenseExpiry DateTime?
+
+  // Status
+  isActive Boolean  @default(true)
+  joinedAt DateTime @default(now())
+
+  // Performance (auto-updated)
+  totalLeads     Int   @default(0)
+  totalDeals     Int   @default(0)
+  totalRevenue   Float @default(0)
+  conversionRate Float @default(0)
+
+  // Relations
+  assignedLeads AgencyLead[]       @relation("LeadAssignedTo")
+  deals         AgencyDeal[]       @relation("DealOwner")
+  commissions   AgencyCommission[]
+  activities    AgencyActivity[]
+  tasks         AgencyTask[]       @relation("TaskAssignedTo")
+
+  createdAt DateTime @default(now())
+  updatedAt DateTime @updatedAt
+
+  @@unique([agencyId, userId])
+  @@index([agencyId])
+  @@index([userId])
+  @@index([role])
+  @@index([isActive])
+}
+
+enum AgencyRole {
+  OWNER // Agency owner (full access)
+  ADMIN // Admin (manage agents, view all data)
+  SENIOR_AGENT // Senior agent (can mentor juniors)
+  AGENT // Regular agent
+  COORDINATOR // Support staff (scheduling, documents)
+}
+
+enum AgentType {
+  GENERAL // Works with all property types
+  RESIDENTIAL // Apartments, houses only
+  COMMERCIAL // Offices, retail spaces
+  RENTAL // Specializes in rentals
+  LUXURY // High-end properties
+}
+
+// Agency lead (potential client)
+model AgencyLead {
+  id       String @id @default(cuid())
+  agencyId String
+  agency   Agency @relation(fields: [agencyId], references: [id], onDelete: Cascade)
+
+  // Contact Info
+  firstName String
+  lastName  String
+  phone     String
+  email     String?
+  telegram  String? // @username or phone
+  whatsapp  String?
+
+  // Property Requirements
+  propertyType   PropertyType?
+  listingType    ListingType? // SALE, RENT, etc.
+  budget         Float?
+  budgetCurrency Currency      @default(YE)
+  bedrooms       Int?
+  districts      String[] // Preferred districts
+  requirements   String?       @db.Text
+
+  // Lead Info
+  source   LeadSource   @default(WALK_IN)
+  status   LeadStatus   @default(NEW)
+  priority LeadPriority @default(MEDIUM)
+  tags     String[] // ["FIRST_TIME_BUYER", "INVESTOR", "URGENT"]
+
+  // Assignment
+  assignedToId String?
+  assignedTo   AgencyMember? @relation("LeadAssignedTo", fields: [assignedToId], references: [id], onDelete: SetNull)
+  assignedAt   DateTime?
+
+  // Tracking
+  lastContactedAt DateTime?
+  nextFollowUpAt  DateTime?
+  totalContacts   Int       @default(0)
+
+  // Conversion
+  convertedAt       DateTime?
+  convertedToDealId String?
+  conversionValue   Float?
+
+  // Notes
+  notes String? @db.Text
+
+  // Relations
+  deal       AgencyDeal?
+  activities AgencyActivity[]
+  tasks      AgencyTask[]
+
+  createdAt DateTime @default(now())
+  updatedAt DateTime @updatedAt
+
+  @@index([agencyId])
+  @@index([status])
+  @@index([assignedToId])
+  @@index([source])
+  @@index([agencyId, status, assignedToId])
+  @@index([nextFollowUpAt])
+}
+
+enum LeadPriority {
+  URGENT // Hot lead, respond immediately
+  HIGH // Qualified, ready to buy
+  MEDIUM // Interested, needs nurturing
+  LOW // Long-term, low urgency
+}
+
+// Agency deal (transaction pipeline)
+model AgencyDeal {
+  id       String @id @default(cuid())
+  agencyId String
+  agency   Agency @relation(fields: [agencyId], references: [id], onDelete: Cascade)
+
+  // Deal Info
+  leadId     String     @unique
+  lead       AgencyLead @relation(fields: [leadId], references: [id], onDelete: Cascade)
+  propertyId String?
+  property   Property?  @relation(fields: [propertyId], references: [id], onDelete: SetNull)
+
+  // Deal Details
+  dealType  DealType @default(BUYER)
+  dealValue Float // Property price
+  currency  Currency @default(YE)
+
+  // Pipeline
+  stage             DealStage  @default(QUALIFIED)
+  status            DealStatus @default(ACTIVE)
+  probability       Int        @default(50) // 0-100%
+  expectedCloseDate DateTime?
+  actualCloseDate   DateTime?
+
+  // Ownership
+  ownerId String // Agent responsible
+  owner   AgencyMember @relation("DealOwner", fields: [ownerId], references: [id], onDelete: Restrict)
+
+  // Commission
+  commissionRate   Float // 3.0 = 3%
+  commissionAmount Float @default(0)
+  commissionSplit  Json? // [{ memberId: "x", percent: 50 }, { memberId: "y", percent: 50 }]
+
+  // Notary & Registration
+  notaryScheduled  DateTime?
+  notaryCompleted  Boolean   @default(false)
+  registrationId   String? // State cadastre registration number
+  registrationDate DateTime?
+
+  // Closing
+  closeReason String? // If closed-lost: reason
+  notes       String? @db.Text
+
+  // Relations
+  activities  AgencyActivity[]
+  commissions AgencyCommission[]
+  tasks       AgencyTask[]
+
+  createdAt DateTime @default(now())
+  updatedAt DateTime @updatedAt
+
+  @@index([agencyId])
+  @@index([stage])
+  @@index([status])
+  @@index([ownerId])
+  @@index([agencyId, status, stage])
+  @@index([expectedCloseDate])
+}
+
+enum DealType {
+  BUYER // Representing buyer
+  SELLER // Representing seller
+  BOTH // Representing both sides (double commission)
+}
+
+enum DealStage {
+  QUALIFIED // Lead qualified, deal created
+  VIEWING_SCHEDULED
+  VIEWING_COMPLETED
+  OFFER_MADE
+  NEGOTIATION
+  AGREEMENT_REACHED
+  NOTARY_SCHEDULED
+  DOCUMENTS_PENDING
+  REGISTRATION_PENDING
+  CLOSED_WON
+  CLOSED_LOST
+}
+
+enum DealStatus {
+  ACTIVE // Currently active
+  ON_HOLD // Paused (client traveling, etc.)
+  WON // Successfully closed
+  LOST // Deal fell through
+}
+
+// Commission tracking
+model AgencyCommission {
+  id       String @id @default(cuid())
+  agencyId String
+  agency   Agency @relation(fields: [agencyId], references: [id], onDelete: Cascade)
+
+  // Deal Reference
+  dealId String
+  deal   AgencyDeal @relation(fields: [dealId], references: [id], onDelete: Cascade)
+
+  // Agent
+  memberId String
+  member   AgencyMember @relation(fields: [memberId], references: [id], onDelete: Restrict)
+
+  // Commission Details
+  grossAmount Float // Total commission before agency cut
+  agencyFee   Float // Amount agency keeps
+  netAmount   Float // Amount agent receives
+  currency    Currency @default(YE)
+
+  // Payment
+  status        CommissionStatus @default(PENDING)
+  dueDate       DateTime?
+  paidDate      DateTime?
+  paymentMethod String? // "BANK_TRANSFER", "CASH"
+  paymentNotes  String?
+
+  createdAt DateTime @default(now())
+  updatedAt DateTime @updatedAt
+
+  @@index([agencyId])
+  @@index([memberId])
+  @@index([dealId])
+  @@index([status])
+  @@index([agencyId, status, memberId])
+}
+
+enum CommissionStatus {
+  PENDING // Deal closed, commission calculated
+  APPROVED // Approved by admin
+  PAID // Paid to agent
+  DISPUTED // Issue with commission
+}
+
+// Activity log (interactions with leads/clients)
+model AgencyActivity {
+  id       String @id @default(cuid())
+  agencyId String
+  agency   Agency @relation(fields: [agencyId], references: [id], onDelete: Cascade)
+
+  // Related Entity
+  leadId String?
+  lead   AgencyLead? @relation(fields: [leadId], references: [id], onDelete: Cascade)
+  dealId String?
+  deal   AgencyDeal? @relation(fields: [dealId], references: [id], onDelete: Cascade)
+
+  // Activity Details
+  type        ActivityType
+  title       String // "Called client", "Sent property list"
+  description String?      @db.Text
+  outcome     String? // "ANSWERED", "NO_ANSWER", "VOICEMAIL"
+
+  // Agent
+  memberId String
+  member   AgencyMember @relation(fields: [memberId], references: [id], onDelete: Cascade)
+
+  // Metadata
+  metadata Json? // { duration: 120, platform: "TELEGRAM" }
+
+  createdAt DateTime @default(now())
+
+  @@index([agencyId])
+  @@index([leadId])
+  @@index([dealId])
+  @@index([memberId])
+  @@index([type])
+  @@index([agencyId, memberId, createdAt])
+}
+
+enum ActivityType {
+  CALL // Phone call
+  TELEGRAM // Telegram message
+  WHATSAPP // WhatsApp message
+  EMAIL // Email sent
+  MEETING // In-person meeting
+  VIEWING // Property viewing
+  NOTE // General note
+  STATUS_CHANGE // Lead/deal status changed
+}
+
+// Task management (reminders, follow-ups)
+model AgencyTask {
+  id       String @id @default(cuid())
+  agencyId String
+  agency   Agency @relation(fields: [agencyId], references: [id], onDelete: Cascade)
+
+  // Task Details
+  title       String
+  description String?      @db.Text
+  type        TaskType     @default(FOLLOW_UP)
+  priority    TaskPriority @default(MEDIUM)
+
+  // Assignment
+  assignedToId String
+  assignedTo   AgencyMember @relation("TaskAssignedTo", fields: [assignedToId], references: [id], onDelete: Cascade)
+
+  // Related Entity
+  leadId String?
+  lead   AgencyLead? @relation(fields: [leadId], references: [id], onDelete: Cascade)
+  dealId String?
+  deal   AgencyDeal? @relation(fields: [dealId], references: [id], onDelete: Cascade)
+
+  // Timing
+  dueDate      DateTime
+  reminderSent Boolean   @default(false)
+  completedAt  DateTime?
+
+  // Status
+  status TaskStatus @default(PENDING)
+
+  createdAt DateTime @default(now())
+  updatedAt DateTime @updatedAt
+
+  @@index([agencyId])
+  @@index([assignedToId])
+  @@index([status])
+  @@index([dueDate])
+  @@index([agencyId, assignedToId, status])
+}
+
+enum TaskType {
+  FOLLOW_UP // Call client back
+  VIEWING // Schedule viewing
+  SEND_LISTINGS // Send property options
+  DOCUMENT // Upload/request document
+  MEETING // Schedule meeting
+  OTHER
+}
+
+enum TaskPriority {
+  URGENT
+  HIGH
+  MEDIUM
+  LOW
+}
+
+enum TaskStatus {
+  PENDING
+  IN_PROGRESS
+  COMPLETED
+  CANCELLED
 }
