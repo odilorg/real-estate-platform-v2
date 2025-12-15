@@ -976,7 +976,7 @@ export default function PropertiesPage() {
 
                   {searchQuery && (
                     <div className="flex items-center gap-1 px-3 py-1 bg-white border border-blue-300 rounded-full text-sm">
-                      <span>Поиск: "{searchQuery}"</span>
+                      <span>Поиск: &quot;{searchQuery}&quot;</span>
                       <button
                         onClick={() => setSearchQuery('')}
                         className="ml-1 text-gray-500 hover:text-gray-700"
