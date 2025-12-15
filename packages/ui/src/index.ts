@@ -34,5 +34,6 @@ export {
 // Composites
 export { PropertyCard, type PropertyCardProps } from './composites/property-card';
 export { PropertyCardSkeleton, PropertyCardSkeletonGrid, type PropertyCardSkeletonProps } from './composites/property-card-skeleton';
+export { EmptyState, EmptyStates, type EmptyStateProps } from './composites/empty-state';
 export { PhoneInput, type PhoneInputProps } from './composites/phone-input';
 export { OtpInput, type OtpInputProps } from './composites/otp-input';
