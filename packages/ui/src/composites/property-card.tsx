@@ -53,6 +53,19 @@ function getListingTypeLabel(type: string): string {
   }
 }
 
+function getListingTypeBadge(type: string): { label: string; color: string } {
+  switch (type) {
+    case 'SALE':
+      return { label: 'Продажа', color: 'bg-green-500' };
+    case 'RENT_LONG':
+      return { label: 'Аренда', color: 'bg-blue-500' };
+    case 'RENT_DAILY':
+      return { label: 'Посуточно', color: 'bg-purple-500' };
+    default:
+      return { label: type, color: 'bg-gray-500' };
+  }
+}
+
 function getPropertyTypeLabel(type: string): string {
   switch (type) {
     case 'APARTMENT':
@@ -124,9 +137,9 @@ export function PropertyCard({
               onError={handleImageError}
             />
           ) : (
-            <div className="flex items-center justify-center w-full h-full bg-muted text-muted-foreground">
+            <div className="flex items-center justify-center w-full h-full bg-gradient-to-br from-gray-100 to-gray-200 text-gray-400">
               <svg
-                className="w-12 h-12"
+                className="w-16 h-16"
                 fill="none"
                 stroke="currentColor"
                 viewBox="0 0 24 24"
@@ -147,14 +160,22 @@ export function PropertyCard({
             </div>
           )}
 
-          <div className="absolute top-2 left-2 flex gap-1">
+          <div className="absolute top-2 left-2 flex gap-1 flex-wrap">
+            {(() => {
+              const badge = getListingTypeBadge(listingType);
+              return (
+                <span className={cn("px-2 py-0.5 text-xs font-semibold text-white rounded shadow-sm", badge.color)}>
+                  {badge.label}
+                </span>
+              );
+            })()}
             {featured && (
-              <span className="px-2 py-0.5 text-xs font-medium bg-yellow-400 text-yellow-900 rounded">
+              <span className="px-2 py-0.5 text-xs font-semibold bg-yellow-400 text-yellow-900 rounded shadow-sm">
                 TOP
               </span>
             )}
             {verified && (
-              <span className="px-2 py-0.5 text-xs font-medium bg-green-500 text-white rounded">
+              <span className="px-2 py-0.5 text-xs font-semibold bg-green-500 text-white rounded shadow-sm">
                 ✓
               </span>
             )}
@@ -177,17 +198,24 @@ export function PropertyCard({
           </div>
         </div>
 
-        <CardContent className="p-3">
-          {/* Price - Large and prominent */}
-          <div className="text-lg font-bold text-primary mb-1">
-            {formatPrice(price)} у.е.
-            <span className="text-xs font-normal text-muted-foreground ml-1">
-              {priceLabel || getListingTypeLabel(listingType)}
-            </span>
+        <CardContent className="p-4">
+          {/* Price - Large and prominent with better contrast */}
+          <div className="mb-2">
+            <div className="text-2xl font-extrabold text-gray-900 dark:text-white">
+              {formatPrice(price)} у.е.
+              <span className="text-sm font-medium text-gray-600 dark:text-gray-400 ml-1">
+                {priceLabel || getListingTypeLabel(listingType)}
+              </span>
+            </div>
+            {area && (
+              <div className="text-xs text-gray-500 dark:text-gray-400 mt-0.5">
+                {Math.round(price / area).toLocaleString()} у.е./м²
+              </div>
+            )}
           </div>
 
           {/* Title - Compact */}
-          <h3 className="font-medium text-sm line-clamp-1 mb-2">{title}</h3>
+          <h3 className="font-semibold text-sm line-clamp-1 mb-2 text-gray-800 dark:text-gray-200">{title}</h3>
 
           {/* Location + Details - Inline with bullet separators for better scannability */}
           <div className="flex flex-wrap items-center gap-x-2 gap-y-1 text-xs text-muted-foreground">
