@@ -31,21 +31,20 @@ export function AuthProvider({ children }: { children: ReactNode }) {
       setUser(userData);
       console.log('AuthContext: User refreshed successfully', userData.id);
     } catch (error: any) {
-      // Not authenticated (no valid token in localStorage or cookie)
       const token = getToken();
-      console.error('AuthContext: Failed to refresh user', error);
 
-      // Only clear token if we get a 401 Unauthorized
+      // Silent handling for 401 Unauthorized
       if (error?.message?.includes('401') || error?.status === 401) {
         if (token) {
+          // Had a token but it's invalid
           console.warn('AuthContext: Invalid token found, logging out');
           authLogout();
         }
+        // else: No token, anonymous user - silent (no console.error)
         setUser(null);
       } else {
-        // For other errors (network, 500, etc), don't log out immediately
-        // allowing retries or keeping the optimistic state if possible
-        console.warn('AuthContext: Non-401 error, keeping token if present');
+        // Log other errors (network, 500, etc.)
+        console.error('AuthContext: Unexpected error', error);
         setUser(null);
       }
     } finally {
