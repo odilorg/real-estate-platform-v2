@@ -2,6 +2,7 @@ import type { Metadata } from 'next';
 import { NextIntlClientProvider } from 'next-intl';
 import { getMessages } from 'next-intl/server';
 import { notFound } from 'next/navigation';
+import { Toaster } from 'sonner';
 import { locales, type Locale } from '@/i18n/config';
 import { Providers } from '@/context/Providers';
 import { ErrorBoundary } from '@/components/ErrorBoundary';
@@ -32,7 +33,16 @@ export default async function LocaleLayout({ children, params }: Props) {
   return (
     <NextIntlClientProvider messages={messages}>
       <ErrorBoundary>
-        <Providers>{children}</Providers>
+        <Providers>
+          {children}
+          <Toaster
+            position="top-right"
+            expand={false}
+            richColors
+            closeButton
+            duration={4000}
+          />
+        </Providers>
       </ErrorBoundary>
     </NextIntlClientProvider>
   );
