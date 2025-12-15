@@ -177,47 +177,60 @@ export function PropertyCard({
           </div>
         </div>
 
-        <CardContent className="p-4">
-          <div className="flex justify-between items-start mb-2">
-            <div className="text-xl font-bold text-primary">
-              {formatPrice(price)} у.е.
-              <span className="text-sm font-normal text-muted-foreground">
-                {priceLabel || getListingTypeLabel(listingType)}
-              </span>
-            </div>
+        <CardContent className="p-3">
+          {/* Price - Large and prominent */}
+          <div className="text-lg font-bold text-primary mb-1">
+            {formatPrice(price)} у.е.
+            <span className="text-xs font-normal text-muted-foreground ml-1">
+              {priceLabel || getListingTypeLabel(listingType)}
+            </span>
           </div>
 
+          {/* Title - Compact */}
           <h3 className="font-medium text-sm line-clamp-1 mb-2">{title}</h3>
 
-          {displayLocation && (
-            <div className="text-sm text-muted-foreground mb-3">
-              {displayLocation}
-            </div>
-          )}
-
-          <div className="flex gap-4 text-sm text-muted-foreground">
+          {/* Location + Details - Inline with bullet separators for better scannability */}
+          <div className="flex flex-wrap items-center gap-x-2 gap-y-1 text-xs text-muted-foreground">
+            {displayLocation && (
+              <>
+                <div className="flex items-center gap-1">
+                  <svg className="w-3 h-3" fill="none" stroke="currentColor" viewBox="0 0 24 24">
+                    <path strokeLinecap="round" strokeLinejoin="round" strokeWidth={2} d="M17.657 16.657L13.414 20.9a1.998 1.998 0 01-2.827 0l-4.244-4.243a8 8 0 1111.314 0z" />
+                    <path strokeLinecap="round" strokeLinejoin="round" strokeWidth={2} d="M15 11a3 3 0 11-6 0 3 3 0 016 0z" />
+                  </svg>
+                  <span>{displayLocation}</span>
+                </div>
+                {(displayRooms || area || (floor && totalFloors)) && <span>•</span>}
+              </>
+            )}
             {displayRooms && (
-              <div className="flex items-center gap-1">
-                <svg className="w-4 h-4" fill="none" stroke="currentColor" viewBox="0 0 24 24">
-                  <path strokeLinecap="round" strokeLinejoin="round" strokeWidth={2} d="M19 21V5a2 2 0 00-2-2H7a2 2 0 00-2 2v16m14 0h2m-2 0h-5m-9 0H3m2 0h5M9 7h1m-1 4h1m4-4h1m-1 4h1m-5 10v-5a1 1 0 011-1h2a1 1 0 011 1v5m-4 0h4" />
-                </svg>
-                <span>{displayRooms} комн.</span>
-              </div>
+              <>
+                <div className="flex items-center gap-1">
+                  <svg className="w-3 h-3" fill="none" stroke="currentColor" viewBox="0 0 24 24">
+                    <path strokeLinecap="round" strokeLinejoin="round" strokeWidth={2} d="M19 21V5a2 2 0 00-2-2H7a2 2 0 00-2 2v16m14 0h2m-2 0h-5m-9 0H3m2 0h5M9 7h1m-1 4h1m4-4h1m-1 4h1m-5 10v-5a1 1 0 011-1h2a1 1 0 011 1v5m-4 0h4" />
+                  </svg>
+                  <span>{displayRooms} комн.</span>
+                </div>
+                {(area || (floor && totalFloors)) && <span>•</span>}
+              </>
             )}
             {area && (
-              <div className="flex items-center gap-1">
-                <svg className="w-4 h-4" fill="none" stroke="currentColor" viewBox="0 0 24 24">
-                  <path strokeLinecap="round" strokeLinejoin="round" strokeWidth={2} d="M4 8V4m0 0h4M4 4l5 5m11-1V4m0 0h-4m4 0l-5 5M4 16v4m0 0h4m-4 0l5-5m11 5l-5-5m5 5v-4m0 4h-4" />
-                </svg>
-                <span>{area} м²</span>
-              </div>
+              <>
+                <div className="flex items-center gap-1">
+                  <svg className="w-3 h-3" fill="none" stroke="currentColor" viewBox="0 0 24 24">
+                    <path strokeLinecap="round" strokeLinejoin="round" strokeWidth={2} d="M4 8V4m0 0h4M4 4l5 5m11-1V4m0 0h-4m4 0l-5 5M4 16v4m0 0h4m-4 0l5-5m11 5l-5-5m5 5v-4m0 4h-4" />
+                  </svg>
+                  <span>{area} м²</span>
+                </div>
+                {floor && totalFloors && <span>•</span>}
+              </>
             )}
             {floor && totalFloors && (
               <div className="flex items-center gap-1">
-                <svg className="w-4 h-4" fill="none" stroke="currentColor" viewBox="0 0 24 24">
+                <svg className="w-3 h-3" fill="none" stroke="currentColor" viewBox="0 0 24 24">
                   <path strokeLinecap="round" strokeLinejoin="round" strokeWidth={2} d="M19 21V5a2 2 0 00-2-2H7a2 2 0 00-2 2v16" />
                 </svg>
-                <span>{floor}/{totalFloors}</span>
+                <span>{floor}/{totalFloors} эт.</span>
               </div>
             )}
           </div>
