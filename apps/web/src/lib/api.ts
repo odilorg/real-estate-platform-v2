@@ -79,3 +79,41 @@ class ApiClient {
 }
 
 export const api = new ApiClient(API_URL);
+
+// Saved Search API
+export interface SavedSearch {
+  id: string;
+  userId: string;
+  name: string;
+  filters: Record<string, any>;
+  notificationsEnabled: boolean;
+  createdAt: string;
+  updatedAt: string;
+}
+
+export interface CreateSavedSearchDto {
+  name: string;
+  filters: Record<string, any>;
+  notificationsEnabled?: boolean;
+}
+
+export const savedSearchApi = {
+  // Get all saved searches for current user
+  getAll: () => api.get<SavedSearch[]>('/saved-searches'),
+
+  // Create a new saved search
+  create: (data: CreateSavedSearchDto) =>
+    api.post<SavedSearch>('/saved-searches', data),
+
+  // Delete a saved search
+  delete: (id: string) =>
+    api.delete<{ message: string }>(`/saved-searches/${id}`),
+
+  // Update a saved search
+  update: (id: string, data: Partial<CreateSavedSearchDto>) =>
+    api.put<SavedSearch>(`/saved-searches/${id}`, data),
+
+  // Toggle notifications for a saved search
+  toggleNotifications: (id: string, enabled: boolean) =>
+    api.patch<SavedSearch>(`/saved-searches/${id}/notifications`, { enabled }),
+};

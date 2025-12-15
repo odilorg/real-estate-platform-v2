@@ -29,3 +29,5 @@ export { PropertyVideoPlayer } from './PropertyVideoPlayer';
 export { Property360Viewer } from './Property360Viewer';
 export { MobileBottomNav } from './MobileBottomNav';
 export { PropertyQuickView } from './PropertyQuickView';
+export { SaveSearchModal } from './SaveSearchModal';
+export { SavedSearchesDropdown } from './SavedSearchesDropdown';

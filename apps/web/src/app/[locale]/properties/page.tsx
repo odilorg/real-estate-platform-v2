@@ -4,8 +4,8 @@ import { useState, useEffect, useRef, useCallback } from 'react';
 import Link from 'next/link';
 import { useRouter, useSearchParams } from 'next/navigation';
 import { PropertyCard, Button, Select, SelectContent, SelectItem, SelectTrigger, SelectValue } from '@repo/ui';
-import { PropertyFiltersModern, PropertyFiltersExtended, type ModernFilterValues, type ExtendedFilterValues, PropertyMap, type PropertyMapMarker, PropertyListItem, PropertyQuickView } from '@/components';
-import { Search, Plus, Loader2, User, LogOut, MapPin, ArrowUpDown, Grid3X3, Map as MapIcon, List, Bookmark, X, Eye } from 'lucide-react';
+import { PropertyFiltersModern, PropertyFiltersExtended, type ModernFilterValues, type ExtendedFilterValues, PropertyMap, type PropertyMapMarker, PropertyListItem, PropertyQuickView, SaveSearchModal, SavedSearchesDropdown } from '@/components';
+import { Search, Plus, Loader2, User, LogOut, MapPin, ArrowUpDown, Grid3X3, Map as MapIcon, List, Bookmark, X, Eye, Save } from 'lucide-react';
 import { useAuth } from '@/context/AuthContext';
 
 interface PropertyImage {
@@ -98,10 +98,8 @@ export default function PropertiesPage() {
   const [viewMode, setViewMode] = useState<ViewMode>('grid');
   const [selectedPropertyId, setSelectedPropertyId] = useState<string | null>(null);
   const [quickViewPropertyId, setQuickViewPropertyId] = useState<string | null>(null);
-  const [filtersInitialized, setFiltersInitialized] = useState(false);
   const [showSaveSearchModal, setShowSaveSearchModal] = useState(false);
-  const [searchName, setSearchName] = useState('');
-  const [savingSearch, setSavingSearch] = useState(false);
+  const [filtersInitialized, setFiltersInitialized] = useState(false);
   const searchInputRef = useRef<HTMLInputElement>(null);
   const suggestionsRef = useRef<HTMLDivElement>(null);
   const router = useRouter();
@@ -904,6 +902,36 @@ export default function PropertiesPage() {
                 </SelectContent>
               </Select>
             </div>
+
+            {/* Saved Searches */}
+            {isAuthenticated && (
+              <>
+                <SavedSearchesDropdown
+                  onLoadSearch={(loadedFilters) => {
+                    // Restore filters from saved search
+                    const modernFilters: ModernFilterValues = {
+                      propertyTypes: loadedFilters.propertyTypes || [],
+                      listingTypes: loadedFilters.listingTypes || [],
+                      amenities: loadedFilters.amenities || [],
+                    };
+                    setFilters(modernFilters);
+                    setSearchQuery(loadedFilters.searchQuery || '');
+                    setCurrentPage(1);
+                  }}
+                />
+
+                <Button
+                  variant="outline"
+                  size="sm"
+                  onClick={() => setShowSaveSearchModal(true)}
+                  disabled={!filters.propertyTypes.length && !filters.listingTypes.length && !searchQuery}
+                  title="Сохранить текущий поиск"
+                >
+                  <Save className="h-4 w-4 mr-2" />
+                  Сохранить поиск
+                </Button>
+              </>
+            )}
           </div>
         </div>
 
@@ -1237,6 +1265,22 @@ export default function PropertiesPage() {
         onViewFull={(id) => {
           setQuickViewPropertyId(null);
           router.push(`/properties/${id}`);
+        }}
+      />
+
+      {/* Save Search Modal */}
+      <SaveSearchModal
+        isOpen={showSaveSearchModal}
+        onClose={() => setShowSaveSearchModal(false)}
+        filters={{
+          propertyTypes: filters.propertyTypes,
+          listingTypes: filters.listingTypes,
+          amenities: filters.amenities,
+          searchQuery,
+        }}
+        onSaved={() => {
+          // Refresh saved searches dropdown (component will auto-refresh)
+          console.log('Search saved successfully');
         }}
       />
     </div>
