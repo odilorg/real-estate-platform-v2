@@ -96,10 +96,15 @@ export function PropertyCard({
   onClick,
   className,
 }: PropertyCardProps) {
+  const [imageError, setImageError] = React.useState(false);
   const displayRooms = rooms || bedrooms;
   const displayLocation = address || (city ? (district ? `${city}, ${district}` : city) : '');
   const CardWrapper = href ? 'a' : 'div';
   const wrapperProps = href ? { href } : { onClick };
+
+  const handleImageError = () => {
+    setImageError(true);
+  };
 
   return (
     <Card
@@ -111,11 +116,12 @@ export function PropertyCard({
     >
       <CardWrapper {...wrapperProps} className="block">
         <div className="relative aspect-[4/3] overflow-hidden bg-muted">
-          {imageUrl ? (
+          {imageUrl && !imageError ? (
             <img
               src={imageUrl}
               alt={title}
               className="object-cover w-full h-full transition-transform group-hover:scale-105"
+              onError={handleImageError}
             />
           ) : (
             <div className="flex items-center justify-center w-full h-full bg-muted text-muted-foreground">
