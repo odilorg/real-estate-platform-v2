@@ -937,6 +937,78 @@ export default function PropertiesPage() {
         {/* Property Results - View Mode Aware */}
         {!loading && !error && properties.length > 0 && (
           <>
+            {/* Active Filters Summary Chips */}
+            {(searchQuery || filters.propertyTypes.length > 0 || filters.listingTypes.length > 0 || filters.amenities.length > 0 || searchRadius) && (
+              <div className="mb-4 p-4 bg-blue-50 border border-blue-200 rounded-lg">
+                <div className="flex flex-wrap items-center gap-2">
+                  <span className="text-sm font-medium text-gray-700">
+                    Найдено: {pagination?.total || properties.length}
+                  </span>
+
+                  {searchQuery && (
+                    <div className="flex items-center gap-1 px-3 py-1 bg-white border border-blue-300 rounded-full text-sm">
+                      <span>Поиск: "{searchQuery}"</span>
+                      <button
+                        onClick={() => setSearchQuery('')}
+                        className="ml-1 text-gray-500 hover:text-gray-700"
+                      >
+                        <X className="h-3 w-3" />
+                      </button>
+                    </div>
+                  )}
+
+                  {filters.listingTypes.map((type) => (
+                    <div key={type} className="flex items-center gap-1 px-3 py-1 bg-white border border-blue-300 rounded-full text-sm">
+                      <span>{type === 'SALE' ? 'Продажа' : type === 'RENT_LONG' ? 'Аренда' : 'Посуточно'}</span>
+                      <button
+                        onClick={() => setFilters(prev => ({
+                          ...prev,
+                          listingTypes: prev.listingTypes.filter(t => t !== type)
+                        }))}
+                        className="ml-1 text-gray-500 hover:text-gray-700"
+                      >
+                        <X className="h-3 w-3" />
+                      </button>
+                    </div>
+                  ))}
+
+                  {filters.propertyTypes.map((type) => (
+                    <div key={type} className="flex items-center gap-1 px-3 py-1 bg-white border border-blue-300 rounded-full text-sm">
+                      <span>{type}</span>
+                      <button
+                        onClick={() => setFilters(prev => ({
+                          ...prev,
+                          propertyTypes: prev.propertyTypes.filter(t => t !== type)
+                        }))}
+                        className="ml-1 text-gray-500 hover:text-gray-700"
+                      >
+                        <X className="h-3 w-3" />
+                      </button>
+                    </div>
+                  ))}
+
+                  {searchRadius && (
+                    <div className="flex items-center gap-1 px-3 py-1 bg-white border border-blue-300 rounded-full text-sm">
+                      <span>В радиусе {searchRadius} км</span>
+                      <button
+                        onClick={() => setSearchRadius(null)}
+                        className="ml-1 text-gray-500 hover:text-gray-700"
+                      >
+                        <X className="h-3 w-3" />
+                      </button>
+                    </div>
+                  )}
+
+                  <button
+                    onClick={handleResetFilters}
+                    className="ml-2 px-3 py-1 text-sm text-blue-600 hover:text-blue-800 font-medium"
+                  >
+                    Сбросить все
+                  </button>
+                </div>
+              </div>
+            )}
+
             {/* Map View */}
             {viewMode === 'map' && (
               <div className="h-[calc(100vh-300px)] min-h-[500px] rounded-lg overflow-hidden">
