@@ -18,7 +18,7 @@ async function bootstrap() {
 
   // Serve static files from uploads directory
   app.useStaticAssets(join(process.cwd(), 'uploads'), {
-    prefix: '/uploads',
+    prefix: '/api/uploads',
   });
 
   // Security headers with helmet
