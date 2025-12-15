@@ -1,5 +1,5 @@
 import { Module } from '@nestjs/common';
-import { DatabaseModule } from '../../database/database.module';
+import { PrismaModule } from '../../common/prisma/prisma.module';
 
 // Lead management
 import { LeadsController } from './leads/leads.controller';
@@ -26,7 +26,7 @@ import { TasksController } from './tasks/tasks.controller';
 import { TasksService } from './tasks/tasks.service';
 
 @Module({
-  imports: [DatabaseModule],
+  imports: [PrismaModule],
   controllers: [
     LeadsController,
     MembersController,

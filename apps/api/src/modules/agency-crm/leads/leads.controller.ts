@@ -11,7 +11,7 @@ import {
   Request,
 } from '@nestjs/common';
 import { LeadsService } from './leads.service';
-import { JwtAuthGuard } from '../../../auth/jwt-auth.guard';
+import { JwtAuthGuard } from '../../../common/guards/jwt-auth.guard';
 import { AgencyOwnershipGuard } from '../guards/agency-ownership.guard';
 import { CreateLeadDto } from './dto/create-lead.dto';
 import { UpdateLeadDto } from './dto/update-lead.dto';

@@ -1,5 +1,5 @@
 import { Injectable, CanActivate, ExecutionContext, ForbiddenException } from '@nestjs/common';
-import { PrismaService } from '../../../database/prisma.service';
+import { PrismaService } from '../../../common/prisma/prisma.service';
 
 /**
  * AgencyOwnershipGuard - Ensures user belongs to an agency and has access to it
