@@ -252,55 +252,14 @@ export default function DashboardPage() {
     <div className="min-h-screen bg-gray-50 pb-20 lg:pb-0">
       <main className="container mx-auto px-4 py-8">
         {/* Dashboard Header */}
-        <div className="mb-8">
-          <div className="flex items-center justify-between mb-6">
-            <h1 className="text-3xl font-bold text-gray-900">Личный кабинет</h1>
-            <Link href="/properties/new">
-              <Button size="lg" className="bg-blue-600 hover:bg-blue-700">
-                <Plus className="h-5 w-5 mr-2" />
-                Создать объявление
-              </Button>
-            </Link>
-          </div>
-          <div className="flex items-center gap-2">
-            <Link href="/dashboard/favorites">
-              <Button variant="ghost" size="sm">
-                <Heart className="h-4 w-4 mr-2" />
-                Избранное
-              </Button>
-            </Link>
-            <Link href="/dashboard/saved-searches">
-              <Button variant="ghost" size="sm">
-                <BookmarkCheck className="h-4 w-4 mr-2" />
-                Сохраненные поиски
-              </Button>
-            </Link>
-            <Link href="/dashboard/messages">
-              <Button variant="ghost" size="sm" className="relative">
-                <MessageSquare className="h-4 w-4 mr-2" />
-                Сообщения
-                {unreadCount > 0 && (
-                  <span className="absolute -top-1 -right-1 bg-red-500 text-white text-xs rounded-full h-5 w-5 flex items-center justify-center font-semibold">
-                    {unreadCount > 9 ? '9+' : unreadCount}
-                  </span>
-                )}
-              </Button>
-            </Link>
-            <Link href="/dashboard/profile">
-              <Button variant="ghost" size="sm">
-                <Settings className="h-4 w-4 mr-2" />
-                Настройки
-              </Button>
-            </Link>
-            {user?.role === 'ADMIN' && (
-              <Link href="/admin">
-                <Button variant="ghost" size="sm">
-                  <Shield className="h-4 w-4 mr-2" />
-                  Админ
-                </Button>
-              </Link>
-            )}
-          </div>
+        <div className="flex items-center justify-between mb-8">
+          <h1 className="text-3xl font-bold text-gray-900">Личный кабинет</h1>
+          <Link href="/properties/new">
+            <Button size="lg" className="bg-blue-600 hover:bg-blue-700">
+              <Plus className="h-5 w-5 mr-2" />
+              Создать объявление
+            </Button>
+          </Link>
         </div>
 
         {/* Welcome Message */}
