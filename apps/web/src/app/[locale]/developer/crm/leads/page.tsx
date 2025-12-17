@@ -187,8 +187,8 @@ export default function AgencyCRMLeadsPage() {
       <div className="space-y-4">
         <div className="flex flex-col sm:flex-row sm:items-center sm:justify-between gap-3">
           <div>
-            <h1 className="text-2xl md:text-3xl font-bold text-gray-900">Лиды</h1>
-            <p className="mt-0.5 text-xs md:text-sm text-gray-500">Управление клиентами</p>
+            <h1 className="text-2xl lg:text-3xl font-bold text-gray-900">Лиды</h1>
+            <p className="mt-0.5 text-xs sm:text-sm text-gray-500">Управление клиентами</p>
           </div>
           <Link href="/developer/crm/leads/new" className="sm:order-last">
             <button className="w-full sm:w-auto bg-blue-600 text-white px-5 py-3 rounded-lg hover:bg-blue-700 transition-colors flex items-center justify-center gap-2 font-medium shadow-sm min-h-[44px]">
@@ -218,20 +218,20 @@ export default function AgencyCRMLeadsPage() {
       </div>
 
       {/* Stats Cards - Horizontal scroll on mobile */}
-      <div className="overflow-x-auto -mx-4 px-4 md:mx-0 md:px-0">
-        <div className="flex md:grid md:grid-cols-4 gap-3 min-w-max md:min-w-0">
+      <div className="overflow-x-auto -mx-4 px-4 sm:mx-0 sm:px-0">
+        <div className="flex sm:grid sm:grid-cols-2 lg:grid-cols-4 gap-3 min-w-max sm:min-w-0">
           {[
             { label: 'Всего лидов', value: total, icon: '📊', color: 'text-gray-900' },
             { label: 'Новые', value: safeLeads.filter(l => l.status === 'NEW').length, icon: '🆕', color: 'text-blue-600' },
             { label: 'Квалифицированные', value: safeLeads.filter(l => l.status === 'QUALIFIED').length, icon: '✅', color: 'text-green-600' },
             { label: 'Срочные', value: safeLeads.filter(l => l.priority === 'URGENT').length, icon: '🔥', color: 'text-red-600' },
           ].map((stat, i) => (
-            <div key={i} className="bg-white p-4 md:p-5 rounded-lg shadow-sm border border-gray-100 min-w-[160px] md:min-w-0">
+            <div key={i} className="bg-white p-4 lg:p-5 rounded-lg shadow-sm border border-gray-100 min-w-[160px] sm:min-w-0">
               <div className="flex items-center justify-between">
-                <div className="text-xs md:text-sm font-medium text-gray-600">{stat.label}</div>
+                <div className="text-xs sm:text-sm font-medium text-gray-600">{stat.label}</div>
                 <span className="text-lg">{stat.icon}</span>
               </div>
-              <div className={`text-2xl md:text-3xl font-bold mt-2 ${stat.color}`}>{stat.value}</div>
+              <div className={`text-2xl lg:text-3xl font-bold mt-2 ${stat.color}`}>{stat.value}</div>
             </div>
           ))}
         </div>
