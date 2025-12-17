@@ -242,11 +242,12 @@ export default function NewLeadPage() {
                   className="w-full px-4 py-2 border border-gray-300 rounded-lg focus:ring-2 focus:ring-blue-500 focus:border-blue-500"
                 >
                   <option value="WALK_IN">Пришел в офис</option>
+                  <option value="AGENT">Агент привел</option>
                   <option value="PHONE_CALL">Телефонный звонок</option>
                   <option value="WEBSITE">Сайт</option>
-                  <option value="TELEGRAM">Telegram</option>
-                  <option value="INSTAGRAM">Instagram</option>
-                  <option value="FACEBOOK">Facebook</option>
+                  <option value="SOCIAL_MEDIA">Соцсети (Telegram/Instagram/Facebook)</option>
+                  
+                  
                   <option value="REFERRAL">Рекомендация</option>
                   <option value="OTHER">Другое</option>
                 </select>
