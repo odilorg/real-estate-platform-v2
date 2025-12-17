@@ -58,6 +58,7 @@ export class UnitsService {
     const existingUnit = await this.prisma.property.findFirst({
       where: {
         developerProjectId: projectId,
+listingSource: 'DEVELOPER_PROJECT',
         unitNumber: dto.unitNumber,
       },
     });
@@ -81,6 +82,7 @@ export class UnitsService {
         // Developer ownership
         developerId: project.developerId,
         developerProjectId: projectId,
+listingSource: 'DEVELOPER_PROJECT',
         userId, // Service account or developer user
 
         // Unit-specific fields
@@ -304,6 +306,7 @@ export class UnitsService {
         const existing = await this.prisma.property.findFirst({
           where: {
             developerProjectId: projectId,
+listingSource: 'DEVELOPER_PROJECT',
             unitNumber,
           },
         });
@@ -331,6 +334,7 @@ export class UnitsService {
             // Developer ownership
             developerId: project.developerId,
             developerProjectId: projectId,
+listingSource: 'DEVELOPER_PROJECT',
             userId,
 
             // Unit-specific
@@ -406,6 +410,7 @@ export class UnitsService {
   ): Promise<PaginatedUnits> {
     const where: any = {
       developerProjectId: projectId,
+listingSource: 'DEVELOPER_PROJECT',
     };
 
     // Apply filters
@@ -653,24 +658,28 @@ export class UnitsService {
       this.prisma.property.count({
         where: {
           developerProjectId: projectId,
+listingSource: 'DEVELOPER_PROJECT',
           unitStatus: 'AVAILABLE',
         },
       }),
       this.prisma.property.count({
         where: {
           developerProjectId: projectId,
+listingSource: 'DEVELOPER_PROJECT',
           unitStatus: 'RESERVED',
         },
       }),
       this.prisma.property.count({
         where: {
           developerProjectId: projectId,
+listingSource: 'DEVELOPER_PROJECT',
           unitStatus: 'SOLD',
         },
       }),
       this.prisma.property.count({
         where: {
           developerProjectId: projectId,
+listingSource: 'DEVELOPER_PROJECT',
           unitStatus: 'HANDED_OVER',
         },
       }),

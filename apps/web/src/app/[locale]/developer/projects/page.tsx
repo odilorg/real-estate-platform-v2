@@ -1,6 +1,6 @@
 'use client';
 
-import Link from 'next/link';
+import { Link } from '@/i18n/routing';
 import { Plus, Loader2 } from 'lucide-react';
 import { ProjectCard } from '../components/ProjectCard';
 import { useParams } from 'next/navigation';

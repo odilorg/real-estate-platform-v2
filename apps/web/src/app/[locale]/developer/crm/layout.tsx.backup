@@ -1,0 +1,9 @@
+import { CrmLayout } from '@/components/crm';
+
+export default function DeveloperCrmLayout({
+  children,
+}: {
+  children: React.ReactNode;
+}) {
+  return <CrmLayout title="Developer CRM">{children}</CrmLayout>;
+}

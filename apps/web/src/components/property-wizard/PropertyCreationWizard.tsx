@@ -1,7 +1,7 @@
 'use client';
 
 import { useState, useEffect, useRef } from 'react';
-import { useRouter } from 'next/navigation';
+import { useRouter } from '@/i18n/routing';
 import { Card, CardContent, Button } from '@repo/ui';
 import { ArrowLeft, ArrowRight, Save, Check, Trash2, ChevronDown } from 'lucide-react';
 import { useTranslations } from 'next-intl';

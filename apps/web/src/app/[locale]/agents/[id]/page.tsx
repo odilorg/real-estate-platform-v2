@@ -1,7 +1,7 @@
 'use client';
 
 import { useState, useEffect, use } from 'react';
-import Link from 'next/link';
+import { Link } from '@/i18n/routing';
 import { Button, Badge, Card, CardContent } from '@repo/ui';
 import { PropertyListItem } from '@/components';
 import { useTranslations } from 'next-intl';

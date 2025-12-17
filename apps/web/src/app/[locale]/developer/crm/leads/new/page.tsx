@@ -1,7 +1,7 @@
 'use client';
 
 import { useState } from 'react';
-import { useRouter } from 'next/navigation';
+import { useRouter } from '@/i18n/routing';
 import { ArrowLeft, Save, Loader2 } from 'lucide-react';
 import { Link } from '@/i18n/routing';
 import { api } from '@/lib/api';
@@ -62,7 +62,7 @@ export default function NewLeadPage() {
   };
 
   return (
-    <div className="max-w-4xl mx-auto space-y-6">
+    <div className="max-w-4xl mx-auto space-y-6 pb-20 md:pb-6">
       <div className="flex items-center gap-4">
         <Link href="/developer/crm/leads">
           <button className="p-2 hover:bg-gray-100 rounded-lg transition-colors">
@@ -187,8 +187,8 @@ export default function NewLeadPage() {
                 >
                   <option value="">Выберите тип</option>
                   <option value="SALE">Продажа</option>
-                  <option value="RENT">Аренда</option>
-                  <option value="DAILY_RENT">Посуточная аренда</option>
+                  <option value="RENT_LONG">Аренда</option>
+                  <option value="RENT_DAILY">Посуточная аренда</option>
                 </select>
               </div>
             </div>

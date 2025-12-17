@@ -1,7 +1,7 @@
 'use client';
 
 import { useState, useEffect, use } from 'react';
-import { useRouter } from 'next/navigation';
+import { useRouter } from '@/i18n/routing';
 import { ArrowLeft, Save, Loader2 } from 'lucide-react';
 import { Link } from '@/i18n/routing';
 import { api } from '@/lib/api';
@@ -104,7 +104,7 @@ export default function EditMemberPage({ params }: PageProps) {
   }
 
   return (
-    <div className="max-w-4xl mx-auto space-y-6">
+    <div className="max-w-4xl mx-auto space-y-6 pb-20 md:pb-6">
       <div className="flex items-center gap-4">
         <Link href={`/developer/crm/members/${resolvedParams.id}`}>
           <button className="p-2 hover:bg-gray-100 rounded-lg transition-colors">
@@ -148,9 +148,11 @@ export default function EditMemberPage({ params }: PageProps) {
                   className="w-full px-4 py-2 border border-gray-300 rounded-lg focus:ring-2 focus:ring-blue-500 focus:border-blue-500"
                 >
                   <option value="">Не выбрано</option>
-                  <option value="BUYER_AGENT">Агент покупателя</option>
-                  <option value="SELLER_AGENT">Агент продавца</option>
-                  <option value="DUAL_AGENT">Двойной агент</option>
+                  <option value="GENERAL">Общий</option>
+                  <option value="RESIDENTIAL">Жилая недвижимость</option>
+                  <option value="COMMERCIAL">Коммерческая</option>
+                  <option value="RENTAL">Аренда</option>
+                  <option value="LUXURY">Люкс</option>
                 </select>
               </div>
             </div>

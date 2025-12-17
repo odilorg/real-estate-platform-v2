@@ -2,8 +2,10 @@
 
 import { useState, useEffect } from 'react';
 import { Link } from '@/i18n/routing';
-import { Search, Plus, Phone, Mail, User, Calendar, ChevronRight, AlertCircle, Loader2 } from 'lucide-react';
+import { Search, Plus, Phone, Mail, User, Calendar, ChevronRight, AlertCircle, Loader2, UserPlus, X, LayoutList, LayoutGrid } from 'lucide-react';
 import { api } from '@/lib/api';
+import { useAuth } from '@/context/AuthContext';
+import KanbanBoard from './KanbanBoard';
 
 interface Lead {
   id: string;
@@ -23,6 +25,18 @@ interface Lead {
   nextFollowUpAt?: string;
 }
 
+interface TeamMember {
+  id: string;
+  user: {
+    id: string;
+    firstName: string;
+    lastName: string;
+    email: string;
+  };
+  role: string;
+  agentType?: string;
+}
+
 const statusColors = {
   NEW: 'bg-blue-100 text-blue-800',
   CONTACTED: 'bg-yellow-100 text-yellow-800',
@@ -40,33 +54,92 @@ const priorityColors = {
 };
 
 export default function AgencyCRMLeadsPage() {
+  const { user } = useAuth();
+
   const [leads, setLeads] = useState<Lead[]>([]);
+  
+  // Defensive: Ensure leads is always an array
+  const safeLeads = Array.isArray(leads) ? leads : [];
+  const [teamMembers, setTeamMembers] = useState<TeamMember[]>([]);
+  const safeTeamMembers = Array.isArray(teamMembers) ? teamMembers : [];
   const [loading, setLoading] = useState(true);
   const [search, setSearch] = useState('');
   const [statusFilter, setStatusFilter] = useState('all');
   const [priorityFilter, setPriorityFilter] = useState('all');
+  const [assignedFilter, setAssignedFilter] = useState('all');
   const [total, setTotal] = useState(0);
+  const [showAssignModal, setShowAssignModal] = useState(false);
+  const [selectedLead, setSelectedLead] = useState<Lead | null>(null);
+  const [assigning, setAssigning] = useState(false);
+  const [viewMode, setViewMode] = useState<'list' | 'kanban'>('list');
+
+  useEffect(() => {
+    fetchTeamMembers();
+    fetchLeads();
+  }, []);
 
   useEffect(() => {
     fetchLeads();
-  }, [search, statusFilter, priorityFilter]);
+  }, [search, statusFilter, priorityFilter, assignedFilter]);
+
+  const fetchTeamMembers = async () => {
+    try {
+      const data = await api.get<TeamMember[]>('/agency-crm/members');
+      setTeamMembers(data);
+    } catch (error) {
+      console.error('Error fetching team members:', error);
+    }
+  };
 
   const fetchLeads = async () => {
+    setLoading(true);
     try {
-      setLoading(true);
       const params = new URLSearchParams();
       if (search) params.append('search', search);
       if (statusFilter !== 'all') params.append('status', statusFilter);
       if (priorityFilter !== 'all') params.append('priority', priorityFilter);
+      if (assignedFilter === 'unassigned') params.append('unassigned', 'true');
+      else if (assignedFilter !== 'all') params.append('assignedTo', assignedFilter);
 
-      const response = await api.get<any>(`/agency-crm/leads?${params}`);
-      setLeads(response.leads || []);
-      setTotal(response.total || 0);
+      const data = await api.get<{leads: Lead[], total: number, skip?: number}>(`/agency-crm/leads?${params.toString()}`);
+      setLeads(data.leads || []);
+      setTotal(data.total || 0);
     } catch (error) {
       console.error('Error fetching leads:', error);
-      setLeads([]);
     } finally {
       setLoading(false);
+    }
+  };
+
+  const handleAssign = async (memberId: string) => {
+    if (!selectedLead) return;
+
+    setAssigning(true);
+    try {
+      await api.put(`/agency-crm/leads/${selectedLead.id}/assign`, { memberId });
+      setShowAssignModal(false);
+      setSelectedLead(null);
+      fetchLeads();
+    } catch (error) {
+      console.error('Error assigning lead:', error);
+      alert('Ошибка при назначении лида');
+    } finally {
+      setAssigning(false);
+    }
+  };
+
+  const handleUnassign = async (leadId: string, e: React.MouseEvent) => {
+    e.preventDefault();
+    e.stopPropagation();
+
+    if (!confirm('Отменить назначение этого лида?')) return;
+
+    try {
+      await api.put(`/agency-crm/leads/${leadId}/assign`, { memberId: null });
+      fetchLeads();
+    } catch (error) {
+      console.error('Error unassigning lead:', error);
+      alert('Ошибка при отмене назначения');
     }
   };
 
@@ -81,153 +154,373 @@ export default function AgencyCRMLeadsPage() {
     return date.toLocaleDateString('ru-RU', { day: 'numeric', month: 'short', year: 'numeric' });
   };
 
+  const getFollowUpLeads = () => {
+    const now = new Date();
+    const todayEnd = new Date(now.getFullYear(), now.getMonth(), now.getDate(), 23, 59, 59);
+
+    return safeLeads.filter(lead => {
+      if (!lead.nextFollowUpAt) return false;
+      const followUpDate = new Date(lead.nextFollowUpAt);
+      return followUpDate <= todayEnd;
+    }).sort((a, b) => {
+      const dateA = new Date(a.nextFollowUpAt!).getTime();
+      const dateB = new Date(b.nextFollowUpAt!).getTime();
+      return dateA - dateB;
+    });
+  };
+
+  const followUpLeads = getFollowUpLeads();
+
+  const handleStatusChange = async (leadId: string, newStatus: string) => {
+    try {
+      await api.put(`/agency-crm/leads/${leadId}`, { status: newStatus });
+      fetchLeads(); // Refresh leads after status change
+    } catch (error) {
+      console.error('Error updating lead status:', error);
+      alert('Ошибка при обновлении статуса лида');
+    }
+  };
+
   return (
-    <div className="space-y-6">
-      {/* Header */}
-      <div className="flex items-center justify-between">
-        <div>
-          <h1 className="text-3xl font-bold text-gray-900">Лиды</h1>
-          <p className="mt-1 text-sm text-gray-500">Управление потенциальными клиентами</p>
+    <div className="space-y-4 md:space-y-6 pb-24 md:pb-6">
+      {/* Header Section - Improved mobile layout */}
+      <div className="space-y-4">
+        <div className="flex flex-col sm:flex-row sm:items-center sm:justify-between gap-3">
+          <div>
+            <h1 className="text-2xl md:text-3xl font-bold text-gray-900">Лиды</h1>
+            <p className="mt-0.5 text-xs md:text-sm text-gray-500">Управление клиентами</p>
+          </div>
+          <Link href="/developer/crm/leads/new" className="sm:order-last">
+            <button className="w-full sm:w-auto bg-blue-600 text-white px-5 py-3 rounded-lg hover:bg-blue-700 transition-colors flex items-center justify-center gap-2 font-medium shadow-sm min-h-[44px]">
+              <Plus className="h-5 w-5" />
+              <span>Добавить лид</span>
+            </button>
+          </Link>
         </div>
-        <Link href="/developer/crm/leads/new">
-          <button className="bg-blue-600 text-white px-4 py-2 rounded-lg hover:bg-blue-700 transition-colors flex items-center gap-2">
-            <Plus className="h-4 w-4" />
-            Добавить лид
+
+        {/* View Mode Toggle - Mobile friendly */}
+        <div className="flex items-center bg-gray-100 rounded-lg p-1 w-full sm:w-auto">
+          <button
+            onClick={() => setViewMode('list')}
+            className={`flex-1 sm:flex-initial px-4 py-2.5 rounded-md transition-colors flex items-center justify-center gap-2 min-h-[44px] ${viewMode === 'list' ? 'bg-white shadow-sm text-blue-600' : 'text-gray-600 hover:text-gray-900'}`}
+          >
+            <LayoutList className="h-4 w-4" />
+            <span className="font-medium">Список</span>
           </button>
-        </Link>
+          <button
+            onClick={() => setViewMode('kanban')}
+            className={`flex-1 sm:flex-initial px-4 py-2.5 rounded-md transition-colors flex items-center justify-center gap-2 min-h-[44px] ${viewMode === 'kanban' ? 'bg-white shadow-sm text-blue-600' : 'text-gray-600 hover:text-gray-900'}`}
+          >
+            <LayoutGrid className="h-4 w-4" />
+            <span className="font-medium">Kanban</span>
+          </button>
+        </div>
       </div>
 
-      {/* Stats Cards */}
-      <div className="grid grid-cols-1 md:grid-cols-4 gap-4">
-        {[
-          { label: 'Всего лидов', value: total },
-          { label: 'Новые', value: leads.filter(l => l.status === 'NEW').length },
-          { label: 'Квалифицированные', value: leads.filter(l => l.status === 'QUALIFIED').length },
-          { label: 'Срочные', value: leads.filter(l => l.priority === 'URGENT').length, color: 'text-red-600' },
-        ].map((stat, i) => (
-          <div key={i} className="bg-white p-6 rounded-lg shadow">
-            <div className="text-sm font-medium text-gray-600">{stat.label}</div>
-            <div className={`text-2xl font-bold mt-2 ${stat.color || ''}`}>{stat.value}</div>
-          </div>
-        ))}
+      {/* Stats Cards - Horizontal scroll on mobile */}
+      <div className="overflow-x-auto -mx-4 px-4 md:mx-0 md:px-0">
+        <div className="flex md:grid md:grid-cols-4 gap-3 min-w-max md:min-w-0">
+          {[
+            { label: 'Всего лидов', value: total, icon: '📊', color: 'text-gray-900' },
+            { label: 'Новые', value: safeLeads.filter(l => l.status === 'NEW').length, icon: '🆕', color: 'text-blue-600' },
+            { label: 'Квалифицированные', value: safeLeads.filter(l => l.status === 'QUALIFIED').length, icon: '✅', color: 'text-green-600' },
+            { label: 'Срочные', value: safeLeads.filter(l => l.priority === 'URGENT').length, icon: '🔥', color: 'text-red-600' },
+          ].map((stat, i) => (
+            <div key={i} className="bg-white p-4 md:p-5 rounded-lg shadow-sm border border-gray-100 min-w-[140px] md:min-w-0">
+              <div className="flex items-center justify-between">
+                <div className="text-xs md:text-sm font-medium text-gray-600">{stat.label}</div>
+                <span className="text-lg">{stat.icon}</span>
+              </div>
+              <div className={`text-2xl md:text-3xl font-bold mt-2 ${stat.color}`}>{stat.value}</div>
+            </div>
+          ))}
+        </div>
       </div>
 
-      {/* Filters */}
-      <div className="bg-white p-6 rounded-lg shadow">
-        <div className="grid grid-cols-1 md:grid-cols-4 gap-4">
-          <div className="md:col-span-2 relative">
-            <Search className="absolute left-3 top-1/2 -translate-y-1/2 h-4 w-4 text-gray-400" />
-            <input
-              type="text"
-              placeholder="Поиск по имени, телефону, email..."
-              value={search}
-              onChange={(e) => setSearch(e.target.value)}
-              className="w-full pl-10 pr-4 py-2 border border-gray-300 rounded-lg focus:ring-2 focus:ring-blue-500 focus:border-blue-500"
-            />
+      {/* Follow-up Alert - Mobile optimized */}
+      {followUpLeads.length > 0 && (
+        <div className="bg-orange-50 border-l-4 border-orange-500 p-4 rounded-r-lg">
+          <div className="flex items-start gap-3">
+            <AlertCircle className="h-5 w-5 text-orange-500 flex-shrink-0 mt-0.5" />
+            <div className="flex-1 min-w-0">
+              <h3 className="text-sm md:text-base font-semibold text-orange-900 mb-2">Требуют связи сегодня ({followUpLeads.length})</h3>
+              <div className="space-y-2">
+                {followUpLeads.map(lead => (
+                  <Link key={lead.id} href={`/developer/crm/leads/${lead.id}`}>
+                    <div className="bg-white p-3 rounded-lg hover:shadow-sm transition-shadow">
+                      <div className="flex items-center justify-between gap-2">
+                        <div className="flex-1 min-w-0">
+                          <p className="text-sm font-medium text-gray-900 truncate">{lead.firstName} {lead.lastName}</p>
+                          <p className="text-xs text-gray-600">{lead.phone}</p>
+                        </div>
+                        {lead.assignedTo && (
+                          <div className="flex items-center gap-1 text-xs text-gray-500 flex-shrink-0">
+                            <User className="h-3.5 w-3.5" />
+                            <span className="hidden sm:inline">{lead.assignedTo.user.firstName}</span>
+                          </div>
+                        )}
+                        {lead.priority === 'URGENT' && (
+                          <span className="text-xs font-bold text-red-600 flex-shrink-0">Просрочено</span>
+                        )}
+                      </div>
+                    </div>
+                  </Link>
+                ))}
+              </div>
+            </div>
           </div>
+        </div>
+      )}
+
+      {/* Search and Filters - Mobile optimized */}
+      <div className="bg-white p-4 rounded-lg shadow-sm space-y-3">
+        <div className="relative">
+          <Search className="absolute left-3 top-1/2 transform -translate-y-1/2 h-5 w-5 text-gray-400" />
+          <input
+            type="text"
+            placeholder="Поиск..."
+            value={search}
+            onChange={(e) => setSearch(e.target.value)}
+            className="w-full pl-10 pr-4 py-2.5 border border-gray-200 rounded-lg focus:outline-none focus:ring-2 focus:ring-blue-500 focus:border-transparent min-h-[44px]"
+          />
+        </div>
+        <div className="grid grid-cols-1 sm:grid-cols-3 gap-3">
           <select
             value={statusFilter}
             onChange={(e) => setStatusFilter(e.target.value)}
-            className="px-4 py-2 border border-gray-300 rounded-lg focus:ring-2 focus:ring-blue-500 focus:border-blue-500"
+            className="px-3 py-2.5 border border-gray-200 rounded-lg focus:outline-none focus:ring-2 focus:ring-blue-500 min-h-[44px]"
           >
             <option value="all">Все статусы</option>
-            <option value="NEW">Новый</option>
+            <option value="NEW">Новые</option>
             <option value="CONTACTED">Связались</option>
-            <option value="QUALIFIED">Квалифицирован</option>
+            <option value="QUALIFIED">Квалифицированные</option>
             <option value="NEGOTIATING">Переговоры</option>
-            <option value="CONVERTED">Конвертирован</option>
-            <option value="LOST">Потерян</option>
+            <option value="CONVERTED">Конвертированные</option>
+            <option value="LOST">Потеряны</option>
           </select>
           <select
             value={priorityFilter}
             onChange={(e) => setPriorityFilter(e.target.value)}
-            className="px-4 py-2 border border-gray-300 rounded-lg focus:ring-2 focus:ring-blue-500 focus:border-blue-500"
+            className="px-3 py-2.5 border border-gray-200 rounded-lg focus:outline-none focus:ring-2 focus:ring-blue-500 min-h-[44px]"
           >
             <option value="all">Все приоритеты</option>
-            <option value="LOW">Низкий</option>
-            <option value="MEDIUM">Средний</option>
+            <option value="URGENT">Срочные</option>
             <option value="HIGH">Высокий</option>
-            <option value="URGENT">Срочный</option>
+            <option value="MEDIUM">Средний</option>
+            <option value="LOW">Низкий</option>
+          </select>
+          <select
+            value={assignedFilter}
+            onChange={(e) => setAssignedFilter(e.target.value)}
+            className="px-3 py-2.5 border border-gray-200 rounded-lg focus:outline-none focus:ring-2 focus:ring-blue-500 min-h-[44px]"
+          >
+            <option value="all">Все агенты</option>
+            <option value="unassigned">Не назначен</option>
+            {safeTeamMembers.map(member => (
+              <option key={member.id} value={member.id}>
+                {member.user.firstName} {member.user.lastName}
+              </option>
+            ))}
           </select>
         </div>
       </div>
 
-      {/* Leads List */}
-      <div className="bg-white rounded-lg shadow">
-        <div className="px-6 py-4 border-b border-gray-200">
-          <h2 className="text-lg font-semibold text-gray-900">Лиды ({leads.length})</h2>
+      {/* Leads List/Kanban */}
+      {loading ? (
+        <div className="flex items-center justify-center py-12">
+          <Loader2 className="h-8 w-8 text-blue-600 animate-spin" />
         </div>
-        <div>
-          {loading ? (
-            <div className="flex items-center justify-center h-96">
-              <Loader2 className="w-8 h-8 text-blue-600 animate-spin" />
+      ) : leads.length === 0 ? (
+        <div className="bg-white rounded-lg shadow-sm p-8 md:p-12 text-center">
+          <div className="max-w-md mx-auto">
+            <div className="w-16 h-16 bg-gray-100 rounded-full flex items-center justify-center mx-auto mb-4">
+              <User className="h-8 w-8 text-gray-400" />
             </div>
-          ) : leads.length === 0 ? (
-            <div className="text-center py-12">
-              <AlertCircle className="mx-auto h-12 w-12 text-gray-400" />
-              <h3 className="mt-2 text-sm font-medium text-gray-900">Нет лидов</h3>
-              <p className="mt-1 text-sm text-gray-500">Начните с создания первого лида</p>
-              <div className="mt-6">
-                <Link href="/developer/crm/leads/new">
-                  <button className="bg-blue-600 text-white px-4 py-2 rounded-lg hover:bg-blue-700 flex items-center gap-2 mx-auto">
-                    <Plus className="h-4 w-4" />
-                    Добавить лид
-                  </button>
-                </Link>
-              </div>
-            </div>
-          ) : (
-            <div className="divide-y divide-gray-200">
+            <h3 className="text-lg md:text-xl font-semibold text-gray-900 mb-2">Нет лидов</h3>
+            <p className="text-sm md:text-base text-gray-600 mb-6">Начните добавлять лидов, чтобы управлять ими</p>
+            <Link href="/developer/crm/leads/new">
+              <button className="bg-blue-600 text-white px-6 py-3 rounded-lg hover:bg-blue-700 transition-colors flex items-center justify-center gap-2 mx-auto min-h-[44px]">
+                <Plus className="h-5 w-5" />
+                <span>Добавить первого лида</span>
+              </button>
+            </Link>
+          </div>
+        </div>
+      ) : viewMode === 'kanban' ? (
+        <div className="-mx-4 sm:-mx-6 lg:-mx-8">
+          <KanbanBoard leads={safeLeads} onStatusChange={handleStatusChange} />
+        </div>
+      ) : (
+        <>
+          {/* Mobile Card View */}
+          <div className="block md:hidden space-y-3">
+            {leads.map((lead) => (
+              <Link key={lead.id} href={`/developer/crm/leads/${lead.id}`}>
+                <div className="bg-white rounded-xl shadow-sm border border-gray-200 p-4 hover:shadow-md transition-all active:scale-98">
+                  {/* Header */}
+                  <div className="flex items-start justify-between mb-3">
+                    <div className="flex-1 min-w-0">
+                      <h3 className="text-lg font-semibold text-gray-900 truncate mb-1">
+                        {lead.firstName} {lead.lastName}
+                      </h3>
+                      <div className="flex items-center gap-2 flex-wrap">
+                        <span className={`px-2.5 py-1 text-xs font-bold rounded-full ${statusColors[lead.status]}`}>
+                          {lead.status}
+                        </span>
+                        {lead.priority === 'URGENT' || lead.priority === 'HIGH' ? (
+                          <span className={`px-2.5 py-1 text-xs font-bold rounded-full ${priorityColors[lead.priority]}`}>
+                            {lead.priority === 'URGENT' ? '🔥 СРОЧНО' : '⚡ ВАЖНО'}
+                          </span>
+                        ) : null}
+                      </div>
+                    </div>
+                    <ChevronRight className="h-5 w-5 text-gray-400 flex-shrink-0 mt-1" />
+                  </div>
+
+                  {/* Contact Info */}
+                  <div className="space-y-2 mb-3">
+                    <div className="flex items-center gap-2 text-gray-700">
+                      <div className="w-8 h-8 bg-blue-50 rounded-lg flex items-center justify-center flex-shrink-0">
+                        <Phone className="h-4 w-4 text-blue-600" />
+                      </div>
+                      <span className="font-medium text-sm">{lead.phone}</span>
+                    </div>
+                    {lead.email && (
+                      <div className="flex items-center gap-2 text-gray-700">
+                        <div className="w-8 h-8 bg-purple-50 rounded-lg flex items-center justify-center flex-shrink-0">
+                          <Mail className="h-4 w-4 text-purple-600" />
+                        </div>
+                        <span className="text-sm truncate">{lead.email}</span>
+                      </div>
+                    )}
+                  </div>
+
+                  {/* Agent & Time */}
+                  <div className="flex items-center justify-between pt-3 border-t border-gray-100">
+                    <div className="flex items-center gap-2">
+                      <div className={`w-7 h-7 rounded-full flex items-center justify-center flex-shrink-0 ${lead.assignedTo ? 'bg-green-50' : 'bg-gray-50'}`}>
+                        <User className={`h-4 w-4 ${lead.assignedTo ? 'text-green-600' : 'text-gray-400'}`} />
+                      </div>
+                      <span className={`text-xs font-medium ${lead.assignedTo ? 'text-green-700' : 'text-gray-500'}`}>
+                        {lead.assignedTo ? lead.assignedTo.user.firstName : 'Не назначен'}
+                      </span>
+                    </div>
+                    <div className="flex items-center gap-1 text-xs text-gray-500">
+                      <Calendar className="h-3.5 w-3.5" />
+                      <span>{formatTime(lead.createdAt)}</span>
+                    </div>
+                  </div>
+
+                  {/* Follow-up Alert */}
+                  {lead.nextFollowUpAt && (
+                    <div className="mt-2 pt-2 border-t border-gray-100">
+                      <div className="flex items-center gap-2 text-orange-600">
+                        <div className="w-6 h-6 bg-orange-50 rounded-full flex items-center justify-center">
+                          <Calendar className="h-3.5 w-3.5" />
+                        </div>
+                        <span className="text-xs font-semibold">
+                          Звонок: {formatTime(lead.nextFollowUpAt)}
+                        </span>
+                      </div>
+                    </div>
+                  )}
+                </div>
+              </Link>
+            ))}
+          </div>
+
+          {/* Desktop Table View */}
+          <div className="hidden md:block bg-white rounded-lg shadow-sm border border-gray-100">
+            <div className="divide-y divide-gray-100">
               {leads.map((lead) => (
-                <Link key={lead.id} href={`/developer/crm/leads/${lead.id}`} className="block hover:bg-gray-50 transition-colors">
-                  <div className="p-4">
-                    <div className="flex items-start justify-between">
-                      <div className="flex-1">
-                        <div className="flex items-center gap-3">
-                          <h3 className="text-lg font-medium text-gray-900">{lead.firstName} {lead.lastName}</h3>
-                          <span className={`px-2 py-1 text-xs font-semibold rounded-full ${statusColors[lead.status]}`}>{lead.status}</span>
-                          <span className={`px-2 py-1 text-xs font-semibold rounded-full ${priorityColors[lead.priority]}`}>{lead.priority}</span>
+                <Link key={lead.id} href={`/developer/crm/leads/${lead.id}`}>
+                  <div className="p-4 hover:bg-gray-50 transition-colors flex items-center gap-4">
+                    <div className="flex-1 min-w-0">
+                      <div className="flex items-center gap-3 mb-2">
+                        <h3 className="text-base font-semibold text-gray-900 truncate">
+                          {lead.firstName} {lead.lastName}
+                        </h3>
+                        <span className={`px-2 py-0.5 text-xs font-bold rounded-full ${statusColors[lead.status]}`}>
+                          {lead.status}
+                        </span>
+                        <span className={`px-2 py-0.5 text-xs font-bold rounded-full ${priorityColors[lead.priority]}`}>
+                          {lead.priority}
+                        </span>
+                      </div>
+                      <div className="flex items-center gap-4 text-sm text-gray-600">
+                        <div className="flex items-center gap-1">
+                          <Phone className="h-4 w-4" />
+                          <span>{lead.phone}</span>
                         </div>
-                        <div className="mt-2 flex items-center gap-4 text-sm text-gray-600">
+                        {lead.email && (
                           <div className="flex items-center gap-1">
-                            <Phone className="h-4 w-4" />
-                            {lead.phone}
+                            <Mail className="h-4 w-4" />
+                            <span className="truncate">{lead.email}</span>
                           </div>
-                          {lead.email && (
-                            <div className="flex items-center gap-1">
-                              <Mail className="h-4 w-4" />
-                              {lead.email}
-                            </div>
-                          )}
-                          {lead.assignedTo && (
-                            <div className="flex items-center gap-1">
-                              <User className="h-4 w-4" />
-                              {lead.assignedTo.user.firstName} {lead.assignedTo.user.lastName}
-                            </div>
-                          )}
-                        </div>
-                        <div className="mt-2 flex items-center gap-4 text-xs text-gray-500">
-                          <div className="flex items-center gap-1">
-                            <Calendar className="h-3 w-3" />
-                            Создан: {formatTime(lead.createdAt)}
-                          </div>
-                          {lead.lastContactedAt && <div>Последний контакт: {formatTime(lead.lastContactedAt)}</div>}
-                          {lead.nextFollowUpAt && (
-                            <div className="text-orange-600 font-medium">
-                              Следующий звонок: {formatTime(lead.nextFollowUpAt)}
-                            </div>
-                          )}
+                        )}
+                        <div className="flex items-center gap-1">
+                          <Calendar className="h-4 w-4" />
+                          <span>{formatTime(lead.createdAt)}</span>
                         </div>
                       </div>
+                    </div>
+                    <div className="flex items-center gap-2">
+                      {lead.assignedTo ? (
+                        <div className="flex items-center gap-1.5 text-sm text-green-700 bg-green-50 px-3 py-1.5 rounded-lg">
+                          <User className="h-4 w-4" />
+                          <span>{lead.assignedTo.user.firstName}</span>
+                        </div>
+                      ) : (
+                        <button
+                          onClick={(e) => {
+                            e.preventDefault();
+                            setSelectedLead(lead);
+                            setShowAssignModal(true);
+                          }}
+                          className="flex items-center gap-1.5 text-sm text-gray-600 hover:text-blue-600 bg-gray-50 hover:bg-blue-50 px-3 py-1.5 rounded-lg transition-colors"
+                        >
+                          <UserPlus className="h-4 w-4" />
+                          <span>Назначить</span>
+                        </button>
+                      )}
                       <ChevronRight className="h-5 w-5 text-gray-400" />
                     </div>
                   </div>
                 </Link>
               ))}
             </div>
-          )}
+          </div>
+        </>
+      )}
+
+      {/* Assign Modal */}
+      {showAssignModal && (
+        <div className="fixed inset-0 bg-black bg-opacity-50 flex items-center justify-center p-4 z-50">
+          <div className="bg-white rounded-lg max-w-md w-full p-6">
+            <div className="flex items-center justify-between mb-4">
+              <h3 className="text-lg font-semibold">Назначить агента</h3>
+              <button onClick={() => setShowAssignModal(false)} className="text-gray-400 hover:text-gray-600">
+                <X className="h-5 w-5" />
+              </button>
+            </div>
+            <div className="space-y-2 max-h-96 overflow-y-auto">
+              {safeTeamMembers.map((member) => (
+                <button
+                  key={member.id}
+                  onClick={() => handleAssign(member.id)}
+                  disabled={assigning}
+                  className="w-full text-left p-3 rounded-lg border border-gray-200 hover:border-blue-500 hover:bg-blue-50 transition-colors disabled:opacity-50"
+                >
+                  <div className="font-medium text-gray-900">
+                    {member.user.firstName} {member.user.lastName}
+                  </div>
+                  <div className="text-sm text-gray-600">{member.role}</div>
+                </button>
+              ))}
+            </div>
+          </div>
         </div>
-      </div>
+      )}
     </div>
   );
 }

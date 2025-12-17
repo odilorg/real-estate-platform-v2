@@ -1,10 +1,11 @@
 'use client';
 
 import { useState, useEffect, use } from 'react';
-import { useRouter } from 'next/navigation';
+import { useRouter } from '@/i18n/routing';
 import { ArrowLeft, Edit, Trash2, Phone, Mail, MessageSquare, Calendar, User, Building, DollarSign, Loader2 } from 'lucide-react';
 import { Link } from '@/i18n/routing';
 import { api } from '@/lib/api';
+import ActivityTimeline from './ActivityTimeline';
 
 interface Lead {
   id: string;
@@ -49,8 +50,11 @@ export default function LeadDetailPage({ params }: PageProps) {
 
   const fetchLead = async (id: string) => {
     try {
-      const data = await api.get<Lead>(`/agency-crm/leads/${id}`);
-      setLead(data);
+      const [leadData, activitiesData] = await Promise.all([
+        api.get<Lead>(`/agency-crm/leads/${id}`),
+        api.get<any[]>(`/agency-crm/activities/lead/${id}`),
+      ]);
+      setLead({ ...leadData, activities: activitiesData || [] });
     } catch (error) {
       console.error('Error fetching lead:', error);
     } finally {
@@ -248,6 +252,13 @@ export default function LeadDetailPage({ params }: PageProps) {
           </div>
         </div>
       </div>
+
+      {/* Activities Timeline */}
+      <ActivityTimeline
+        leadId={lead.id}
+        activities={lead.activities}
+        onActivityAdded={() => fetchLead(resolvedParams.id)}
+      />
     </div>
   );
 }

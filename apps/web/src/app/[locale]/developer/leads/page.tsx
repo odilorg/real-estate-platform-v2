@@ -3,7 +3,7 @@
 import { useState, useEffect, use } from 'react';
 import { useTranslations } from 'next-intl';
 import { ArrowLeft, Loader2 } from 'lucide-react';
-import Link from 'next/link';
+import { Link } from '@/i18n/routing';
 import { api } from '@/lib/api';
 
 interface Lead {

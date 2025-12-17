@@ -17,7 +17,6 @@ import { ReviewsModule } from './modules/reviews/reviews.module';
 import { SavedSearchesModule } from './modules/saved-searches/saved-searches.module';
 import { AgentsModule } from './modules/agents/agents.module';
 import { AgenciesModule } from './modules/agencies/agencies.module';
-import { DevelopersModule } from './modules/developers/developers.module';
 import { DeveloperProjectsModule } from './modules/developer-projects/developer-projects.module';
 import { UnitsModule } from './modules/units/units.module';
 import { LeadsModule } from './modules/leads/leads.module';
@@ -26,6 +25,7 @@ import { EmailModule } from './modules/email/email.module';
 import { SearchModule } from './modules/search/search.module';
 import { AnalyticsModule } from './modules/analytics/analytics.module';
 import { AgencyCrmModule } from './modules/agency-crm/agency-crm.module';
+import { AgencyModule } from './modules/agency/agency.module';
 import { JwtAuthGuard } from './common/guards/jwt-auth.guard';
 import { RequestIdMiddleware } from './common/middleware/request-id.middleware';
 
@@ -56,7 +56,6 @@ import { RequestIdMiddleware } from './common/middleware/request-id.middleware';
     SavedSearchesModule,
     AgentsModule,
     AgenciesModule,
-    DevelopersModule,
     DeveloperProjectsModule,
     UnitsModule,
     LeadsModule,
@@ -65,6 +64,7 @@ import { RequestIdMiddleware } from './common/middleware/request-id.middleware';
     SearchModule,
     AnalyticsModule,
     AgencyCrmModule,
+    AgencyModule,
   ],
   controllers: [AppController],
   providers: [

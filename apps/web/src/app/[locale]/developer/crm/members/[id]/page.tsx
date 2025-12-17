@@ -1,7 +1,7 @@
 'use client';
 
 import { useState, useEffect, use } from 'react';
-import { useRouter } from 'next/navigation';
+import { useRouter } from '@/i18n/routing';
 import { ArrowLeft, Edit, Trash2, Phone, Mail, MessageSquare, User, Shield, Loader2, Calendar } from 'lucide-react';
 import { Link } from '@/i18n/routing';
 import { api } from '@/lib/api';

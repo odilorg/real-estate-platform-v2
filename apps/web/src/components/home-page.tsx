@@ -1,6 +1,6 @@
 'use client';
 
-import Link from 'next/link';
+import { Link } from '@/i18n/routing';
 import { Button, Card, CardContent } from '@repo/ui';
 import { Search, MapPin, Home, Building2, Warehouse } from 'lucide-react';
 

@@ -1,9 +1,41 @@
-import { IsString, IsOptional, IsEnum, IsArray, IsBoolean,  IsDateString } from 'class-validator';
+import { IsString, IsOptional, IsEnum, IsArray, IsBoolean, IsDateString, IsEmail, MinLength, ValidateNested, ValidateIf } from 'class-validator';
+import { Type } from 'class-transformer';
 import { AgencyRole, AgentType } from '@repo/database';
 
-export class CreateMemberDto {
+class NewUserDto {
+  @IsEmail()
+  email!: string;
+
   @IsString()
-  userId!: string;
+  @MinLength(1)
+  firstName!: string;
+
+  @IsString()
+  @MinLength(1)
+  lastName!: string;
+
+  @IsString()
+  @MinLength(6)
+  password!: string;
+
+  @IsOptional()
+  @IsString()
+  phone?: string;
+}
+
+export class CreateMemberDto {
+  // Option 1: Existing user
+  @IsOptional()
+  @ValidateIf(o => !o.newUser)
+  @IsString()
+  userId?: string;
+
+  // Option 2: New user
+  @IsOptional()
+  @ValidateIf(o => !o.userId)
+  @ValidateNested()
+  @Type(() => NewUserDto)
+  newUser?: NewUserDto;
 
   @IsEnum(AgencyRole)
   role!: AgencyRole;

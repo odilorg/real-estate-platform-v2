@@ -1,7 +1,7 @@
 'use client';
 
-import Link from 'next/link';
-import { useRouter } from 'next/navigation';
+import { Link } from '@/i18n/routing';
+import { useRouter } from '@/i18n/routing';
 import { MapPin, Bed, Bath, Maximize, Heart, Phone, MessageCircle, Scale } from 'lucide-react';
 import { Badge } from '@repo/ui';
 import { useComparison } from '@/context';

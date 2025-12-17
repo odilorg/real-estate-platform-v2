@@ -1,7 +1,7 @@
 'use client';
 
 import { useState, useEffect, use } from 'react';
-import { useRouter } from 'next/navigation';
+import { useRouter } from '@/i18n/routing';
 import { ArrowLeft, Save, Loader2 } from 'lucide-react';
 import { Link } from '@/i18n/routing';
 import { api } from '@/lib/api';
@@ -24,6 +24,7 @@ export default function EditLeadPage({ params }: PageProps) {
     email: '',
     status: 'NEW',
     priority: 'MEDIUM',
+    nextFollowUpAt: '',
     notes: '',
   });
 
@@ -41,6 +42,7 @@ export default function EditLeadPage({ params }: PageProps) {
         email: data.email || '',
         status: data.status || 'NEW',
         priority: data.priority || 'MEDIUM',
+    nextFollowUpAt: '',
         notes: data.notes || '',
       });
     } catch (err: any) {
@@ -70,7 +72,7 @@ export default function EditLeadPage({ params }: PageProps) {
   }
 
   return (
-    <div className="max-w-4xl mx-auto space-y-6">
+    <div className="max-w-4xl mx-auto space-y-6 pb-20 md:pb-6">
       <div className="flex items-center gap-4">
         <Link href={`/developer/crm/leads/${resolvedParams.id}`}>
           <button className="p-2 hover:bg-gray-100 rounded-lg transition-colors">
@@ -171,6 +173,17 @@ export default function EditLeadPage({ params }: PageProps) {
               </div>
             </div>
             <div>
+
+            <div>
+              <label className="block text-sm font-medium text-gray-700 mb-1">Дата следующего звонка</label>
+              <input
+                type="datetime-local"
+                value={formData.nextFollowUpAt}
+                onChange={(e) => setFormData({ ...formData, nextFollowUpAt: e.target.value })}
+                className="w-full px-4 py-2 border border-gray-300 rounded-lg focus:ring-2 focus:ring-blue-500 focus:border-blue-500"
+              />
+              <p className="mt-1 text-xs text-gray-500">Установите напоминание для последующего контакта</p>
+            </div>
               <label className="block text-sm font-medium text-gray-700 mb-1">Заметки</label>
               <textarea
                 rows={4}

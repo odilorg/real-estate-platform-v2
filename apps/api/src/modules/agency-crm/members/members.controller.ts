@@ -31,6 +31,14 @@ export class MembersController {
     return this.membersService.create(agencyId, createMemberDto);
   }
 
+  @Get('search-users')
+  @UseGuards(AgencyPermissionGuard)
+  @RequireAgencyRoles(...ROLE_MANAGEMENT)
+  async searchUsers(@Query('q') query: string, @Request() req: any): Promise<any> {
+    const agencyId = req.user.agencyId;
+    return this.membersService.searchUsers(agencyId, query);
+  }
+
   @Get()
   async findAll(@Query() query: QueryMembersDto, @Request() req: any): Promise<any> {
     const agencyId = req.user.agencyId;

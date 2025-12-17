@@ -25,6 +25,14 @@ import { ActivitiesService } from './activities/activities.service';
 import { TasksController } from './tasks/tasks.controller';
 import { TasksService } from './tasks/tasks.service';
 
+// Analytics & reporting
+import { AnalyticsController } from './analytics/analytics.controller';
+import { AnalyticsService } from './analytics/analytics.service';
+
+// Listing management
+import { ListingsController } from './listings/listings.controller';
+import { ListingsService } from './listings/listings.service';
+
 @Module({
   imports: [PrismaModule],
   controllers: [
@@ -34,6 +42,8 @@ import { TasksService } from './tasks/tasks.service';
     CommissionsController,
     ActivitiesController,
     TasksController,
+    AnalyticsController,
+    ListingsController,
   ],
   providers: [
     LeadsService,
@@ -42,6 +52,8 @@ import { TasksService } from './tasks/tasks.service';
     CommissionsService,
     ActivitiesService,
     TasksService,
+    AnalyticsService,
+    ListingsService,
   ],
   exports: [
     LeadsService,
@@ -50,6 +62,8 @@ import { TasksService } from './tasks/tasks.service';
     CommissionsService,
     ActivitiesService,
     TasksService,
+    AnalyticsService,
+    ListingsService,
   ],
 })
 export class AgencyCrmModule {}
