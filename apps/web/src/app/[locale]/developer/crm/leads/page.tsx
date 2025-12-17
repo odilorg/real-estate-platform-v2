@@ -226,7 +226,7 @@ export default function AgencyCRMLeadsPage() {
             { label: 'Квалифицированные', value: safeLeads.filter(l => l.status === 'QUALIFIED').length, icon: '✅', color: 'text-green-600' },
             { label: 'Срочные', value: safeLeads.filter(l => l.priority === 'URGENT').length, icon: '🔥', color: 'text-red-600' },
           ].map((stat, i) => (
-            <div key={i} className="bg-white p-4 md:p-5 rounded-lg shadow-sm border border-gray-100 min-w-[140px] md:min-w-0">
+            <div key={i} className="bg-white p-4 md:p-5 rounded-lg shadow-sm border border-gray-100 min-w-[160px] md:min-w-0">
               <div className="flex items-center justify-between">
                 <div className="text-xs md:text-sm font-medium text-gray-600">{stat.label}</div>
                 <span className="text-lg">{stat.icon}</span>
