@@ -10,6 +10,7 @@ export default function NewLeadPage() {
   const router = useRouter();
   const [loading, setLoading] = useState(false);
   const [error, setError] = useState('');
+  const [success, setSuccess] = useState(false);
 
   const [formData, setFormData] = useState({
     firstName: '',
@@ -53,7 +54,10 @@ export default function NewLeadPage() {
       if (formData.notes) payload.notes = formData.notes;
 
       await api.post('/agency-crm/leads', payload);
+      setSuccess(true);
+      setTimeout(() => {
       router.push('/developer/crm/leads');
+      }, 1500);
     } catch (err: any) {
       setError(err.message || 'Failed to create lead');
     } finally {
@@ -70,12 +74,18 @@ export default function NewLeadPage() {
           </button>
         </Link>
         <div>
-          <h1 className="text-3xl font-bold text-gray-900">Добавить лид</h1>
+          <h1 className="text-xl md:text-2xl lg:text-3xl font-bold text-gray-900">Добавить лид</h1>
           <p className="mt-1 text-sm text-gray-500">Создание нового потенциального клиента</p>
         </div>
       </div>
 
       <form onSubmit={handleSubmit} className="space-y-6">
+        {success && (
+          <div className="bg-green-50 border border-green-200 text-green-800 px-4 py-3 rounded-lg">
+            ✅ Лид успешно создан! Перенаправление...
+          </div>
+        )}
+
         {error && (
           <div className="bg-red-50 border border-red-200 text-red-800 px-4 py-3 rounded-lg">
             {error}
@@ -83,10 +93,10 @@ export default function NewLeadPage() {
         )}
 
         {/* Contact Information */}
-        <div className="bg-white p-6 rounded-lg shadow">
-          <h2 className="text-xl font-semibold text-gray-900 mb-4">Контактная информация</h2>
+        <div className="bg-white p-6 rounded-lg shadow" role="region" aria-labelledby="contact-info">
+          <h2 id="contact-info" className="text-lg md:text-xl font-semibold text-gray-900 mb-4">Контактная информация</h2>
           <div className="space-y-4">
-            <div className="grid grid-cols-2 gap-4">
+            <div className="grid grid-cols-1 md:grid-cols-2 gap-4">
               <div>
                 <label className="block text-sm font-medium text-gray-700 mb-1">Имя *</label>
                 <input
@@ -109,17 +119,18 @@ export default function NewLeadPage() {
               </div>
             </div>
 
-            <div className="grid grid-cols-2 gap-4">
+            <div className="grid grid-cols-1 md:grid-cols-2 gap-4">
               <div>
                 <label className="block text-sm font-medium text-gray-700 mb-1">Телефон *</label>
                 <input
-                  type="tel"
+                  type="tel" pattern="+998[0-9]{9}"
                   required
                   placeholder="+998901234567"
                   value={formData.phone}
                   onChange={(e) => setFormData({ ...formData, phone: e.target.value })}
                   className="w-full px-4 py-2 border border-gray-300 rounded-lg focus:ring-2 focus:ring-blue-500 focus:border-blue-500"
                 />
+                <p className="mt-1 text-xs text-gray-500">Формат: +998XXXXXXXXX</p>
               </div>
               <div>
                 <label className="block text-sm font-medium text-gray-700 mb-1">Email</label>
@@ -132,7 +143,7 @@ export default function NewLeadPage() {
               </div>
             </div>
 
-            <div className="grid grid-cols-2 gap-4">
+            <div className="grid grid-cols-1 md:grid-cols-2 gap-4">
               <div>
                 <label className="block text-sm font-medium text-gray-700 mb-1">Telegram</label>
                 <input
@@ -146,7 +157,7 @@ export default function NewLeadPage() {
               <div>
                 <label className="block text-sm font-medium text-gray-700 mb-1">WhatsApp</label>
                 <input
-                  type="tel"
+                  type="tel" pattern="+998[0-9]{9}"
                   placeholder="+998901234567"
                   value={formData.whatsapp}
                   onChange={(e) => setFormData({ ...formData, whatsapp: e.target.value })}
@@ -158,10 +169,10 @@ export default function NewLeadPage() {
         </div>
 
         {/* Property Requirements */}
-        <div className="bg-white p-6 rounded-lg shadow">
-          <h2 className="text-xl font-semibold text-gray-900 mb-4">Требования к недвижимости</h2>
+        <div className="bg-white p-6 rounded-lg shadow" role="region" aria-labelledby="property-requirements">
+          <h2 id="property-requirements" className="text-lg md:text-xl font-semibold text-gray-900 mb-4">Требования к недвижимости</h2>
           <div className="space-y-4">
-            <div className="grid grid-cols-2 gap-4">
+            <div className="grid grid-cols-1 md:grid-cols-2 gap-4">
               <div>
                 <label className="block text-sm font-medium text-gray-700 mb-1">Тип недвижимости</label>
                 <select
@@ -193,9 +204,9 @@ export default function NewLeadPage() {
               </div>
             </div>
 
-            <div className="grid grid-cols-2 gap-4">
+            <div className="grid grid-cols-1 md:grid-cols-2 gap-4">
               <div>
-                <label className="block text-sm font-medium text-gray-700 mb-1">Бюджет (YE)</label>
+                <label className="block text-sm font-medium text-gray-700 mb-1">Бюджет (сум)</label>
                 <input
                   type="number"
                   placeholder="50000000"
@@ -203,6 +214,7 @@ export default function NewLeadPage() {
                   onChange={(e) => setFormData({ ...formData, budget: e.target.value })}
                   className="w-full px-4 py-2 border border-gray-300 rounded-lg focus:ring-2 focus:ring-blue-500 focus:border-blue-500"
                 />
+                <p className="mt-1 text-xs text-gray-500">Примерный бюджет клиента в узбекских сумах</p>
               </div>
               <div>
                 <label className="block text-sm font-medium text-gray-700 mb-1">Количество комнат</label>
@@ -230,10 +242,10 @@ export default function NewLeadPage() {
         </div>
 
         {/* Lead Info */}
-        <div className="bg-white p-6 rounded-lg shadow">
-          <h2 className="text-xl font-semibold text-gray-900 mb-4">Информация о лиде</h2>
+        <div className="bg-white p-6 rounded-lg shadow" role="region" aria-labelledby="lead-info">
+          <h2 id="lead-info" className="text-lg md:text-xl font-semibold text-gray-900 mb-4">Информация о лиде</h2>
           <div className="space-y-4">
-            <div className="grid grid-cols-2 gap-4">
+            <div className="grid grid-cols-1 md:grid-cols-2 gap-4">
               <div>
                 <label className="block text-sm font-medium text-gray-700 mb-1">Источник лида *</label>
                 <select
@@ -246,8 +258,6 @@ export default function NewLeadPage() {
                   <option value="PHONE_CALL">Телефонный звонок</option>
                   <option value="WEBSITE">Сайт</option>
                   <option value="SOCIAL_MEDIA">Соцсети (Telegram/Instagram/Facebook)</option>
-                  
-                  
                   <option value="REFERRAL">Рекомендация</option>
                   <option value="OTHER">Другое</option>
                 </select>
