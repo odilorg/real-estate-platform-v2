@@ -182,15 +182,15 @@ export default function AgencyCRMLeadsPage() {
   };
 
   return (
-    <div className="space-y-4 md:space-y-6 pb-24 md:pb-6">
+    <div className="space-y-4 md:space-y-6 pb-24 md:pb-6 w-full">
       {/* Header Section - Improved mobile layout */}
-      <div className="space-y-4">
-        <div className="flex flex-col sm:flex-row sm:items-center sm:justify-between gap-3">
+      <div className="space-y-4 w-full">
+        <div className="flex flex-col sm:flex-row sm:items-center sm:justify-between gap-3 w-full">
           <div>
             <h1 className="text-xl sm:text-2xl lg:text-3xl font-bold text-gray-900">Лиды</h1>
             <p className="mt-0.5 text-xs sm:text-sm text-gray-500">Управление клиентами</p>
           </div>
-          <Link href="/developer/crm/leads/new" className="sm:order-last">
+          <Link href="/developer/crm/leads/new" className="w-full sm:w-auto sm:order-last">
             <button className="w-full sm:w-auto bg-blue-600 text-white px-4 py-2 sm:px-5 sm:py-3 rounded-lg hover:bg-blue-700 transition-colors flex items-center justify-center gap-2 font-medium shadow-sm min-h-[38px] sm:min-h-[44px]">
               <Plus className="h-5 w-5" />
               <span className="text-sm sm:text-base">Добавить лид</span>
