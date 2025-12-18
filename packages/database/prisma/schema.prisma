@@ -538,14 +538,15 @@ model Agency {
   createdAt       DateTime @default(now())
   updatedAt       DateTime @updatedAt
 
-  agents      Agent[]
-  crmSettings AgencyCRM?
-  members     AgencyMember[]
-  leads       AgencyLead[]
-  deals       AgencyDeal[]
-  commissions AgencyCommission[]
-  activities  AgencyActivity[]
-  tasks       AgencyTask[]
+  agents        Agent[]
+  crmSettings   AgencyCRM?
+  members       AgencyMember[]
+  leads         AgencyLead[]
+  deals         AgencyDeal[]
+  commissions   AgencyCommission[]
+  activities    AgencyActivity[]
+  tasks         AgencyTask[]
+  notifications AgencyNotification[]
 
   @@index([slug])
   @@index([city])
@@ -1182,6 +1183,7 @@ model AgencyMember {
   commissions   AgencyCommission[]
   activities    AgencyActivity[]
   tasks         AgencyTask[]       @relation("TaskAssignedTo")
+  notifications AgencyNotification[]
 
   createdAt DateTime @default(now())
   updatedAt DateTime @updatedAt
@@ -1257,9 +1259,10 @@ model AgencyLead {
   notes String? @db.Text
 
   // Relations
-  deal       AgencyDeal?
-  activities AgencyActivity[]
-  tasks      AgencyTask[]
+  deal          AgencyDeal?
+  activities    AgencyActivity[]
+  tasks         AgencyTask[]
+  notifications AgencyNotification[]
 
   createdAt DateTime @default(now())
   updatedAt DateTime @updatedAt
@@ -1323,9 +1326,10 @@ model AgencyDeal {
   notes       String? @db.Text
 
   // Relations
-  activities  AgencyActivity[]
-  commissions AgencyCommission[]
-  tasks       AgencyTask[]
+  activities    AgencyActivity[]
+  commissions   AgencyCommission[]
+  tasks         AgencyTask[]
+  notifications AgencyNotification[]
 
   createdAt DateTime @default(now())
   updatedAt DateTime @updatedAt
@@ -1477,6 +1481,9 @@ model AgencyTask {
   dealId String?
   deal   AgencyDeal? @relation(fields: [dealId], references: [id], onDelete: Cascade)
 
+  // Notifications
+  notifications AgencyNotification[]
+
   // Timing
   dueDate      DateTime
   reminderSent Boolean   @default(false)
@@ -1516,4 +1523,50 @@ enum TaskStatus {
   IN_PROGRESS
   COMPLETED
   CANCELLED
+}
+
+// Notification system
+model AgencyNotification {
+  id       String @id @default(cuid())
+  agencyId String
+  agency   Agency @relation(fields: [agencyId], references: [id], onDelete: Cascade)
+
+  // Recipient
+  recipientId String
+  recipient   AgencyMember @relation(fields: [recipientId], references: [id], onDelete: Cascade)
+
+  // Notification Details
+  type    NotificationType
+  title   String
+  message String           @db.Text
+
+  // Related Entities
+  taskId String?
+  task   AgencyTask? @relation(fields: [taskId], references: [id], onDelete: Cascade)
+  leadId String?
+  lead   AgencyLead? @relation(fields: [leadId], references: [id], onDelete: Cascade)
+  dealId String?
+  deal   AgencyDeal? @relation(fields: [dealId], references: [id], onDelete: Cascade)
+
+  // Read Status
+  isRead Boolean   @default(false)
+  readAt DateTime?
+
+  createdAt DateTime @default(now())
+
+  @@index([agencyId])
+  @@index([recipientId])
+  @@index([isRead])
+  @@index([agencyId, recipientId, isRead, createdAt])
+}
+
+enum NotificationType {
+  TASK_ASSIGNED // New task assigned to you
+  TASK_DUE_SOON // Task due within 24 hours
+  TASK_OVERDUE // Task is overdue
+  TASK_COMPLETED // Task you created was completed
+  LEAD_ASSIGNED // New lead assigned to you
+  LEAD_STATUS_CHANGE // Lead status changed
+  DEAL_STATUS_CHANGE // Deal status changed
+  ACTIVITY_MENTION // Someone mentioned you in an activity
 }
