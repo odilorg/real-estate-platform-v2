@@ -2,7 +2,7 @@
 
 import { Card, CardContent } from '@repo/ui';
 import { Star, Building2, Home, CheckCircle2 } from 'lucide-react';
-import Link from 'next/link';
+import { Link } from '@/i18n/routing';
 
 interface Agency {
   id: string;

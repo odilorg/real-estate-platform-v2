@@ -1,8 +1,8 @@
 'use client';
 
 import { useState, useEffect, use } from 'react';
-import Link from 'next/link';
-import { useRouter } from 'next/navigation';
+import { Link } from '@/i18n/routing';
+import { useRouter } from '@/i18n/routing';
 import { Button, Badge, Card, CardContent } from '@repo/ui';
 import { ImageGallery, MortgageCalculator, PropertyKeyFacts, PropertyDetailedInfo, PropertyLocationMap, PropertyAmenities, PriceHistoryChart, NearbyPOIs, PropertyReviews, SocialShare, LoginModal, PropertyMediaGallery, PropertyVideoPlayer, Property360Viewer } from '@/components';
 import { useAuth } from '@/context/AuthContext';

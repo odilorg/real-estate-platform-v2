@@ -173,6 +173,19 @@ model Property {
   isReadyToMoveIn   Boolean   @default(false)
   handoverDate      DateTime? // When keys given
 
+  // 🆕 Listing context (three-tier system)
+  listingSource     ListingSource? // DEVELOPER_PROJECT or INDIVIDUAL_OWNER
+  listedById        String? // AgencyMember who listed this property
+  listingAgencyId   String? // Agency this listing belongs to
+  listedBy          AgencyMember? @relation("PropertyListedBy", fields: [listedById], references: [id], onDelete: SetNull)
+  listingAgency     Agency? @relation("AgencyListings", fields: [listingAgencyId], references: [id], onDelete: SetNull)
+
+  // 🆕 Individual owner fields (for agent-listed properties)
+  ownerId           String? // User ID if owner is registered
+  ownerName         String? // Owner name if not registered
+  ownerPhone        String? // Owner phone if not registered
+  ownerIsAnonymous  Boolean @default(false) // Hide owner contact info from public
+
   // Metadata
   views     Int      @default(0)
   featured  Boolean  @default(false)
@@ -214,6 +227,10 @@ model Property {
   @@index([status, createdAt])
   @@index([status, featured, createdAt])
   @@index([userId, status, createdAt])
+  @@index([listingSource])
+  @@index([listedById])
+  @@index([listingAgencyId])
+  @@index([ownerId])
 }
 
 enum PropertyType {
@@ -284,6 +301,11 @@ enum UnitStatus {
   RESERVED // Temporarily held (24-48 hours)
   SOLD // Contract signed
   HANDED_OVER // Keys given to buyer
+}
+
+enum ListingSource {
+  DEVELOPER_PROJECT // Unit in developer project
+  INDIVIDUAL_OWNER // Agent-listed for home owner
 }
 
 // Property images
@@ -546,6 +568,7 @@ model Agency {
   commissions   AgencyCommission[]
   activities    AgencyActivity[]
   tasks         AgencyTask[]
+  properties    Property[] @relation("AgencyListings")
   notifications AgencyNotification[]
 
   @@index([slug])
@@ -1178,12 +1201,13 @@ model AgencyMember {
   conversionRate Float @default(0)
 
   // Relations
-  assignedLeads AgencyLead[]       @relation("LeadAssignedTo")
-  deals         AgencyDeal[]       @relation("DealOwner")
-  commissions   AgencyCommission[]
-  activities    AgencyActivity[]
-  tasks         AgencyTask[]       @relation("TaskAssignedTo")
-  notifications AgencyNotification[]
+  assignedLeads    AgencyLead[]         @relation("LeadAssignedTo")
+  deals            AgencyDeal[]         @relation("DealOwner")
+  commissions      AgencyCommission[]
+  activities       AgencyActivity[]
+  tasks            AgencyTask[]         @relation("TaskAssignedTo")
+  propertiesListed Property[]           @relation("PropertyListedBy")
+  notifications    AgencyNotification[]
 
   createdAt DateTime @default(now())
   updatedAt DateTime @updatedAt

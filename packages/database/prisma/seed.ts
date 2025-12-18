@@ -48,6 +48,7 @@ async function main() {
     prisma.agency.create({
       data: {
         name: 'Premium Real Estate',
+      slug: 'premium-real-estate',
         slug: 'premium-real-estate',
         logo: 'https://placehold.co/200x200/3b82f6/white?text=PRE',
         description: 'Leading real estate agency in Tashkent specializing in luxury properties',
@@ -63,6 +64,7 @@ async function main() {
     prisma.agency.create({
       data: {
         name: 'City Homes Agency',
+      slug: 'city-homes-agency',
         slug: 'city-homes-agency',
         logo: 'https://placehold.co/200x200/10b981/white?text=CHA',
         description: 'Affordable and quality homes across Uzbekistan',
@@ -995,6 +997,64 @@ async function main() {
   console.log('   Admin: admin@realestate.uz / password123');
   console.log('   Agent: agent1@premium-re.uz / password123');
   console.log('   User: john.doe@example.com / password123');
+
+  // ========================================
+  // AGENCY CRM SEED DATA
+  // ========================================
+  console.log('🏢 Creating Agency CRM data...');
+
+  // Create agencies
+  const premiumAgency = await prisma.agency.create({
+    data: {
+      name: 'Premium Real Estate',
+      slug: 'premium-real-estate',
+      phone: '+998901234567',
+      email: 'info@premium-re.uz',
+      description: 'Leading real estate agency in Tashkent',
+    },
+  });
+
+  const cityHomesAgency = await prisma.agency.create({
+    data: {
+      name: 'City Homes Agency',
+      slug: 'city-homes-agency',
+      phone: '+998901234568',
+      email: 'info@cityhomes.uz',
+      description: 'Your trusted real estate partner',
+    },
+  });
+
+  // Add agency members
+  await prisma.agencyMember.createMany({
+    data: [
+      {
+        userId: agentUsers[0].id, // agent1@premium-re.uz
+        agencyId: premiumAgency.id,
+        role: 'AGENT',
+        isActive: true,
+      },
+      {
+        userId: agentUsers[1].id, // agent2@premium-re.uz
+        agencyId: premiumAgency.id,
+        role: 'AGENT',
+        isActive: true,
+      },
+      {
+        userId: agentUsers[2].id, // agent3@cityhomes.uz
+        agencyId: cityHomesAgency.id,
+        role: 'AGENT',
+        isActive: true,
+      },
+      {
+        userId: agentUsers[3].id, // agent4@cityhomes.uz
+        agencyId: cityHomesAgency.id,
+        role: 'AGENT',
+        isActive: true,
+      },
+    ],
+  });
+
+  console.log('✅ Agency CRM data created');
 }
 
 main()

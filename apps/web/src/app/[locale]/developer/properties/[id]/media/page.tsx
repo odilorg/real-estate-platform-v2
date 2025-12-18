@@ -3,7 +3,7 @@
 import { useState, useEffect, useRef } from 'react';
 import { useParams } from 'next/navigation';
 import { ArrowLeft, Upload, Trash2, Star, GripVertical, Loader2, Eye, Edit2, Check, X } from 'lucide-react';
-import Link from 'next/link';
+import { Link } from '@/i18n/routing';
 import Image from 'next/image';
 import dynamic from 'next/dynamic';
 import { api } from '@/lib/api';

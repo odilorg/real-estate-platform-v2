@@ -1,6 +1,6 @@
-import { IsOptional, IsEnum, IsString, IsInt, Min } from 'class-validator';
+import { IsOptional, IsEnum, IsString, IsNumber, Min } from 'class-validator';
+import { LeadStatus, LeadSource, LeadPriority } from '@repo/database';
 import { Type } from 'class-transformer';
-import { LeadStatus, LeadSource, LeadPriority } from '@prisma/client';
 
 export class QueryLeadsDto {
   @IsOptional()
@@ -24,14 +24,14 @@ export class QueryLeadsDto {
   search?: string;
 
   @IsOptional()
-  @IsInt()
-  @Min(0)
   @Type(() => Number)
-  skip?: number;
+  @IsNumber()
+  @Min(0)
+  skip?: number = 0;
 
   @IsOptional()
-  @IsInt()
-  @Min(1)
   @Type(() => Number)
-  take?: number;
+  @IsNumber()
+  @Min(1)
+  take?: number = 20;
 }

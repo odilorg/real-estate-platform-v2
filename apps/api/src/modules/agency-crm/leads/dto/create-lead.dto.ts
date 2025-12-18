@@ -1,21 +1,21 @@
 import { IsString, IsOptional, IsEnum, IsNumber, IsArray, IsEmail, MinLength, MaxLength } from 'class-validator';
-import { PropertyType, ListingType, Currency, LeadSource, LeadStatus, LeadPriority } from '@prisma/client';
+import { PropertyType, ListingType, Currency, LeadSource, LeadStatus, LeadPriority } from '@repo/database';
 
 export class CreateLeadDto {
   @IsString()
   @MinLength(1)
   @MaxLength(100)
-  firstName: string;
+  firstName!: string;
 
   @IsString()
   @MinLength(1)
   @MaxLength(100)
-  lastName: string;
+  lastName!: string;
 
   @IsString()
   @MinLength(5)
   @MaxLength(20)
-  phone: string;
+  phone!: string;
 
   @IsOptional()
   @IsEmail()
@@ -62,7 +62,7 @@ export class CreateLeadDto {
 
   // Lead Info
   @IsEnum(LeadSource)
-  source: LeadSource;
+  source!: LeadSource;
 
   @IsOptional()
   @IsEnum(LeadStatus)

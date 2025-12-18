@@ -290,7 +290,6 @@
     "buyLand": "Yer sotib olish",
     "rentHouse": "Uy ijarasi",
     "buy": "Sotib olish",
-    "rent": "Ijara",
     "offices": "Ofislar",
     "retail": "Savdo joylari",
     "warehouses": "Omborlar",
@@ -654,68 +653,6 @@
   "developer": {
     "dashboard": "Boshqaruv paneli",
     "projects": "Loyihalar",
-    "leads": "Mijozlar",
-    "team": "Jamoa",
-    "analytics": "Analitika",
-    "settings": "Sozlamalar",
-    "settings": {
-      "title": "Kompaniya sozlamalari",
-      "subtitle": "Kompaniya profilingizni va sozlamalarni boshqaring",
-      "successMessage": "Kompaniya profili muvaffaqiyatli yaratildi! Yo'naltirish...",
-      "save": "O'zgarishlarni saqlash",
-      "saving": "Saqlanmoqda...",
-      "cancel": "Bekor qilish",
-      "basicInfo": {
-        "title": "Asosiy ma'lumotlar",
-        "name": "Kompaniya nomi (Ruscha)",
-        "nameUz": "Kompaniya nomi (O'zbekcha)",
-        "slug": "URL manzil (slug)",
-        "slugHelper": "Kompaniyangizning noyob manzili (faqat lotin harflari, raqamlar va defis)",
-        "descriptionRu": "Tavsif (Ruscha)",
-        "descriptionUz": "Tavsif (O'zbekcha)"
-      },
-      "contact": {
-        "title": "Aloqa ma'lumotlari",
-        "phone": "Telefon raqami",
-        "email": "Email",
-        "website": "Veb-sayt",
-        "telegram": "Telegram",
-        "officeAddress": "Ofis manzili"
-      },
-      "legal": {
-        "title": "Yuridik ma'lumotlar",
-        "city": "Shahar",
-        "selectCity": "Shaharni tanlang",
-        "legalEntity": "Tashkiliy-huquqiy shakl",
-        "selectLegalEntity": "Shaklni tanlang",
-        "licenseNumber": "Litsenziya raqami",
-        "innTin": "INN",
-        "establishedYear": "Ta'sis yili",
-        "legalAddress": "Yuridik manzil"
-      }
-    },
-    "team": {
-      "title": "Jamoa",
-      "subtitle": "Sotuv bo'limi xodimlarini boshqarish",
-      "addMember": "Xodim qo'shish",
-      "empty": {
-        "title": "Sizda hali xodimlar yo'q",
-        "description": "Leadlar va bitimlarni boshqarish uchun sotuv menejerlari qo'shing",
-        "button": "Birinchi xodimni qo'shish"
-      },
-      "roles": {
-        "admin": "Administrator",
-        "agent": "Sotuv menejeri"
-      },
-      "joinedAt": "Qo'shildi",
-      "addModal": {
-        "description": "Yangi xodimga taklifnoma yuboring",
-        "email": "Xodim emaili",
-        "role": "Rol",
-        "send": "Taklifnoma yuborish"
-      },
-      "cancel": "Bekor qilish"
-    },
     "leads": {
       "title": "Leadlar",
       "subtitle": "Potentsial xaridorlarni boshqarish",
@@ -760,6 +697,28 @@
       "actions": {
         "view": "Ko'rish"
       }
+    },
+    "team": {
+      "title": "Jamoa",
+      "subtitle": "Sotuv bo'limi xodimlarini boshqarish",
+      "addMember": "Xodim qo'shish",
+      "empty": {
+        "title": "Sizda hali xodimlar yo'q",
+        "description": "Leadlar va bitimlarni boshqarish uchun sotuv menejerlari qo'shing",
+        "button": "Birinchi xodimni qo'shish"
+      },
+      "roles": {
+        "admin": "Administrator",
+        "agent": "Sotuv menejeri"
+      },
+      "joinedAt": "Qo'shildi",
+      "addModal": {
+        "description": "Yangi xodimga taklifnoma yuboring",
+        "email": "Xodim emaili",
+        "role": "Rol",
+        "send": "Taklifnoma yuborish"
+      },
+      "cancel": "Bekor qilish"
     },
     "analytics": {
       "title": "Analitika",
@@ -844,6 +803,42 @@
         "salesRate": "% sotuv",
         "revenue": "Daromad",
         "leads": "Leadlar"
+      }
+    },
+    "settings": {
+      "title": "Kompaniya sozlamalari",
+      "subtitle": "Kompaniya profilingizni va sozlamalarni boshqaring",
+      "successMessage": "Kompaniya profili muvaffaqiyatli yaratildi! Yo'naltirish...",
+      "save": "O'zgarishlarni saqlash",
+      "saving": "Saqlanmoqda...",
+      "cancel": "Bekor qilish",
+      "basicInfo": {
+        "title": "Asosiy ma'lumotlar",
+        "name": "Kompaniya nomi (Ruscha)",
+        "nameUz": "Kompaniya nomi (O'zbekcha)",
+        "slug": "URL manzil (slug)",
+        "slugHelper": "Kompaniyangizning noyob manzili (faqat lotin harflari, raqamlar va defis)",
+        "descriptionRu": "Tavsif (Ruscha)",
+        "descriptionUz": "Tavsif (O'zbekcha)"
+      },
+      "contact": {
+        "title": "Aloqa ma'lumotlari",
+        "phone": "Telefon raqami",
+        "email": "Email",
+        "website": "Veb-sayt",
+        "telegram": "Telegram",
+        "officeAddress": "Ofis manzili"
+      },
+      "legal": {
+        "title": "Yuridik ma'lumotlar",
+        "city": "Shahar",
+        "selectCity": "Shaharni tanlang",
+        "legalEntity": "Tashkiliy-huquqiy shakl",
+        "selectLegalEntity": "Shaklni tanlang",
+        "licenseNumber": "Litsenziya raqami",
+        "innTin": "INN",
+        "establishedYear": "Ta'sis yili",
+        "legalAddress": "Yuridik manzil"
       }
     },
     "projectsList": {
@@ -990,6 +985,14 @@
         "amenitiesUz": "Qulayliklar (O'zbekcha)",
         "placeholder": "Bolalar maydoni, Sport zali, Avtomashina turargoh..."
       }
+    },
+    "nav": {
+      "dashboard": "Panel",
+      "projects": "Loyihalar",
+      "leads": "Lidlar",
+      "team": "Jamoa",
+      "analytics": "Analitika",
+      "settings": "Sozlamalar"
     }
   }
 }

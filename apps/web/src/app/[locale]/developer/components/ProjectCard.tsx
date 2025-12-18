@@ -1,6 +1,6 @@
 'use client';
 
-import Link from 'next/link';
+import { Link } from '@/i18n/routing';
 import { Building2, MapPin, Calendar, Package } from 'lucide-react';
 
 interface Project {

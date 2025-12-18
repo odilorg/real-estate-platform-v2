@@ -1,76 +1,210 @@
-import {
-  Injectable,
-  NotFoundException,
-  ForbiddenException,
-} from '@nestjs/common';
+import { Injectable, ForbiddenException, NotFoundException } from '@nestjs/common';
 import { PrismaService } from '../../../common/prisma/prisma.service';
+import { CreateListingDto, UpdateListingDto, DeactivateListingDto, MarkSoldDto } from './dto/listing.dto';
 
 @Injectable()
 export class ListingsService {
   constructor(private prisma: PrismaService) {}
 
   /**
-   * Get all listings (properties) created by agency members
+   * Create a new listing for an individual owner
    */
-  async findAll(agencyId: string, memberId?: string) {
-    // Get all agency members
-    const members = await this.prisma.agencyMember.findMany({
-      where: { agencyId },
-      select: { userId: true },
+  async create(agencyId: string, memberId: string, createListingDto: CreateListingDto): Promise<any> {
+    // Get member's userId to create property
+    const member = await this.prisma.agencyMember.findUnique({
+      where: { id: memberId },
+      include: { user: true },
     });
 
-    const memberUserIds = members.map((m: any) => m.userId);
+    if (!member) {
+      throw new ForbiddenException('Member not found');
+    }
 
-    // Find all properties created by these members
-    return this.prisma.property.findMany({
-      where: {
-        userId: { in: memberUserIds },
-        ...(memberId && { userId: memberId }), // Filter by specific member if provided
+    // Create property with listing context
+    const property = await this.prisma.property.create({
+      data: {
+        // Basic info
+        userId: member.userId,
+        title: createListingDto.title,
+        description: createListingDto.description,
+        price: createListingDto.price,
+        currency: createListingDto.currency as any,
+        propertyType: createListingDto.propertyType as any,
+        listingType: createListingDto.listingType as any,
+        marketType: createListingDto.marketType as any,
+        status: 'ACTIVE',
+
+        // Location
+        address: createListingDto.address,
+        city: createListingDto.city,
+        district: createListingDto.district,
+        mahalla: createListingDto.mahalla,
+        latitude: createListingDto.latitude,
+        longitude: createListingDto.longitude,
+        country: 'Uzbekistan',
+
+        // Property details
+        bedrooms: createListingDto.bedrooms,
+        bathrooms: createListingDto.bathrooms,
+        area: createListingDto.area,
+        floor: createListingDto.floor,
+        totalFloors: createListingDto.totalFloors,
+        buildingType: createListingDto.buildingType as any,
+        buildingClass: createListingDto.buildingClass as any,
+        renovation: createListingDto.renovation as any,
+        yearBuilt: createListingDto.yearBuilt,
+
+        // Listing context
+        listingSource: 'INDIVIDUAL_OWNER',
+        listedById: memberId,
+        listingAgencyId: agencyId,
+
+        // Individual owner details
+        ownerName: createListingDto.ownerName,
+        ownerPhone: createListingDto.ownerPhone,
+        ownerIsAnonymous: createListingDto.ownerIsAnonymous || false,
       },
-      include: {
-        images: {
-          where: { isPrimary: true },
-          take: 1,
+    });
+
+    // Create property images if provided
+    if (createListingDto.images && createListingDto.images.length > 0) {
+      await this.prisma.propertyImage.createMany({
+        data: createListingDto.images.map((url, index) => ({
+          propertyId: property.id,
+          url,
+          order: index,
+          isPrimary: index === 0,
+        })),
+      });
+    }
+
+    // Create property amenities if provided
+    if (createListingDto.amenities && createListingDto.amenities.length > 0) {
+      await this.prisma.propertyAmenity.createMany({
+        data: createListingDto.amenities.map((amenity) => ({
+          propertyId: property.id,
+          amenity,
+        })),
+      });
+    }
+
+    // Log activity
+    await this.prisma.agencyActivity.create({
+      data: {
+        title: "Listing Activity",
+        agencyId,
+        memberId,
+        type: 'NOTE',
+        metadata: {
+      
+          action: 'listing_created',
+          title: property.title,
+          propertyType: property.propertyType,
+          price: property.price,
         },
-        user: {
-          select: {
-            id: true,
-            firstName: true,
-            lastName: true,
+      },
+    });
+
+    return this.findOne(agencyId, memberId, null, property.id);
+  }
+
+  /**
+   * Get all listings for agency (or specific agent if role=AGENT)
+   */
+  async findAll(agencyId: string, memberId: string, role: string, query: any): Promise<any> {
+    const { page = 1, limit = 20, status, propertyType, search } = query;
+    const skip = (page - 1) * limit;
+
+    const where: any = {
+      listingAgencyId: agencyId,
+      listingSource: 'INDIVIDUAL_OWNER',
+    };
+
+    if (role === 'AGENT') {
+      where.listedById = memberId;
+    }
+
+    if (status) {
+      where.status = status;
+    }
+
+    if (propertyType) {
+      where.propertyType = propertyType;
+    }
+
+    if (search) {
+      where.OR = [
+        { title: { contains: search, mode: 'insensitive' } },
+        { description: { contains: search, mode: 'insensitive' } },
+        { address: { contains: search, mode: 'insensitive' } },
+        { ownerName: { contains: search, mode: 'insensitive' } },
+      ];
+    }
+
+    const [listings, total] = await Promise.all([
+      this.prisma.property.findMany({
+        where,
+        skip,
+        take: parseInt(limit),
+        orderBy: { createdAt: 'desc' },
+        include: {
+          images: {
+            where: { isPrimary: true },
+            take: 1,
+          },
+          listedBy: {
+            include: {
+              user: {
+                select: {
+                  firstName: true,
+                  lastName: true,
+                },
+              },
+            },
           },
         },
+      }),
+      this.prisma.property.count({ where }),
+    ]);
+
+    return {
+      data: listings,
+      pagination: {
+        page: parseInt(page),
+        limit: parseInt(limit),
+        total,
+        totalPages: Math.ceil(total / limit),
       },
-      orderBy: {
-        createdAt: 'desc',
-      },
-    });
+    };
   }
 
   /**
    * Get a single listing by ID
    */
-  async findOne(agencyId: string, listingId: string) {
-    const members = await this.prisma.agencyMember.findMany({
-      where: { agencyId },
-      select: { userId: true },
-    });
-
-    const memberUserIds = members.map((m: any) => m.userId);
-
+  async findOne(agencyId: string, memberId: string, role: string | null, id: string): Promise<any> {
     const listing = await this.prisma.property.findUnique({
-      where: { id: listingId },
+      where: { id },
       include: {
         images: {
           orderBy: { order: 'asc' },
         },
         amenities: true,
-        user: {
+        listedBy: {
+          include: {
+            user: {
+              select: {
+                firstName: true,
+                lastName: true,
+                phone: true,
+                email: true,
+              },
+            },
+          },
+        },
+        listingAgency: {
           select: {
-            id: true,
-            firstName: true,
-            lastName: true,
-            email: true,
-            phone: true,
+            name: true,
+            slug: true,
           },
         },
       },
@@ -80,175 +214,221 @@ export class ListingsService {
       throw new NotFoundException('Listing not found');
     }
 
-    // Verify listing belongs to an agency member
-    if (!memberUserIds.includes(listing.userId)) {
-      throw new ForbiddenException('Listing does not belong to this agency');
+    if (listing.listingAgencyId !== agencyId) {
+      throw new ForbiddenException('You can only view your own agency listings');
+    }
+
+    if (role === 'AGENT' && listing.listedById !== memberId) {
+      throw new ForbiddenException('You can only view your own listings');
     }
 
     return listing;
   }
 
   /**
-   * Create a new listing (property)
-   */
-  async create(userId: string, agencyId: string, data: any) {
-    // Verify user is an agency member
-    const member = await this.prisma.agencyMember.findFirst({
-      where: {
-        agencyId,
-        userId,
-        isActive: true,
-      },
-    });
-
-    if (!member) {
-      throw new ForbiddenException('User is not a member of this agency');
-    }
-
-    // Create property
-    return this.prisma.property.create({
-      data: {
-        ...data,
-        userId,
-        amenities: data.amenities
-          ? {
-              create: data.amenities.map((amenity: string) => ({ amenity })),
-            }
-          : undefined,
-      },
-      include: {
-        images: true,
-        amenities: true,
-        user: {
-          select: {
-            id: true,
-            firstName: true,
-            lastName: true,
-          },
-        },
-      },
-    });
-  }
-
-  /**
    * Update a listing
    */
-  async update(userId: string, agencyId: string, listingId: string, data: any) {
+  async update(
+    agencyId: string,
+    memberId: string,
+    role: string,
+    id: string,
+    updateListingDto: UpdateListingDto,
+  ): Promise<any> {
     const listing = await this.prisma.property.findUnique({
-      where: { id: listingId },
+      where: { id },
     });
 
     if (!listing) {
       throw new NotFoundException('Listing not found');
     }
 
-    // Verify user owns this listing
-    if (listing.userId !== userId) {
-      throw new ForbiddenException('You do not own this listing');
+    if (listing.listingAgencyId !== agencyId) {
+      throw new ForbiddenException('You can only update your own agency listings');
     }
 
-    // Verify user is still an agency member
-    const member = await this.prisma.agencyMember.findFirst({
-      where: {
-        agencyId,
-        userId,
-        isActive: true,
+    if (role === 'AGENT' && listing.listedById !== memberId) {
+      throw new ForbiddenException('You can only update your own listings');
+    }
+
+    await this.prisma.property.update({
+      where: { id },
+      data: {
+        title: updateListingDto.title,
+        description: updateListingDto.description,
+        price: updateListingDto.price,
+        status: updateListingDto.status as any,
+        ownerName: updateListingDto.ownerName,
+        ownerPhone: updateListingDto.ownerPhone,
+        ownerIsAnonymous: updateListingDto.ownerIsAnonymous,
+        bedrooms: updateListingDto.bedrooms,
+        bathrooms: updateListingDto.bathrooms,
+        area: updateListingDto.area,
       },
     });
 
-    if (!member) {
-      throw new ForbiddenException('User is not a member of this agency');
-    }
-
-    // Update amenities if provided
-    if (data.amenities) {
-      await this.prisma.propertyAmenity.deleteMany({
-        where: { propertyId: listingId },
-      });
-
-      await this.prisma.propertyAmenity.createMany({
-        data: data.amenities.map((amenity: string) => ({
-          propertyId: listingId,
-          amenity,
-        })),
-      });
-    }
-
-    const { amenities, ...updateData } = data;
-
-    return this.prisma.property.update({
-      where: { id: listingId },
-      data: updateData,
-      include: {
-        images: true,
-        amenities: true,
-        user: {
-          select: {
-            id: true,
-            firstName: true,
-            lastName: true,
-          },
+    await this.prisma.agencyActivity.create({
+      data: {
+        title: "Listing Activity",
+        agencyId,
+        memberId,
+        type: 'NOTE',
+        metadata: {
+      
+          action: 'listing_updated',
+          listingId: id,
+          changes: Object.keys(updateListingDto),
         },
       },
     });
+
+    return this.findOne(agencyId, memberId, role, id);
   }
 
   /**
-   * Delete a listing
+   * Deactivate a listing
    */
-  async remove(userId: string, _agencyId: string, listingId: string) {
+  async deactivate(
+    agencyId: string,
+    memberId: string,
+    role: string,
+    id: string,
+    deactivateListingDto: DeactivateListingDto,
+  ): Promise<any> {
     const listing = await this.prisma.property.findUnique({
-      where: { id: listingId },
+      where: { id },
     });
 
     if (!listing) {
       throw new NotFoundException('Listing not found');
     }
 
-    // Verify user owns this listing
-    if (listing.userId !== userId) {
-      throw new ForbiddenException('You do not own this listing');
+    if (listing.listingAgencyId !== agencyId) {
+      throw new ForbiddenException('You can only deactivate your own agency listings');
     }
 
-    await this.prisma.property.delete({
-      where: { id: listingId },
+    if (role === 'AGENT' && listing.listedById !== memberId) {
+      throw new ForbiddenException('You can only deactivate your own listings');
+    }
+
+    await this.prisma.property.update({
+      where: { id },
+      data: {
+        status: 'INACTIVE',
+      },
     });
 
-    return { message: 'Listing deleted successfully' };
+    await this.prisma.agencyActivity.create({
+      data: {
+        title: "Listing Activity",
+        agencyId,
+        memberId,
+        type: 'NOTE',
+        metadata: {
+      
+          action: 'listing_deactivated',
+          listingId: id,
+          reason: deactivateListingDto.reason,
+        },
+      },
+    });
+
+    return { message: 'Listing deactivated successfully' };
   }
 
   /**
    * Mark listing as sold
    */
   async markSold(
-    userId: string,
-    _agencyId: string,
-    listingId: string,
-    _soldPrice: number,
-    _soldDate: Date,
-  ) {
+    agencyId: string,
+    memberId: string,
+    role: string,
+    id: string,
+    markSoldDto: MarkSoldDto,
+  ): Promise<any> {
     const listing = await this.prisma.property.findUnique({
-      where: { id: listingId },
+      where: { id },
     });
 
     if (!listing) {
       throw new NotFoundException('Listing not found');
     }
 
-    // Verify user owns this listing
-    if (listing.userId !== userId) {
-      throw new ForbiddenException('You do not own this listing');
+    if (listing.listingAgencyId !== agencyId) {
+      throw new ForbiddenException('You can only mark your own agency listings as sold');
     }
 
-    return this.prisma.property.update({
-      where: { id: listingId },
+    if (role === 'AGENT' && listing.listedById !== memberId) {
+      throw new ForbiddenException('You can only mark your own listings as sold');
+    }
+
+    await this.prisma.property.update({
+      where: { id },
       data: {
-        status: 'SOLD',
-      },
-      include: {
-        images: true,
-        amenities: true,
+        status: listing.listingType === 'SALE' ? 'SOLD' : 'RENTED',
       },
     });
+
+    await this.prisma.agencyActivity.create({
+      data: {
+        title: "Listing Activity",
+        agencyId,
+        memberId,
+        type: 'NOTE',
+        metadata: {
+      
+          action: listing.listingType === 'SALE' ? 'listing_sold' : 'listing_rented',
+          listingId: id,
+          soldPrice: markSoldDto.soldPrice,
+          soldDate: markSoldDto.soldDate,
+          buyerName: markSoldDto.buyerName,
+          notes: markSoldDto.notes,
+        },
+      },
+    });
+
+    return { message: `Listing marked as ${listing.listingType === 'SALE' ? 'sold' : 'rented'} successfully` };
+  }
+
+  /**
+   * Delete a listing
+   */
+  async delete(agencyId: string, memberId: string, role: string, id: string): Promise<any> {
+    const listing = await this.prisma.property.findUnique({
+      where: { id },
+    });
+
+    if (!listing) {
+      throw new NotFoundException('Listing not found');
+    }
+
+    if (listing.listingAgencyId !== agencyId) {
+      throw new ForbiddenException('You can only delete your own agency listings');
+    }
+
+    if (role === 'AGENT' && listing.listedById !== memberId) {
+      throw new ForbiddenException('You can only delete your own listings');
+    }
+
+    await this.prisma.property.delete({
+      where: { id },
+    });
+
+    await this.prisma.agencyActivity.create({
+      data: {
+        title: "Listing Activity",
+        agencyId,
+        memberId,
+        type: 'NOTE',
+        metadata: {
+      
+          action: 'listing_deleted',
+          listingId: id,
+          title: listing.title,
+        },
+      },
+    });
+
+    return { message: 'Listing deleted successfully' };
   }
 }

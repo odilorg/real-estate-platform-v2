@@ -2,7 +2,7 @@
 
 import { useState, useEffect, use } from 'react';
 import { useTranslations } from 'next-intl';
-import Link from 'next/link';
+import { Link } from '@/i18n/routing';
 import { ArrowLeft, Plus, Upload, Loader2 } from 'lucide-react';
 import UnitTable from './components/UnitTable';
 import UnitFilters from './components/UnitFilters';

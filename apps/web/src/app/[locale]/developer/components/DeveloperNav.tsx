@@ -1,8 +1,8 @@
 'use client';
 
 import { Link } from '@/i18n/routing';
-import { usePathname } from 'next/navigation';
-import { useTranslations } from 'next-intl';
+import { usePathname as useNextPathname } from 'next/navigation';
+import { useTranslations, useLocale } from 'next-intl';
 import {
   LayoutDashboard,
   Building2,
@@ -14,15 +14,19 @@ import {
 
 export function DeveloperNav() {
   const t = useTranslations('developer');
-  const pathname = usePathname();
+  const pathname = useNextPathname();
+  const locale = useLocale();
+
+  // Remove locale prefix from pathname for comparison
+  const currentPath = pathname.replace(`/${locale}`, '') || '/';
 
   const navigation = [
-    { name: t('dashboard'), href: '/developer', icon: LayoutDashboard },
-    { name: t('projects'), href: '/developer/projects', icon: Building2 },
-    { name: t('leads'), href: '/developer/leads', icon: MessageSquare },
-    { name: t('team'), href: '/developer/team', icon: Users },
-    { name: t('analytics'), href: '/developer/analytics', icon: BarChart3 },
-    { name: t('settings'), href: '/developer/settings', icon: Settings },
+    { name: t('nav.dashboard'), href: '/developer', icon: LayoutDashboard },
+    { name: t('nav.projects'), href: '/developer/projects', icon: Building2 },
+    { name: t('nav.leads'), href: '/developer/leads', icon: MessageSquare },
+    { name: t('nav.team'), href: '/developer/team', icon: Users },
+    { name: t('nav.analytics'), href: '/developer/analytics', icon: BarChart3 },
+    { name: t('nav.settings'), href: '/developer/settings', icon: Settings },
   ];
 
   return (
@@ -37,7 +41,7 @@ export function DeveloperNav() {
           <div className="hidden md:flex md:space-x-4">
             {navigation.map((item) => {
               const Icon = item.icon;
-              const isActive = pathname === item.href;
+              const isActive = currentPath === item.href || currentPath.startsWith(item.href + '/');
               return (
                 <Link
                   key={item.name}

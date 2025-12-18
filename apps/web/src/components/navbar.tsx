@@ -1,9 +1,9 @@
 'use client';
 
 import React, { useState, useEffect } from 'react';
-import Link from 'next/link';
-import { usePathname } from 'next/navigation';
-import { ChevronDown, Menu, X, User, LogOut, Plus, MessageSquare, Scale } from 'lucide-react';
+import { Link } from '@/i18n/routing';
+import { usePathname } from '@/i18n/routing';
+import { ChevronDown, Menu, X, User, LogOut, Plus, MessageSquare, Scale, Building2, Users, FileText, Settings as SettingsIcon } from 'lucide-react';
 import { cn } from '@/lib/utils';
 import { useAuth } from '@/context/AuthContext';
 import { useComparison } from '@/context';
@@ -12,6 +12,7 @@ import { Button } from '@repo/ui';
 import { useTranslations } from 'next-intl';
 import { LoginModal } from './auth/LoginModal';
 import { RegisterModal } from './auth/RegisterModal';
+import { api } from '@/lib/api';
 
 interface MenuItem {
   labelKey: string;
@@ -35,6 +36,8 @@ export function Navbar() {
   const [unreadCount, setUnreadCount] = useState(0);
   const [loginModalOpen, setLoginModalOpen] = useState(false);
   const [registerModalOpen, setRegisterModalOpen] = useState(false);
+  const [hasAgency, setHasAgency] = useState(false);
+  const [agencyRole, setAgencyRole] = useState<string | null>(null);
   const pathname = usePathname();
   const { user, isAuthenticated, logout } = useAuth();
   const { comparisonIds } = useComparison();
@@ -75,6 +78,34 @@ export function Navbar() {
       href: '/developers',
     },
   ];
+
+  // Check if user has an agency
+  useEffect(() => {
+    if (!isAuthenticated) {
+      setHasAgency(false);
+      setAgencyRole(null);
+      return;
+    }
+
+    const checkAgency = async () => {
+      try {
+        const response = await api.get<any>('/agency/profile');
+        if (response.agency) {
+          setHasAgency(true);
+          setAgencyRole(response.role);
+        } else {
+          setHasAgency(false);
+          setAgencyRole(null);
+        }
+      } catch (error) {
+        // User doesn't have an agency - silent fail
+        setHasAgency(false);
+        setAgencyRole(null);
+      }
+    };
+
+    checkAgency();
+  }, [isAuthenticated]);
 
   // Fetch unread messages count
   useEffect(() => {
@@ -129,6 +160,9 @@ export function Navbar() {
   const isActive = (href: string) => {
     return pathname === href;
   };
+
+  const agencyCrmActive = pathname?.startsWith('/agency') || pathname?.startsWith('/developer/crm');
+  const crmLabel = pathname?.startsWith('/developer/crm') ? 'Developer CRM' : 'Agency CRM';
 
   return (
     <nav className="bg-white border-b border-gray-200 sticky top-0 z-50">
@@ -222,23 +256,17 @@ export function Navbar() {
             ))}
           </div>
 
-          {/* User Actions - Desktop */}
-          <div className="hidden lg:flex lg:items-center lg:gap-4">
+          {/* Right side items */}
+          <div className="hidden lg:flex lg:items-center lg:space-x-2">
             <LanguageSwitcher />
-
-            {/* Comparison link - available to all users */}
             {comparisonIds.length > 0 && (
               <Link href="/compare">
                 <Button variant="ghost" size="sm" className="gap-1 relative">
                   <Scale className="h-4 w-4" />
-                  {t('comparison')}
-                  <span className="absolute -top-1 -right-1 bg-blue-500 text-white text-xs rounded-full h-5 w-5 flex items-center justify-center font-semibold">
-                    {comparisonIds.length}
-                  </span>
+                  {comparisonIds.length}
                 </Button>
               </Link>
             )}
-
             {isAuthenticated ? (
               <>
                 <Link href="/dashboard/messages">
@@ -252,6 +280,98 @@ export function Navbar() {
                     )}
                   </Button>
                 </Link>
+
+                {/* Agency CRM Dropdown - Only show if user has agency */}
+                {hasAgency && (
+                  <div 
+                    className="relative"
+                    onMouseEnter={() => handleMouseEnter(999)}
+                    onMouseLeave={handleMouseLeave}
+                  >
+                    <button
+                      className={cn(
+                        'flex items-center px-3 py-2 rounded-md text-sm font-medium transition-colors gap-1',
+                        agencyCrmActive || activeDropdown === 999
+                          ? 'text-blue-600 bg-blue-50'
+                          : 'text-gray-700 hover:text-blue-600 hover:bg-gray-50'
+                      )}
+                    >
+                      <Building2 className="h-4 w-4" />
+                      {crmLabel}
+                      <ChevronDown
+                        className={cn(
+                          'h-4 w-4 transition-transform',
+                          activeDropdown === 999 && 'rotate-180'
+                        )}
+                      />
+                    </button>
+
+                    {activeDropdown === 999 && (
+                      <div
+                        className="absolute right-0 top-full pt-2 w-56"
+                        onMouseEnter={() => handleMouseEnter(999)}
+                        onMouseLeave={handleMouseLeave}
+                      >
+                        <div className="bg-white rounded-lg shadow-lg border border-gray-200 py-2">
+                          <Link
+                            href="/agency/dashboard"
+                            className={cn(
+                              'flex items-center gap-3 px-4 py-2 text-sm transition-colors',
+                              pathname === '/agency/dashboard'
+                                ? 'text-blue-600 bg-blue-50 font-medium'
+                                : 'text-gray-700 hover:text-blue-600 hover:bg-gray-50'
+                            )}
+                            onClick={() => setActiveDropdown(null)}
+                          >
+                            <Building2 className="h-4 w-4" />
+                            Dashboard
+                          </Link>
+                          <Link
+                            href="/developer/crm/members"
+                            className={cn(
+                              'flex items-center gap-3 px-4 py-2 text-sm transition-colors',
+                              pathname?.startsWith('/developer/crm/members')
+                                ? 'text-blue-600 bg-blue-50 font-medium'
+                                : 'text-gray-700 hover:text-blue-600 hover:bg-gray-50'
+                            )}
+                            onClick={() => setActiveDropdown(null)}
+                          >
+                            <Users className="h-4 w-4" />
+                            Team Members
+                          </Link>
+                          <Link
+                            href="/developer/crm/leads"
+                            className={cn(
+                              'flex items-center gap-3 px-4 py-2 text-sm transition-colors',
+                              pathname?.startsWith('/developer/crm/leads')
+                                ? 'text-blue-600 bg-blue-50 font-medium'
+                                : 'text-gray-700 hover:text-blue-600 hover:bg-gray-50'
+                            )}
+                            onClick={() => setActiveDropdown(null)}
+                          >
+                            <FileText className="h-4 w-4" />
+                            Leads
+                          </Link>
+                          <div className="border-t border-gray-200 my-2"></div>
+                          <Link
+                            href="/agency/settings"
+                            className={cn(
+                              'flex items-center gap-3 px-4 py-2 text-sm transition-colors',
+                              pathname === '/agency/settings'
+                                ? 'text-blue-600 bg-blue-50 font-medium'
+                                : 'text-gray-700 hover:text-blue-600 hover:bg-gray-50'
+                            )}
+                            onClick={() => setActiveDropdown(null)}
+                          >
+                            <SettingsIcon className="h-4 w-4" />
+                            Agency Settings
+                          </Link>
+                        </div>
+                      </div>
+                    )}
+                  </div>
+                )}
+
                 <Link href="/properties/new">
                   <Button size="sm" className="gap-1">
                     <Plus className="h-4 w-4" />
@@ -340,46 +460,91 @@ export function Navbar() {
                     </button>
                     {activeDropdown === index && item.submenu && (
                       <div className="pl-4 mt-1 space-y-1">
-                        {item.submenu.map((section, sectionIndex) => (
-                          <div key={sectionIndex}>
-                            {section.titleKey && (
-                              <div className="px-3 py-2 text-xs font-semibold text-gray-500 uppercase tracking-wider">
-                                {t(section.titleKey as any)}
-                              </div>
-                            )}
-                            {section.items.map((subItem, subItemIndex) => (
-                              <Link
-                                key={subItemIndex}
-                                href={subItem.href}
-                                className={cn(
-                                  'block px-3 py-2 rounded-md text-sm',
-                                  isActive(subItem.href)
-                                    ? 'text-blue-600 bg-blue-50 font-medium'
-                                    : 'text-gray-700 hover:text-blue-600 hover:bg-gray-50'
-                                )}
-                                onClick={() => {
-                                  setMobileMenuOpen(false);
-                                  setActiveDropdown(null);
-                                }}
-                              >
-                                {t(subItem.labelKey as any)}
-                              </Link>
-                            ))}
-                          </div>
-                        ))}
+                        {item.submenu.flatMap((section) =>
+                          section.items.map((subItem, subItemIndex) => (
+                            <Link
+                              key={subItemIndex}
+                              href={subItem.href}
+                              className={cn(
+                                'block px-3 py-2 rounded-md text-sm',
+                                isActive(subItem.href)
+                                  ? 'text-blue-600 bg-blue-50 font-medium'
+                                  : 'text-gray-700 hover:text-blue-600 hover:bg-gray-50'
+                              )}
+                              onClick={() => setMobileMenuOpen(false)}
+                            >
+                              {t(subItem.labelKey as any)}
+                            </Link>
+                          ))
+                        )}
                       </div>
                     )}
                   </>
                 )}
               </div>
             ))}
+
+            {/* Agency CRM in Mobile Menu */}
+            {hasAgency && isAuthenticated && (
+              <div>
+                <button
+                  onClick={() =>
+                    setActiveDropdown(activeDropdown === 998 ? null : 998)
+                  }
+                  className="w-full flex items-center justify-between px-3 py-2 rounded-md text-base font-medium text-gray-700 hover:text-blue-600 hover:bg-gray-50"
+                >
+                  <span className="flex items-center gap-2">
+                    <Building2 className="h-5 w-5" />
+                    {crmLabel}
+                  </span>
+                  <ChevronDown
+                    className={cn(
+                      'h-4 w-4 transition-transform',
+                      activeDropdown === 998 && 'rotate-180'
+                    )}
+                  />
+                </button>
+                {activeDropdown === 998 && (
+                  <div className="pl-4 mt-1 space-y-1">
+                    <Link
+                      href="/agency/dashboard"
+                      className="flex items-center gap-2 px-3 py-2 rounded-md text-sm text-gray-700 hover:text-blue-600 hover:bg-gray-50"
+                      onClick={() => setMobileMenuOpen(false)}
+                    >
+                      <Building2 className="h-4 w-4" />
+                      Dashboard
+                    </Link>
+                    <Link
+                      href="/developer/crm/members"
+                      className="flex items-center gap-2 px-3 py-2 rounded-md text-sm text-gray-700 hover:text-blue-600 hover:bg-gray-50"
+                      onClick={() => setMobileMenuOpen(false)}
+                    >
+                      <Users className="h-4 w-4" />
+                      Team Members
+                    </Link>
+                    <Link
+                      href="/developer/crm/leads"
+                      className="flex items-center gap-2 px-3 py-2 rounded-md text-sm text-gray-700 hover:text-blue-600 hover:bg-gray-50"
+                      onClick={() => setMobileMenuOpen(false)}
+                    >
+                      <FileText className="h-4 w-4" />
+                      Leads
+                    </Link>
+                    <Link
+                      href="/agency/settings"
+                      className="flex items-center gap-2 px-3 py-2 rounded-md text-sm text-gray-700 hover:text-blue-600 hover:bg-gray-50"
+                      onClick={() => setMobileMenuOpen(false)}
+                    >
+                      <SettingsIcon className="h-4 w-4" />
+                      Settings
+                    </Link>
+                  </div>
+                )}
+              </div>
+            )}
           </div>
 
-          {/* Mobile User Actions */}
-          <div className="border-t border-gray-200 pt-3 pb-3 px-2 space-y-2">
-            <div className="px-3 mb-2">
-              <LanguageSwitcher />
-            </div>
+          <div className="border-t border-gray-200 px-2 py-3 space-y-2">
             {isAuthenticated ? (
               <>
                 <Link href="/properties/new" onClick={() => setMobileMenuOpen(false)}>
