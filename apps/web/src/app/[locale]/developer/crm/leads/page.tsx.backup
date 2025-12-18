@@ -187,13 +187,13 @@ export default function AgencyCRMLeadsPage() {
       <div className="space-y-4">
         <div className="flex flex-col sm:flex-row sm:items-center sm:justify-between gap-3">
           <div>
-            <h1 className="text-xl sm:text-2xl lg:text-3xl font-bold text-gray-900">Лиды</h1>
+            <h1 className="text-2xl lg:text-3xl font-bold text-gray-900">Лиды</h1>
             <p className="mt-0.5 text-xs sm:text-sm text-gray-500">Управление клиентами</p>
           </div>
           <Link href="/developer/crm/leads/new" className="sm:order-last">
-            <button className="w-full sm:w-auto bg-blue-600 text-white px-4 py-2 sm:px-5 sm:py-3 rounded-lg hover:bg-blue-700 transition-colors flex items-center justify-center gap-2 font-medium shadow-sm min-h-[38px] sm:min-h-[44px]">
+            <button className="w-full sm:w-auto bg-blue-600 text-white px-5 py-3 rounded-lg hover:bg-blue-700 transition-colors flex items-center justify-center gap-2 font-medium shadow-sm min-h-[44px]">
               <Plus className="h-5 w-5" />
-              <span className="text-sm sm:text-base">Добавить лид</span>
+              <span>Добавить лид</span>
             </button>
           </Link>
         </div>
@@ -202,14 +202,14 @@ export default function AgencyCRMLeadsPage() {
         <div className="flex items-center bg-gray-100 rounded-lg p-1 w-full sm:w-auto">
           <button
             onClick={() => setViewMode('list')}
-            className={`flex-1 sm:flex-initial px-4 py-2.5 rounded-md transition-colors flex items-center justify-center gap-2 min-h-[38px] sm:min-h-[44px] ${viewMode === 'list' ? 'bg-white shadow-sm text-blue-600' : 'text-gray-600 hover:text-gray-900'}`}
+            className={`flex-1 sm:flex-initial px-4 py-2.5 rounded-md transition-colors flex items-center justify-center gap-2 min-h-[44px] ${viewMode === 'list' ? 'bg-white shadow-sm text-blue-600' : 'text-gray-600 hover:text-gray-900'}`}
           >
             <LayoutList className="h-4 w-4" />
             <span className="font-medium">Список</span>
           </button>
           <button
             onClick={() => setViewMode('kanban')}
-            className={`flex-1 sm:flex-initial px-4 py-2.5 rounded-md transition-colors flex items-center justify-center gap-2 min-h-[38px] sm:min-h-[44px] ${viewMode === 'kanban' ? 'bg-white shadow-sm text-blue-600' : 'text-gray-600 hover:text-gray-900'}`}
+            className={`flex-1 sm:flex-initial px-4 py-2.5 rounded-md transition-colors flex items-center justify-center gap-2 min-h-[44px] ${viewMode === 'kanban' ? 'bg-white shadow-sm text-blue-600' : 'text-gray-600 hover:text-gray-900'}`}
           >
             <LayoutGrid className="h-4 w-4" />
             <span className="font-medium">Kanban</span>
@@ -231,7 +231,7 @@ export default function AgencyCRMLeadsPage() {
                 <div className="text-xs sm:text-sm font-medium text-gray-600">{stat.label}</div>
                 <span className="text-lg">{stat.icon}</span>
               </div>
-              <div className={`text-xl sm:text-2xl lg:text-3xl font-bold mt-2 ${stat.color}`}>{stat.value}</div>
+              <div className={`text-2xl lg:text-3xl font-bold mt-2 ${stat.color}`}>{stat.value}</div>
             </div>
           ))}
         </div>
@@ -281,14 +281,14 @@ export default function AgencyCRMLeadsPage() {
             placeholder="Поиск..."
             value={search}
             onChange={(e) => setSearch(e.target.value)}
-            className="w-full pl-10 pr-4 py-2 sm:py-2.5 border border-gray-200 rounded-lg focus:outline-none focus:ring-2 focus:ring-blue-500 focus:border-transparent min-h-[38px] sm:min-h-[44px]"
+            className="w-full pl-10 pr-4 py-2.5 border border-gray-200 rounded-lg focus:outline-none focus:ring-2 focus:ring-blue-500 focus:border-transparent min-h-[44px]"
           />
         </div>
         <div className="grid grid-cols-1 sm:grid-cols-3 gap-3">
           <select
             value={statusFilter}
             onChange={(e) => setStatusFilter(e.target.value)}
-            className="px-3 py-1.5 sm:py-2.5 border border-gray-200 rounded-lg focus:outline-none focus:ring-2 focus:ring-blue-500 min-h-[38px] sm:min-h-[44px]"
+            className="px-3 py-2.5 border border-gray-200 rounded-lg focus:outline-none focus:ring-2 focus:ring-blue-500 min-h-[44px]"
           >
             <option value="all">Все статусы</option>
             <option value="NEW">Новые</option>
@@ -301,7 +301,7 @@ export default function AgencyCRMLeadsPage() {
           <select
             value={priorityFilter}
             onChange={(e) => setPriorityFilter(e.target.value)}
-            className="px-3 py-1.5 sm:py-2.5 border border-gray-200 rounded-lg focus:outline-none focus:ring-2 focus:ring-blue-500 min-h-[38px] sm:min-h-[44px]"
+            className="px-3 py-2.5 border border-gray-200 rounded-lg focus:outline-none focus:ring-2 focus:ring-blue-500 min-h-[44px]"
           >
             <option value="all">Все приоритеты</option>
             <option value="URGENT">Срочные</option>
@@ -312,7 +312,7 @@ export default function AgencyCRMLeadsPage() {
           <select
             value={assignedFilter}
             onChange={(e) => setAssignedFilter(e.target.value)}
-            className="px-3 py-1.5 sm:py-2.5 border border-gray-200 rounded-lg focus:outline-none focus:ring-2 focus:ring-blue-500 min-h-[38px] sm:min-h-[44px]"
+            className="px-3 py-2.5 border border-gray-200 rounded-lg focus:outline-none focus:ring-2 focus:ring-blue-500 min-h-[44px]"
           >
             <option value="all">Все агенты</option>
             <option value="unassigned">Не назначен</option>
@@ -339,7 +339,7 @@ export default function AgencyCRMLeadsPage() {
             <h3 className="text-lg md:text-xl font-semibold text-gray-900 mb-2">Нет лидов</h3>
             <p className="text-sm md:text-base text-gray-600 mb-6">Начните добавлять лидов, чтобы управлять ими</p>
             <Link href="/developer/crm/leads/new">
-              <button className="bg-blue-600 text-white px-6 py-3 rounded-lg hover:bg-blue-700 transition-colors flex items-center justify-center gap-2 mx-auto min-h-[38px] sm:min-h-[44px]">
+              <button className="bg-blue-600 text-white px-6 py-3 rounded-lg hover:bg-blue-700 transition-colors flex items-center justify-center gap-2 mx-auto min-h-[44px]">
                 <Plus className="h-5 w-5" />
                 <span>Добавить первого лида</span>
               </button>
