@@ -257,4 +257,227 @@ export class EmailService {
       html,
     });
   }
+
+  // CRM Email Templates
+  async sendTaskAssignedEmail(
+    to: string,
+    assigneeName: string,
+    taskTitle: string,
+    taskDescription: string,
+    dueDate: Date,
+    priority: string,
+    taskId: string,
+  ): Promise<boolean> {
+    const baseUrl = process.env.FRONTEND_URL || 'http://localhost:3000';
+    const priorityColors: Record<string, string> = {
+      LOW: '#10b981',
+      MEDIUM: '#f59e0b',
+      HIGH: '#ef4444',
+    };
+
+    const html = `
+      <div style="font-family: Arial, sans-serif; max-width: 600px; margin: 0 auto;">
+        <h1 style="color: #2563eb;">Новая задача назначена</h1>
+        <p>Здравствуйте, ${assigneeName}!</p>
+        <p>Вам назначена новая задача:</p>
+        <div style="border: 1px solid #e5e7eb; padding: 20px; border-radius: 8px; margin: 20px 0;">
+          <h2 style="margin: 0 0 15px 0; color: #1f2937;">${taskTitle}</h2>
+          <p style="margin: 10px 0; color: #4b5563;">${taskDescription}</p>
+          <div style="margin-top: 15px; padding-top: 15px; border-top: 1px solid #e5e7eb;">
+            <p style="margin: 5px 0;">
+              <strong>Срок:</strong> ${dueDate.toLocaleDateString('ru-RU', { weekday: 'long', year: 'numeric', month: 'long', day: 'numeric' })}
+            </p>
+            <p style="margin: 5px 0;">
+              <strong>Приоритет:</strong>
+              <span style="display: inline-block; padding: 2px 8px; border-radius: 4px; background: ${priorityColors[priority] || '#6b7280'}; color: white; font-size: 12px;">
+                ${priority === 'LOW' ? 'Низкий' : priority === 'MEDIUM' ? 'Средний' : 'Высокий'}
+              </span>
+            </p>
+          </div>
+        </div>
+        <a href="${baseUrl}/ru/developer/crm/tasks/${taskId}"
+           style="display: inline-block; margin-top: 10px; padding: 12px 24px; background: #2563eb; color: white; text-decoration: none; border-radius: 4px;">
+          Открыть задачу
+        </a>
+        <hr style="margin: 30px 0; border: none; border-top: 1px solid #e5e7eb;">
+        <p style="color: #6b7280; font-size: 14px;">
+          С уважением,<br>Real Estate Platform CRM
+        </p>
+      </div>
+    `;
+
+    return this.sendEmail({
+      to,
+      subject: `Новая задача: ${taskTitle}`,
+      html,
+    });
+  }
+
+  async sendTaskDueSoonEmail(
+    to: string,
+    assigneeName: string,
+    taskTitle: string,
+    dueDate: Date,
+    taskId: string,
+  ): Promise<boolean> {
+    const baseUrl = process.env.FRONTEND_URL || 'http://localhost:3000';
+
+    const html = `
+      <div style="font-family: Arial, sans-serif; max-width: 600px; margin: 0 auto;">
+        <h1 style="color: #f59e0b;">⏰ Задача скоро истекает</h1>
+        <p>Здравствуйте, ${assigneeName}!</p>
+        <p>Напоминаем, что срок выполнения задачи <strong>"${taskTitle}"</strong> истекает:</p>
+        <div style="background: #fef3c7; padding: 20px; border-radius: 8px; margin: 20px 0; border-left: 4px solid #f59e0b;">
+          <p style="margin: 0; font-size: 18px; color: #92400e;">
+            <strong>Срок:</strong> ${dueDate.toLocaleDateString('ru-RU', { weekday: 'long', year: 'numeric', month: 'long', day: 'numeric' })}
+          </p>
+        </div>
+        <a href="${baseUrl}/ru/developer/crm/tasks/${taskId}"
+           style="display: inline-block; margin-top: 10px; padding: 12px 24px; background: #f59e0b; color: white; text-decoration: none; border-radius: 4px;">
+          Перейти к задаче
+        </a>
+        <hr style="margin: 30px 0; border: none; border-top: 1px solid #e5e7eb;">
+        <p style="color: #6b7280; font-size: 14px;">
+          С уважением,<br>Real Estate Platform CRM
+        </p>
+      </div>
+    `;
+
+    return this.sendEmail({
+      to,
+      subject: `⏰ Задача скоро истекает: ${taskTitle}`,
+      html,
+    });
+  }
+
+  async sendTaskOverdueEmail(
+    to: string,
+    assigneeName: string,
+    taskTitle: string,
+    dueDate: Date,
+    taskId: string,
+  ): Promise<boolean> {
+    const baseUrl = process.env.FRONTEND_URL || 'http://localhost:3000';
+
+    const html = `
+      <div style="font-family: Arial, sans-serif; max-width: 600px; margin: 0 auto;">
+        <h1 style="color: #ef4444;">⚠️ Задача просрочена</h1>
+        <p>Здравствуйте, ${assigneeName}!</p>
+        <p>Задача <strong>"${taskTitle}"</strong> просрочена и требует вашего внимания:</p>
+        <div style="background: #fee2e2; padding: 20px; border-radius: 8px; margin: 20px 0; border-left: 4px solid #ef4444;">
+          <p style="margin: 0; font-size: 18px; color: #991b1b;">
+            <strong>Срок был:</strong> ${dueDate.toLocaleDateString('ru-RU', { weekday: 'long', year: 'numeric', month: 'long', day: 'numeric' })}
+          </p>
+        </div>
+        <a href="${baseUrl}/ru/developer/crm/tasks/${taskId}"
+           style="display: inline-block; margin-top: 10px; padding: 12px 24px; background: #ef4444; color: white; text-decoration: none; border-radius: 4px;">
+          Перейти к задаче
+        </a>
+        <hr style="margin: 30px 0; border: none; border-top: 1px solid #e5e7eb;">
+        <p style="color: #6b7280; font-size: 14px;">
+          С уважением,<br>Real Estate Platform CRM
+        </p>
+      </div>
+    `;
+
+    return this.sendEmail({
+      to,
+      subject: `⚠️ Задача просрочена: ${taskTitle}`,
+      html,
+    });
+  }
+
+  async sendLeadAssignedEmail(
+    to: string,
+    assigneeName: string,
+    leadName: string,
+    leadPhone: string,
+    leadEmail: string | null,
+    propertyType: string,
+    budget: number | null,
+    leadId: string,
+  ): Promise<boolean> {
+    const baseUrl = process.env.FRONTEND_URL || 'http://localhost:3000';
+
+    const html = `
+      <div style="font-family: Arial, sans-serif; max-width: 600px; margin: 0 auto;">
+        <h1 style="color: #2563eb;">Новый лид назначен</h1>
+        <p>Здравствуйте, ${assigneeName}!</p>
+        <p>Вам назначен новый лид:</p>
+        <div style="border: 1px solid #e5e7eb; padding: 20px; border-radius: 8px; margin: 20px 0;">
+          <h2 style="margin: 0 0 15px 0; color: #1f2937;">${leadName}</h2>
+          <div style="margin-top: 15px;">
+            <p style="margin: 5px 0;"><strong>Телефон:</strong> ${leadPhone}</p>
+            ${leadEmail ? `<p style="margin: 5px 0;"><strong>Email:</strong> ${leadEmail}</p>` : ''}
+            <p style="margin: 5px 0;"><strong>Тип недвижимости:</strong> ${propertyType === 'APARTMENT' ? 'Квартира' : propertyType === 'HOUSE' ? 'Дом' : propertyType === 'COMMERCIAL' ? 'Коммерция' : 'Участок'}</p>
+            ${budget ? `<p style="margin: 5px 0;"><strong>Бюджет:</strong> $${budget.toLocaleString()}</p>` : ''}
+          </div>
+        </div>
+        <a href="${baseUrl}/ru/developer/crm/leads/${leadId}"
+           style="display: inline-block; margin-top: 10px; padding: 12px 24px; background: #2563eb; color: white; text-decoration: none; border-radius: 4px;">
+          Открыть лид
+        </a>
+        <hr style="margin: 30px 0; border: none; border-top: 1px solid #e5e7eb;">
+        <p style="color: #6b7280; font-size: 14px;">
+          С уважением,<br>Real Estate Platform CRM
+        </p>
+      </div>
+    `;
+
+    return this.sendEmail({
+      to,
+      subject: `Новый лид: ${leadName}`,
+      html,
+    });
+  }
+
+  async sendLeadStatusChangeEmail(
+    to: string,
+    assigneeName: string,
+    leadName: string,
+    oldStatus: string,
+    newStatus: string,
+    leadId: string,
+  ): Promise<boolean> {
+    const baseUrl = process.env.FRONTEND_URL || 'http://localhost:3000';
+    const statusLabels: Record<string, string> = {
+      NEW: 'Новый',
+      CONTACTED: 'Контакт установлен',
+      QUALIFIED: 'Квалифицирован',
+      MEETING_SCHEDULED: 'Встреча назначена',
+      PROPOSAL_SENT: 'Предложение отправлено',
+      NEGOTIATION: 'Переговоры',
+      WON: 'Успешно',
+      LOST: 'Не успешно',
+    };
+
+    const html = `
+      <div style="font-family: Arial, sans-serif; max-width: 600px; margin: 0 auto;">
+        <h1 style="color: #2563eb;">Статус лида изменен</h1>
+        <p>Здравствуйте, ${assigneeName}!</p>
+        <p>Статус лида <strong>"${leadName}"</strong> был изменен:</p>
+        <div style="background: #f3f4f6; padding: 20px; border-radius: 8px; margin: 20px 0;">
+          <p style="margin: 0; font-size: 16px;">
+            <span style="color: #6b7280;">${statusLabels[oldStatus] || oldStatus}</span>
+            →
+            <strong style="color: #2563eb;">${statusLabels[newStatus] || newStatus}</strong>
+          </p>
+        </div>
+        <a href="${baseUrl}/ru/developer/crm/leads/${leadId}"
+           style="display: inline-block; margin-top: 10px; padding: 12px 24px; background: #2563eb; color: white; text-decoration: none; border-radius: 4px;">
+          Открыть лид
+        </a>
+        <hr style="margin: 30px 0; border: none; border-top: 1px solid #e5e7eb;">
+        <p style="color: #6b7280; font-size: 14px;">
+          С уважением,<br>Real Estate Platform CRM
+        </p>
+      </div>
+    `;
+
+    return this.sendEmail({
+      to,
+      subject: `Статус лида изменен: ${leadName}`,
+      html,
+    });
+  }
 }

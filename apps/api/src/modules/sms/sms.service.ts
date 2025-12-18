@@ -149,5 +149,40 @@ export class SmsService {
     }
   }
 
+  // CRM SMS Templates
+  async sendTaskAssignedSms(
+    phone: string,
+    taskTitle: string,
+    dueDate: Date,
+  ): Promise<boolean> {
+    const message = `Vam naznachena zadacha: "${taskTitle}". Srok: ${dueDate.toLocaleDateString('ru-RU')}`;
+    return await this.provider.sendSms(phone, message);
+  }
+
+  async sendTaskReminderSms(
+    phone: string,
+    taskTitle: string,
+    dueDate: Date,
+    isOverdue: boolean,
+  ): Promise<boolean> {
+    const message = isOverdue
+      ? `Zadacha prosrochena: "${taskTitle}". Srok byl: ${dueDate.toLocaleDateString('ru-RU')}`
+      : `Zadacha skoro istekaet: "${taskTitle}". Srok: ${dueDate.toLocaleDateString('ru-RU')}`;
+    return await this.provider.sendSms(phone, message);
+  }
+
+  async sendLeadAssignedSms(
+    phone: string,
+    leadName: string,
+    leadPhone: string,
+  ): Promise<boolean> {
+    const message = `Novyy lid: ${leadName}. Tel: ${leadPhone}`;
+    return await this.provider.sendSms(phone, message);
+  }
+
+  async sendCustomSms(phone: string, message: string): Promise<boolean> {
+    return await this.provider.sendSms(phone, message);
+  }
+
   // Easy to swap provider later by changing SMS_PROVIDER env variable
 }

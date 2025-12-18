@@ -1,5 +1,7 @@
-import { Module } from '@nestjs/common';
+import { Module, forwardRef } from '@nestjs/common';
 import { PrismaModule } from '../../common/prisma/prisma.module';
+import { EmailModule } from '../email/email.module';
+import { SmsModule } from '../sms/sms.module';
 
 // Lead management
 import { LeadsController } from './leads/leads.controller';
@@ -25,8 +27,16 @@ import { ActivitiesService } from './activities/activities.service';
 import { TasksController } from './tasks/tasks.controller';
 import { TasksService } from './tasks/tasks.service';
 
+// Listings management
+import { ListingsController } from './listings/listings.controller';
+import { ListingsService } from './listings/listings.service';
+
+// Notifications
+import { NotificationsController } from './notifications/notifications.controller';
+import { NotificationsService } from './notifications/notifications.service';
+
 @Module({
-  imports: [PrismaModule],
+  imports: [PrismaModule, forwardRef(() => EmailModule), SmsModule],
   controllers: [
     LeadsController,
     MembersController,
@@ -34,6 +44,8 @@ import { TasksService } from './tasks/tasks.service';
     CommissionsController,
     ActivitiesController,
     TasksController,
+    ListingsController,
+    NotificationsController,
   ],
   providers: [
     LeadsService,
@@ -42,6 +54,8 @@ import { TasksService } from './tasks/tasks.service';
     CommissionsService,
     ActivitiesService,
     TasksService,
+    ListingsService,
+    NotificationsService,
   ],
   exports: [
     LeadsService,
@@ -50,6 +64,8 @@ import { TasksService } from './tasks/tasks.service';
     CommissionsService,
     ActivitiesService,
     TasksService,
+    ListingsService,
+    NotificationsService,
   ],
 })
 export class AgencyCrmModule {}
