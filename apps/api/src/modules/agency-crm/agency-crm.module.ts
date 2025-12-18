@@ -27,7 +27,10 @@ import { ActivitiesService } from './activities/activities.service';
 import { TasksController } from './tasks/tasks.controller';
 import { TasksService } from './tasks/tasks.service';
 
-<<<<<<< HEAD
+// Analytics & reporting
+import { AnalyticsController } from './analytics/analytics.controller';
+import { AnalyticsService } from './analytics/analytics.service';
+
 // Listings management
 import { ListingsController } from './listings/listings.controller';
 import { ListingsService } from './listings/listings.service';
@@ -36,16 +39,6 @@ import { ListingsService } from './listings/listings.service';
 import { NotificationsController } from './notifications/notifications.controller';
 import { NotificationsService } from './notifications/notifications.service';
 
-=======
-// Analytics & reporting
-import { AnalyticsController } from './analytics/analytics.controller';
-import { AnalyticsService } from './analytics/analytics.service';
-
-// Listing management
-import { ListingsController } from './listings/listings.controller';
-import { ListingsService } from './listings/listings.service';
-
->>>>>>> origin/feature/agency-crm
 @Module({
   imports: [PrismaModule, forwardRef(() => EmailModule), SmsModule],
   controllers: [
@@ -55,13 +48,9 @@ import { ListingsService } from './listings/listings.service';
     CommissionsController,
     ActivitiesController,
     TasksController,
-<<<<<<< HEAD
-    ListingsController,
-    NotificationsController,
-=======
     AnalyticsController,
     ListingsController,
->>>>>>> origin/feature/agency-crm
+    NotificationsController,
   ],
   providers: [
     LeadsService,
@@ -70,13 +59,9 @@ import { ListingsService } from './listings/listings.service';
     CommissionsService,
     ActivitiesService,
     TasksService,
-<<<<<<< HEAD
-    ListingsService,
-    NotificationsService,
-=======
     AnalyticsService,
     ListingsService,
->>>>>>> origin/feature/agency-crm
+    NotificationsService,
   ],
   exports: [
     LeadsService,
@@ -85,13 +70,9 @@ import { ListingsService } from './listings/listings.service';
     CommissionsService,
     ActivitiesService,
     TasksService,
-<<<<<<< HEAD
-    ListingsService,
-    NotificationsService,
-=======
     AnalyticsService,
     ListingsService,
->>>>>>> origin/feature/agency-crm
+    NotificationsService,
   ],
 })
 export class AgencyCrmModule {}

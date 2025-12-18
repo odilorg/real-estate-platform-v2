@@ -72,12 +72,6 @@ export class LeadsController {
     return this.leadsService.assign(agencyId, id, memberId);
   }
 
-  @Get(':id/matched-properties')
-  async getMatchedProperties(@Param('id') id: string, @Request() req: any) {
-    const agencyId = req.user.agencyId;
-    return this.leadsService.getMatchedProperties(agencyId, id);
-  }
-
   @Post(':id/send-email')
   async sendEmail(
     @Param('id') id: string,
