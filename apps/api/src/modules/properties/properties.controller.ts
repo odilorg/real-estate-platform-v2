@@ -18,6 +18,7 @@ import { AnalyticsService } from './analytics.service';
 import { RecommendationService } from './recommendation.service';
 import { StatusHistoryService } from './status-history.service';
 import { ValuationService, ValuationResult } from './valuation.service';
+import { TelegramShareService } from './telegram-share.service';
 import {
   CreatePropertyDto,
   UpdatePropertyDto,
@@ -40,6 +41,7 @@ export class PropertiesController {
     private recommendationService: RecommendationService,
     private statusHistoryService: StatusHistoryService,
     private valuationService: ValuationService,
+    private telegramShareService: TelegramShareService,
   ) {}
 
   @Post()
@@ -413,6 +415,26 @@ export class PropertiesController {
     }
 
     return this.statusHistoryService.getStatusStats(id);
+  }
+
+  @Post(':id/telegram')
+  @UseGuards(JwtAuthGuard)
+  async shareToTelegram(
+    @Param('id') id: string,
+    @CurrentUser() user: User,
+  ) {
+    const property = await this.propertiesService.findOne(id);
+
+    if (!property) {
+      throw new NotFoundException(`Property with ID ${id} not found`);
+    }
+
+    // Only property owner can share to Telegram
+    if (property.userId !== user.id) {
+      throw new NotFoundException(`Property with ID ${id} not found`);
+    }
+
+    return this.telegramShareService.sharePropertyToTelegram(id);
   }
 
   @Get(':id')

@@ -174,6 +174,9 @@ export default function PropertyDetailPage({
   const [priceHistory, setPriceHistory] = useState<any[]>([]);
   const [priceStats, setPriceStats] = useState<any>(null);
 
+  // Telegram share state
+  const [telegramLoading, setTelegramLoading] = useState(false);
+
   const apiUrl = process.env.NEXT_PUBLIC_API_URL || 'http://localhost:3001/api';
 
   const getAuthToken = () => {
@@ -372,6 +375,43 @@ export default function PropertyDetailPage({
     }
   };
 
+  const handlePostToTelegram = async () => {
+    if (!isAuthenticated) {
+      setShowLoginModal(true);
+      return;
+    }
+
+    const token = getAuthToken();
+    if (!token) return;
+
+    setTelegramLoading(true);
+    try {
+      const response = await fetch(`${apiUrl}/properties/${id}/telegram`, {
+        method: 'POST',
+        headers: {
+          Authorization: `Bearer ${token}`,
+        },
+      });
+
+      if (response.ok) {
+        const data = await response.json();
+        if (data.success) {
+          alert('✅ Объявление опубликовано в Telegram!');
+        } else {
+          alert(`❌ Ошибка: ${data.error || 'Не удалось опубликовать'}`);
+        }
+      } else {
+        const errorData = await response.json();
+        alert(`❌ Ошибка: ${errorData.message || 'Не удалось опубликовать'}`);
+      }
+    } catch (error) {
+      console.error('Error posting to Telegram:', error);
+      alert('❌ Ошибка при публикации в Telegram');
+    } finally {
+      setTelegramLoading(false);
+    }
+  };
+
   const handleSendMessage = async () => {
     if (!isAuthenticated) {
       router.push('/auth/login');
@@ -546,12 +586,27 @@ export default function PropertyDetailPage({
               image={property.images[0]?.url}
             />
             {isOwner && (
-              <Link href={`/properties/${id}/edit`}>
-                <Button variant="outline">
-                  <Edit className="h-4 w-4 mr-2" />
-                  {t('actions.edit')}
+              <>
+                <Link href={`/properties/${id}/edit`}>
+                  <Button variant="outline">
+                    <Edit className="h-4 w-4 mr-2" />
+                    {t('actions.edit')}
+                  </Button>
+                </Link>
+                <Button
+                  variant="outline"
+                  onClick={handlePostToTelegram}
+                  disabled={telegramLoading}
+                  className="bg-blue-50 hover:bg-blue-100 border-blue-200"
+                >
+                  {telegramLoading ? (
+                    <Loader2 className="h-4 w-4 mr-2 animate-spin" />
+                  ) : (
+                    <Send className="h-4 w-4 mr-2" />
+                  )}
+                  Telegram
                 </Button>
-              </Link>
+              </>
             )}
           </div>
         </div>

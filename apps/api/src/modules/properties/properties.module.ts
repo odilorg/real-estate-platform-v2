@@ -8,6 +8,7 @@ import { AnalyticsService } from './analytics.service';
 import { RecommendationService } from './recommendation.service';
 import { StatusHistoryService } from './status-history.service';
 import { ValuationService } from './valuation.service';
+import { TelegramShareService } from './telegram-share.service';
 import { UploadModule } from '../upload/upload.module';
 
 @Module({
@@ -22,6 +23,7 @@ import { UploadModule } from '../upload/upload.module';
     RecommendationService,
     StatusHistoryService,
     ValuationService,
+    TelegramShareService,
   ],
   exports: [
     PropertiesService,
@@ -32,6 +34,7 @@ import { UploadModule } from '../upload/upload.module';
     RecommendationService,
     StatusHistoryService,
     ValuationService,
+    TelegramShareService,
   ],
 })
 export class PropertiesModule {}
