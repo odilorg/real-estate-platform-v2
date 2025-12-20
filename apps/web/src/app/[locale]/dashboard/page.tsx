@@ -27,6 +27,7 @@ import {
   CheckCircle,
   Star,
   Mail,
+  Search,
 } from 'lucide-react';
 
 interface PropertyImage {
@@ -273,7 +274,18 @@ export default function DashboardPage() {
         </div>
 
         {/* Quick Actions */}
-        <div className="grid grid-cols-2 md:grid-cols-4 gap-4 mb-8">
+        <div className="grid grid-cols-2 md:grid-cols-5 gap-4 mb-8">
+          <Link href="/properties">
+            <Card className="hover:shadow-md transition-shadow cursor-pointer">
+              <CardContent className="p-4 flex items-center gap-3">
+                <div className="p-3 bg-green-100 rounded-lg">
+                  <Search className="h-6 w-6 text-green-600" />
+                </div>
+                <div className="font-semibold text-gray-900">Все объявления</div>
+              </CardContent>
+            </Card>
+          </Link>
+
           <Link href="/dashboard/messages">
             <Card className="hover:shadow-md transition-shadow cursor-pointer">
               <CardContent className="p-4 flex items-center gap-3">

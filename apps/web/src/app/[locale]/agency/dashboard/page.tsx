@@ -2,7 +2,7 @@
 
 import { useState, useEffect } from 'react';
 import { Link } from '@/i18n/routing';
-import { Building, Users, UserPlus, FileText, Settings, Loader2, Edit } from 'lucide-react';
+import { Building, Users, UserPlus, FileText, Settings, Loader2, Edit, Search } from 'lucide-react';
 import { api } from '@/lib/api';
 
 interface AgencyStats {
@@ -227,7 +227,19 @@ export default function AgencyDashboardPage() {
       {/* Quick Actions */}
       <div className="bg-white rounded-lg shadow p-6">
         <h2 className="text-xl font-semibold text-gray-900 mb-4">Quick Actions</h2>
-        <div className="grid grid-cols-1 md:grid-cols-3 gap-4">
+        <div className="grid grid-cols-1 md:grid-cols-4 gap-4">
+          <Link href="/properties">
+            <button className="w-full flex items-center gap-3 p-4 border border-gray-200 rounded-lg hover:bg-gray-50 text-left">
+              <div className="p-2 bg-emerald-100 rounded-lg">
+                <Search className="h-5 w-5 text-emerald-600" />
+              </div>
+              <div>
+                <p className="font-medium text-gray-900">Browse Properties</p>
+                <p className="text-sm text-gray-500">View all listings</p>
+              </div>
+            </button>
+          </Link>
+
           <Link href="/developer/crm/members/new">
             <button className="w-full flex items-center gap-3 p-4 border border-gray-200 rounded-lg hover:bg-gray-50 text-left">
               <div className="p-2 bg-blue-100 rounded-lg">
