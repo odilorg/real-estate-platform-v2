@@ -177,6 +177,14 @@ export default function PropertyDetailPage({
   // Telegram share state
   const [telegramLoading, setTelegramLoading] = useState(false);
 
+  // Toast notification state
+  const [toast, setToast] = useState<{ message: string; type: 'success' | 'error' } | null>(null);
+
+  const showToast = (message: string, type: 'success' | 'error') => {
+    setToast({ message, type });
+    setTimeout(() => setToast(null), 4000);
+  };
+
   const apiUrl = process.env.NEXT_PUBLIC_API_URL || 'http://localhost:3001/api';
 
   const getAuthToken = () => {
@@ -396,17 +404,17 @@ export default function PropertyDetailPage({
       if (response.ok) {
         const data = await response.json();
         if (data.success) {
-          alert('✅ Объявление опубликовано в Telegram!');
+          showToast('Объявление опубликовано в Telegram!', 'success');
         } else {
-          alert(`❌ Ошибка: ${data.error || 'Не удалось опубликовать'}`);
+          showToast(data.error || 'Не удалось опубликовать', 'error');
         }
       } else {
         const errorData = await response.json();
-        alert(`❌ Ошибка: ${errorData.message || 'Не удалось опубликовать'}`);
+        showToast(errorData.message || 'Не удалось опубликовать', 'error');
       }
     } catch (error) {
       console.error('Error posting to Telegram:', error);
-      alert('❌ Ошибка при публикации в Telegram');
+      showToast('Ошибка при публикации в Telegram', 'error');
     } finally {
       setTelegramLoading(false);
     }
@@ -900,6 +908,38 @@ export default function PropertyDetailPage({
         open={showLoginModal}
         onOpenChange={setShowLoginModal}
       />
+
+      {/* Toast Notification */}
+      {toast && (
+        <div className="fixed bottom-6 right-6 z-50 animate-in slide-in-from-bottom-5 fade-in duration-300">
+          <div
+            className={`flex items-center gap-3 px-4 py-3 rounded-lg shadow-lg ${
+              toast.type === 'success'
+                ? 'bg-green-600 text-white'
+                : 'bg-red-600 text-white'
+            }`}
+          >
+            {toast.type === 'success' ? (
+              <svg className="w-5 h-5 flex-shrink-0" fill="none" stroke="currentColor" viewBox="0 0 24 24">
+                <path strokeLinecap="round" strokeLinejoin="round" strokeWidth={2} d="M5 13l4 4L19 7" />
+              </svg>
+            ) : (
+              <svg className="w-5 h-5 flex-shrink-0" fill="none" stroke="currentColor" viewBox="0 0 24 24">
+                <path strokeLinecap="round" strokeLinejoin="round" strokeWidth={2} d="M6 18L18 6M6 6l12 12" />
+              </svg>
+            )}
+            <span className="text-sm font-medium">{toast.message}</span>
+            <button
+              onClick={() => setToast(null)}
+              className="ml-2 hover:opacity-80 transition-opacity"
+            >
+              <svg className="w-4 h-4" fill="none" stroke="currentColor" viewBox="0 0 24 24">
+                <path strokeLinecap="round" strokeLinejoin="round" strokeWidth={2} d="M6 18L18 6M6 6l12 12" />
+              </svg>
+            </button>
+          </div>
+        </div>
+      )}
     </div>
   );
 }
