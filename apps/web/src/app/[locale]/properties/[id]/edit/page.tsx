@@ -19,7 +19,7 @@ import {
 } from '@repo/ui';
 import { ImageUploader } from '@/components';
 import { useAuth } from '@/context/AuthContext';
-import { ArrowLeft, Loader2, Save, Eye } from 'lucide-react';
+import { ArrowLeft, Loader2, Save, Eye, Trash2, Youtube } from 'lucide-react';
 
 // Enums from schema
 const PROPERTY_TYPES = [
@@ -79,6 +79,15 @@ const CITIES = [
   'Нукус',
   'Термез',
 ];
+
+interface PropertyVideo {
+  id: string;
+  url: string;
+  thumbnailUrl?: string;
+  title?: string;
+  type: string;
+  order: number;
+}
 
 interface FormData {
   title: string;
@@ -155,7 +164,33 @@ export default function EditPropertyPage() {
   const [saving, setSaving] = useState(false);
   const [error, setError] = useState<string | null>(null);
 
+  // YouTube video state
+  const [videos, setVideos] = useState<PropertyVideo[]>([]);
+  const [youtubeUrl, setYoutubeUrl] = useState('');
+  const [youtubeTitle, setYoutubeTitle] = useState('');
+  const [addingYoutube, setAddingYoutube] = useState(false);
+  const [youtubeError, setYoutubeError] = useState('');
+
   const apiUrl = process.env.NEXT_PUBLIC_API_URL || 'http://localhost:3001/api';
+
+  // YouTube URL parser - extracts video ID from various YouTube URL formats
+  const extractYoutubeVideoId = (url: string): string | null => {
+    const patterns = [
+      /(?:youtube\.com\/watch\?v=|youtu\.be\/|youtube\.com\/embed\/|youtube\.com\/v\/|youtube\.com\/shorts\/)([a-zA-Z0-9_-]{11})/,
+      /^([a-zA-Z0-9_-]{11})$/, // Just the video ID
+    ];
+
+    for (const pattern of patterns) {
+      const match = url.match(pattern);
+      if (match) return match[1];
+    }
+    return null;
+  };
+
+  // Get YouTube thumbnail URL
+  const getYoutubeThumbnail = (videoId: string): string => {
+    return `https://img.youtube.com/vi/${videoId}/hqdefault.jpg`;
+  };
 
   const getAuthToken = () => {
     if (typeof window !== 'undefined') {
@@ -231,6 +266,21 @@ export default function EditPropertyPage() {
           hasGatedArea: property.hasGatedArea || false,
           images: property.images?.map((img: { url: string }) => img.url) || [],
         });
+
+        // Fetch videos
+        try {
+          const videosResponse = await fetch(`${apiUrl}/properties/${propertyId}/media/videos`, {
+            headers: {
+              Authorization: `Bearer ${token}`,
+            },
+          });
+          if (videosResponse.ok) {
+            const videosData = await videosResponse.json();
+            setVideos(videosData || []);
+          }
+        } catch (err) {
+          console.error('Error loading videos:', err);
+        }
       } catch (err) {
         setError(err instanceof Error ? err.message : 'Ошибка загрузки');
       } finally {
@@ -243,6 +293,66 @@ export default function EditPropertyPage() {
 
   const handleChange = (field: keyof FormData, value: string | boolean | string[]) => {
     setFormData((prev) => ({ ...prev, [field]: value }));
+  };
+
+  // Handle adding YouTube video
+  const handleAddYoutubeVideo = async () => {
+    setYoutubeError('');
+
+    const videoId = extractYoutubeVideoId(youtubeUrl.trim());
+    if (!videoId) {
+      setYoutubeError('Неверная ссылка на YouTube');
+      return;
+    }
+
+    try {
+      setAddingYoutube(true);
+      const token = getAuthToken();
+
+      const response = await fetch(`${apiUrl}/properties/${propertyId}/media/videos`, {
+        method: 'POST',
+        headers: {
+          'Content-Type': 'application/json',
+          Authorization: `Bearer ${token}`,
+        },
+        body: JSON.stringify({
+          url: `https://www.youtube.com/watch?v=${videoId}`,
+          thumbnailUrl: getYoutubeThumbnail(videoId),
+          title: youtubeTitle.trim() || undefined,
+          type: 'YOUTUBE',
+        }),
+      });
+
+      if (!response.ok) {
+        throw new Error('Failed to add video');
+      }
+
+      const newVideo = await response.json();
+      setVideos([...videos, newVideo]);
+      setYoutubeUrl('');
+      setYoutubeTitle('');
+    } catch (err) {
+      console.error('Error adding YouTube video:', err);
+      setYoutubeError('Ошибка добавления видео');
+    } finally {
+      setAddingYoutube(false);
+    }
+  };
+
+  // Handle deleting video
+  const handleDeleteVideo = async (videoId: string) => {
+    try {
+      const token = getAuthToken();
+      await fetch(`${apiUrl}/properties/${propertyId}/media/videos/${videoId}`, {
+        method: 'DELETE',
+        headers: {
+          Authorization: `Bearer ${token}`,
+        },
+      });
+      setVideos(videos.filter((v) => v.id !== videoId));
+    } catch (err) {
+      console.error('Error deleting video:', err);
+    }
   };
 
   const handleSubmit = async (e: React.FormEvent) => {
@@ -811,6 +921,140 @@ export default function EditPropertyPage() {
                 onChange={(images) => handleChange('images', images)}
                 maxImages={20}
               />
+            </CardContent>
+          </Card>
+
+          {/* YouTube Videos */}
+          <Card>
+            <CardContent className="p-6">
+              <div className="flex items-center gap-2 mb-4">
+                <Youtube className="h-5 w-5 text-red-600" />
+                <h2 className="text-lg font-semibold">Видео с YouTube</h2>
+              </div>
+
+              {/* Add YouTube Video Form */}
+              <div className="space-y-4 mb-6">
+                <div className="bg-red-50 border border-red-200 rounded-lg p-4">
+                  <div className="space-y-3">
+                    <div className="space-y-2">
+                      <Label htmlFor="youtubeUrl">Ссылка на YouTube видео *</Label>
+                      <Input
+                        id="youtubeUrl"
+                        type="url"
+                        value={youtubeUrl}
+                        onChange={(e) => {
+                          setYoutubeUrl(e.target.value);
+                          setYoutubeError('');
+                        }}
+                        placeholder="https://www.youtube.com/watch?v=..."
+                      />
+                    </div>
+
+                    <div className="space-y-2">
+                      <Label htmlFor="youtubeTitle">Название видео (необязательно)</Label>
+                      <Input
+                        id="youtubeTitle"
+                        type="text"
+                        value={youtubeTitle}
+                        onChange={(e) => setYoutubeTitle(e.target.value)}
+                        placeholder="например: Видеотур по квартире"
+                      />
+                    </div>
+
+                    {youtubeError && (
+                      <p className="text-sm text-red-600">{youtubeError}</p>
+                    )}
+
+                    {/* YouTube Preview */}
+                    {youtubeUrl && extractYoutubeVideoId(youtubeUrl) && (
+                      <div className="aspect-video rounded-lg overflow-hidden bg-black max-w-md">
+                        <iframe
+                          src={`https://www.youtube.com/embed/${extractYoutubeVideoId(youtubeUrl)}`}
+                          className="w-full h-full"
+                          allow="accelerometer; autoplay; clipboard-write; encrypted-media; gyroscope; picture-in-picture"
+                          allowFullScreen
+                        />
+                      </div>
+                    )}
+
+                    <Button
+                      type="button"
+                      onClick={handleAddYoutubeVideo}
+                      disabled={addingYoutube || !youtubeUrl.trim()}
+                      className="bg-red-600 hover:bg-red-700"
+                    >
+                      {addingYoutube ? (
+                        <>
+                          <Loader2 className="h-4 w-4 mr-2 animate-spin" />
+                          Добавление...
+                        </>
+                      ) : (
+                        <>
+                          <Youtube className="h-4 w-4 mr-2" />
+                          Добавить видео
+                        </>
+                      )}
+                    </Button>
+                  </div>
+                </div>
+              </div>
+
+              {/* Existing Videos List */}
+              {videos.length > 0 && (
+                <div className="space-y-4">
+                  <h3 className="text-sm font-medium text-gray-700">Добавленные видео ({videos.length})</h3>
+                  <div className="grid grid-cols-1 md:grid-cols-2 gap-4">
+                    {videos.map((video) => {
+                      const videoId = video.type === 'YOUTUBE' ? extractYoutubeVideoId(video.url) : null;
+                      return (
+                        <div key={video.id} className="bg-white rounded-lg border overflow-hidden">
+                          {/* Video Preview */}
+                          <div className="aspect-video relative bg-gray-900">
+                            {video.type === 'YOUTUBE' && videoId ? (
+                              <iframe
+                                src={`https://www.youtube.com/embed/${videoId}`}
+                                className="w-full h-full"
+                                allow="accelerometer; autoplay; clipboard-write; encrypted-media; gyroscope; picture-in-picture"
+                                allowFullScreen
+                              />
+                            ) : (
+                              <div className="w-full h-full flex items-center justify-center">
+                                <Youtube className="w-12 h-12 text-gray-600" />
+                              </div>
+                            )}
+                            {/* Type Badge */}
+                            <div className="absolute top-2 right-2 bg-red-600 text-white text-xs px-2 py-1 rounded-full">
+                              YouTube
+                            </div>
+                          </div>
+
+                          {/* Video Info */}
+                          <div className="p-3 flex items-center justify-between">
+                            <p className="font-medium text-sm text-gray-900 truncate flex-1">
+                              {video.title || 'Без названия'}
+                            </p>
+                            <Button
+                              type="button"
+                              variant="ghost"
+                              size="sm"
+                              onClick={() => handleDeleteVideo(video.id)}
+                              className="text-red-600 hover:text-red-700 hover:bg-red-50"
+                            >
+                              <Trash2 className="h-4 w-4" />
+                            </Button>
+                          </div>
+                        </div>
+                      );
+                    })}
+                  </div>
+                </div>
+              )}
+
+              {videos.length === 0 && (
+                <p className="text-sm text-gray-500 text-center py-4">
+                  Нет добавленных видео. Добавьте ссылку на YouTube выше.
+                </p>
+              )}
             </CardContent>
           </Card>
 
