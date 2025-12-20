@@ -508,9 +508,9 @@ export default function DashboardPage() {
 
                   {/* Content */}
                   <CardContent className="flex-1 p-4">
-                    <div className="flex items-start justify-between">
-                      <div className="flex-1">
-                        <div className="flex items-center gap-2 mb-1">
+                    <div className="flex items-start justify-between gap-4">
+                      <div className="flex-1 min-w-0">
+                        <div className="flex items-center gap-2 mb-1 flex-wrap">
                           <Badge
                             variant={
                               STATUS_LABELS[property.status]?.variant || 'default'
@@ -545,8 +545,8 @@ export default function DashboardPage() {
                         </div>
                       </div>
 
-                      <div className="text-right flex flex-col items-end">
-                        <div className="text-2xl font-bold text-blue-600 mb-4">
+                      <div className="text-right flex flex-col items-end flex-shrink-0">
+                        <div className="text-2xl font-bold text-blue-600 mb-4 whitespace-nowrap">
                           {property.price.toLocaleString()} <span className="text-sm font-normal text-gray-500">у.е.</span>
                         </div>
                         <div className="flex items-center gap-2">
