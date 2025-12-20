@@ -272,6 +272,7 @@ export class PropertiesService {
       where: { id },
       include: {
         images: { orderBy: { order: 'asc' } },
+        videos: { orderBy: { order: 'asc' } },
         amenities: true,
         user: {
           select: {
