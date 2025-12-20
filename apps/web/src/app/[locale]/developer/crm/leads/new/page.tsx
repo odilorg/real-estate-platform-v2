@@ -5,9 +5,11 @@ import { useRouter } from '@/i18n/routing';
 import { ArrowLeft, Save, Loader2 } from 'lucide-react';
 import { Link } from '@/i18n/routing';
 import { api } from '@/lib/api';
+import { useTranslations } from 'next-intl';
 
 export default function NewLeadPage() {
   const router = useRouter();
+  const t = useTranslations('crm.leads.newPage');
   const [loading, setLoading] = useState(false);
   const [error, setError] = useState('');
   const [success, setSuccess] = useState(false);
@@ -74,15 +76,15 @@ export default function NewLeadPage() {
           </button>
         </Link>
         <div>
-          <h1 className="text-xl md:text-2xl lg:text-3xl font-bold text-gray-900">Добавить лид</h1>
-          <p className="mt-1 text-sm text-gray-500">Создание нового потенциального клиента</p>
+          <h1 className="text-xl md:text-2xl lg:text-3xl font-bold text-gray-900">{t('title')}</h1>
+          <p className="mt-1 text-sm text-gray-500">{t('subtitle')}</p>
         </div>
       </div>
 
       <form onSubmit={handleSubmit} className="space-y-6">
         {success && (
           <div className="bg-green-50 border border-green-200 text-green-800 px-4 py-3 rounded-lg">
-            ✅ Лид успешно создан! Перенаправление...
+            ✅ {t('successMessage')}
           </div>
         )}
 
@@ -94,11 +96,11 @@ export default function NewLeadPage() {
 
         {/* Contact Information */}
         <div className="bg-white p-6 rounded-lg shadow" role="region" aria-labelledby="contact-info">
-          <h2 id="contact-info" className="text-lg md:text-xl font-semibold text-gray-900 mb-4">Контактная информация</h2>
+          <h2 id="contact-info" className="text-lg md:text-xl font-semibold text-gray-900 mb-4">{t('contactInfo')}</h2>
           <div className="space-y-4">
             <div className="grid grid-cols-1 md:grid-cols-2 gap-4">
               <div>
-                <label className="block text-sm font-medium text-gray-700 mb-1">Имя *</label>
+                <label className="block text-sm font-medium text-gray-700 mb-1">{t('firstName')} *</label>
                 <input
                   type="text"
                   required
@@ -108,7 +110,7 @@ export default function NewLeadPage() {
                 />
               </div>
               <div>
-                <label className="block text-sm font-medium text-gray-700 mb-1">Фамилия *</label>
+                <label className="block text-sm font-medium text-gray-700 mb-1">{t('lastName')} *</label>
                 <input
                   type="text"
                   required
@@ -121,7 +123,7 @@ export default function NewLeadPage() {
 
             <div className="grid grid-cols-1 md:grid-cols-2 gap-4">
               <div>
-                <label className="block text-sm font-medium text-gray-700 mb-1">Телефон *</label>
+                <label className="block text-sm font-medium text-gray-700 mb-1">{t('phone')} *</label>
                 <input
                   type="tel" pattern="+998[0-9]{9}"
                   required
@@ -130,10 +132,10 @@ export default function NewLeadPage() {
                   onChange={(e) => setFormData({ ...formData, phone: e.target.value })}
                   className="w-full px-4 py-2 border border-gray-300 rounded-lg focus:ring-2 focus:ring-blue-500 focus:border-blue-500"
                 />
-                <p className="mt-1 text-xs text-gray-500">Формат: +998XXXXXXXXX</p>
+                <p className="mt-1 text-xs text-gray-500">{t('phoneFormat')}</p>
               </div>
               <div>
-                <label className="block text-sm font-medium text-gray-700 mb-1">Email</label>
+                <label className="block text-sm font-medium text-gray-700 mb-1">{t('email')}</label>
                 <input
                   type="email"
                   value={formData.email}
@@ -145,7 +147,7 @@ export default function NewLeadPage() {
 
             <div className="grid grid-cols-1 md:grid-cols-2 gap-4">
               <div>
-                <label className="block text-sm font-medium text-gray-700 mb-1">Telegram</label>
+                <label className="block text-sm font-medium text-gray-700 mb-1">{t('telegram')}</label>
                 <input
                   type="text"
                   placeholder="@username"
@@ -155,7 +157,7 @@ export default function NewLeadPage() {
                 />
               </div>
               <div>
-                <label className="block text-sm font-medium text-gray-700 mb-1">WhatsApp</label>
+                <label className="block text-sm font-medium text-gray-700 mb-1">{t('whatsapp')}</label>
                 <input
                   type="tel" pattern="+998[0-9]{9}"
                   placeholder="+998901234567"
@@ -170,43 +172,43 @@ export default function NewLeadPage() {
 
         {/* Property Requirements */}
         <div className="bg-white p-6 rounded-lg shadow" role="region" aria-labelledby="property-requirements">
-          <h2 id="property-requirements" className="text-lg md:text-xl font-semibold text-gray-900 mb-4">Требования к недвижимости</h2>
+          <h2 id="property-requirements" className="text-lg md:text-xl font-semibold text-gray-900 mb-4">{t('propertyRequirements')}</h2>
           <div className="space-y-4">
             <div className="grid grid-cols-1 md:grid-cols-2 gap-4">
               <div>
-                <label className="block text-sm font-medium text-gray-700 mb-1">Тип недвижимости</label>
+                <label className="block text-sm font-medium text-gray-700 mb-1">{t('propertyType')}</label>
                 <select
                   value={formData.propertyType}
                   onChange={(e) => setFormData({ ...formData, propertyType: e.target.value })}
                   className="w-full px-4 py-2 border border-gray-300 rounded-lg focus:ring-2 focus:ring-blue-500 focus:border-blue-500"
                 >
-                  <option value="">Выберите тип</option>
-                  <option value="APARTMENT">Квартира</option>
-                  <option value="HOUSE">Дом</option>
-                  <option value="TOWNHOUSE">Таунхаус</option>
-                  <option value="LAND">Земля</option>
-                  <option value="COMMERCIAL">Коммерческая</option>
+                  <option value="">{t('selectType')}</option>
+                  <option value="APARTMENT">{t('apartment')}</option>
+                  <option value="HOUSE">{t('house')}</option>
+                  <option value="TOWNHOUSE">{t('townhouse')}</option>
+                  <option value="LAND">{t('land')}</option>
+                  <option value="COMMERCIAL">{t('commercial')}</option>
                 </select>
               </div>
 
               <div>
-                <label className="block text-sm font-medium text-gray-700 mb-1">Тип сделки</label>
+                <label className="block text-sm font-medium text-gray-700 mb-1">{t('listingType')}</label>
                 <select
                   value={formData.listingType}
                   onChange={(e) => setFormData({ ...formData, listingType: e.target.value })}
                   className="w-full px-4 py-2 border border-gray-300 rounded-lg focus:ring-2 focus:ring-blue-500 focus:border-blue-500"
                 >
-                  <option value="">Выберите тип</option>
-                  <option value="SALE">Продажа</option>
-                  <option value="RENT_LONG">Аренда</option>
-                  <option value="RENT_DAILY">Посуточная аренда</option>
+                  <option value="">{t('selectType')}</option>
+                  <option value="SALE">{t('sale')}</option>
+                  <option value="RENT_LONG">{t('rentLong')}</option>
+                  <option value="RENT_DAILY">{t('rentDaily')}</option>
                 </select>
               </div>
             </div>
 
             <div className="grid grid-cols-1 md:grid-cols-2 gap-4">
               <div>
-                <label className="block text-sm font-medium text-gray-700 mb-1">Бюджет (сум)</label>
+                <label className="block text-sm font-medium text-gray-700 mb-1">{t('budget')}</label>
                 <input
                   type="number"
                   placeholder="50000000"
@@ -214,10 +216,10 @@ export default function NewLeadPage() {
                   onChange={(e) => setFormData({ ...formData, budget: e.target.value })}
                   className="w-full px-4 py-2 border border-gray-300 rounded-lg focus:ring-2 focus:ring-blue-500 focus:border-blue-500"
                 />
-                <p className="mt-1 text-xs text-gray-500">Примерный бюджет клиента в узбекских сумах</p>
+                <p className="mt-1 text-xs text-gray-500">{t('budgetHint')}</p>
               </div>
               <div>
-                <label className="block text-sm font-medium text-gray-700 mb-1">Количество комнат</label>
+                <label className="block text-sm font-medium text-gray-700 mb-1">{t('bedrooms')}</label>
                 <input
                   type="number"
                   placeholder="3"
@@ -229,10 +231,10 @@ export default function NewLeadPage() {
             </div>
 
             <div>
-              <label className="block text-sm font-medium text-gray-700 mb-1">Дополнительные требования</label>
+              <label className="block text-sm font-medium text-gray-700 mb-1">{t('additionalRequirements')}</label>
               <textarea
                 rows={4}
-                placeholder="Близко к метро, с ремонтом, хорошая инфраструктура..."
+                placeholder={t('requirementsPlaceholder')}
                 value={formData.requirements}
                 onChange={(e) => setFormData({ ...formData, requirements: e.target.value })}
                 className="w-full px-4 py-2 border border-gray-300 rounded-lg focus:ring-2 focus:ring-blue-500 focus:border-blue-500"
@@ -243,46 +245,46 @@ export default function NewLeadPage() {
 
         {/* Lead Info */}
         <div className="bg-white p-6 rounded-lg shadow" role="region" aria-labelledby="lead-info">
-          <h2 id="lead-info" className="text-lg md:text-xl font-semibold text-gray-900 mb-4">Информация о лиде</h2>
+          <h2 id="lead-info" className="text-lg md:text-xl font-semibold text-gray-900 mb-4">{t('leadInfo')}</h2>
           <div className="space-y-4">
             <div className="grid grid-cols-1 md:grid-cols-2 gap-4">
               <div>
-                <label className="block text-sm font-medium text-gray-700 mb-1">Источник лида *</label>
+                <label className="block text-sm font-medium text-gray-700 mb-1">{t('leadSource')} *</label>
                 <select
                   value={formData.source}
                   onChange={(e) => setFormData({ ...formData, source: e.target.value })}
                   className="w-full px-4 py-2 border border-gray-300 rounded-lg focus:ring-2 focus:ring-blue-500 focus:border-blue-500"
                 >
-                  <option value="WALK_IN">Пришел в офис</option>
-                  <option value="AGENT">Агент привел</option>
-                  <option value="PHONE_CALL">Телефонный звонок</option>
-                  <option value="WEBSITE">Сайт</option>
-                  <option value="SOCIAL_MEDIA">Соцсети (Telegram/Instagram/Facebook)</option>
-                  <option value="REFERRAL">Рекомендация</option>
-                  <option value="OTHER">Другое</option>
+                  <option value="WALK_IN">{t('sourceWalkIn')}</option>
+                  <option value="AGENT">{t('sourceAgent')}</option>
+                  <option value="PHONE_CALL">{t('sourcePhoneCall')}</option>
+                  <option value="WEBSITE">{t('sourceWebsite')}</option>
+                  <option value="SOCIAL_MEDIA">{t('sourceSocialMedia')}</option>
+                  <option value="REFERRAL">{t('sourceReferral')}</option>
+                  <option value="OTHER">{t('sourceOther')}</option>
                 </select>
               </div>
 
               <div>
-                <label className="block text-sm font-medium text-gray-700 mb-1">Приоритет *</label>
+                <label className="block text-sm font-medium text-gray-700 mb-1">{t('priorityLabel')} *</label>
                 <select
                   value={formData.priority}
                   onChange={(e) => setFormData({ ...formData, priority: e.target.value })}
                   className="w-full px-4 py-2 border border-gray-300 rounded-lg focus:ring-2 focus:ring-blue-500 focus:border-blue-500"
                 >
-                  <option value="LOW">Низкий</option>
-                  <option value="MEDIUM">Средний</option>
-                  <option value="HIGH">Высокий</option>
-                  <option value="URGENT">Срочный</option>
+                  <option value="LOW">{t('priorityLow')}</option>
+                  <option value="MEDIUM">{t('priorityMedium')}</option>
+                  <option value="HIGH">{t('priorityHigh')}</option>
+                  <option value="URGENT">{t('priorityUrgent')}</option>
                 </select>
               </div>
             </div>
 
             <div>
-              <label className="block text-sm font-medium text-gray-700 mb-1">Заметки</label>
+              <label className="block text-sm font-medium text-gray-700 mb-1">{t('notes')}</label>
               <textarea
                 rows={4}
-                placeholder="Дополнительная информация о клиенте..."
+                placeholder={t('notesPlaceholder')}
                 value={formData.notes}
                 onChange={(e) => setFormData({ ...formData, notes: e.target.value })}
                 className="w-full px-4 py-2 border border-gray-300 rounded-lg focus:ring-2 focus:ring-blue-500 focus:border-blue-500"
@@ -294,7 +296,7 @@ export default function NewLeadPage() {
         <div className="flex justify-end gap-4">
           <Link href="/developer/crm/leads">
             <button type="button" className="px-6 py-2 border border-gray-300 rounded-lg hover:bg-gray-50 transition-colors" disabled={loading}>
-              Отмена
+              {t('cancel')}
             </button>
           </Link>
           <button
@@ -305,12 +307,12 @@ export default function NewLeadPage() {
             {loading ? (
               <>
                 <Loader2 className="h-4 w-4 animate-spin" />
-                Сохранение...
+                {t('saving')}
               </>
             ) : (
               <>
                 <Save className="h-4 w-4" />
-                Сохранить
+                {t('save')}
               </>
             )}
           </button>

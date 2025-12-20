@@ -4,6 +4,7 @@ import { useState, useEffect } from 'react';
 import { api } from '@/lib/api';
 import { Bell, Check, CheckCheck, Trash2, Filter } from 'lucide-react';
 import Link from 'next/link';
+import { useTranslations } from 'next-intl';
 
 interface Notification {
   id: string;
@@ -24,6 +25,7 @@ interface Notification {
 }
 
 export default function NotificationsPage() {
+  const t = useTranslations('crm.notifications');
   const [notifications, setNotifications] = useState<Notification[]>([]);
   const [loading, setLoading] = useState(true);
   const [filter, setFilter] = useState<'all' | 'unread'>('all');
@@ -104,16 +106,9 @@ export default function NotificationsPage() {
   };
 
   const getTypeLabel = (type: string) => {
-    const labels: Record<string, string> = {
-      TASK_ASSIGNED: 'Задача назначена',
-      TASK_DUE_SOON: 'Задача скоро истекает',
-      TASK_OVERDUE: 'Задача просрочена',
-      TASK_COMPLETED: 'Задача выполнена',
-      LEAD_ASSIGNED: 'Лид назначен',
-      LEAD_STATUS_CHANGE: 'Статус лида изменен',
-      DEAL_STATUS_CHANGE: 'Статус сделки изменен',
-    };
-    return labels[type] || type;
+    const key = `types.${type}` as any;
+    const translated = t(key);
+    return translated !== key ? translated : type;
   };
 
   const formatDate = (dateString: string) => {
@@ -124,13 +119,13 @@ export default function NotificationsPage() {
     const diffHours = Math.floor(diffMs / 3600000);
     const diffDays = Math.floor(diffMs / 86400000);
 
-    if (diffMins < 1) return 'Только что';
-    if (diffMins < 60) return `${diffMins} мин назад`;
-    if (diffHours < 24) return `${diffHours} ч назад`;
-    if (diffDays === 0) return 'Сегодня';
-    if (diffDays === 1) return 'Вчера';
-    if (diffDays < 7) return `${diffDays} дней назад`;
-    return date.toLocaleDateString('ru-RU');
+    if (diffMins < 1) return t('time.justNow');
+    if (diffMins < 60) return t('time.minutesAgo', { count: diffMins });
+    if (diffHours < 24) return t('time.hoursAgo', { count: diffHours });
+    if (diffDays === 0) return t('time.today');
+    if (diffDays === 1) return t('time.yesterday');
+    if (diffDays < 7) return t('time.daysAgo', { count: diffDays });
+    return date.toLocaleDateString();
   };
 
   const unreadCount = notifications.filter((n) => !n.isRead).length;
@@ -139,7 +134,7 @@ export default function NotificationsPage() {
     return (
       <div className="min-h-screen bg-gray-50 p-6">
         <div className="max-w-4xl mx-auto">
-          <div className="text-center py-12 text-gray-500">Загрузка...</div>
+          <div className="text-center py-12 text-gray-500">{t('loading')}</div>
         </div>
       </div>
     );
@@ -154,11 +149,13 @@ export default function NotificationsPage() {
             <div>
               <h1 className="text-3xl font-bold text-gray-900 flex items-center gap-3">
                 <Bell className="w-8 h-8" />
-                Уведомления
+                {t('title')}
               </h1>
               {unreadCount > 0 && (
                 <p className="text-sm text-gray-600 mt-1">
-                  {unreadCount} {unreadCount === 1 ? 'непрочитанное' : 'непрочитанных'}
+                  {unreadCount === 1
+                    ? t('unreadCountOne', { count: unreadCount })
+                    : t('unreadCount', { count: unreadCount })}
                 </p>
               )}
             </div>
@@ -169,7 +166,7 @@ export default function NotificationsPage() {
                 className="flex items-center gap-2 px-4 py-2 bg-blue-600 text-white rounded-lg hover:bg-blue-700"
               >
                 <CheckCheck className="w-5 h-5" />
-                Отметить все прочитанными
+                {t('markAllAsRead')}
               </button>
             )}
           </div>
@@ -185,7 +182,7 @@ export default function NotificationsPage() {
               }`}
             >
               <Filter className="w-4 h-4" />
-              Все ({notifications.length})
+              {t('filters.all')} ({notifications.length})
             </button>
             <button
               onClick={() => setFilter('unread')}
@@ -195,7 +192,7 @@ export default function NotificationsPage() {
                   : 'bg-white text-gray-700 border hover:bg-gray-50'
               }`}
             >
-              Непрочитанные ({unreadCount})
+              {t('filters.unread')} ({unreadCount})
             </button>
           </div>
         </div>
@@ -205,9 +202,7 @@ export default function NotificationsPage() {
           <div className="bg-white rounded-lg shadow p-12 text-center">
             <Bell className="w-16 h-16 mx-auto text-gray-400 mb-4" />
             <p className="text-gray-500 text-lg">
-              {filter === 'unread'
-                ? 'Нет непрочитанных уведомлений'
-                : 'У вас пока нет уведомлений'}
+              {filter === 'unread' ? t('empty.unread') : t('empty.all')}
             </p>
           </div>
         ) : (
@@ -260,7 +255,7 @@ export default function NotificationsPage() {
                             }
                           }}
                         >
-                          Перейти →
+                          {t('actions.goTo')}
                         </Link>
                       )}
 
@@ -270,7 +265,7 @@ export default function NotificationsPage() {
                           className="flex items-center gap-1 text-sm text-gray-600 hover:text-gray-900"
                         >
                           <Check className="w-4 h-4" />
-                          Прочитано
+                          {t('actions.markAsRead')}
                         </button>
                       )}
 
@@ -279,7 +274,7 @@ export default function NotificationsPage() {
                         className="flex items-center gap-1 text-sm text-red-600 hover:text-red-800 ml-auto"
                       >
                         <Trash2 className="w-4 h-4" />
-                        Удалить
+                        {t('actions.delete')}
                       </button>
                     </div>
                   </div>

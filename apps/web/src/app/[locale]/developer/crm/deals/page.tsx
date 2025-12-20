@@ -5,6 +5,7 @@ import { DragDropContext, Droppable, Draggable, DropResult } from '@hello-pangea
 import { Plus, Search, Filter, DollarSign, User, Calendar, Building } from 'lucide-react';
 import { Link } from '@/i18n/routing';
 import { api } from '@/lib/api';
+import { useTranslations } from 'next-intl';
 
 interface Deal {
   id: string;
@@ -43,23 +44,30 @@ interface Pipeline {
   };
 }
 
-const stages = [
-  { key: 'QUALIFIED', label: 'Квалифицирован', color: 'bg-gray-100' },
-  { key: 'VIEWING_SCHEDULED', label: 'Просмотр назначен', color: 'bg-blue-100' },
-  { key: 'VIEWING_COMPLETED', label: 'Просмотр завершен', color: 'bg-purple-100' },
-  { key: 'OFFER_MADE', label: 'Предложение сделано', color: 'bg-yellow-100' },
-  { key: 'NEGOTIATION', label: 'Переговоры', color: 'bg-orange-100' },
-  { key: 'AGREEMENT_REACHED', label: 'Соглашение достигнуто', color: 'bg-green-100' },
-  { key: 'NOTARY_SCHEDULED', label: 'Нотариус назначен', color: 'bg-teal-100' },
-  { key: 'DOCUMENTS_PENDING', label: 'Ожидание документов', color: 'bg-indigo-100' },
-  { key: 'REGISTRATION_PENDING', label: 'Регистрация', color: 'bg-pink-100' },
+const stageKeys = [
+  { key: 'QUALIFIED', color: 'bg-gray-100' },
+  { key: 'VIEWING_SCHEDULED', color: 'bg-blue-100' },
+  { key: 'VIEWING_COMPLETED', color: 'bg-purple-100' },
+  { key: 'OFFER_MADE', color: 'bg-yellow-100' },
+  { key: 'NEGOTIATION', color: 'bg-orange-100' },
+  { key: 'AGREEMENT_REACHED', color: 'bg-green-100' },
+  { key: 'NOTARY_SCHEDULED', color: 'bg-teal-100' },
+  { key: 'DOCUMENTS_PENDING', color: 'bg-indigo-100' },
+  { key: 'REGISTRATION_PENDING', color: 'bg-pink-100' },
 ];
 
 export default function DealsPage() {
+  const t = useTranslations('crm.deals');
   const [pipeline, setPipeline] = useState<Pipeline>({});
   const [loading, setLoading] = useState(true);
   const [searchQuery, setSearchQuery] = useState('');
   const [filterOwner, setFilterOwner] = useState('');
+
+  // Build stages with translated labels
+  const stages = stageKeys.map(s => ({
+    ...s,
+    label: t(`stages.${s.key}` as any),
+  }));
 
   useEffect(() => {
     fetchPipeline();
@@ -119,7 +127,7 @@ export default function DealsPage() {
 
   const formatCurrency = (value: number, currency: string) => {
     if (currency === 'YE') {
-      return `${value.toLocaleString()} у.е.`;
+      return `${value.toLocaleString()} ${t('currency.ye')}`;
     }
     return `${value.toLocaleString()} ${currency}`;
   };
@@ -145,13 +153,13 @@ export default function DealsPage() {
       {/* Header */}
       <div className="flex items-center justify-between">
         <div>
-          <h1 className="text-3xl font-bold text-gray-900">Сделки</h1>
-          <p className="text-gray-600 mt-1">Управление воронкой продаж</p>
+          <h1 className="text-3xl font-bold text-gray-900">{t('title')}</h1>
+          <p className="text-gray-600 mt-1">{t('subtitle')}</p>
         </div>
         <Link href="/developer/crm/leads">
           <button className="bg-blue-600 text-white px-4 py-2 rounded-lg hover:bg-blue-700 flex items-center gap-2">
             <Plus className="h-5 w-5" />
-            Конвертировать лид
+            {t('convertLead')}
           </button>
         </Link>
       </div>
@@ -162,7 +170,7 @@ export default function DealsPage() {
           <Search className="absolute left-3 top-1/2 -translate-y-1/2 h-5 w-5 text-gray-400" />
           <input
             type="text"
-            placeholder="Поиск по имени клиента..."
+            placeholder={t('searchPlaceholder')}
             value={searchQuery}
             onChange={(e) => setSearchQuery(e.target.value)}
             className="w-full pl-10 pr-4 py-2 border border-gray-300 rounded-lg focus:ring-2 focus:ring-blue-500 focus:border-blue-500"
@@ -170,7 +178,7 @@ export default function DealsPage() {
         </div>
         <button className="px-4 py-2 border border-gray-300 rounded-lg hover:bg-gray-50 flex items-center gap-2">
           <Filter className="h-5 w-5" />
-          Фильтры
+          {t('filters')}
         </button>
       </div>
 
@@ -179,7 +187,7 @@ export default function DealsPage() {
         <div className="bg-white p-6 rounded-lg shadow">
           <div className="flex items-center justify-between">
             <div>
-              <p className="text-sm text-gray-600">Всего сделок</p>
+              <p className="text-sm text-gray-600">{t('stats.total')}</p>
               <p className="text-2xl font-bold text-gray-900">
                 {Object.values(pipeline).reduce((sum, stage) => sum + stage.count, 0)}
               </p>
@@ -192,7 +200,7 @@ export default function DealsPage() {
         <div className="bg-white p-6 rounded-lg shadow">
           <div className="flex items-center justify-between">
             <div>
-              <p className="text-sm text-gray-600">Общая стоимость</p>
+              <p className="text-sm text-gray-600">{t('stats.totalValue')}</p>
               <p className="text-2xl font-bold text-gray-900">
                 {formatCurrency(
                   Object.values(pipeline).reduce((sum, stage) => sum + stage.totalValue, 0),
@@ -208,7 +216,7 @@ export default function DealsPage() {
         <div className="bg-white p-6 rounded-lg shadow">
           <div className="flex items-center justify-between">
             <div>
-              <p className="text-sm text-gray-600">На просмотре</p>
+              <p className="text-sm text-gray-600">{t('stats.viewing')}</p>
               <p className="text-2xl font-bold text-gray-900">
                 {(pipeline['VIEWING_SCHEDULED']?.count || 0) + (pipeline['VIEWING_COMPLETED']?.count || 0)}
               </p>
@@ -221,7 +229,7 @@ export default function DealsPage() {
         <div className="bg-white p-6 rounded-lg shadow">
           <div className="flex items-center justify-between">
             <div>
-              <p className="text-sm text-gray-600">В переговорах</p>
+              <p className="text-sm text-gray-600">{t('stats.negotiation')}</p>
               <p className="text-2xl font-bold text-gray-900">
                 {pipeline['NEGOTIATION']?.count || 0}
               </p>

@@ -295,10 +295,10 @@ export default function PropertyCreationWizard() {
 
       case 2:
         if (!formData.address) {
-          newErrors.address = 'Укажите адрес';
+          newErrors.address = t('validation.address');
         }
         if (!formData.city) {
-          newErrors.city = 'Выберите город';
+          newErrors.city = t('validation.city');
         }
         break;
 
@@ -307,7 +307,7 @@ export default function PropertyCreationWizard() {
           newErrors.price = t('validation.price');
         }
         if (!formData.area || parseFloat(formData.area) <= 0) {
-          newErrors.area = 'Укажите площадь больше 0 м²';
+          newErrors.area = t('validation.area');
         }
         break;
 
@@ -316,10 +316,10 @@ export default function PropertyCreationWizard() {
           newErrors.images = t('validation.images');
         }
         if (!formData.title || formData.title.length < 10) {
-          newErrors.title = 'Заголовок должен содержать минимум 10 символов';
+          newErrors.title = t('validation.title');
         }
         if (!formData.description || formData.description.length < 50) {
-          newErrors.description = 'Описание должно содержать минимум 50 символов';
+          newErrors.description = t('validation.description');
         }
         break;
     }
@@ -333,40 +333,40 @@ export default function PropertyCreationWizard() {
 
     // Step 1: Property Type
     if (!formData.propertyType) {
-      allErrors.push({ step: 1, field: 'Тип недвижимости', message: 'Выберите тип недвижимости' });
+      allErrors.push({ step: 1, field: t('fields.propertyType'), message: t('validation.propertyType') });
     }
     if (!formData.listingType) {
-      allErrors.push({ step: 1, field: 'Тип объявления', message: 'Выберите тип объявления' });
+      allErrors.push({ step: 1, field: t('fields.listingType'), message: t('validation.listingType') });
     }
 
     // Step 2: Location
     if (!formData.address) {
-      allErrors.push({ step: 2, field: 'Адрес', message: 'Укажите адрес' });
+      allErrors.push({ step: 2, field: t('fields.address'), message: t('validation.address') });
     }
     if (!formData.city) {
-      allErrors.push({ step: 2, field: 'Город', message: 'Выберите город' });
+      allErrors.push({ step: 2, field: t('fields.city'), message: t('validation.city') });
     }
 
     // Step 3: Basic Info
     if (!formData.price || parseFloat(formData.price) <= 0) {
-      allErrors.push({ step: 3, field: 'Цена', message: 'Укажите корректную цену' });
+      allErrors.push({ step: 3, field: t('fields.price'), message: t('validation.price') });
     }
     if (!formData.currency) {
-      allErrors.push({ step: 3, field: 'Валюта', message: 'Выберите валюту' });
+      allErrors.push({ step: 3, field: t('fields.currency'), message: t('validation.currency') });
     }
     if (!formData.area || parseFloat(formData.area) <= 0) {
-      allErrors.push({ step: 3, field: 'Площадь', message: 'Укажите площадь больше 0 м²' });
+      allErrors.push({ step: 3, field: t('fields.area'), message: t('validation.area') });
     }
 
     // Step 5: Photos & Description
     if (formData.images.length === 0) {
-      allErrors.push({ step: 5, field: 'Фотографии', message: 'Загрузите хотя бы одно фото' });
+      allErrors.push({ step: 5, field: t('fields.photos'), message: t('validation.images') });
     }
     if (!formData.title || formData.title.length < 10) {
-      allErrors.push({ step: 5, field: 'Заголовок', message: 'Заголовок должен содержать минимум 10 символов' });
+      allErrors.push({ step: 5, field: t('fields.title'), message: t('validation.title') });
     }
     if (!formData.description || formData.description.length < 50) {
-      allErrors.push({ step: 5, field: 'Описание', message: 'Описание должно содержать минимум 50 символов' });
+      allErrors.push({ step: 5, field: t('fields.description'), message: t('validation.description') });
     }
 
     return allErrors;
@@ -488,7 +488,7 @@ export default function PropertyCreationWizard() {
 
         // Show specific validation errors if available
         if (errorData?.errors && Array.isArray(errorData.errors)) {
-          alert(`Ошибка валидации:\n${errorData.errors.join('\n')}`);
+          alert(`${t('errors.validationAlert')}\n${errorData.errors.join('\n')}`);
         } else {
           alert(t('errors.createFailed', { message: errorData?.message || t('errors.unknownError') }));
         }
@@ -507,7 +507,7 @@ export default function PropertyCreationWizard() {
       setCreatedPropertyId(property.id);
       setShowSuccessModal(true);
     } catch (error) {
-      alert('Ошибка при создании объявления. Попробуйте еще раз.');
+      alert(t('errors.tryAgain'));
     } finally {
       setSaving(false);
     }
@@ -546,10 +546,10 @@ export default function PropertyCreationWizard() {
             className="mb-4"
           >
             <ArrowLeft className="h-4 w-4 mr-2" />
-            Назад
+            {t('nav.back')}
           </Button>
           <h1 className="text-3xl font-bold text-gray-900">
-            Создать объявление
+            {t('title')}
           </h1>
         </div>
 
@@ -557,7 +557,7 @@ export default function PropertyCreationWizard() {
         <div className="mb-8">
           <div className="flex items-center justify-between mb-2">
             <span className="text-sm font-medium text-gray-700">
-              Шаг {currentStep} из {STEPS.length}
+              {t('progress', { current: currentStep, total: STEPS.length })}
             </span>
             <span className="text-sm text-gray-500">{Math.round(progress)}%</span>
           </div>
@@ -572,7 +572,7 @@ export default function PropertyCreationWizard() {
         {/* Mobile Step Indicator - Compact */}
         <div className="md:hidden flex items-center justify-between mb-6 px-4 py-3 bg-blue-50 rounded-lg">
           <span className="text-sm font-medium text-blue-900">
-            Шаг {currentStep} из {STEPS.length}
+            {t('progress', { current: currentStep, total: STEPS.length })}
           </span>
           <div className="flex gap-1">
             {STEPS.map((step) => (
@@ -657,7 +657,7 @@ export default function PropertyCreationWizard() {
             className="gap-2 px-3 md:px-4"
           >
             <ArrowLeft className="h-4 w-4" />
-            <span>Назад</span>
+            <span>{t('nav.back')}</span>
           </Button>
 
           {/* Draft Actions Dropdown */}
@@ -669,10 +669,10 @@ export default function PropertyCreationWizard() {
             >
               <Save className="h-4 w-4" />
               <span className="hidden xs:inline">
-                {draftSaved ? 'Сохранено ✓' : 'Черновик'}
+                {draftSaved ? t('draft.saved') : t('draft.label')}
               </span>
               <span className="xs:hidden">
-                {draftSaved ? '✓' : 'Сохр'}
+                {draftSaved ? t('draft.shortSaved') : t('draft.short')}
               </span>
               <ChevronDown className={`h-4 w-4 transition-transform ${showDraftDropdown ? 'rotate-180' : ''}`} />
             </button>
@@ -694,7 +694,7 @@ export default function PropertyCreationWizard() {
                   }`}
                 >
                   <Save className="h-4 w-4" />
-                  {draftSaved ? '✓ Сохранено!' : 'Сохранить'}
+                  {draftSaved ? t('draft.justSaved') : t('draft.save')}
                 </button>
                 <button
                   type="button"
@@ -705,7 +705,7 @@ export default function PropertyCreationWizard() {
                   className="w-full flex items-center gap-2 px-4 py-2.5 text-sm text-red-600 hover:bg-red-50 transition-colors last:rounded-b-lg border-t border-gray-100"
                 >
                   <Trash2 className="h-4 w-4" />
-                  Удалить
+                  {t('draft.delete')}
                 </button>
               </div>
             )}
@@ -714,7 +714,7 @@ export default function PropertyCreationWizard() {
           {/* Next/Submit Button */}
           {currentStep < STEPS.length ? (
             <Button onClick={handleNext} className="flex-1 md:flex-auto gap-2 ml-auto">
-              <span>Далее</span>
+              <span>{t('nav.next')}</span>
               <ArrowRight className="h-4 w-4" />
             </Button>
           ) : (
@@ -724,11 +724,11 @@ export default function PropertyCreationWizard() {
               className="flex-1 md:flex-auto gap-2 ml-auto bg-green-600 hover:bg-green-700"
             >
               {saving ? (
-                <>Публикация...</>
+                <>{t('nav.publishing')}</>
               ) : (
                 <>
                   <Check className="h-4 w-4" />
-                  <span>Опубликовать</span>
+                  <span>{t('nav.publish')}</span>
                 </>
               )}
             </Button>
@@ -745,24 +745,24 @@ export default function PropertyCreationWizard() {
                     <Trash2 className="h-6 w-6 text-red-600" />
                   </div>
                   <h3 className="text-lg font-semibold text-gray-900">
-                    Удалить черновик?
+                    {t('modals.clearDraft.title')}
                   </h3>
                 </div>
                 <p className="text-gray-600 mb-6">
-                  Вы уверены, что хотите удалить черновик и начать заново? Все несохраненные данные будут потеряны.
+                  {t('modals.clearDraft.message')}
                 </p>
                 <div className="flex gap-3 justify-end">
                   <Button
                     variant="outline"
                     onClick={() => setShowClearConfirm(false)}
                   >
-                    Отмена
+                    {t('modals.clearDraft.cancel')}
                   </Button>
                   <Button
                     onClick={confirmClearDraft}
                     className="bg-red-600 hover:bg-red-700"
                   >
-                    Удалить черновик
+                    {t('modals.clearDraft.confirm')}
                   </Button>
                 </div>
               </div>
@@ -783,7 +783,7 @@ export default function PropertyCreationWizard() {
                   </div>
                   <div>
                     <h3 className="text-lg font-semibold text-gray-900">
-                      Заполните обязательные поля
+                      {t('modals.validation.title')}
                     </h3>
                     <p className="text-sm text-gray-600 mt-1">
                       {t('errors.found', {
@@ -827,7 +827,7 @@ export default function PropertyCreationWizard() {
                     variant="outline"
                     onClick={() => setShowValidationModal(false)}
                   >
-                    Закрыть
+                    {t('modals.validation.close')}
                   </Button>
                   <Button
                     onClick={() => {
@@ -838,7 +838,7 @@ export default function PropertyCreationWizard() {
                     }}
                     className="bg-blue-600 hover:bg-blue-700"
                   >
-                    Перейти к шагу {validationErrors[0]?.step || 1}
+                    {t('modals.validation.goToStep', { step: validationErrors[0]?.step || 1 })}
                   </Button>
                 </div>
               </div>
@@ -861,10 +861,10 @@ export default function PropertyCreationWizard() {
 
                   {/* Success Message */}
                   <h3 className="text-2xl font-bold text-gray-900 mb-2">
-                    Объявление опубликовано!
+                    {t('modals.success.title')}
                   </h3>
                   <p className="text-gray-600 mb-6">
-                    Ваше объявление успешно создано и теперь доступно для просмотра.
+                    {t('modals.success.description')}
                   </p>
 
                   {/* Action Buttons */}
@@ -877,7 +877,7 @@ export default function PropertyCreationWizard() {
                       }}
                       className="flex-1"
                     >
-                      На главную
+                      {t('modals.success.home')}
                     </Button>
                     <Button
                       onClick={() => {
@@ -886,7 +886,7 @@ export default function PropertyCreationWizard() {
                       }}
                       className="flex-1 bg-green-600 hover:bg-green-700"
                     >
-                      Посмотреть объявление
+                      {t('modals.success.view')}
                     </Button>
                   </div>
                 </div>

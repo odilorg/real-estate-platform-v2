@@ -2,6 +2,7 @@
 
 import { useEffect, useState } from 'react';
 import { useRouter } from 'next/navigation';
+import { useTranslations } from 'next-intl';
 import { api } from '@/lib/api';
 import {
   CheckCircle, Clock, AlertCircle, Plus, Filter,
@@ -47,6 +48,7 @@ interface TaskStats {
 
 export default function TasksPage() {
   const router = useRouter();
+  const t = useTranslations('crm.tasks');
   const [tasks, setTasks] = useState<Task[]>([]);
   const [stats, setStats] = useState<TaskStats | null>(null);
   const [loading, setLoading] = useState(true);
@@ -121,15 +123,15 @@ export default function TasksPage() {
         {/* Header */}
         <div className="flex items-center justify-between mb-6">
           <div>
-            <h1 className="text-3xl font-bold text-gray-900">Задачи</h1>
-            <p className="text-gray-500 mt-1">Управление задачами и напоминаниями</p>
+            <h1 className="text-3xl font-bold text-gray-900">{t('title')}</h1>
+            <p className="text-gray-500 mt-1">{t('subtitle')}</p>
           </div>
           <button
             onClick={() => router.push('/developer/crm/tasks/new')}
             className="flex items-center gap-2 px-4 py-2 bg-blue-600 text-white rounded-lg hover:bg-blue-700"
           >
             <Plus className="w-5 h-5" />
-            Новая задача
+            {t('newTask')}
           </button>
         </div>
 
@@ -137,23 +139,23 @@ export default function TasksPage() {
         {stats && (
           <div className="grid grid-cols-1 md:grid-cols-5 gap-4 mb-6">
             <div className="bg-white rounded-lg shadow p-4">
-              <div className="text-sm text-gray-500">Всего</div>
+              <div className="text-sm text-gray-500">{t('stats.total')}</div>
               <div className="text-2xl font-bold text-gray-900">{stats.totalTasks}</div>
             </div>
             <div className="bg-white rounded-lg shadow p-4">
-              <div className="text-sm text-gray-500">Ожидают</div>
+              <div className="text-sm text-gray-500">{t('stats.pending')}</div>
               <div className="text-2xl font-bold text-yellow-600">{stats.pendingTasks}</div>
             </div>
             <div className="bg-white rounded-lg shadow p-4">
-              <div className="text-sm text-gray-500">В работе</div>
+              <div className="text-sm text-gray-500">{t('stats.inProgress')}</div>
               <div className="text-2xl font-bold text-blue-600">{stats.inProgressTasks}</div>
             </div>
             <div className="bg-white rounded-lg shadow p-4">
-              <div className="text-sm text-gray-500">Завершено</div>
+              <div className="text-sm text-gray-500">{t('stats.completed')}</div>
               <div className="text-2xl font-bold text-green-600">{stats.completedTasks}</div>
             </div>
             <div className="bg-white rounded-lg shadow p-4">
-              <div className="text-sm text-gray-500">Просрочено</div>
+              <div className="text-sm text-gray-500">{t('stats.overdue')}</div>
               <div className="text-2xl font-bold text-red-600">{stats.overdueTasks}</div>
             </div>
           </div>
@@ -168,22 +170,22 @@ export default function TasksPage() {
               onChange={(e) => setFilterStatus(e.target.value)}
               className="px-4 py-2 border rounded-lg focus:outline-none focus:ring-2 focus:ring-blue-500"
             >
-              <option value="">Все статусы</option>
-              <option value="PENDING">Ожидает</option>
-              <option value="IN_PROGRESS">В работе</option>
-              <option value="COMPLETED">Завершено</option>
-              <option value="CANCELLED">Отменено</option>
+              <option value="">{t('filters.allStatuses')}</option>
+              <option value="PENDING">{t('status.PENDING')}</option>
+              <option value="IN_PROGRESS">{t('status.IN_PROGRESS')}</option>
+              <option value="COMPLETED">{t('status.COMPLETED')}</option>
+              <option value="CANCELLED">{t('status.CANCELLED')}</option>
             </select>
             <select
               value={filterPriority}
               onChange={(e) => setFilterPriority(e.target.value)}
               className="px-4 py-2 border rounded-lg focus:outline-none focus:ring-2 focus:ring-blue-500"
             >
-              <option value="">Все приоритеты</option>
-              <option value="URGENT">Срочно</option>
-              <option value="HIGH">Высокий</option>
-              <option value="MEDIUM">Средний</option>
-              <option value="LOW">Низкий</option>
+              <option value="">{t('filters.allPriorities')}</option>
+              <option value="URGENT">{t('priority.URGENT')}</option>
+              <option value="HIGH">{t('priority.HIGH')}</option>
+              <option value="MEDIUM">{t('priority.MEDIUM')}</option>
+              <option value="LOW">{t('priority.LOW')}</option>
             </select>
           </div>
         </div>
@@ -191,11 +193,11 @@ export default function TasksPage() {
         {/* Tasks List */}
         {loading ? (
           <div className="flex items-center justify-center py-12">
-            <div className="text-gray-500">Загрузка...</div>
+            <div className="text-gray-500">{t('loading')}</div>
           </div>
         ) : tasks.length === 0 ? (
           <div className="text-center py-12 bg-white rounded-lg shadow">
-            <p className="text-gray-500">Задачи не найдены</p>
+            <p className="text-gray-500">{t('noTasks')}</p>
           </div>
         ) : (
           <div className="grid grid-cols-1 gap-4">
@@ -211,10 +213,10 @@ export default function TasksPage() {
                   <h3 className="text-lg font-semibold text-gray-900">{task.title}</h3>
                   <div className="flex gap-2">
                     <span className={`px-3 py-1 rounded-full text-xs font-medium ${getStatusColor(task.status)}`}>
-                      {task.status}
+                      {t(`status.${task.status}` as any, { defaultValue: task.status })}
                     </span>
                     <span className={`px-3 py-1 rounded-full text-xs font-medium ${getPriorityColor(task.priority)}`}>
-                      {task.priority}
+                      {t(`priority.${task.priority}` as any, { defaultValue: task.priority })}
                     </span>
                   </div>
                 </div>
@@ -236,11 +238,11 @@ export default function TasksPage() {
                   </div>
                   <div className="flex items-center gap-1">
                     <Tag className="w-4 h-4" />
-                    {task.type}
+                    {t(`type.${task.type}` as any, { defaultValue: task.type })}
                   </div>
                   {task.lead && (
                     <div className="text-blue-600">
-                      Лид: {task.lead.firstName} {task.lead.lastName}
+                      {t('detail.lead')}: {task.lead.firstName} {task.lead.lastName}
                     </div>
                   )}
                 </div>

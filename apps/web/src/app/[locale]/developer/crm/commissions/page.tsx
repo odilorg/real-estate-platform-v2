@@ -3,6 +3,7 @@
 import { useState, useEffect } from 'react';
 import { Search, Filter, DollarSign, Check, X, Calendar, User, TrendingUp, Loader2 } from 'lucide-react';
 import { api } from '@/lib/api';
+import { useTranslations } from 'next-intl';
 
 interface Commission {
   id: string;
@@ -49,6 +50,8 @@ interface Summary {
 }
 
 export default function CommissionsPage() {
+  const t = useTranslations('crm.commissions');
+  const tc = useTranslations('crm.common');
   const [commissions, setCommissions] = useState<Commission[]>([]);
   const [summary, setSummary] = useState<Summary | null>(null);
   const [loading, setLoading] = useState(true);
@@ -87,7 +90,7 @@ export default function CommissionsPage() {
   };
 
   const handleApprove = async (id: string) => {
-    if (!confirm('Одобрить эту комиссию для выплаты?')) return;
+    if (!confirm(t('alerts.approveConfirm'))) return;
 
     try {
       await api.post(`/agency-crm/commissions/${id}/approve`, {});
@@ -95,14 +98,14 @@ export default function CommissionsPage() {
       fetchSummary();
     } catch (error) {
       console.error('Error approving commission:', error);
-      alert('Ошибка при одобрении комиссии');
+      alert(t('alerts.approveError'));
     }
   };
 
   const handleMarkAsPaid = async () => {
     if (!selectedCommission) return;
     if (!paymentMethod) {
-      alert('Пожалуйста, укажите способ оплаты');
+      alert(t('alerts.paymentMethodRequired'));
       return;
     }
 
@@ -121,7 +124,7 @@ export default function CommissionsPage() {
       fetchSummary();
     } catch (error) {
       console.error('Error marking as paid:', error);
-      alert('Ошибка при отметке выплаты');
+      alert(t('alerts.payError'));
     } finally {
       setProcessing(false);
     }
@@ -129,7 +132,7 @@ export default function CommissionsPage() {
 
   const formatCurrency = (value: number, currency: string) => {
     if (currency === 'YE') {
-      return `${value.toLocaleString()} у.е.`;
+      return `${value.toLocaleString()} ${t('currency.ye', { defaultValue: 'у.е.' })}`;
     }
     return `${value.toLocaleString()} ${currency}`;
   };
@@ -144,16 +147,17 @@ export default function CommissionsPage() {
   };
 
   const getStatusBadge = (status: string) => {
-    const badges: Record<string, { bg: string; text: string; label: string }> = {
-      PENDING: { bg: 'bg-yellow-100', text: 'text-yellow-800', label: 'Ожидает' },
-      APPROVED: { bg: 'bg-blue-100', text: 'text-blue-800', label: 'Одобрено' },
-      PAID: { bg: 'bg-green-100', text: 'text-green-800', label: 'Выплачено' },
-      DISPUTED: { bg: 'bg-red-100', text: 'text-red-800', label: 'Спор' },
+    const badges: Record<string, { bg: string; text: string }> = {
+      PENDING: { bg: 'bg-yellow-100', text: 'text-yellow-800' },
+      APPROVED: { bg: 'bg-blue-100', text: 'text-blue-800' },
+      PAID: { bg: 'bg-green-100', text: 'text-green-800' },
+      DISPUTED: { bg: 'bg-red-100', text: 'text-red-800' },
     };
-    const badge = badges[status] || { bg: 'bg-gray-100', text: 'text-gray-800', label: status };
+    const badge = badges[status] || { bg: 'bg-gray-100', text: 'text-gray-800' };
+    const label = t(`statuses.${status}` as any, { defaultValue: status });
     return (
       <span className={`px-3 py-1 text-xs font-semibold rounded-full ${badge.bg} ${badge.text}`}>
-        {badge.label}
+        {label}
       </span>
     );
   };
@@ -181,8 +185,8 @@ export default function CommissionsPage() {
     <div className="space-y-6">
       {/* Header */}
       <div>
-        <h1 className="text-3xl font-bold text-gray-900">Комиссии</h1>
-        <p className="text-gray-600 mt-1">Управление выплатами агентам</p>
+        <h1 className="text-3xl font-bold text-gray-900">{t('title')}</h1>
+        <p className="text-gray-600 mt-1">{t('subtitle')}</p>
       </div>
 
       {/* Summary Stats */}
@@ -191,7 +195,7 @@ export default function CommissionsPage() {
           <div className="bg-white p-6 rounded-lg shadow">
             <div className="flex items-center justify-between">
               <div>
-                <p className="text-sm text-gray-600">Всего комиссий</p>
+                <p className="text-sm text-gray-600">{t('stats.total')}</p>
                 <p className="text-2xl font-bold text-gray-900">{summary.count}</p>
               </div>
               <div className="p-3 bg-blue-100 rounded-lg">
@@ -202,7 +206,7 @@ export default function CommissionsPage() {
           <div className="bg-white p-6 rounded-lg shadow">
             <div className="flex items-center justify-between">
               <div>
-                <p className="text-sm text-gray-600">К выплате</p>
+                <p className="text-sm text-gray-600">{t('stats.pending')}</p>
                 <p className="text-2xl font-bold text-gray-900">{formatCurrency(summary.total, 'YE')}</p>
               </div>
               <div className="p-3 bg-green-100 rounded-lg">
@@ -213,7 +217,7 @@ export default function CommissionsPage() {
           <div className="bg-white p-6 rounded-lg shadow">
             <div className="flex items-center justify-between">
               <div>
-                <p className="text-sm text-gray-600">Ожидают одобрения</p>
+                <p className="text-sm text-gray-600">{t('stats.awaitingApproval')}</p>
                 <p className="text-2xl font-bold text-yellow-600">{summary.pending.count}</p>
               </div>
               <div className="p-3 bg-yellow-100 rounded-lg">
@@ -224,7 +228,7 @@ export default function CommissionsPage() {
           <div className="bg-white p-6 rounded-lg shadow">
             <div className="flex items-center justify-between">
               <div>
-                <p className="text-sm text-gray-600">Выплачено</p>
+                <p className="text-sm text-gray-600">{t('stats.paid')}</p>
                 <p className="text-2xl font-bold text-green-600">{formatCurrency(summary.paid.total, 'YE')}</p>
               </div>
               <div className="p-3 bg-green-100 rounded-lg">
@@ -241,7 +245,7 @@ export default function CommissionsPage() {
           <Search className="absolute left-3 top-1/2 -translate-y-1/2 h-5 w-5 text-gray-400" />
           <input
             type="text"
-            placeholder="Поиск по агенту или клиенту..."
+            placeholder={t('search')}
             value={searchQuery}
             onChange={(e) => setSearchQuery(e.target.value)}
             className="w-full pl-10 pr-4 py-2 border border-gray-300 rounded-lg focus:ring-2 focus:ring-blue-500 focus:border-blue-500"
@@ -252,11 +256,11 @@ export default function CommissionsPage() {
           onChange={(e) => setStatusFilter(e.target.value)}
           className="px-4 py-2 border border-gray-300 rounded-lg focus:ring-2 focus:ring-blue-500 focus:border-blue-500"
         >
-          <option value="">Все статусы</option>
-          <option value="PENDING">Ожидают</option>
-          <option value="APPROVED">Одобрено</option>
-          <option value="PAID">Выплачено</option>
-          <option value="DISPUTED">Спорные</option>
+          <option value="">{t('statuses.all')}</option>
+          <option value="PENDING">{t('statuses.PENDING')}</option>
+          <option value="APPROVED">{t('statuses.APPROVED')}</option>
+          <option value="PAID">{t('statuses.PAID')}</option>
+          <option value="DISPUTED">{t('statuses.DISPUTED')}</option>
         </select>
       </div>
 
@@ -267,25 +271,25 @@ export default function CommissionsPage() {
             <thead className="bg-gray-50 border-b">
               <tr>
                 <th className="px-6 py-3 text-left text-xs font-medium text-gray-500 uppercase tracking-wider">
-                  Агент
+                  {t('table.agent')}
                 </th>
                 <th className="px-6 py-3 text-left text-xs font-medium text-gray-500 uppercase tracking-wider">
-                  Сделка
+                  {t('table.deal')}
                 </th>
                 <th className="px-6 py-3 text-left text-xs font-medium text-gray-500 uppercase tracking-wider">
-                  Сумма сделки
+                  {t('table.dealAmount')}
                 </th>
                 <th className="px-6 py-3 text-left text-xs font-medium text-gray-500 uppercase tracking-wider">
-                  Комиссия
+                  {t('table.commission')}
                 </th>
                 <th className="px-6 py-3 text-left text-xs font-medium text-gray-500 uppercase tracking-wider">
-                  Статус
+                  {t('table.status')}
                 </th>
                 <th className="px-6 py-3 text-left text-xs font-medium text-gray-500 uppercase tracking-wider">
-                  Дата
+                  {t('table.date')}
                 </th>
                 <th className="px-6 py-3 text-right text-xs font-medium text-gray-500 uppercase tracking-wider">
-                  Действия
+                  {t('table.actions')}
                 </th>
               </tr>
             </thead>
@@ -293,7 +297,7 @@ export default function CommissionsPage() {
               {filteredCommissions.length === 0 ? (
                 <tr>
                   <td colSpan={7} className="px-6 py-12 text-center text-gray-500">
-                    Комиссий не найдено
+                    {t('table.noCommissions')}
                   </td>
                 </tr>
               ) : (
@@ -327,7 +331,7 @@ export default function CommissionsPage() {
                         {formatCurrency(commission.netAmount, commission.currency)}
                       </div>
                       <div className="text-xs text-gray-500">
-                        Валовая: {formatCurrency(commission.grossAmount, commission.currency)}
+                        {t('table.gross')}: {formatCurrency(commission.grossAmount, commission.currency)}
                       </div>
                     </td>
                     <td className="px-6 py-4 whitespace-nowrap">{getStatusBadge(commission.status)}</td>
@@ -345,7 +349,7 @@ export default function CommissionsPage() {
                           onClick={() => handleApprove(commission.id)}
                           className="text-blue-600 hover:text-blue-900 mr-4"
                         >
-                          Одобрить
+                          {t('actions.approve')}
                         </button>
                       )}
                       {commission.status === 'APPROVED' && (
@@ -356,11 +360,11 @@ export default function CommissionsPage() {
                           }}
                           className="text-green-600 hover:text-green-900"
                         >
-                          Выплатить
+                          {t('actions.pay')}
                         </button>
                       )}
                       {commission.status === 'PAID' && (
-                        <span className="text-gray-400">Выплачено ✓</span>
+                        <span className="text-gray-400">{t('actions.paidDone')}</span>
                       )}
                     </td>
                   </tr>
@@ -376,7 +380,7 @@ export default function CommissionsPage() {
         <div className="fixed inset-0 bg-black bg-opacity-50 flex items-center justify-center z-50">
           <div className="bg-white p-6 rounded-lg shadow-xl max-w-md w-full mx-4">
             <div className="flex items-center justify-between mb-4">
-              <h3 className="text-xl font-semibold">Отметить как выплачено</h3>
+              <h3 className="text-xl font-semibold">{t('payModal.title')}</h3>
               <button
                 onClick={() => {
                   setShowPayModal(false);
@@ -391,11 +395,11 @@ export default function CommissionsPage() {
             </div>
 
             <div className="mb-4 p-4 bg-gray-50 rounded-lg">
-              <p className="text-sm text-gray-600">Агент</p>
+              <p className="text-sm text-gray-600">{t('payModal.agent')}</p>
               <p className="font-medium">
                 {selectedCommission.member.user.firstName} {selectedCommission.member.user.lastName}
               </p>
-              <p className="text-sm text-gray-600 mt-2">Сумма к выплате</p>
+              <p className="text-sm text-gray-600 mt-2">{t('payModal.amount')}</p>
               <p className="text-2xl font-bold text-green-600">
                 {formatCurrency(selectedCommission.netAmount, selectedCommission.currency)}
               </p>
@@ -403,27 +407,27 @@ export default function CommissionsPage() {
 
             <div className="space-y-4">
               <div>
-                <label className="block text-sm font-medium text-gray-700 mb-1">Способ оплаты *</label>
+                <label className="block text-sm font-medium text-gray-700 mb-1">{t('payModal.paymentMethod')}</label>
                 <select
                   value={paymentMethod}
                   onChange={(e) => setPaymentMethod(e.target.value)}
                   className="w-full px-4 py-2 border border-gray-300 rounded-lg focus:ring-2 focus:ring-blue-500 focus:border-blue-500"
                 >
-                  <option value="">Выберите способ</option>
-                  <option value="BANK_TRANSFER">Банковский перевод</option>
-                  <option value="CASH">Наличные</option>
-                  <option value="CARD">Карта</option>
+                  <option value="">{t('payModal.selectMethod')}</option>
+                  <option value="BANK_TRANSFER">{t('payModal.bankTransfer')}</option>
+                  <option value="CASH">{t('payModal.cash')}</option>
+                  <option value="CARD">{t('payModal.card')}</option>
                   <option value="PAYPAL">PayPal</option>
-                  <option value="OTHER">Другое</option>
+                  <option value="OTHER">{t('payModal.other')}</option>
                 </select>
               </div>
 
               <div>
-                <label className="block text-sm font-medium text-gray-700 mb-1">Примечания</label>
+                <label className="block text-sm font-medium text-gray-700 mb-1">{t('payModal.notes')}</label>
                 <textarea
                   value={paymentNotes}
                   onChange={(e) => setPaymentNotes(e.target.value)}
-                  placeholder="Номер транзакции, детали..."
+                  placeholder={t('payModal.notesPlaceholder')}
                   rows={3}
                   className="w-full px-4 py-2 border border-gray-300 rounded-lg focus:ring-2 focus:ring-blue-500 focus:border-blue-500"
                 />
@@ -435,7 +439,7 @@ export default function CommissionsPage() {
                   disabled={processing}
                   className="flex-1 bg-green-600 text-white px-4 py-2 rounded-lg hover:bg-green-700 disabled:opacity-50 disabled:cursor-not-allowed"
                 >
-                  {processing ? 'Сохранение...' : 'Подтвердить выплату'}
+                  {processing ? t('payModal.saving') : t('payModal.confirm')}
                 </button>
                 <button
                   onClick={() => {
@@ -447,7 +451,7 @@ export default function CommissionsPage() {
                   disabled={processing}
                   className="flex-1 px-4 py-2 border border-gray-300 rounded-lg hover:bg-gray-50 disabled:opacity-50"
                 >
-                  Отмена
+                  {tc('cancel')}
                 </button>
               </div>
             </div>

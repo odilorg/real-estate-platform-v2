@@ -5,6 +5,7 @@ import { Link } from '@/i18n/routing';
 import { useRouter } from '@/i18n/routing';
 import { Button, Card, CardContent, Badge } from '@repo/ui';
 import { useAuth } from '@/context/AuthContext';
+import { useTranslations } from 'next-intl';
 import {
   Plus,
   Loader2,
@@ -59,23 +60,18 @@ interface Analytics {
   contactsTrend: number;
 }
 
-const LISTING_TYPE_LABELS: Record<string, string> = {
-  SALE: 'Продажа',
-  RENT_LONG: 'Аренда',
-  RENT_DAILY: 'Посуточно',
-};
-
-const STATUS_LABELS: Record<string, { label: string; variant: 'default' | 'secondary' | 'outline' }> = {
-  ACTIVE: { label: 'Активно', variant: 'default' },
-  PENDING: { label: 'На модерации', variant: 'secondary' },
-  SOLD: { label: 'Продано', variant: 'outline' },
-  RENTED: { label: 'Сдано', variant: 'outline' },
-  INACTIVE: { label: 'Неактивно', variant: 'outline' },
+const STATUS_VARIANTS: Record<string, 'default' | 'secondary' | 'outline'> = {
+  ACTIVE: 'default',
+  PENDING: 'secondary',
+  SOLD: 'outline',
+  RENTED: 'outline',
+  INACTIVE: 'outline',
 };
 
 export default function DashboardPage() {
   const router = useRouter();
   const { user, isAuthenticated, loading: authLoading } = useAuth();
+  const t = useTranslations('dashboard.main');
   const [properties, setProperties] = useState<Property[]>([]);
   const [loading, setLoading] = useState(true);
   const [error, setError] = useState<string | null>(null);
@@ -169,20 +165,20 @@ export default function DashboardPage() {
       });
 
       if (!response.ok) {
-        throw new Error('Ошибка загрузки объявлений');
+        throw new Error(t('errors.loadError'));
       }
 
       const data = await response.json();
       setProperties(data.items || data);
     } catch (err) {
-      setError(err instanceof Error ? err.message : 'Ошибка загрузки');
+      setError(err instanceof Error ? err.message : t('errors.loadError'));
     } finally {
       setLoading(false);
     }
   };
 
   const handleDelete = async (id: string) => {
-    if (!confirm('Вы уверены, что хотите удалить это объявление?')) {
+    if (!confirm(t('confirmDelete'))) {
       return;
     }
 
@@ -198,12 +194,12 @@ export default function DashboardPage() {
       });
 
       if (!response.ok) {
-        throw new Error('Ошибка удаления');
+        throw new Error(t('errors.deleteError'));
       }
 
       setProperties((prev) => prev.filter((p) => p.id !== id));
     } catch (err) {
-      alert(err instanceof Error ? err.message : 'Ошибка удаления');
+      alert(err instanceof Error ? err.message : t('errors.deleteError'));
     } finally {
       setDeletingId(null);
     }
@@ -215,7 +211,7 @@ export default function DashboardPage() {
         <div className="flex items-center text-green-600 text-sm mt-2">
           <TrendingUp className="h-4 w-4 mr-1" />
           <span className="font-medium">+{trend.toFixed(1)}%</span>
-          <span className="text-xs text-gray-500 ml-1">vs прошлый период</span>
+          <span className="text-xs text-gray-500 ml-1">{t('trends.vsPrevious')}</span>
         </div>
       );
     } else if (trend < 0) {
@@ -223,7 +219,7 @@ export default function DashboardPage() {
         <div className="flex items-center text-red-600 text-sm mt-2">
           <TrendingDown className="h-4 w-4 mr-1" />
           <span className="font-medium">{trend.toFixed(1)}%</span>
-          <span className="text-xs text-gray-500 ml-1">vs прошлый период</span>
+          <span className="text-xs text-gray-500 ml-1">{t('trends.vsPrevious')}</span>
         </div>
       );
     } else {
@@ -231,7 +227,7 @@ export default function DashboardPage() {
         <div className="flex items-center text-gray-500 text-sm mt-2">
           <Minus className="h-4 w-4 mr-1" />
           <span className="font-medium">0%</span>
-          <span className="text-xs text-gray-500 ml-1">без изменений</span>
+          <span className="text-xs text-gray-500 ml-1">{t('trends.noChange')}</span>
         </div>
       );
     }
@@ -254,11 +250,11 @@ export default function DashboardPage() {
       <main className="container mx-auto px-4 py-8">
         {/* Dashboard Header */}
         <div className="flex items-center justify-between mb-8">
-          <h1 className="text-3xl font-bold text-gray-900">Личный кабинет</h1>
+          <h1 className="text-3xl font-bold text-gray-900">{t('title')}</h1>
           <Link href="/properties/new">
             <Button size="lg" className="bg-blue-600 hover:bg-blue-700">
               <Plus className="h-5 w-5 mr-2" />
-              Создать объявление
+              {t('createListing')}
             </Button>
           </Link>
         </div>
@@ -266,10 +262,10 @@ export default function DashboardPage() {
         {/* Welcome Message */}
         <div className="mb-8 bg-gradient-to-r from-blue-50 to-indigo-50 rounded-xl p-6 border border-blue-100">
           <h2 className="text-xl font-semibold text-gray-800 mb-1">
-            Добро пожаловать, <span className="text-blue-600">{user?.firstName}</span>!
+            {t('welcome')}, <span className="text-blue-600">{user?.firstName}</span>!
           </h2>
           <p className="text-base text-gray-600">
-            Здесь вы можете управлять своими объявлениями и отслеживать статистику
+            {t('welcomeDescription')}
           </p>
         </div>
 
@@ -281,7 +277,7 @@ export default function DashboardPage() {
                 <div className="p-3 bg-green-100 rounded-lg">
                   <Search className="h-6 w-6 text-green-600" />
                 </div>
-                <div className="font-semibold text-gray-900">Все объявления</div>
+                <div className="font-semibold text-gray-900">{t('quickActions.allListings')}</div>
               </CardContent>
             </Card>
           </Link>
@@ -298,9 +294,9 @@ export default function DashboardPage() {
                   )}
                 </div>
                 <div>
-                  <div className="font-semibold text-gray-900">Сообщения</div>
+                  <div className="font-semibold text-gray-900">{t('quickActions.messages')}</div>
                   {unreadCount > 0 && (
-                    <div className="text-xs text-blue-600">{unreadCount} новых</div>
+                    <div className="text-xs text-blue-600">{unreadCount} {t('quickActions.newMessages')}</div>
                   )}
                 </div>
               </CardContent>
@@ -313,7 +309,7 @@ export default function DashboardPage() {
                 <div className="p-3 bg-pink-100 rounded-lg">
                   <Heart className="h-6 w-6 text-pink-600" />
                 </div>
-                <div className="font-semibold text-gray-900">Избранное</div>
+                <div className="font-semibold text-gray-900">{t('quickActions.favorites')}</div>
               </CardContent>
             </Card>
           </Link>
@@ -324,7 +320,7 @@ export default function DashboardPage() {
                 <div className="p-3 bg-purple-100 rounded-lg">
                   <BookmarkCheck className="h-6 w-6 text-purple-600" />
                 </div>
-                <div className="font-semibold text-gray-900">Сохраненные</div>
+                <div className="font-semibold text-gray-900">{t('quickActions.savedSearches')}</div>
               </CardContent>
             </Card>
           </Link>
@@ -335,7 +331,7 @@ export default function DashboardPage() {
                 <div className="p-3 bg-gray-100 rounded-lg">
                   <Settings className="h-6 w-6 text-gray-600" />
                 </div>
-                <div className="font-semibold text-gray-900">Настройки</div>
+                <div className="font-semibold text-gray-900">{t('quickActions.settings')}</div>
               </CardContent>
             </Card>
           </Link>
@@ -354,7 +350,7 @@ export default function DashboardPage() {
               <div className="text-4xl font-bold text-gray-900 mb-1">
                 {properties.length}
               </div>
-              <div className="text-sm font-medium text-gray-600">Всего объявлений</div>
+              <div className="text-sm font-medium text-gray-600">{t('stats.totalListings')}</div>
             </CardContent>
           </Card>
 
@@ -369,7 +365,7 @@ export default function DashboardPage() {
               <div className="text-4xl font-bold text-gray-900 mb-1">
                 {properties.filter((p) => p.status === 'ACTIVE').length}
               </div>
-              <div className="text-sm font-medium text-gray-600">Активных</div>
+              <div className="text-sm font-medium text-gray-600">{t('stats.activeListings')}</div>
             </CardContent>
           </Card>
 
@@ -388,7 +384,7 @@ export default function DashboardPage() {
                   <div className="text-4xl font-bold text-gray-900 mb-1">
                     {analytics?.totalViews.toLocaleString() || 0}
                   </div>
-                  <div className="text-sm font-medium text-gray-600">Просмотров (30 дн)</div>
+                  <div className="text-sm font-medium text-gray-600">{t('stats.viewsPeriod')}</div>
                   {analytics && renderTrend(analytics.viewsTrend)}
                 </>
               )}
@@ -410,7 +406,7 @@ export default function DashboardPage() {
                   <div className="text-4xl font-bold text-gray-900 mb-1">
                     {analytics?.totalFavorites.toLocaleString() || 0}
                   </div>
-                  <div className="text-sm font-medium text-gray-600">Избранное (30 дн)</div>
+                  <div className="text-sm font-medium text-gray-600">{t('stats.favoritesPeriod')}</div>
                   {analytics && renderTrend(analytics.favoritesTrend)}
                 </>
               )}
@@ -432,7 +428,7 @@ export default function DashboardPage() {
                   <div className="text-4xl font-bold text-gray-900 mb-1">
                     {analytics?.totalContacts.toLocaleString() || 0}
                   </div>
-                  <div className="text-sm font-medium text-gray-600">Обращений (30 дн)</div>
+                  <div className="text-sm font-medium text-gray-600">{t('stats.contactsPeriod')}</div>
                   {analytics && renderTrend(analytics.contactsTrend)}
                 </>
               )}
@@ -442,9 +438,9 @@ export default function DashboardPage() {
 
         {/* Properties Section Header */}
         <div className="mb-6 flex items-center justify-between">
-          <h2 className="text-2xl font-bold text-gray-900">Мои объявления</h2>
+          <h2 className="text-2xl font-bold text-gray-900">{t('myListings.title')}</h2>
           <div className="text-sm text-gray-500">
-            {properties.length} {properties.length === 1 ? 'объявление' : 'объявлений'}
+            {properties.length} {properties.length === 1 ? t('myListings.count_one') : t('myListings.count_many')}
           </div>
         </div>
 
@@ -470,15 +466,15 @@ export default function DashboardPage() {
                 <Building2 className="h-10 w-10 text-gray-400" />
               </div>
               <h3 className="text-xl font-bold text-gray-900 mb-2">
-                У вас пока нет объявлений
+                {t('empty.title')}
               </h3>
               <p className="text-base text-gray-600 mb-8 max-w-md mx-auto">
-                Создайте своё первое объявление прямо сейчас и начните получать запросы от клиентов
+                {t('empty.description')}
               </p>
               <Link href="/properties/new">
                 <Button size="lg" className="bg-blue-600 hover:bg-blue-700">
                   <Plus className="h-5 w-5 mr-2" />
-                  Создать объявление
+                  {t('createListing')}
                 </Button>
               </Link>
             </CardContent>
@@ -513,22 +509,18 @@ export default function DashboardPage() {
                         <div className="flex items-center justify-between gap-2 mb-1 sm:mb-2">
                           <div className="flex items-center gap-1 sm:gap-2 flex-wrap">
                             <Badge
-                              variant={
-                                STATUS_LABELS[property.status]?.variant || 'default'
-                              }
+                              variant={STATUS_VARIANTS[property.status] || 'default'}
                               className="flex-shrink-0 text-xs"
                             >
-                              {STATUS_LABELS[property.status]?.label ||
-                                property.status}
+                              {t(`statuses.${property.status}`)}
                             </Badge>
                             <Badge variant="outline" className="flex-shrink-0 text-xs">
-                              {LISTING_TYPE_LABELS[property.listingType] ||
-                                property.listingType}
+                              {t(`listingTypes.${property.listingType}`)}
                             </Badge>
                           </div>
                           {/* Price on mobile - inline with badges */}
                           <div className="sm:hidden text-base font-bold text-blue-600 whitespace-nowrap">
-                            {property.price.toLocaleString()} <span className="text-xs font-normal text-gray-500">у.е.</span>
+                            {property.price.toLocaleString()} <span className="text-xs font-normal text-gray-500">{t('currency')}</span>
                           </div>
                         </div>
                         <h3 className="font-semibold text-sm sm:text-base mb-1 sm:mb-2 text-gray-900 line-clamp-2">
@@ -583,7 +575,7 @@ export default function DashboardPage() {
                       {/* Desktop price and actions */}
                       <div className="hidden sm:flex text-right flex-col items-end flex-shrink-0 ml-4">
                         <div className="text-xl font-bold text-blue-600 mb-4 whitespace-nowrap">
-                          {property.price.toLocaleString()} <span className="text-sm font-normal text-gray-500">у.е.</span>
+                          {property.price.toLocaleString()} <span className="text-sm font-normal text-gray-500">{t('currency')}</span>
                         </div>
                         <div className="flex items-center gap-2">
                           <Link href={`/properties/${property.id}`}>

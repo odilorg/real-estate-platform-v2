@@ -4,6 +4,7 @@ import { useState, useEffect, useRef, useCallback } from 'react';
 import { Link } from '@/i18n/routing';
 import { useRouter } from '@/i18n/routing';
 import { useSearchParams } from 'next/navigation';
+import { useTranslations } from 'next-intl';
 import { PropertyCard, PropertyCardSkeletonGrid, Button, Select, SelectContent, SelectItem, SelectTrigger, SelectValue } from '@repo/ui';
 import { PropertyFiltersModern, PropertyFiltersExtended, type ModernFilterValues, type ExtendedFilterValues, PropertyMap, type PropertyMapMarker, PropertyListItem, PropertyQuickView, SaveSearchModal, SavedSearchesDropdown } from '@/components';
 import { Search, Plus, Loader2, User, LogOut, MapPin, ArrowUpDown, Grid3X3, Map as MapIcon, List, Bookmark, X, Eye, Save } from 'lucide-react';
@@ -71,17 +72,18 @@ const defaultFilters: ModernFilterValues = {
   amenities: [],
 };
 
-const SORT_OPTIONS = [
-  { value: 'createdAt:desc', label: 'Сначала новые' },
-  { value: 'createdAt:asc', label: 'Сначала старые' },
-  { value: 'price:asc', label: 'Сначала дешевые' },
-  { value: 'price:desc', label: 'Сначала дорогие' },
-  { value: 'area:desc', label: 'По площади (убыв.)' },
-  { value: 'area:asc', label: 'По площади (возр.)' },
-  { value: 'rating:desc', label: 'По рейтингу' },
-];
+const SORT_OPTION_KEYS = [
+  'createdAt:desc',
+  'createdAt:asc',
+  'price:asc',
+  'price:desc',
+  'area:desc',
+  'area:asc',
+  'rating:desc',
+] as const;
 
 export default function PropertiesPage() {
+  const t = useTranslations('propertiesPage');
   const { user, isAuthenticated, logout } = useAuth();
   const searchParams = useSearchParams();
   const [properties, setProperties] = useState<Property[]>([]);
@@ -537,7 +539,7 @@ export default function PropertiesPage() {
           setSearchRadius(5); // Default 5km radius
         },
         () => {
-          setError('Не удалось определить местоположение');
+          setError(t('locationError'));
         }
       );
     }
@@ -567,7 +569,7 @@ export default function PropertiesPage() {
               <input
                 ref={searchInputRef}
                 type="text"
-                placeholder="Адрес, ЖК..."
+                placeholder={t('searchPlaceholder')}
                 value={searchQuery}
                 onChange={(e) => setSearchQuery(e.target.value)}
                 onFocus={() => setShowSuggestions(true)}
@@ -604,10 +606,7 @@ export default function PropertiesPage() {
                         )}
                       </span>
                       <span className="text-xs text-gray-400 capitalize">
-                        {suggestion.type === 'city' && 'Город'}
-                        {suggestion.type === 'district' && 'Район'}
-                        {suggestion.type === 'metro' && 'Метро'}
-                        {suggestion.type === 'property' && 'Объект'}
+                        {t(`suggestions.${suggestion.type}`)}
                       </span>
                     </button>
                   ))}
@@ -619,13 +618,13 @@ export default function PropertiesPage() {
             <Button
               variant={userLocation ? 'default' : 'outline'}
               onClick={handleGetUserLocation}
-              title="Искать рядом со мной"
+              title={t('searchNearMe')}
             >
               <MapPin className="h-5 w-5" />
             </Button>
 
             <Button onClick={handleSearchSubmit} size="lg">
-              Найти
+              {t('findButton')}
             </Button>
           </div>
 
@@ -633,7 +632,7 @@ export default function PropertiesPage() {
           {userLocation && (
             <div className="mt-3 flex items-center gap-3 p-3 bg-blue-50 rounded-lg">
               <MapPin className="h-4 w-4 text-blue-600" />
-              <span className="text-sm text-blue-800">Поиск рядом с вами:</span>
+              <span className="text-sm text-blue-800">{t('searchNearYou')}</span>
               <Select
                 value={searchRadius?.toString() || '5'}
                 onValueChange={(val) => setSearchRadius(Number(val))}
@@ -642,12 +641,12 @@ export default function PropertiesPage() {
                   <SelectValue />
                 </SelectTrigger>
                 <SelectContent>
-                  <SelectItem value="1">1 км</SelectItem>
-                  <SelectItem value="2">2 км</SelectItem>
-                  <SelectItem value="5">5 км</SelectItem>
-                  <SelectItem value="10">10 км</SelectItem>
-                  <SelectItem value="20">20 км</SelectItem>
-                  <SelectItem value="50">50 км</SelectItem>
+                  <SelectItem value="1">1 {t('filters.km')}</SelectItem>
+                  <SelectItem value="2">2 {t('filters.km')}</SelectItem>
+                  <SelectItem value="5">5 {t('filters.km')}</SelectItem>
+                  <SelectItem value="10">10 {t('filters.km')}</SelectItem>
+                  <SelectItem value="20">20 {t('filters.km')}</SelectItem>
+                  <SelectItem value="50">50 {t('filters.km')}</SelectItem>
                 </SelectContent>
               </Select>
               <Button
@@ -659,7 +658,7 @@ export default function PropertiesPage() {
                 }}
                 className="text-blue-600"
               >
-                Отменить
+                {t('cancel')}
               </Button>
             </div>
           )}
@@ -721,10 +720,10 @@ export default function PropertiesPage() {
         {/* Results Header with Sorting and View Mode - Removed as it's now in the filter component */}
         <div className="mb-4 flex flex-col sm:flex-row sm:items-center sm:justify-between gap-4 hidden">
           <h1 className="text-2xl font-bold">
-            Недвижимость{' '}
+            {t('title')}{' '}
             {!loading && (
               <span className="text-gray-500 font-normal text-lg">
-                ({pagination?.total || properties.length} объектов)
+                ({pagination?.total || properties.length} {t('objectsCount')})
               </span>
             )}
           </h1>
@@ -737,7 +736,7 @@ export default function PropertiesPage() {
                 size="sm"
                 onClick={() => setViewMode('grid')}
                 className="rounded-none"
-                title="Сетка"
+                title={t('viewMode.grid')}
               >
                 <Grid3X3 className="h-4 w-4" />
               </Button>
@@ -746,7 +745,7 @@ export default function PropertiesPage() {
                 size="sm"
                 onClick={() => setViewMode('list')}
                 className="rounded-none border-x"
-                title="Список"
+                title={t('viewMode.list')}
               >
                 <List className="h-4 w-4" />
               </Button>
@@ -755,7 +754,7 @@ export default function PropertiesPage() {
                 size="sm"
                 onClick={() => setViewMode('split')}
                 className="rounded-none border-x"
-                title="Список + Карта"
+                title={t('viewMode.listMap')}
               >
                 <Grid3X3 className="h-4 w-4 mr-1" />
                 <MapIcon className="h-4 w-4" />
@@ -765,7 +764,7 @@ export default function PropertiesPage() {
                 size="sm"
                 onClick={() => setViewMode('map')}
                 className="rounded-none"
-                title="Карта"
+                title={t('viewMode.map')}
               >
                 <MapIcon className="h-4 w-4" />
               </Button>
@@ -776,12 +775,12 @@ export default function PropertiesPage() {
               <ArrowUpDown className="h-4 w-4 text-gray-500" />
               <Select value={sortBy} onValueChange={setSortBy}>
                 <SelectTrigger className="w-48">
-                  <SelectValue placeholder="Сортировка" />
+                  <SelectValue placeholder={t('sort.placeholder')} />
                 </SelectTrigger>
                 <SelectContent>
-                  {SORT_OPTIONS.map((option) => (
-                    <SelectItem key={option.value} value={option.value}>
-                      {option.label}
+                  {SORT_OPTION_KEYS.map((value) => (
+                    <SelectItem key={value} value={value}>
+                      {t(`sort.${value.replace(':', '_')}`)}
                     </SelectItem>
                   ))}
                 </SelectContent>
@@ -810,10 +809,10 @@ export default function PropertiesPage() {
                   size="sm"
                   onClick={() => setShowSaveSearchModal(true)}
                   disabled={!filters.propertyTypes.length && !filters.listingTypes.length && !searchQuery}
-                  title="Сохранить текущий поиск"
+                  title={t('saveSearch')}
                 >
                   <Save className="h-4 w-4 mr-2" />
-                  Сохранить поиск
+                  {t('saveSearch')}
                 </Button>
               </>
             )}
@@ -838,12 +837,12 @@ export default function PropertiesPage() {
             <div className="text-gray-400 mb-4">
               <Search className="h-16 w-16 mx-auto" />
             </div>
-            <h2 className="text-xl font-semibold mb-2">Объекты не найдены</h2>
+            <h2 className="text-xl font-semibold mb-2">{t('empty.title')}</h2>
             <p className="text-gray-600 mb-6">
-              Попробуйте изменить параметры поиска
+              {t('empty.description')}
             </p>
             <Button variant="outline" onClick={handleResetFilters}>
-              Сбросить фильтры
+              {t('empty.resetFilters')}
             </Button>
           </div>
         )}
@@ -856,12 +855,12 @@ export default function PropertiesPage() {
               <div className="mb-4 p-4 bg-blue-50 border border-blue-200 rounded-lg">
                 <div className="flex flex-wrap items-center gap-2">
                   <span className="text-sm font-medium text-gray-700">
-                    Найдено: {pagination?.total || properties.length}
+                    {t('filters.found')}: {pagination?.total || properties.length}
                   </span>
 
                   {searchQuery && (
                     <div className="flex items-center gap-1 px-3 py-1 bg-white border border-blue-300 rounded-full text-sm">
-                      <span>Поиск: &quot;{searchQuery}&quot;</span>
+                      <span>{t('filters.search')}: &quot;{searchQuery}&quot;</span>
                       <button
                         onClick={() => setSearchQuery('')}
                         className="ml-1 text-gray-500 hover:text-gray-700"
@@ -873,7 +872,7 @@ export default function PropertiesPage() {
 
                   {filters.listingTypes.map((type) => (
                     <div key={type} className="flex items-center gap-1 px-3 py-1 bg-white border border-blue-300 rounded-full text-sm">
-                      <span>{type === 'SALE' ? 'Продажа' : type === 'RENT_LONG' ? 'Аренда' : 'Посуточно'}</span>
+                      <span>{type === 'SALE' ? t('filters.sale') : type === 'RENT_LONG' ? t('filters.rentLong') : t('filters.rentDaily')}</span>
                       <button
                         onClick={() => setFilters(prev => ({
                           ...prev,
@@ -903,7 +902,7 @@ export default function PropertiesPage() {
 
                   {searchRadius && (
                     <div className="flex items-center gap-1 px-3 py-1 bg-white border border-blue-300 rounded-full text-sm">
-                      <span>В радиусе {searchRadius} км</span>
+                      <span>{t('filters.inRadius')} {searchRadius} {t('filters.km')}</span>
                       <button
                         onClick={() => setSearchRadius(null)}
                         className="ml-1 text-gray-500 hover:text-gray-700"
@@ -917,7 +916,7 @@ export default function PropertiesPage() {
                     onClick={handleResetFilters}
                     className="ml-2 px-3 py-1 text-sm text-blue-600 hover:text-blue-800 font-medium"
                   >
-                    Сбросить все
+                    {t('filters.resetAll')}
                   </button>
                 </div>
               </div>
@@ -969,7 +968,7 @@ export default function PropertiesPage() {
                             setQuickViewPropertyId(property.id);
                           }}
                           className="absolute top-2 right-2 p-2 bg-white hover:bg-blue-600 text-gray-700 hover:text-white rounded-full shadow-lg opacity-0 group-hover:opacity-100 transition-all duration-200 z-10"
-                          title="Быстрый просмотр"
+                          title={t('quickView')}
                         >
                           <Eye className="h-4 w-4" />
                         </button>
@@ -1064,7 +1063,7 @@ export default function PropertiesPage() {
                         setQuickViewPropertyId(property.id);
                       }}
                       className="absolute top-2 right-2 p-2 bg-white hover:bg-blue-600 text-gray-700 hover:text-white rounded-full shadow-lg opacity-0 group-hover:opacity-100 transition-all duration-200 z-10"
-                      title="Быстрый просмотр"
+                      title={t('quickView')}
                     >
                       <Eye className="h-4 w-4" />
                     </button>
@@ -1099,7 +1098,7 @@ export default function PropertiesPage() {
                     onClick={() => handlePageChange(currentPage - 1)}
                     disabled={currentPage === 1}
                   >
-                    Назад
+                    {t('pagination.prev')}
                   </Button>
 
                   <div className="flex gap-1">
@@ -1140,7 +1139,7 @@ export default function PropertiesPage() {
                     onClick={() => handlePageChange(currentPage + 1)}
                     disabled={currentPage === pagination.pages}
                   >
-                    Вперед
+                    {t('pagination.next')}
                   </Button>
                 </div>
               </div>

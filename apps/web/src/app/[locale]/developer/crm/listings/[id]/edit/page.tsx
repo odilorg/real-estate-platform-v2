@@ -2,6 +2,7 @@
 
 import { useState, useEffect } from 'react';
 import { useParams, useRouter } from 'next/navigation';
+import { useTranslations } from 'next-intl';
 import { ChevronLeft, Building, MapPin, Info, User } from 'lucide-react';
 import { Link } from '@/i18n/routing';
 import { api } from '@/lib/api';
@@ -9,6 +10,7 @@ import { api } from '@/lib/api';
 export default function EditListingPage() {
   const params = useParams();
   const router = useRouter();
+  const t = useTranslations('crm.listings');
   const [loading, setLoading] = useState(true);
   const [saving, setSaving] = useState(false);
   const [success, setSuccess] = useState(false);
@@ -81,7 +83,7 @@ export default function EditListingPage() {
       });
     } catch (error) {
       console.error('Error fetching listing:', error);
-      alert('Ошибка загрузки данных');
+      alert(t('alerts.loadError'));
     } finally {
       setLoading(false);
     }
@@ -113,7 +115,7 @@ export default function EditListingPage() {
       }, 1500);
     } catch (error) {
       console.error('Error updating listing:', error);
-      alert('Ошибка при обновлении объекта');
+      alert(t('alerts.updateError'));
     } finally {
       setSaving(false);
     }
@@ -136,7 +138,7 @@ export default function EditListingPage() {
   if (loading) {
     return (
       <div className="flex items-center justify-center h-64">
-        <div className="text-gray-500">Загрузка...</div>
+        <div className="text-gray-500">{t('loading')}</div>
       </div>
     );
   }
@@ -147,28 +149,28 @@ export default function EditListingPage() {
         <Link href={`/developer/crm/listings/${params.id}`}>
           <button className="flex items-center gap-2 text-gray-600 hover:text-gray-900 mb-4">
             <ChevronLeft className="h-5 w-5" />
-            <span>Назад к объекту</span>
+            <span>{t('edit.backToListing')}</span>
           </button>
         </Link>
 
-        <h1 className="text-xl md:text-2xl lg:text-3xl font-bold text-gray-900">Редактировать объект</h1>
-        <p className="text-sm text-gray-500 mt-1">Обновление информации об объекте недвижимости</p>
+        <h1 className="text-xl md:text-2xl lg:text-3xl font-bold text-gray-900">{t('edit.title')}</h1>
+        <p className="text-sm text-gray-500 mt-1">{t('edit.subtitle')}</p>
       </div>
 
       {success && (
         <div className="bg-green-50 border border-green-200 text-green-800 px-4 py-3 rounded-lg mb-6">
-          ✅ Объект успешно обновлен! Перенаправление...
+          ✅ {t('edit.success')}
         </div>
       )}
 
       <form onSubmit={handleSubmit} className="space-y-6">
         {/* Basic Information */}
         <div className="bg-white p-4 md:p-6 rounded-lg shadow">
-          <h2 className="text-lg md:text-xl font-semibold text-gray-900 mb-4">Основная информация</h2>
+          <h2 className="text-lg md:text-xl font-semibold text-gray-900 mb-4">{t('sections.basicInfo')}</h2>
 
           <div className="space-y-4">
             <div>
-              <label className="block text-sm font-medium text-gray-700 mb-1">Название *</label>
+              <label className="block text-sm font-medium text-gray-700 mb-1">{t('form.title')} *</label>
               <input
                 type="text"
                 required
@@ -179,7 +181,7 @@ export default function EditListingPage() {
             </div>
 
             <div>
-              <label className="block text-sm font-medium text-gray-700 mb-1">Описание *</label>
+              <label className="block text-sm font-medium text-gray-700 mb-1">{t('form.description')} *</label>
               <textarea
                 required
                 value={formData.description}
@@ -191,7 +193,7 @@ export default function EditListingPage() {
 
             <div className="grid grid-cols-1 md:grid-cols-2 gap-4">
               <div>
-                <label className="block text-sm font-medium text-gray-700 mb-1">Цена *</label>
+                <label className="block text-sm font-medium text-gray-700 mb-1">{t('form.price')} *</label>
                 <input
                   type="number"
                   required
@@ -204,45 +206,45 @@ export default function EditListingPage() {
               </div>
 
               <div>
-                <label className="block text-sm font-medium text-gray-700 mb-1">Валюта *</label>
+                <label className="block text-sm font-medium text-gray-700 mb-1">{t('form.currency')} *</label>
                 <select
                   value={formData.currency}
                   onChange={(e) => setFormData({ ...formData, currency: e.target.value })}
                   className="w-full px-4 py-2.5 border border-gray-300 rounded-lg focus:ring-2 focus:ring-blue-500 focus:border-blue-500"
                 >
-                  <option value="UZS">Сум (UZS)</option>
-                  <option value="YE">Доллар (USD)</option>
+                  <option value="UZS">{t('currency.UZS')}</option>
+                  <option value="USD">{t('currency.USD')}</option>
                 </select>
               </div>
             </div>
 
             <div className="grid grid-cols-1 md:grid-cols-2 gap-4">
               <div>
-                <label className="block text-sm font-medium text-gray-700 mb-1">Тип недвижимости *</label>
+                <label className="block text-sm font-medium text-gray-700 mb-1">{t('form.propertyType')} *</label>
                 <select
                   value={formData.propertyType}
                   onChange={(e) => setFormData({ ...formData, propertyType: e.target.value })}
                   className="w-full px-4 py-2.5 border border-gray-300 rounded-lg focus:ring-2 focus:ring-blue-500 focus:border-blue-500"
                 >
-                  <option value="APARTMENT">Квартира</option>
-                  <option value="HOUSE">Дом</option>
-                  <option value="CONDO">Кондоминиум</option>
-                  <option value="TOWNHOUSE">Таунхаус</option>
-                  <option value="LAND">Земля</option>
-                  <option value="COMMERCIAL">Коммерческая</option>
+                  <option value="APARTMENT">{t('propertyType.APARTMENT')}</option>
+                  <option value="HOUSE">{t('propertyType.HOUSE')}</option>
+                  <option value="CONDO">{t('propertyType.CONDO')}</option>
+                  <option value="TOWNHOUSE">{t('propertyType.TOWNHOUSE')}</option>
+                  <option value="LAND">{t('propertyType.LAND')}</option>
+                  <option value="COMMERCIAL">{t('propertyType.COMMERCIAL')}</option>
                 </select>
               </div>
 
               <div>
-                <label className="block text-sm font-medium text-gray-700 mb-1">Тип сделки *</label>
+                <label className="block text-sm font-medium text-gray-700 mb-1">{t('form.listingType')} *</label>
                 <select
                   value={formData.listingType}
                   onChange={(e) => setFormData({ ...formData, listingType: e.target.value })}
                   className="w-full px-4 py-2.5 border border-gray-300 rounded-lg focus:ring-2 focus:ring-blue-500 focus:border-blue-500"
                 >
-                  <option value="SALE">Продажа</option>
-                  <option value="RENT_LONG">Долгосрочная аренда</option>
-                  <option value="RENT_DAILY">Посуточная аренда</option>
+                  <option value="SALE">{t('listingType.SALE')}</option>
+                  <option value="RENT_LONG">{t('listingType.RENT_LONG')}</option>
+                  <option value="RENT_DAILY">{t('listingType.RENT_DAILY')}</option>
                 </select>
               </div>
             </div>
@@ -251,11 +253,11 @@ export default function EditListingPage() {
 
         {/* Location */}
         <div className="bg-white p-4 md:p-6 rounded-lg shadow">
-          <h2 className="text-lg md:text-xl font-semibold text-gray-900 mb-4">Местоположение</h2>
+          <h2 className="text-lg md:text-xl font-semibold text-gray-900 mb-4">{t('sections.location')}</h2>
 
           <div className="space-y-4">
             <div>
-              <label className="block text-sm font-medium text-gray-700 mb-1">Адрес *</label>
+              <label className="block text-sm font-medium text-gray-700 mb-1">{t('form.address')} *</label>
               <input
                 type="text"
                 required
@@ -267,7 +269,7 @@ export default function EditListingPage() {
 
             <div className="grid grid-cols-1 md:grid-cols-2 gap-4">
               <div>
-                <label className="block text-sm font-medium text-gray-700 mb-1">Город *</label>
+                <label className="block text-sm font-medium text-gray-700 mb-1">{t('form.city')} *</label>
                 <input
                   type="text"
                   required
@@ -278,7 +280,7 @@ export default function EditListingPage() {
               </div>
 
               <div>
-                <label className="block text-sm font-medium text-gray-700 mb-1">Район</label>
+                <label className="block text-sm font-medium text-gray-700 mb-1">{t('form.district')}</label>
                 <input
                   type="text"
                   value={formData.district}
@@ -292,12 +294,12 @@ export default function EditListingPage() {
 
         {/* Property Details */}
         <div className="bg-white p-4 md:p-6 rounded-lg shadow">
-          <h2 className="text-lg md:text-xl font-semibold text-gray-900 mb-4">Характеристики</h2>
+          <h2 className="text-lg md:text-xl font-semibold text-gray-900 mb-4">{t('sections.propertyDetails')}</h2>
 
           <div className="space-y-4">
             <div className="grid grid-cols-1 md:grid-cols-3 gap-4">
               <div>
-                <label className="block text-sm font-medium text-gray-700 mb-1">Комнат</label>
+                <label className="block text-sm font-medium text-gray-700 mb-1">{t('form.bedrooms')}</label>
                 <input
                   type="number"
                   min="0"
@@ -308,7 +310,7 @@ export default function EditListingPage() {
               </div>
 
               <div>
-                <label className="block text-sm font-medium text-gray-700 mb-1">Санузлов</label>
+                <label className="block text-sm font-medium text-gray-700 mb-1">{t('form.bathrooms')}</label>
                 <input
                   type="number"
                   min="0"
@@ -320,7 +322,7 @@ export default function EditListingPage() {
               </div>
 
               <div>
-                <label className="block text-sm font-medium text-gray-700 mb-1">Площадь (м²)</label>
+                <label className="block text-sm font-medium text-gray-700 mb-1">{t('form.area')}</label>
                 <input
                   type="number"
                   min="0"
@@ -333,7 +335,7 @@ export default function EditListingPage() {
             </div>
 
             <div>
-              <label className="block text-sm font-medium text-gray-700 mb-2">Удобства</label>
+              <label className="block text-sm font-medium text-gray-700 mb-2">{t('form.amenities')}</label>
               <div className="grid grid-cols-2 md:grid-cols-3 gap-3">
                 {amenitiesList.map((amenity) => (
                   <label key={amenity} className="flex items-center gap-2 cursor-pointer">
@@ -353,7 +355,7 @@ export default function EditListingPage() {
 
         {/* Owner Details */}
         <div className="bg-white p-4 md:p-6 rounded-lg shadow">
-          <h2 className="text-lg md:text-xl font-semibold text-gray-900 mb-4">Собственник</h2>
+          <h2 className="text-lg md:text-xl font-semibold text-gray-900 mb-4">{t('sections.ownerInfo')}</h2>
 
           <div className="space-y-4">
             <div className="flex items-center gap-2">
@@ -365,14 +367,14 @@ export default function EditListingPage() {
                 className="w-4 h-4 text-blue-600 border-gray-300 rounded focus:ring-blue-500"
               />
               <label htmlFor="anonymous" className="text-sm text-gray-700 cursor-pointer">
-                Собственник анонимный
+                {t('form.ownerAnonymous')}
               </label>
             </div>
 
             {!formData.ownerIsAnonymous && (
               <div className="grid grid-cols-1 md:grid-cols-2 gap-4">
                 <div>
-                  <label className="block text-sm font-medium text-gray-700 mb-1">Имя собственника</label>
+                  <label className="block text-sm font-medium text-gray-700 mb-1">{t('form.ownerName')}</label>
                   <input
                     type="text"
                     value={formData.ownerName}
@@ -382,7 +384,7 @@ export default function EditListingPage() {
                 </div>
 
                 <div>
-                  <label className="block text-sm font-medium text-gray-700 mb-1">Телефон</label>
+                  <label className="block text-sm font-medium text-gray-700 mb-1">{t('form.ownerPhone')}</label>
                   <input
                     type="tel"
                     value={formData.ownerPhone}
@@ -398,12 +400,12 @@ export default function EditListingPage() {
 
         {/* Notes */}
         <div className="bg-white p-4 md:p-6 rounded-lg shadow">
-          <h2 className="text-lg md:text-xl font-semibold text-gray-900 mb-4">Заметки</h2>
+          <h2 className="text-lg md:text-xl font-semibold text-gray-900 mb-4">{t('form.notes')}</h2>
           <textarea
             value={formData.notes}
             onChange={(e) => setFormData({ ...formData, notes: e.target.value })}
             rows={4}
-            placeholder="Внутренние заметки..."
+            placeholder={t('form.notesPlaceholder')}
             className="w-full px-4 py-2.5 border border-gray-300 rounded-lg focus:ring-2 focus:ring-blue-500 focus:border-blue-500"
           />
         </div>
@@ -415,7 +417,7 @@ export default function EditListingPage() {
               type="button"
               className="w-full px-6 py-3 border border-gray-300 text-gray-700 rounded-lg hover:bg-gray-50 font-medium"
             >
-              Отмена
+              {t('actions.cancel')}
             </button>
           </Link>
           <button
@@ -423,7 +425,7 @@ export default function EditListingPage() {
             disabled={saving}
             className="flex-1 px-6 py-3 bg-blue-600 hover:bg-blue-700 text-white rounded-lg font-medium disabled:opacity-50"
           >
-            {saving ? 'Сохранение...' : 'Сохранить изменения'}
+            {saving ? t('actions.saving') : t('actions.save')}
           </button>
         </div>
       </form>

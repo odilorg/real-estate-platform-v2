@@ -1,6 +1,7 @@
 'use client';
 
 import { useEffect, useState } from 'react';
+import { useTranslations } from 'next-intl';
 import { api } from '@/lib/api';
 
 interface RevenueTrend {
@@ -21,6 +22,7 @@ interface RevenueData {
 }
 
 export default function RevenueAnalyticsPage() {
+  const t = useTranslations('crm.analytics');
   const [loading, setLoading] = useState(true);
   const [data, setData] = useState<RevenueData | null>(null);
   const [period, setPeriod] = useState<'MONTH' | 'QUARTER' | 'YEAR'>('YEAR');
@@ -38,7 +40,7 @@ export default function RevenueAnalyticsPage() {
       setData(response);
     } catch (error: any) {
       console.error('Failed to fetch revenue:', error);
-      alert('Ошибка загрузки аналитики выручки');
+      alert(t('revenue.loadError'));
     } finally {
       setLoading(false);
     }
@@ -58,7 +60,7 @@ export default function RevenueAnalyticsPage() {
     return (
       <div className="p-8">
         <div className="flex items-center justify-center h-64">
-          <div className="text-gray-500">Загрузка...</div>
+          <div className="text-gray-500">{t('loading')}</div>
         </div>
       </div>
     );
@@ -68,7 +70,7 @@ export default function RevenueAnalyticsPage() {
     return (
       <div className="p-8">
         <div className="flex items-center justify-center h-64">
-          <div className="text-gray-500">Нет данных</div>
+          <div className="text-gray-500">{t('noData')}</div>
         </div>
       </div>
     );
@@ -81,8 +83,8 @@ export default function RevenueAnalyticsPage() {
       {/* Header */}
       <div className="mb-8 flex items-center justify-between">
         <div>
-          <h1 className="text-2xl font-bold text-gray-900">Аналитика выручки</h1>
-          <p className="text-gray-600 mt-1">Динамика продаж и комиссий</p>
+          <h1 className="text-2xl font-bold text-gray-900">{t('revenue.title')}</h1>
+          <p className="text-gray-600 mt-1">{t('revenue.subtitle')}</p>
         </div>
 
         {/* Period selector */}
@@ -95,7 +97,7 @@ export default function RevenueAnalyticsPage() {
                 : 'bg-gray-100 text-gray-700 hover:bg-gray-200'
             }`}
           >
-            Месяц
+            {t('periods.month')}
           </button>
           <button
             onClick={() => setPeriod('QUARTER')}
@@ -105,7 +107,7 @@ export default function RevenueAnalyticsPage() {
                 : 'bg-gray-100 text-gray-700 hover:bg-gray-200'
             }`}
           >
-            Квартал
+            {t('periods.quarter')}
           </button>
           <button
             onClick={() => setPeriod('YEAR')}
@@ -115,7 +117,7 @@ export default function RevenueAnalyticsPage() {
                 : 'bg-gray-100 text-gray-700 hover:bg-gray-200'
             }`}
           >
-            Год
+            {t('periods.year')}
           </button>
         </div>
       </div>
@@ -125,56 +127,56 @@ export default function RevenueAnalyticsPage() {
         <div className="bg-white rounded-lg shadow p-6">
           <div className="flex items-center justify-between mb-2">
             <div className="text-gray-600 text-sm font-medium">
-              Общая выручка
+              {t('revenue.kpis.totalRevenue')}
             </div>
             <div className="text-2xl">💰</div>
           </div>
           <div className="text-3xl font-bold text-gray-900">
             {formatCurrency(data.totals.revenue)}
           </div>
-          <div className="mt-2 text-sm text-gray-600">у.е.</div>
+          <div className="mt-2 text-sm text-gray-600">{t('currency.ye')}</div>
         </div>
 
         <div className="bg-white rounded-lg shadow p-6">
           <div className="flex items-center justify-between mb-2">
-            <div className="text-gray-600 text-sm font-medium">Комиссии</div>
+            <div className="text-gray-600 text-sm font-medium">{t('revenue.kpis.commissions')}</div>
             <div className="text-2xl">💳</div>
           </div>
           <div className="text-3xl font-bold text-green-600">
             {formatCurrency(data.totals.commissions)}
           </div>
-          <div className="mt-2 text-sm text-gray-600">у.е.</div>
+          <div className="mt-2 text-sm text-gray-600">{t('currency.ye')}</div>
         </div>
 
         <div className="bg-white rounded-lg shadow p-6">
           <div className="flex items-center justify-between mb-2">
             <div className="text-gray-600 text-sm font-medium">
-              Закрытых сделок
+              {t('revenue.kpis.closedDeals')}
             </div>
             <div className="text-2xl">🤝</div>
           </div>
           <div className="text-3xl font-bold text-gray-900">
             {data.totals.deals}
           </div>
-          <div className="mt-2 text-sm text-gray-600">сделок</div>
+          <div className="mt-2 text-sm text-gray-600">{t('revenue.kpis.dealsUnit')}</div>
         </div>
 
         <div className="bg-white rounded-lg shadow p-6">
           <div className="flex items-center justify-between mb-2">
-            <div className="text-gray-600 text-sm font-medium">Средний чек</div>
+            <div className="text-gray-600 text-sm font-medium">{t('revenue.kpis.avgCheck')}</div>
             <div className="text-2xl">💵</div>
           </div>
           <div className="text-3xl font-bold text-gray-900">
             {formatCurrency(data.totals.avgDealValue)}
           </div>
-          <div className="mt-2 text-sm text-gray-600">у.е.</div>
+          <div className="mt-2 text-sm text-gray-600">{t('currency.ye')}</div>
         </div>
       </div>
 
       {/* Revenue Trend Chart */}
       <div className="bg-white rounded-lg shadow p-6 mb-8">
         <h2 className="text-lg font-semibold text-gray-900 mb-6">
-          Динамика выручки
+          {t('revenue.chart.title')}
         </h2>
 
         {data.trend.length > 0 ? (
@@ -193,13 +195,13 @@ export default function RevenueAnalyticsPage() {
                     </span>
                     <div className="flex items-center gap-6">
                       <span className="text-sm text-gray-600">
-                        {item.deals} сделок
+                        {item.deals} {t('revenue.kpis.dealsUnit')}
                       </span>
                       <span className="text-sm font-medium text-gray-900">
-                        {formatCurrency(item.revenue)} у.е.
+                        {formatCurrency(item.revenue)} {t('currency.ye')}
                       </span>
                       <span className="text-sm font-medium text-green-600">
-                        {formatCurrency(item.commissions)} у.е.
+                        {formatCurrency(item.commissions)} {t('currency.ye')}
                       </span>
                     </div>
                   </div>
@@ -219,7 +221,7 @@ export default function RevenueAnalyticsPage() {
                     {heightPercentage > 15 && (
                       <div className="absolute inset-0 flex items-center px-4">
                         <span className="text-white font-medium text-sm">
-                          {formatCurrency(item.revenue)} у.е.
+                          {formatCurrency(item.revenue)} {t('currency.ye')}
                         </span>
                       </div>
                     )}
@@ -231,10 +233,10 @@ export default function RevenueAnalyticsPage() {
         ) : (
           <div className="text-center py-12">
             <div className="text-gray-500 mb-2">
-              Нет закрытых сделок за выбранный период
+              {t('revenue.chart.noDeals')}
             </div>
             <div className="text-sm text-gray-400">
-              Завершите сделки, чтобы увидеть динамику выручки
+              {t('revenue.chart.completeDealsHint')}
             </div>
           </div>
         )}
@@ -244,11 +246,11 @@ export default function RevenueAnalyticsPage() {
           <div className="mt-6 pt-6 border-t border-gray-200 flex items-center justify-center gap-8">
             <div className="flex items-center gap-2">
               <div className="w-4 h-4 bg-gradient-to-r from-blue-500 to-blue-600 rounded"></div>
-              <span className="text-sm text-gray-600">Выручка</span>
+              <span className="text-sm text-gray-600">{t('revenue.chart.legendRevenue')}</span>
             </div>
             <div className="flex items-center gap-2">
               <div className="w-4 h-4 bg-gradient-to-r from-green-500 to-green-600 rounded"></div>
-              <span className="text-sm text-gray-600">Комиссии</span>
+              <span className="text-sm text-gray-600">{t('revenue.chart.legendCommissions')}</span>
             </div>
           </div>
         )}
@@ -259,7 +261,7 @@ export default function RevenueAnalyticsPage() {
         <div className="bg-white rounded-lg shadow overflow-hidden">
           <div className="px-6 py-4 bg-gray-50 border-b border-gray-200">
             <h2 className="text-lg font-semibold text-gray-900">
-              Детальная разбивка
+              {t('revenue.table.title')}
             </h2>
           </div>
           <div className="overflow-x-auto">
@@ -267,22 +269,22 @@ export default function RevenueAnalyticsPage() {
               <thead className="bg-gray-50">
                 <tr>
                   <th className="px-6 py-3 text-left text-xs font-medium text-gray-500 uppercase tracking-wider">
-                    Период
+                    {t('revenue.table.period')}
                   </th>
                   <th className="px-6 py-3 text-right text-xs font-medium text-gray-500 uppercase tracking-wider">
-                    Сделок
+                    {t('revenue.table.deals')}
                   </th>
                   <th className="px-6 py-3 text-right text-xs font-medium text-gray-500 uppercase tracking-wider">
-                    Выручка
+                    {t('revenue.table.revenue')}
                   </th>
                   <th className="px-6 py-3 text-right text-xs font-medium text-gray-500 uppercase tracking-wider">
-                    Комиссии
+                    {t('revenue.table.commissions')}
                   </th>
                   <th className="px-6 py-3 text-right text-xs font-medium text-gray-500 uppercase tracking-wider">
-                    Ср. чек
+                    {t('revenue.table.avgCheck')}
                   </th>
                   <th className="px-6 py-3 text-right text-xs font-medium text-gray-500 uppercase tracking-wider">
-                    % комиссий
+                    {t('revenue.table.commissionPercent')}
                   </th>
                 </tr>
               </thead>
@@ -305,17 +307,17 @@ export default function RevenueAnalyticsPage() {
                       </td>
                       <td className="px-6 py-4 whitespace-nowrap text-right">
                         <div className="text-sm font-medium text-gray-900">
-                          {formatCurrency(item.revenue)} у.е.
+                          {formatCurrency(item.revenue)} {t('currency.ye')}
                         </div>
                       </td>
                       <td className="px-6 py-4 whitespace-nowrap text-right">
                         <div className="text-sm font-medium text-green-600">
-                          {formatCurrency(item.commissions)} у.е.
+                          {formatCurrency(item.commissions)} {t('currency.ye')}
                         </div>
                       </td>
                       <td className="px-6 py-4 whitespace-nowrap text-right">
                         <div className="text-sm text-gray-900">
-                          {formatCurrency(avgDeal)} у.е.
+                          {formatCurrency(avgDeal)} {t('currency.ye')}
                         </div>
                       </td>
                       <td className="px-6 py-4 whitespace-nowrap text-right">
@@ -330,7 +332,7 @@ export default function RevenueAnalyticsPage() {
               <tfoot className="bg-gray-50">
                 <tr>
                   <td className="px-6 py-4 whitespace-nowrap">
-                    <div className="font-bold text-gray-900">Итого</div>
+                    <div className="font-bold text-gray-900">{t('revenue.table.total')}</div>
                   </td>
                   <td className="px-6 py-4 whitespace-nowrap text-right">
                     <div className="text-sm font-bold text-gray-900">
@@ -339,17 +341,17 @@ export default function RevenueAnalyticsPage() {
                   </td>
                   <td className="px-6 py-4 whitespace-nowrap text-right">
                     <div className="text-sm font-bold text-gray-900">
-                      {formatCurrency(data.totals.revenue)} у.е.
+                      {formatCurrency(data.totals.revenue)} {t('currency.ye')}
                     </div>
                   </td>
                   <td className="px-6 py-4 whitespace-nowrap text-right">
                     <div className="text-sm font-bold text-green-600">
-                      {formatCurrency(data.totals.commissions)} у.е.
+                      {formatCurrency(data.totals.commissions)} {t('currency.ye')}
                     </div>
                   </td>
                   <td className="px-6 py-4 whitespace-nowrap text-right">
                     <div className="text-sm font-bold text-gray-900">
-                      {formatCurrency(data.totals.avgDealValue)} у.е.
+                      {formatCurrency(data.totals.avgDealValue)} {t('currency.ye')}
                     </div>
                   </td>
                   <td className="px-6 py-4 whitespace-nowrap text-right">

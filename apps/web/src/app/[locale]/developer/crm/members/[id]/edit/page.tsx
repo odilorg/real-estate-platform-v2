@@ -2,6 +2,7 @@
 
 import { useState, useEffect, use } from 'react';
 import { useRouter } from '@/i18n/routing';
+import { useTranslations } from 'next-intl';
 import { ArrowLeft, Save, Loader2 } from 'lucide-react';
 import { Link } from '@/i18n/routing';
 import { api } from '@/lib/api';
@@ -13,6 +14,7 @@ interface PageProps {
 export default function EditMemberPage({ params }: PageProps) {
   const resolvedParams = use(params);
   const router = useRouter();
+  const t = useTranslations('crm.members');
   const [loading, setLoading] = useState(true);
   const [saving, setSaving] = useState(false);
   const [error, setError] = useState('');
@@ -112,8 +114,8 @@ export default function EditMemberPage({ params }: PageProps) {
           </button>
         </Link>
         <div>
-          <h1 className="text-3xl font-bold text-gray-900">Редактировать сотрудника</h1>
-          <p className="mt-1 text-sm text-gray-500">Изменение информации о сотруднике</p>
+          <h1 className="text-3xl font-bold text-gray-900">{t('edit.title')}</h1>
+          <p className="mt-1 text-sm text-gray-500">{t('edit.subtitle')}</p>
         </div>
       </div>
 
@@ -123,36 +125,36 @@ export default function EditMemberPage({ params }: PageProps) {
         )}
 
         <div className="bg-white p-6 rounded-lg shadow">
-          <h2 className="text-xl font-semibold text-gray-900 mb-4">Роль и тип</h2>
+          <h2 className="text-xl font-semibold text-gray-900 mb-4">{t('sections.roleAndType')}</h2>
           <div className="space-y-4">
             <div className="grid grid-cols-2 gap-4">
               <div>
-                <label className="block text-sm font-medium text-gray-700 mb-1">Роль *</label>
+                <label className="block text-sm font-medium text-gray-700 mb-1">{t('form.role')} *</label>
                 <select
                   value={formData.role}
                   onChange={(e) => setFormData({ ...formData, role: e.target.value })}
                   className="w-full px-4 py-2 border border-gray-300 rounded-lg focus:ring-2 focus:ring-blue-500 focus:border-blue-500"
                 >
-                  <option value="OWNER">Владелец</option>
-                  <option value="ADMIN">Администратор</option>
-                  <option value="SENIOR_AGENT">Старший агент</option>
-                  <option value="AGENT">Агент</option>
-                  <option value="COORDINATOR">Координатор</option>
+                  <option value="OWNER">{t('roles.OWNER')}</option>
+                  <option value="ADMIN">{t('roles.ADMIN')}</option>
+                  <option value="SENIOR_AGENT">{t('roles.SENIOR_AGENT')}</option>
+                  <option value="AGENT">{t('roles.AGENT')}</option>
+                  <option value="COORDINATOR">{t('roles.COORDINATOR')}</option>
                 </select>
               </div>
               <div>
-                <label className="block text-sm font-medium text-gray-700 mb-1">Тип агента</label>
+                <label className="block text-sm font-medium text-gray-700 mb-1">{t('form.agentType')}</label>
                 <select
                   value={formData.agentType}
                   onChange={(e) => setFormData({ ...formData, agentType: e.target.value })}
                   className="w-full px-4 py-2 border border-gray-300 rounded-lg focus:ring-2 focus:ring-blue-500 focus:border-blue-500"
                 >
-                  <option value="">Не выбрано</option>
-                  <option value="GENERAL">Общий</option>
-                  <option value="RESIDENTIAL">Жилая недвижимость</option>
-                  <option value="COMMERCIAL">Коммерческая</option>
-                  <option value="RENTAL">Аренда</option>
-                  <option value="LUXURY">Люкс</option>
+                  <option value="">{t('agentTypes.notSelected')}</option>
+                  <option value="GENERAL">{t('agentTypes.GENERAL')}</option>
+                  <option value="RESIDENTIAL">{t('agentTypes.RESIDENTIAL')}</option>
+                  <option value="COMMERCIAL">{t('agentTypes.COMMERCIAL')}</option>
+                  <option value="RENTAL">{t('agentTypes.RENTAL')}</option>
+                  <option value="LUXURY">{t('agentTypes.LUXURY')}</option>
                 </select>
               </div>
             </div>
@@ -160,11 +162,11 @@ export default function EditMemberPage({ params }: PageProps) {
         </div>
 
         <div className="bg-white p-6 rounded-lg shadow">
-          <h2 className="text-xl font-semibold text-gray-900 mb-4">Контактная информация</h2>
+          <h2 className="text-xl font-semibold text-gray-900 mb-4">{t('sections.contactInfo')}</h2>
           <div className="space-y-4">
             <div className="grid grid-cols-3 gap-4">
               <div>
-                <label className="block text-sm font-medium text-gray-700 mb-1">Телефон</label>
+                <label className="block text-sm font-medium text-gray-700 mb-1">{t('form.phone')}</label>
                 <input
                   type="tel"
                   value={formData.phone}
@@ -173,7 +175,7 @@ export default function EditMemberPage({ params }: PageProps) {
                 />
               </div>
               <div>
-                <label className="block text-sm font-medium text-gray-700 mb-1">Telegram</label>
+                <label className="block text-sm font-medium text-gray-700 mb-1">{t('form.telegram')}</label>
                 <input
                   type="text"
                   value={formData.telegram}
@@ -182,7 +184,7 @@ export default function EditMemberPage({ params }: PageProps) {
                 />
               </div>
               <div>
-                <label className="block text-sm font-medium text-gray-700 mb-1">WhatsApp</label>
+                <label className="block text-sm font-medium text-gray-700 mb-1">{t('form.whatsapp')}</label>
                 <input
                   type="text"
                   value={formData.whatsapp}
@@ -195,41 +197,41 @@ export default function EditMemberPage({ params }: PageProps) {
         </div>
 
         <div className="bg-white p-6 rounded-lg shadow">
-          <h2 className="text-xl font-semibold text-gray-900 mb-4">Профессиональная информация</h2>
+          <h2 className="text-xl font-semibold text-gray-900 mb-4">{t('sections.professionalInfo')}</h2>
           <div className="space-y-4">
             <div>
-              <label className="block text-sm font-medium text-gray-700 mb-1">Специализация (через запятую)</label>
+              <label className="block text-sm font-medium text-gray-700 mb-1">{t('form.specializations')}</label>
               <input
                 type="text"
                 value={formData.specializations}
                 onChange={(e) => setFormData({ ...formData, specializations: e.target.value })}
-                placeholder="Квартиры, Коммерческая недвижимость"
+                placeholder={t('form.specializationsPlaceholder')}
                 className="w-full px-4 py-2 border border-gray-300 rounded-lg focus:ring-2 focus:ring-blue-500 focus:border-blue-500"
               />
             </div>
             <div>
-              <label className="block text-sm font-medium text-gray-700 mb-1">Районы работы (через запятую)</label>
+              <label className="block text-sm font-medium text-gray-700 mb-1">{t('form.districts')}</label>
               <input
                 type="text"
                 value={formData.districts}
                 onChange={(e) => setFormData({ ...formData, districts: e.target.value })}
-                placeholder="Чиланзар, Юнусабад, Мирзо-Улугбек"
+                placeholder={t('form.districtsPlaceholder')}
                 className="w-full px-4 py-2 border border-gray-300 rounded-lg focus:ring-2 focus:ring-blue-500 focus:border-blue-500"
               />
             </div>
             <div>
-              <label className="block text-sm font-medium text-gray-700 mb-1">Языки (через запятую)</label>
+              <label className="block text-sm font-medium text-gray-700 mb-1">{t('form.languages')}</label>
               <input
                 type="text"
                 value={formData.languages}
                 onChange={(e) => setFormData({ ...formData, languages: e.target.value })}
-                placeholder="Русский, Узбекский, Английский"
+                placeholder={t('form.languagesPlaceholder')}
                 className="w-full px-4 py-2 border border-gray-300 rounded-lg focus:ring-2 focus:ring-blue-500 focus:border-blue-500"
               />
             </div>
             <div className="grid grid-cols-2 gap-4">
               <div>
-                <label className="block text-sm font-medium text-gray-700 mb-1">Номер лицензии</label>
+                <label className="block text-sm font-medium text-gray-700 mb-1">{t('form.licenseNumber')}</label>
                 <input
                   type="text"
                   value={formData.licenseNumber}
@@ -238,7 +240,7 @@ export default function EditMemberPage({ params }: PageProps) {
                 />
               </div>
               <div>
-                <label className="block text-sm font-medium text-gray-700 mb-1">Срок действия лицензии</label>
+                <label className="block text-sm font-medium text-gray-700 mb-1">{t('form.licenseExpiry')}</label>
                 <input
                   type="date"
                   value={formData.licenseExpiry}
@@ -251,7 +253,7 @@ export default function EditMemberPage({ params }: PageProps) {
         </div>
 
         <div className="bg-white p-6 rounded-lg shadow">
-          <h2 className="text-xl font-semibold text-gray-900 mb-4">Статус</h2>
+          <h2 className="text-xl font-semibold text-gray-900 mb-4">{t('detail.status')}</h2>
           <div className="flex items-center gap-2">
             <input
               type="checkbox"
@@ -261,7 +263,7 @@ export default function EditMemberPage({ params }: PageProps) {
               className="w-4 h-4 text-blue-600 border-gray-300 rounded focus:ring-blue-500"
             />
             <label htmlFor="isActive" className="text-sm font-medium text-gray-700">
-              Активный сотрудник
+              {t('form.isActive')}
             </label>
           </div>
         </div>
@@ -269,7 +271,7 @@ export default function EditMemberPage({ params }: PageProps) {
         <div className="flex justify-end gap-4">
           <Link href={`/developer/crm/members/${resolvedParams.id}`}>
             <button type="button" className="px-6 py-2 border border-gray-300 rounded-lg hover:bg-gray-50" disabled={saving}>
-              Отмена
+              {t('actions.cancel')}
             </button>
           </Link>
           <button
@@ -280,12 +282,12 @@ export default function EditMemberPage({ params }: PageProps) {
             {saving ? (
               <>
                 <Loader2 className="h-4 w-4 animate-spin" />
-                Сохранение...
+                {t('actions.saving')}
               </>
             ) : (
               <>
                 <Save className="h-4 w-4" />
-                Сохранить
+                {t('actions.save')}
               </>
             )}
           </button>

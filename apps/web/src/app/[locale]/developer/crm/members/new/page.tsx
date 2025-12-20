@@ -2,6 +2,7 @@
 
 import { useState, useEffect } from 'react';
 import { useRouter } from '@/i18n/routing';
+import { useTranslations } from 'next-intl';
 import { ArrowLeft, Save, Loader2, User, UserPlus, Eye, EyeOff, RefreshCw } from 'lucide-react';
 import { Link } from '@/i18n/routing';
 import { api } from '@/lib/api';
@@ -9,6 +10,7 @@ import { api } from '@/lib/api';
 type UserMode = 'new' | 'existing';
 
 export default function NewMemberPage() {
+  const t = useTranslations('crm.members');
   const router = useRouter();
   const [saving, setSaving] = useState(false);
   const [error, setError] = useState('');
@@ -139,8 +141,8 @@ export default function NewMemberPage() {
           </button>
         </Link>
         <div>
-          <h1 className="text-3xl font-bold text-gray-900">Добавить сотрудника</h1>
-          <p className="mt-1 text-sm text-gray-500">Добавление нового члена команды</p>
+          <h1 className="text-3xl font-bold text-gray-900">{t('new.title')}</h1>
+          <p className="mt-1 text-sm text-gray-500">{t('new.subtitle')}</p>
         </div>
       </div>
 
@@ -151,8 +153,8 @@ export default function NewMemberPage() {
 
         {/* User Selection Mode */}
         <div className="bg-white p-6 rounded-lg shadow">
-          <h2 className="text-xl font-semibold text-gray-900 mb-4">Пользователь</h2>
-          
+          <h2 className="text-xl font-semibold text-gray-900 mb-4">{t('sections.user')}</h2>
+
           <div className="flex gap-4 mb-6">
             <button
               type="button"
@@ -164,7 +166,7 @@ export default function NewMemberPage() {
               }`}
             >
               <UserPlus className="h-5 w-5" />
-              <span className="font-medium">Новый пользователь</span>
+              <span className="font-medium">{t('form.newUser')}</span>
             </button>
             <button
               type="button"
@@ -176,7 +178,7 @@ export default function NewMemberPage() {
               }`}
             >
               <User className="h-5 w-5" />
-              <span className="font-medium">Существующий пользователь</span>
+              <span className="font-medium">{t('form.existingUser')}</span>
             </button>
           </div>
 
@@ -184,41 +186,38 @@ export default function NewMemberPage() {
             <div className="space-y-4">
               <div className="grid grid-cols-2 gap-4">
                 <div>
-                  <label className="block text-sm font-medium text-gray-700 mb-1">Имя *</label>
+                  <label className="block text-sm font-medium text-gray-700 mb-1">{t('form.firstName')} *</label>
                   <input
                     type="text"
                     required
                     value={formData.firstName}
                     onChange={(e) => setFormData({ ...formData, firstName: e.target.value })}
-                    placeholder="Иван"
                     className="w-full px-4 py-2 border border-gray-300 rounded-lg focus:ring-2 focus:ring-blue-500 focus:border-blue-500"
                   />
                 </div>
                 <div>
-                  <label className="block text-sm font-medium text-gray-700 mb-1">Фамилия *</label>
+                  <label className="block text-sm font-medium text-gray-700 mb-1">{t('form.lastName')} *</label>
                   <input
                     type="text"
                     required
                     value={formData.lastName}
                     onChange={(e) => setFormData({ ...formData, lastName: e.target.value })}
-                    placeholder="Иванов"
                     className="w-full px-4 py-2 border border-gray-300 rounded-lg focus:ring-2 focus:ring-blue-500 focus:border-blue-500"
                   />
                 </div>
               </div>
               <div>
-                <label className="block text-sm font-medium text-gray-700 mb-1">Email *</label>
+                <label className="block text-sm font-medium text-gray-700 mb-1">{t('form.email')} *</label>
                 <input
                   type="email"
                   required
                   value={formData.email}
                   onChange={(e) => setFormData({ ...formData, email: e.target.value })}
-                  placeholder="ivan@agency.com"
                   className="w-full px-4 py-2 border border-gray-300 rounded-lg focus:ring-2 focus:ring-blue-500 focus:border-blue-500"
                 />
               </div>
               <div>
-                <label className="block text-sm font-medium text-gray-700 mb-1">Пароль *</label>
+                <label className="block text-sm font-medium text-gray-700 mb-1">{t('form.password')} *</label>
                 <div className="flex gap-2">
                   <div className="relative flex-1">
                     <input
@@ -226,7 +225,7 @@ export default function NewMemberPage() {
                       required
                       value={formData.password}
                       onChange={(e) => setFormData({ ...formData, password: e.target.value })}
-                      placeholder="Минимум 6 символов"
+                      placeholder={t('form.passwordPlaceholder')}
                       minLength={6}
                       className="w-full px-4 py-2 border border-gray-300 rounded-lg focus:ring-2 focus:ring-blue-500 focus:border-blue-500 pr-10"
                     />
@@ -242,14 +241,14 @@ export default function NewMemberPage() {
                     type="button"
                     onClick={generatePassword}
                     className="px-4 py-2 border border-gray-300 rounded-lg hover:bg-gray-50 flex items-center gap-2"
-                    title="Сгенерировать"
+                    title={t('actions.generate')}
                   >
                     <RefreshCw className="h-4 w-4" />
                   </button>
                 </div>
               </div>
               <div>
-                <label className="block text-sm font-medium text-gray-700 mb-1">Телефон</label>
+                <label className="block text-sm font-medium text-gray-700 mb-1">{t('form.phone')}</label>
                 <input
                   type="tel"
                   value={formData.userPhone}
@@ -262,7 +261,7 @@ export default function NewMemberPage() {
           ) : (
             <div className="space-y-4">
               <div>
-                <label className="block text-sm font-medium text-gray-700 mb-1">Поиск пользователя *</label>
+                <label className="block text-sm font-medium text-gray-700 mb-1">{t('form.selectUser')} *</label>
                 <div className="relative">
                   <input
                     type="text"
@@ -273,7 +272,7 @@ export default function NewMemberPage() {
                       setSelectedUser(null);
                       setFormData({ ...formData, userId: '' });
                     }}
-                    placeholder="Введите имя или email..."
+                    placeholder={t('form.selectUserPlaceholder')}
                     className="w-full px-4 py-2 border border-gray-300 rounded-lg focus:ring-2 focus:ring-blue-500 focus:border-blue-500"
                   />
                   {searching && (
@@ -306,7 +305,7 @@ export default function NewMemberPage() {
                 )}
                 {searchQuery.length >= 2 && !searching && searchResults.length === 0 && (
                   <p className="mt-2 text-sm text-gray-500">
-                    Пользователи не найдены. Попробуйте создать нового пользователя.
+                    {t('form.noUsersFound')}
                   </p>
                 )}
               </div>
@@ -316,36 +315,36 @@ export default function NewMemberPage() {
 
         {/* Role and Type */}
         <div className="bg-white p-6 rounded-lg shadow">
-          <h2 className="text-xl font-semibold text-gray-900 mb-4">Роль и тип</h2>
+          <h2 className="text-xl font-semibold text-gray-900 mb-4">{t('sections.roleAndType')}</h2>
           <div className="space-y-4">
             <div className="grid grid-cols-2 gap-4">
               <div>
-                <label className="block text-sm font-medium text-gray-700 mb-1">Роль *</label>
+                <label className="block text-sm font-medium text-gray-700 mb-1">{t('form.role')} *</label>
                 <select
                   value={formData.role}
                   onChange={(e) => setFormData({ ...formData, role: e.target.value })}
                   className="w-full px-4 py-2 border border-gray-300 rounded-lg focus:ring-2 focus:ring-blue-500 focus:border-blue-500"
                 >
-                  <option value="OWNER">Владелец</option>
-                  <option value="ADMIN">Администратор</option>
-                  <option value="SENIOR_AGENT">Старший агент</option>
-                  <option value="AGENT">Агент</option>
-                  <option value="COORDINATOR">Координатор</option>
+                  <option value="OWNER">{t('roles.OWNER')}</option>
+                  <option value="ADMIN">{t('roles.ADMIN')}</option>
+                  <option value="SENIOR_AGENT">{t('roles.SENIOR_AGENT')}</option>
+                  <option value="AGENT">{t('roles.AGENT')}</option>
+                  <option value="COORDINATOR">{t('roles.COORDINATOR')}</option>
                 </select>
               </div>
               <div>
-                <label className="block text-sm font-medium text-gray-700 mb-1">Тип агента</label>
+                <label className="block text-sm font-medium text-gray-700 mb-1">{t('form.agentType')}</label>
                 <select
                   value={formData.agentType}
                   onChange={(e) => setFormData({ ...formData, agentType: e.target.value })}
                   className="w-full px-4 py-2 border border-gray-300 rounded-lg focus:ring-2 focus:ring-blue-500 focus:border-blue-500"
                 >
-                  <option value="">Не выбрано</option>
-                  <option value="GENERAL">Общий</option>
-                  <option value="RESIDENTIAL">Жилая недвижимость</option>
-                  <option value="COMMERCIAL">Коммерческая</option>
-                  <option value="RENTAL">Аренда</option>
-                  <option value="LUXURY">Люкс</option>
+                  <option value="">—</option>
+                  <option value="GENERAL">{t('agentTypes.GENERAL')}</option>
+                  <option value="RESIDENTIAL">{t('agentTypes.RESIDENTIAL')}</option>
+                  <option value="COMMERCIAL">{t('agentTypes.COMMERCIAL')}</option>
+                  <option value="RENTAL">{t('agentTypes.RENTAL')}</option>
+                  <option value="LUXURY">{t('agentTypes.LUXURY')}</option>
                 </select>
               </div>
             </div>
@@ -354,11 +353,11 @@ export default function NewMemberPage() {
 
         {/* Contact Information */}
         <div className="bg-white p-6 rounded-lg shadow">
-          <h2 className="text-xl font-semibold text-gray-900 mb-4">Контактная информация</h2>
+          <h2 className="text-xl font-semibold text-gray-900 mb-4">{t('sections.contactInfo')}</h2>
           <div className="space-y-4">
             <div className="grid grid-cols-3 gap-4">
               <div>
-                <label className="block text-sm font-medium text-gray-700 mb-1">Рабочий телефон</label>
+                <label className="block text-sm font-medium text-gray-700 mb-1">{t('form.phone')}</label>
                 <input
                   type="tel"
                   value={formData.phone}
@@ -393,42 +392,21 @@ export default function NewMemberPage() {
         {/* Professional Information - Collapsible */}
         <details className="bg-white p-6 rounded-lg shadow" open>
           <summary className="text-xl font-semibold text-gray-900 cursor-pointer">
-            Профессиональная информация <span className="text-sm font-normal text-gray-500">(необязательно)</span>
+            {t('sections.professionalInfo')} <span className="text-sm font-normal text-gray-500">({t('sections.optionalNote')})</span>
           </summary>
           <div className="mt-4 space-y-4">
             <div>
-              <label className="block text-sm font-medium text-gray-700 mb-1">Специализация (через запятую)</label>
+              <label className="block text-sm font-medium text-gray-700 mb-1">{t('form.specializations')}</label>
               <input
                 type="text"
                 value={formData.specializations}
                 onChange={(e) => setFormData({ ...formData, specializations: e.target.value })}
-                placeholder="Квартиры, Коммерческая недвижимость"
-                className="w-full px-4 py-2 border border-gray-300 rounded-lg focus:ring-2 focus:ring-blue-500 focus:border-blue-500"
-              />
-            </div>
-            <div>
-              <label className="block text-sm font-medium text-gray-700 mb-1">Районы работы (через запятую)</label>
-              <input
-                type="text"
-                value={formData.districts}
-                onChange={(e) => setFormData({ ...formData, districts: e.target.value })}
-                placeholder="Чиланзар, Юнусабад, Мирзо-Улугбек"
-                className="w-full px-4 py-2 border border-gray-300 rounded-lg focus:ring-2 focus:ring-blue-500 focus:border-blue-500"
-              />
-            </div>
-            <div>
-              <label className="block text-sm font-medium text-gray-700 mb-1">Языки (через запятую)</label>
-              <input
-                type="text"
-                value={formData.languages}
-                onChange={(e) => setFormData({ ...formData, languages: e.target.value })}
-                placeholder="Русский, Узбекский, Английский"
                 className="w-full px-4 py-2 border border-gray-300 rounded-lg focus:ring-2 focus:ring-blue-500 focus:border-blue-500"
               />
             </div>
             <div className="grid grid-cols-2 gap-4">
               <div>
-                <label className="block text-sm font-medium text-gray-700 mb-1">Номер лицензии</label>
+                <label className="block text-sm font-medium text-gray-700 mb-1">{t('form.licenseNumber')}</label>
                 <input
                   type="text"
                   value={formData.licenseNumber}
@@ -437,7 +415,7 @@ export default function NewMemberPage() {
                 />
               </div>
               <div>
-                <label className="block text-sm font-medium text-gray-700 mb-1">Срок действия лицензии</label>
+                <label className="block text-sm font-medium text-gray-700 mb-1">{t('form.licenseNumber')}</label>
                 <input
                   type="date"
                   value={formData.licenseExpiry}
@@ -451,7 +429,7 @@ export default function NewMemberPage() {
 
         {/* Status */}
         <div className="bg-white p-6 rounded-lg shadow">
-          <h2 className="text-xl font-semibold text-gray-900 mb-4">Статус</h2>
+          <h2 className="text-xl font-semibold text-gray-900 mb-4">{t('detail.status')}</h2>
           <div className="flex items-center gap-2">
             <input
               type="checkbox"
@@ -461,7 +439,7 @@ export default function NewMemberPage() {
               className="w-4 h-4 text-blue-600 border-gray-300 rounded focus:ring-blue-500"
             />
             <label htmlFor="isActive" className="text-sm font-medium text-gray-700">
-              Активный сотрудник
+              {t('status.active')}
             </label>
           </div>
         </div>
@@ -470,7 +448,7 @@ export default function NewMemberPage() {
         <div className="flex justify-end gap-4">
           <Link href="/developer/crm/members">
             <button type="button" className="px-6 py-2 border border-gray-300 rounded-lg hover:bg-gray-50" disabled={saving}>
-              Отмена
+              {t('actions.cancel')}
             </button>
           </Link>
           <button
@@ -481,12 +459,12 @@ export default function NewMemberPage() {
             {saving ? (
               <>
                 <Loader2 className="h-4 w-4 animate-spin" />
-                Добавление...
+                {t('actions.adding')}
               </>
             ) : (
               <>
                 <Save className="h-4 w-4" />
-                Добавить
+                {t('actions.add')}
               </>
             )}
           </button>

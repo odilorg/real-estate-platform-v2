@@ -5,6 +5,7 @@ import { useRouter } from '@/i18n/routing';
 import { ArrowLeft, Edit, Trash2, Phone, Mail, MessageSquare, Calendar, User, Building, DollarSign, Loader2 } from 'lucide-react';
 import { Link } from '@/i18n/routing';
 import { api } from '@/lib/api';
+import { useTranslations } from 'next-intl';
 import ActivityTimeline from './ActivityTimeline';
 
 interface Lead {
@@ -41,6 +42,10 @@ interface PageProps {
 export default function LeadDetailPage({ params }: PageProps) {
   const resolvedParams = use(params);
   const router = useRouter();
+  const t = useTranslations('crm.leads.detailPage');
+  const tStatuses = useTranslations('crm.leads.statuses');
+  const tPriorities = useTranslations('crm.leads.priorities');
+  const tSources = useTranslations('crm.leads.sources');
   const [lead, setLead] = useState<Lead | null>(null);
   const [loading, setLoading] = useState(true);
 
@@ -63,14 +68,14 @@ export default function LeadDetailPage({ params }: PageProps) {
   };
 
   const handleDelete = async () => {
-    if (!lead || !confirm('Вы уверены, что хотите удалить этот лид?')) return;
+    if (!lead || !confirm(t('deleteConfirm'))) return;
 
     try {
       await api.delete(`/agency-crm/leads/${lead.id}`);
       router.push('/developer/crm/leads');
     } catch (error) {
       console.error('Error deleting lead:', error);
-      alert('Ошибка при удалении лида');
+      alert(t('deleteError'));
     }
   };
 
@@ -97,10 +102,10 @@ export default function LeadDetailPage({ params }: PageProps) {
     return (
       <div className="flex items-center justify-center h-screen">
         <div className="text-center">
-          <h2 className="text-2xl font-bold text-gray-900">Лид не найден</h2>
+          <h2 className="text-2xl font-bold text-gray-900">{t('notFound')}</h2>
           <Link href="/developer/crm/leads">
             <button className="mt-4 bg-blue-600 text-white px-4 py-2 rounded-lg hover:bg-blue-700">
-              Вернуться к списку
+              {t('backToList')}
             </button>
           </Link>
         </div>
@@ -120,21 +125,21 @@ export default function LeadDetailPage({ params }: PageProps) {
           <div>
             <div className="flex items-center gap-3">
               <h1 className="text-3xl font-bold text-gray-900">{lead.firstName} {lead.lastName}</h1>
-              <span className="px-3 py-1 text-sm font-semibold rounded-full bg-blue-100 text-blue-800">{lead.status}</span>
-              <span className="px-3 py-1 text-sm font-semibold rounded-full bg-orange-100 text-orange-800">{lead.priority}</span>
+              <span className="px-3 py-1 text-sm font-semibold rounded-full bg-blue-100 text-blue-800">{tStatuses(lead.status as any)}</span>
+              <span className="px-3 py-1 text-sm font-semibold rounded-full bg-orange-100 text-orange-800">{tPriorities(lead.priority as any)}</span>
             </div>
-            <p className="mt-1 text-sm text-gray-500">Создан {formatDate(lead.createdAt)}</p>
+            <p className="mt-1 text-sm text-gray-500">{t('created')} {formatDate(lead.createdAt)}</p>
           </div>
         </div>
         <div className="flex gap-2">
           <button onClick={handleDelete} className="px-4 py-2 border border-gray-300 rounded-lg hover:bg-gray-50 flex items-center gap-2">
             <Trash2 className="h-4 w-4" />
-            Удалить
+            {t('delete')}
           </button>
           <Link href={`/developer/crm/leads/${lead.id}/edit`}>
             <button className="bg-blue-600 text-white px-4 py-2 rounded-lg hover:bg-blue-700 flex items-center gap-2">
               <Edit className="h-4 w-4" />
-              Редактировать
+              {t('edit')}
             </button>
           </Link>
         </div>
@@ -144,7 +149,7 @@ export default function LeadDetailPage({ params }: PageProps) {
         <div className="lg:col-span-2 space-y-6">
           {/* Contact Info */}
           <div className="bg-white p-6 rounded-lg shadow">
-            <h2 className="text-xl font-semibold text-gray-900 mb-4">Контактная информация</h2>
+            <h2 className="text-xl font-semibold text-gray-900 mb-4">{t('contactInfo')}</h2>
             <div className="space-y-3">
               <div className="flex items-center gap-3 text-gray-700">
                 <Phone className="h-5 w-5 text-gray-400" />
@@ -174,33 +179,33 @@ export default function LeadDetailPage({ params }: PageProps) {
           {/* Property Requirements */}
           {(lead.propertyType || lead.listingType || lead.budget || lead.bedrooms || lead.requirements) && (
             <div className="bg-white p-6 rounded-lg shadow">
-              <h2 className="text-xl font-semibold text-gray-900 mb-4">Требования к недвижимости</h2>
+              <h2 className="text-xl font-semibold text-gray-900 mb-4">{t('propertyRequirements')}</h2>
               <div className="space-y-3">
                 {lead.propertyType && (
                   <div className="flex items-center gap-3">
                     <Building className="h-5 w-5 text-gray-400" />
-                    <span className="text-gray-700">Тип: {lead.propertyType}</span>
+                    <span className="text-gray-700">{t('propertyTypeLabel')} {lead.propertyType}</span>
                   </div>
                 )}
                 {lead.listingType && (
                   <div className="flex items-center gap-3">
-                    <span className="text-gray-700">Сделка: {lead.listingType}</span>
+                    <span className="text-gray-700">{t('listingTypeLabel')} {lead.listingType}</span>
                   </div>
                 )}
                 {lead.budget && (
                   <div className="flex items-center gap-3">
                     <DollarSign className="h-5 w-5 text-gray-400" />
-                    <span className="text-gray-700">Бюджет: {lead.budget.toLocaleString()} YE</span>
+                    <span className="text-gray-700">{t('budgetLabel')} {lead.budget.toLocaleString()} YE</span>
                   </div>
                 )}
                 {lead.bedrooms !== undefined && (
                   <div className="flex items-center gap-3">
-                    <span className="text-gray-700">Комнат: {lead.bedrooms}</span>
+                    <span className="text-gray-700">{t('bedroomsLabel')} {lead.bedrooms}</span>
                   </div>
                 )}
                 {lead.requirements && (
                   <div className="mt-4">
-                    <h4 className="text-sm font-medium text-gray-900 mb-2">Дополнительные требования</h4>
+                    <h4 className="text-sm font-medium text-gray-900 mb-2">{t('additionalRequirements')}</h4>
                     <p className="text-gray-700">{lead.requirements}</p>
                   </div>
                 )}
@@ -210,7 +215,7 @@ export default function LeadDetailPage({ params }: PageProps) {
 
           {lead.notes && (
             <div className="bg-white p-6 rounded-lg shadow">
-              <h2 className="text-xl font-semibold text-gray-900 mb-4">Заметки</h2>
+              <h2 className="text-xl font-semibold text-gray-900 mb-4">{t('notes')}</h2>
               <p className="text-gray-700 whitespace-pre-wrap">{lead.notes}</p>
             </div>
           )}
@@ -219,15 +224,15 @@ export default function LeadDetailPage({ params }: PageProps) {
         <div className="space-y-6">
           {/* Lead Info */}
           <div className="bg-white p-6 rounded-lg shadow">
-            <h2 className="text-xl font-semibold text-gray-900 mb-4">Информация о лиде</h2>
+            <h2 className="text-xl font-semibold text-gray-900 mb-4">{t('leadInfo')}</h2>
             <div className="space-y-3 text-sm">
               <div>
-                <span className="text-gray-500">Источник:</span>
-                <p className="font-medium">{lead.source}</p>
+                <span className="text-gray-500">{t('source')}</span>
+                <p className="font-medium">{tSources(lead.source as any)}</p>
               </div>
               {lead.assignedTo && (
                 <div>
-                  <span className="text-gray-500">Ответственный:</span>
+                  <span className="text-gray-500">{t('assignedTo')}</span>
                   <p className="font-medium">
                     {lead.assignedTo.user.firstName} {lead.assignedTo.user.lastName}
                   </p>
@@ -238,13 +243,13 @@ export default function LeadDetailPage({ params }: PageProps) {
               )}
               {lead.lastContactedAt && (
                 <div>
-                  <span className="text-gray-500">Последний контакт:</span>
+                  <span className="text-gray-500">{t('lastContact')}</span>
                   <p className="font-medium">{formatDate(lead.lastContactedAt)}</p>
                 </div>
               )}
               {lead.nextFollowUpAt && (
                 <div>
-                  <span className="text-gray-500">Следующий звонок:</span>
+                  <span className="text-gray-500">{t('nextFollowUp')}</span>
                   <p className="font-medium text-orange-600">{formatDate(lead.nextFollowUpAt)}</p>
                 </div>
               )}

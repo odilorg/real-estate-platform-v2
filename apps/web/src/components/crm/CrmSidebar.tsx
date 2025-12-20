@@ -14,27 +14,9 @@ import {
 } from 'lucide-react';
 import { CrmNavItem } from './CrmNavItem';
 import { cn } from '@/lib/utils';
+import { useTranslations } from 'next-intl';
 
 const SIDEBAR_COLLAPSED_KEY = 'crm-sidebar-collapsed';
-
-const navigationItems = [
-  {
-    section: 'Main',
-    items: [
-      { href: '/developer/crm/analytics', icon: LayoutDashboard, label: 'Dashboard' },
-      { href: '/developer/crm/leads', icon: FileText, label: 'Leads' },
-      { href: '/developer/crm/deals', icon: Handshake, label: 'Deals' },
-      { href: '/developer/crm/commissions', icon: DollarSign, label: 'Commissions' },
-    ],
-  },
-  {
-    section: 'Team & Reports',
-    items: [
-      { href: '/developer/crm/members', icon: Users, label: 'Team' },
-      { href: '/developer/crm/analytics/revenue', icon: BarChart3, label: 'Reports' },
-    ],
-  },
-];
 
 interface CrmSidebarProps {
   className?: string;
@@ -42,8 +24,29 @@ interface CrmSidebarProps {
 }
 
 export function CrmSidebar({ className, title = 'CRM' }: CrmSidebarProps) {
+  const t = useTranslations('crm.sidebar');
   const [collapsed, setCollapsed] = useState(false);
   const [mounted, setMounted] = useState(false);
+
+  // Define navigation items with translated labels
+  const navigationItems = [
+    {
+      section: t('main'),
+      items: [
+        { href: '/developer/crm/analytics', icon: LayoutDashboard, label: t('dashboard') },
+        { href: '/developer/crm/leads', icon: FileText, label: t('leads') },
+        { href: '/developer/crm/deals', icon: Handshake, label: t('deals') },
+        { href: '/developer/crm/commissions', icon: DollarSign, label: t('commissions') },
+      ],
+    },
+    {
+      section: t('teamReports'),
+      items: [
+        { href: '/developer/crm/members', icon: Users, label: t('team') },
+        { href: '/developer/crm/analytics/revenue', icon: BarChart3, label: t('reports') },
+      ],
+    },
+  ];
 
   // Load collapsed state from localStorage
   useEffect(() => {
@@ -89,7 +92,7 @@ export function CrmSidebar({ className, title = 'CRM' }: CrmSidebarProps) {
             'p-1.5 rounded-md hover:bg-gray-100 transition-colors',
             collapsed && 'mx-auto'
           )}
-          aria-label={collapsed ? 'Expand sidebar' : 'Collapse sidebar'}
+          aria-label={collapsed ? t('expandSidebar') : t('collapseSidebar')}
         >
           {collapsed ? (
             <ChevronRight className="w-5 h-5 text-gray-500" />
@@ -128,7 +131,7 @@ export function CrmSidebar({ className, title = 'CRM' }: CrmSidebarProps) {
         <CrmNavItem
           href="/agency/settings"
           icon={Settings}
-          label="Settings"
+          label={t('settings')}
           collapsed={collapsed}
         />
       </div>

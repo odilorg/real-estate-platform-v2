@@ -5,6 +5,7 @@ import { Link } from '@/i18n/routing';
 import { Search, Plus, Phone, Mail, User, Calendar, ChevronRight, AlertCircle, Loader2, UserPlus, X, LayoutList, LayoutGrid, Upload, Download, Trash2, CheckSquare, Square, CalendarDays } from 'lucide-react';
 import { api } from '@/lib/api';
 import { useAuth } from '@/context/AuthContext';
+import { useTranslations } from 'next-intl';
 import KanbanBoard from './KanbanBoard';
 import CalendarView from './CalendarView';
 
@@ -56,6 +57,8 @@ const priorityColors = {
 
 export default function AgencyCRMLeadsPage() {
   const { user } = useAuth();
+  const t = useTranslations('crm.leads');
+  const tc = useTranslations('crm.common');
 
   const [leads, setLeads] = useState<Lead[]>([]);
   
@@ -129,7 +132,7 @@ export default function AgencyCRMLeadsPage() {
       fetchLeads();
     } catch (error) {
       console.error('Error assigning lead:', error);
-      alert('Ошибка при назначении лида');
+      alert(t('alerts.assignError'));
     } finally {
       setAssigning(false);
     }
@@ -139,14 +142,14 @@ export default function AgencyCRMLeadsPage() {
     e.preventDefault();
     e.stopPropagation();
 
-    if (!confirm('Отменить назначение этого лида?')) return;
+    if (!confirm(t('alerts.unassignConfirm'))) return;
 
     try {
       await api.put(`/agency-crm/leads/${leadId}/assign`, { memberId: null });
       fetchLeads();
     } catch (error) {
       console.error('Error unassigning lead:', error);
-      alert('Ошибка при отмене назначения');
+      alert(t('alerts.unassignError'));
     }
   };
 
@@ -155,9 +158,9 @@ export default function AgencyCRMLeadsPage() {
     const date = new Date(dateString);
     const now = new Date();
     const diffDays = Math.floor((now.getTime() - date.getTime()) / (1000 * 60 * 60 * 24));
-    if (diffDays === 0) return 'Сегодня';
-    if (diffDays === 1) return 'Вчера';
-    if (diffDays < 7) return `${diffDays} дней назад`;
+    if (diffDays === 0) return t('time.today');
+    if (diffDays === 1) return t('time.yesterday');
+    if (diffDays < 7) return t('time.daysAgo', { days: diffDays });
     return date.toLocaleDateString('ru-RU', { day: 'numeric', month: 'short', year: 'numeric' });
   };
 
@@ -184,7 +187,7 @@ export default function AgencyCRMLeadsPage() {
       fetchLeads(); // Refresh leads after status change
     } catch (error) {
       console.error('Error updating lead status:', error);
-      alert('Ошибка при обновлении статуса лида');
+      alert(t('alerts.statusError'));
     }
   };
 
@@ -220,13 +223,13 @@ export default function AgencyCRMLeadsPage() {
       fetchLeads();
 
       if (result.failed > 0) {
-        alert(`Удалено: ${result.success}, Ошибок: ${result.failed}`);
+        alert(t('alerts.deleteSuccess', { success: result.success, failed: result.failed }));
       } else {
-        alert(`Успешно удалено ${result.success} лид(ов)`);
+        alert(t('alerts.deleteSuccessAll', { count: result.success }));
       }
     } catch (error) {
       console.error('Bulk delete error:', error);
-      alert('Ошибка при массовом удалении лидов');
+      alert(t('alerts.deleteError'));
     } finally {
       setBulkOperating(false);
     }
@@ -247,13 +250,13 @@ export default function AgencyCRMLeadsPage() {
       fetchLeads();
 
       if (result.failed > 0) {
-        alert(`Назначено: ${result.success}, Ошибок: ${result.failed}`);
+        alert(t('alerts.assignSuccess', { success: result.success, failed: result.failed }));
       } else {
-        alert(`Успешно назначено ${result.success} лид(ов)`);
+        alert(t('alerts.assignSuccessAll', { count: result.success }));
       }
     } catch (error) {
       console.error('Bulk assign error:', error);
-      alert('Ошибка при массовом назначении лидов');
+      alert(t('alerts.assignError2'));
     } finally {
       setBulkOperating(false);
     }
@@ -265,28 +268,28 @@ export default function AgencyCRMLeadsPage() {
       <div className="space-y-4 w-full">
         <div className="flex flex-col sm:flex-row sm:items-center sm:justify-between gap-3 w-full">
           <div>
-            <h1 className="text-xl sm:text-2xl lg:text-3xl font-bold text-gray-900">Лиды</h1>
-            <p className="mt-0.5 text-xs sm:text-sm text-gray-500">Управление клиентами</p>
+            <h1 className="text-xl sm:text-2xl lg:text-3xl font-bold text-gray-900">{t('title')}</h1>
+            <p className="mt-0.5 text-xs sm:text-sm text-gray-500">{t('subtitle')}</p>
           </div>
           <div className="flex flex-col sm:flex-row gap-2 w-full sm:w-auto">
             <div className="flex gap-2">
               <Link href="/developer/crm/leads/import" className="flex-1 sm:flex-initial">
                 <button className="w-full bg-white border border-gray-300 text-gray-700 px-4 py-2 sm:px-4 sm:py-3 rounded-lg hover:bg-gray-50 transition-colors flex items-center justify-center gap-2 font-medium shadow-sm min-h-[38px] sm:min-h-[44px]">
                   <Upload className="h-4 w-4" />
-                  <span className="text-sm sm:text-base">Импорт</span>
+                  <span className="text-sm sm:text-base">{t('import')}</span>
                 </button>
               </Link>
               <Link href="/developer/crm/leads/export" className="flex-1 sm:flex-initial">
                 <button className="w-full bg-white border border-gray-300 text-gray-700 px-4 py-2 sm:px-4 sm:py-3 rounded-lg hover:bg-gray-50 transition-colors flex items-center justify-center gap-2 font-medium shadow-sm min-h-[38px] sm:min-h-[44px]">
                   <Download className="h-4 w-4" />
-                  <span className="text-sm sm:text-base">Экспорт</span>
+                  <span className="text-sm sm:text-base">{t('export')}</span>
                 </button>
               </Link>
             </div>
             <Link href="/developer/crm/leads/new" className="w-full sm:w-auto">
               <button className="w-full sm:w-auto bg-blue-600 text-white px-4 py-2 sm:px-5 sm:py-3 rounded-lg hover:bg-blue-700 transition-colors flex items-center justify-center gap-2 font-medium shadow-sm min-h-[38px] sm:min-h-[44px]">
                 <Plus className="h-5 w-5" />
-                <span className="text-sm sm:text-base">Добавить лид</span>
+                <span className="text-sm sm:text-base">{t('addLead')}</span>
               </button>
             </Link>
           </div>
@@ -299,21 +302,21 @@ export default function AgencyCRMLeadsPage() {
             className={`flex-1 sm:flex-initial px-3 md:px-4 py-2.5 rounded-md transition-colors flex items-center justify-center gap-1.5 md:gap-2 min-h-[38px] sm:min-h-[44px] ${viewMode === 'list' ? 'bg-white shadow-sm text-blue-600' : 'text-gray-600 hover:text-gray-900'}`}
           >
             <LayoutList className="h-4 w-4" />
-            <span className="font-medium text-sm md:text-base">Список</span>
+            <span className="font-medium text-sm md:text-base">{t('viewModes.list')}</span>
           </button>
           <button
             onClick={() => setViewMode('kanban')}
             className={`flex-1 sm:flex-initial px-3 md:px-4 py-2.5 rounded-md transition-colors flex items-center justify-center gap-1.5 md:gap-2 min-h-[38px] sm:min-h-[44px] ${viewMode === 'kanban' ? 'bg-white shadow-sm text-blue-600' : 'text-gray-600 hover:text-gray-900'}`}
           >
             <LayoutGrid className="h-4 w-4" />
-            <span className="font-medium text-sm md:text-base">Kanban</span>
+            <span className="font-medium text-sm md:text-base">{t('viewModes.kanban')}</span>
           </button>
           <button
             onClick={() => setViewMode('calendar')}
             className={`flex-1 sm:flex-initial px-3 md:px-4 py-2.5 rounded-md transition-colors flex items-center justify-center gap-1.5 md:gap-2 min-h-[38px] sm:min-h-[44px] ${viewMode === 'calendar' ? 'bg-white shadow-sm text-blue-600' : 'text-gray-600 hover:text-gray-900'}`}
           >
             <CalendarDays className="h-4 w-4" />
-            <span className="font-medium text-sm md:text-base">Календарь</span>
+            <span className="font-medium text-sm md:text-base">{t('viewModes.calendar')}</span>
           </button>
         </div>
       </div>
@@ -322,10 +325,10 @@ export default function AgencyCRMLeadsPage() {
       <div className="overflow-x-auto -mx-4 px-4 sm:mx-0 sm:px-0">
         <div className="flex sm:grid sm:grid-cols-2 lg:grid-cols-4 gap-3 min-w-max sm:min-w-0">
           {[
-            { label: 'Всего лидов', value: total, icon: '📊', color: 'text-gray-900' },
-            { label: 'Новые', value: safeLeads.filter(l => l.status === 'NEW').length, icon: '🆕', color: 'text-blue-600' },
-            { label: 'Квалифицированные', value: safeLeads.filter(l => l.status === 'QUALIFIED').length, icon: '✅', color: 'text-green-600' },
-            { label: 'Срочные', value: safeLeads.filter(l => l.priority === 'URGENT').length, icon: '🔥', color: 'text-red-600' },
+            { label: t('stats.total'), value: total, icon: '📊', color: 'text-gray-900' },
+            { label: t('stats.new'), value: safeLeads.filter(l => l.status === 'NEW').length, icon: '🆕', color: 'text-blue-600' },
+            { label: t('stats.qualified'), value: safeLeads.filter(l => l.status === 'QUALIFIED').length, icon: '✅', color: 'text-green-600' },
+            { label: t('stats.urgent'), value: safeLeads.filter(l => l.priority === 'URGENT').length, icon: '🔥', color: 'text-red-600' },
           ].map((stat, i) => (
             <div key={i} className="bg-white p-4 lg:p-5 rounded-lg shadow-sm border border-gray-100 min-w-[160px] sm:min-w-0">
               <div className="flex items-center justify-between">
@@ -344,7 +347,7 @@ export default function AgencyCRMLeadsPage() {
           <div className="flex items-start gap-3">
             <AlertCircle className="h-5 w-5 text-orange-500 flex-shrink-0 mt-0.5" />
             <div className="flex-1 min-w-0">
-              <h3 className="text-sm md:text-base font-semibold text-orange-900 mb-2">Требуют связи сегодня ({followUpLeads.length})</h3>
+              <h3 className="text-sm md:text-base font-semibold text-orange-900 mb-2">{t('followUp.alert')} ({followUpLeads.length})</h3>
               <div className="space-y-2">
                 {followUpLeads.map(lead => (
                   <Link key={lead.id} href={`/developer/crm/leads/${lead.id}`}>
@@ -361,7 +364,7 @@ export default function AgencyCRMLeadsPage() {
                           </div>
                         )}
                         {lead.priority === 'URGENT' && (
-                          <span className="text-xs font-bold text-red-600 flex-shrink-0">Просрочено</span>
+                          <span className="text-xs font-bold text-red-600 flex-shrink-0">{t('followUp.overdue')}</span>
                         )}
                       </div>
                     </div>
@@ -379,7 +382,7 @@ export default function AgencyCRMLeadsPage() {
           <Search className="absolute left-3 top-1/2 transform -translate-y-1/2 h-5 w-5 text-gray-400" />
           <input
             type="text"
-            placeholder="Поиск..."
+            placeholder={t('search')}
             value={search}
             onChange={(e) => setSearch(e.target.value)}
             className="w-full pl-10 pr-4 py-2 sm:py-2.5 border border-gray-200 rounded-lg focus:outline-none focus:ring-2 focus:ring-blue-500 focus:border-transparent min-h-[38px] sm:min-h-[44px]"
@@ -391,32 +394,32 @@ export default function AgencyCRMLeadsPage() {
             onChange={(e) => setStatusFilter(e.target.value)}
             className="px-3 py-1.5 sm:py-2.5 border border-gray-200 rounded-lg focus:outline-none focus:ring-2 focus:ring-blue-500 min-h-[38px] sm:min-h-[44px]"
           >
-            <option value="all">Все статусы</option>
-            <option value="NEW">Новые</option>
-            <option value="CONTACTED">Связались</option>
-            <option value="QUALIFIED">Квалифицированные</option>
-            <option value="NEGOTIATING">Переговоры</option>
-            <option value="CONVERTED">Конвертированные</option>
-            <option value="LOST">Потеряны</option>
+            <option value="all">{t('filters.allStatuses')}</option>
+            <option value="NEW">{t('statuses.NEW')}</option>
+            <option value="CONTACTED">{t('statuses.CONTACTED')}</option>
+            <option value="QUALIFIED">{t('statuses.QUALIFIED')}</option>
+            <option value="NEGOTIATING">{t('statuses.NEGOTIATING')}</option>
+            <option value="CONVERTED">{t('statuses.CONVERTED')}</option>
+            <option value="LOST">{t('statuses.LOST')}</option>
           </select>
           <select
             value={priorityFilter}
             onChange={(e) => setPriorityFilter(e.target.value)}
             className="px-3 py-1.5 sm:py-2.5 border border-gray-200 rounded-lg focus:outline-none focus:ring-2 focus:ring-blue-500 min-h-[38px] sm:min-h-[44px]"
           >
-            <option value="all">Все приоритеты</option>
-            <option value="URGENT">Срочные</option>
-            <option value="HIGH">Высокий</option>
-            <option value="MEDIUM">Средний</option>
-            <option value="LOW">Низкий</option>
+            <option value="all">{t('filters.allPriorities')}</option>
+            <option value="URGENT">{t('priorities.URGENT')}</option>
+            <option value="HIGH">{t('priorities.HIGH')}</option>
+            <option value="MEDIUM">{t('priorities.MEDIUM')}</option>
+            <option value="LOW">{t('priorities.LOW')}</option>
           </select>
           <select
             value={assignedFilter}
             onChange={(e) => setAssignedFilter(e.target.value)}
             className="px-3 py-1.5 sm:py-2.5 border border-gray-200 rounded-lg focus:outline-none focus:ring-2 focus:ring-blue-500 min-h-[38px] sm:min-h-[44px]"
           >
-            <option value="all">Все агенты</option>
-            <option value="unassigned">Не назначен</option>
+            <option value="all">{t('filters.allAgents')}</option>
+            <option value="unassigned">{t('filters.unassigned')}</option>
             {safeTeamMembers.map(member => (
               <option key={member.id} value={member.id}>
                 {member.user.firstName} {member.user.lastName}
@@ -442,7 +445,7 @@ export default function AgencyCRMLeadsPage() {
                 )}
               </button>
               <span className="text-sm font-medium text-blue-900">
-                Выбрано: {selectedLeads.length}
+                {t('bulk.selected')}: {selectedLeads.length}
               </span>
             </div>
             <div className="flex items-center gap-2">
@@ -451,14 +454,14 @@ export default function AgencyCRMLeadsPage() {
                 className="px-4 py-2 bg-white border border-blue-300 text-blue-700 rounded-lg hover:bg-blue-50 transition-colors flex items-center gap-2 text-sm font-medium"
               >
                 <UserPlus className="h-4 w-4" />
-                <span className="hidden sm:inline">Назначить</span>
+                <span className="hidden sm:inline">{t('bulk.assign')}</span>
               </button>
               <button
                 onClick={() => setShowBulkDeleteModal(true)}
                 className="px-4 py-2 bg-red-600 text-white rounded-lg hover:bg-red-700 transition-colors flex items-center gap-2 text-sm font-medium"
               >
                 <Trash2 className="h-4 w-4" />
-                <span className="hidden sm:inline">Удалить</span>
+                <span className="hidden sm:inline">{t('bulk.delete')}</span>
               </button>
               <button
                 onClick={() => setSelectedLeads([])}
@@ -482,12 +485,12 @@ export default function AgencyCRMLeadsPage() {
             <div className="w-16 h-16 bg-gray-100 rounded-full flex items-center justify-center mx-auto mb-4">
               <User className="h-8 w-8 text-gray-400" />
             </div>
-            <h3 className="text-lg md:text-xl font-semibold text-gray-900 mb-2">Нет лидов</h3>
-            <p className="text-sm md:text-base text-gray-600 mb-6">Начните добавлять лидов, чтобы управлять ими</p>
+            <h3 className="text-lg md:text-xl font-semibold text-gray-900 mb-2">{t('noLeads')}</h3>
+            <p className="text-sm md:text-base text-gray-600 mb-6">{t('noLeadsDescription')}</p>
             <Link href="/developer/crm/leads/new">
               <button className="bg-blue-600 text-white px-6 py-3 rounded-lg hover:bg-blue-700 transition-colors flex items-center justify-center gap-2 mx-auto min-h-[38px] sm:min-h-[44px]">
                 <Plus className="h-5 w-5" />
-                <span>Добавить первого лида</span>
+                <span>{t('addFirstLead')}</span>
               </button>
             </Link>
           </div>
@@ -536,7 +539,7 @@ export default function AgencyCRMLeadsPage() {
                         </span>
                         {lead.priority === 'URGENT' || lead.priority === 'HIGH' ? (
                           <span className={`px-2.5 py-1 text-xs font-bold rounded-full ${priorityColors[lead.priority]}`}>
-                            {lead.priority === 'URGENT' ? '🔥 СРОЧНО' : '⚡ ВАЖНО'}
+                            {lead.priority === 'URGENT' ? t('priority.urgentTag') : t('priority.highTag')}
                           </span>
                         ) : null}
                       </div>
@@ -569,7 +572,7 @@ export default function AgencyCRMLeadsPage() {
                         <User className={`h-4 w-4 ${lead.assignedTo ? 'text-green-600' : 'text-gray-400'}`} />
                       </div>
                       <span className={`text-xs font-medium ${lead.assignedTo ? 'text-green-700' : 'text-gray-500'}`}>
-                        {lead.assignedTo ? lead.assignedTo.user.firstName : 'Не назначен'}
+                        {lead.assignedTo ? lead.assignedTo.user.firstName : t('filters.unassigned')}
                       </span>
                     </div>
                     <div className="flex items-center gap-1 text-xs text-gray-500">
@@ -586,7 +589,7 @@ export default function AgencyCRMLeadsPage() {
                           <Calendar className="h-3.5 w-3.5" />
                         </div>
                         <span className="text-xs font-semibold">
-                          Звонок: {formatTime(lead.nextFollowUpAt)}
+                          {t('followUp.call')}: {formatTime(lead.nextFollowUpAt)}
                         </span>
                       </div>
                     </div>
@@ -666,7 +669,7 @@ export default function AgencyCRMLeadsPage() {
                           className="flex items-center gap-1.5 text-sm text-gray-600 hover:text-blue-600 bg-gray-50 hover:bg-blue-50 px-3 py-1.5 rounded-lg transition-colors"
                         >
                           <UserPlus className="h-4 w-4" />
-                          <span>Назначить</span>
+                          <span>{t('assign.button')}</span>
                         </button>
                       )}
                       <ChevronRight className="h-5 w-5 text-gray-400" />
@@ -684,7 +687,7 @@ export default function AgencyCRMLeadsPage() {
         <div className="fixed inset-0 bg-black bg-opacity-50 flex items-center justify-center p-4 z-50">
           <div className="bg-white rounded-lg max-w-md w-full p-6">
             <div className="flex items-center justify-between mb-4">
-              <h3 className="text-lg font-semibold">Назначить агента</h3>
+              <h3 className="text-lg font-semibold">{t('assign.title')}</h3>
               <button onClick={() => setShowAssignModal(false)} className="text-gray-400 hover:text-gray-600">
                 <X className="h-5 w-5" />
               </button>
@@ -713,13 +716,13 @@ export default function AgencyCRMLeadsPage() {
         <div className="fixed inset-0 bg-black bg-opacity-50 flex items-center justify-center p-4 z-50">
           <div className="bg-white rounded-lg max-w-md w-full p-6">
             <div className="flex items-center justify-between mb-4">
-              <h3 className="text-lg font-semibold text-red-900">Удалить лиды?</h3>
+              <h3 className="text-lg font-semibold text-red-900">{t('deleteModal.title')}</h3>
               <button onClick={() => setShowBulkDeleteModal(false)} className="text-gray-400 hover:text-gray-600">
                 <X className="h-5 w-5" />
               </button>
             </div>
             <p className="text-gray-600 mb-6">
-              Вы уверены, что хотите удалить {selectedLeads.length} лид(ов)? Это действие нельзя отменить.
+              {t('deleteModal.message', { count: selectedLeads.length })}
             </p>
             <div className="flex gap-3 justify-end">
               <button
@@ -727,7 +730,7 @@ export default function AgencyCRMLeadsPage() {
                 disabled={bulkOperating}
                 className="px-4 py-2 border border-gray-300 rounded-lg hover:bg-gray-50 disabled:opacity-50"
               >
-                Отмена
+                {tc('cancel')}
               </button>
               <button
                 onClick={handleBulkDelete}
@@ -737,12 +740,12 @@ export default function AgencyCRMLeadsPage() {
                 {bulkOperating ? (
                   <>
                     <Loader2 className="h-4 w-4 animate-spin" />
-                    Удаление...
+                    {t('deleteModal.deleting')}
                   </>
                 ) : (
                   <>
                     <Trash2 className="h-4 w-4" />
-                    Удалить
+                    {tc('delete')}
                   </>
                 )}
               </button>
@@ -756,13 +759,13 @@ export default function AgencyCRMLeadsPage() {
         <div className="fixed inset-0 bg-black bg-opacity-50 flex items-center justify-center p-4 z-50">
           <div className="bg-white rounded-lg max-w-md w-full p-6">
             <div className="flex items-center justify-between mb-4">
-              <h3 className="text-lg font-semibold">Назначить агента</h3>
+              <h3 className="text-lg font-semibold">{t('assign.title')}</h3>
               <button onClick={() => setShowBulkAssignModal(false)} className="text-gray-400 hover:text-gray-600">
                 <X className="h-5 w-5" />
               </button>
             </div>
             <p className="text-sm text-gray-600 mb-4">
-              Выбрано лидов: {selectedLeads.length}
+              {t('assign.selectedLeads')}: {selectedLeads.length}
             </p>
             <div className="space-y-2 max-h-96 overflow-y-auto">
               {safeTeamMembers.map((member) => (

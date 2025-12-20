@@ -1,6 +1,7 @@
 'use client';
 
 import { useEffect, useState } from 'react';
+import { useTranslations } from 'next-intl';
 import { api } from '@/lib/api';
 
 interface AgentPerformance {
@@ -21,6 +22,7 @@ interface LeaderboardData {
 }
 
 export default function AgentsAnalyticsPage() {
+  const t = useTranslations('crm.analytics');
   const [loading, setLoading] = useState(true);
   const [data, setData] = useState<LeaderboardData | null>(null);
   const [period, setPeriod] = useState<'WEEK' | 'MONTH' | 'QUARTER' | 'YEAR'>('MONTH');
@@ -38,7 +40,7 @@ export default function AgentsAnalyticsPage() {
       setData(response);
     } catch (error: any) {
       console.error('Failed to fetch leaderboard:', error);
-      alert('Ошибка загрузки лидерборда');
+      alert(t('agents.loadError'));
     } finally {
       setLoading(false);
     }
@@ -59,7 +61,7 @@ export default function AgentsAnalyticsPage() {
     return (
       <div className="p-8">
         <div className="flex items-center justify-center h-64">
-          <div className="text-gray-500">Загрузка...</div>
+          <div className="text-gray-500">{t('loading')}</div>
         </div>
       </div>
     );
@@ -69,7 +71,7 @@ export default function AgentsAnalyticsPage() {
     return (
       <div className="p-8">
         <div className="flex items-center justify-center h-64">
-          <div className="text-gray-500">Нет данных</div>
+          <div className="text-gray-500">{t('noData')}</div>
         </div>
       </div>
     );
@@ -80,9 +82,9 @@ export default function AgentsAnalyticsPage() {
       {/* Header */}
       <div className="mb-8 flex items-center justify-between">
         <div>
-          <h1 className="text-2xl font-bold text-gray-900">Лидерборд агентов</h1>
+          <h1 className="text-2xl font-bold text-gray-900">{t('agents.title')}</h1>
           <p className="text-gray-600 mt-1">
-            Рейтинг эффективности команды
+            {t('agents.subtitle')}
           </p>
         </div>
 
@@ -96,7 +98,7 @@ export default function AgentsAnalyticsPage() {
                 : 'bg-gray-100 text-gray-700 hover:bg-gray-200'
             }`}
           >
-            Неделя
+            {t('periods.week')}
           </button>
           <button
             onClick={() => setPeriod('MONTH')}
@@ -106,7 +108,7 @@ export default function AgentsAnalyticsPage() {
                 : 'bg-gray-100 text-gray-700 hover:bg-gray-200'
             }`}
           >
-            Месяц
+            {t('periods.month')}
           </button>
           <button
             onClick={() => setPeriod('QUARTER')}
@@ -116,7 +118,7 @@ export default function AgentsAnalyticsPage() {
                 : 'bg-gray-100 text-gray-700 hover:bg-gray-200'
             }`}
           >
-            Квартал
+            {t('periods.quarter')}
           </button>
           <button
             onClick={() => setPeriod('YEAR')}
@@ -126,7 +128,7 @@ export default function AgentsAnalyticsPage() {
                 : 'bg-gray-100 text-gray-700 hover:bg-gray-200'
             }`}
           >
-            Год
+            {t('periods.year')}
           </button>
         </div>
       </div>
@@ -142,10 +144,10 @@ export default function AgentsAnalyticsPage() {
                 {data.leaderboard[1].name}
               </div>
               <div className="text-2xl font-bold text-gray-700 mb-1">
-                {formatCurrency(data.leaderboard[1].revenue)} у.е.
+                {formatCurrency(data.leaderboard[1].revenue)} {t('currency.ye')}
               </div>
               <div className="text-sm text-gray-600">
-                {data.leaderboard[1].wonDeals} сделок
+                {data.leaderboard[1].wonDeals} {t('agents.deals')}
               </div>
             </div>
             <div className="mt-4 h-32 w-48 bg-gradient-to-t from-gray-300 to-gray-200 rounded-t-lg"></div>
@@ -159,10 +161,10 @@ export default function AgentsAnalyticsPage() {
                 {data.leaderboard[0].name}
               </div>
               <div className="text-3xl font-bold text-yellow-700 mb-1">
-                {formatCurrency(data.leaderboard[0].revenue)} у.е.
+                {formatCurrency(data.leaderboard[0].revenue)} {t('currency.ye')}
               </div>
               <div className="text-sm text-gray-600">
-                {data.leaderboard[0].wonDeals} сделок
+                {data.leaderboard[0].wonDeals} {t('agents.deals')}
               </div>
             </div>
             <div className="mt-4 h-40 w-48 bg-gradient-to-t from-yellow-400 to-yellow-300 rounded-t-lg"></div>
@@ -176,10 +178,10 @@ export default function AgentsAnalyticsPage() {
                 {data.leaderboard[2].name}
               </div>
               <div className="text-2xl font-bold text-orange-700 mb-1">
-                {formatCurrency(data.leaderboard[2].revenue)} у.е.
+                {formatCurrency(data.leaderboard[2].revenue)} {t('currency.ye')}
               </div>
               <div className="text-sm text-gray-600">
-                {data.leaderboard[2].wonDeals} сделок
+                {data.leaderboard[2].wonDeals} {t('agents.deals')}
               </div>
             </div>
             <div className="mt-4 h-24 w-48 bg-gradient-to-t from-orange-300 to-orange-200 rounded-t-lg"></div>
@@ -193,28 +195,28 @@ export default function AgentsAnalyticsPage() {
           <thead className="bg-gray-50">
             <tr>
               <th className="px-6 py-3 text-left text-xs font-medium text-gray-500 uppercase tracking-wider">
-                Место
+                {t('agents.table.rank')}
               </th>
               <th className="px-6 py-3 text-left text-xs font-medium text-gray-500 uppercase tracking-wider">
-                Агент
+                {t('agents.table.agent')}
               </th>
               <th className="px-6 py-3 text-right text-xs font-medium text-gray-500 uppercase tracking-wider">
-                Лиды
+                {t('agents.table.leads')}
               </th>
               <th className="px-6 py-3 text-right text-xs font-medium text-gray-500 uppercase tracking-wider">
-                Конверсия
+                {t('agents.table.conversion')}
               </th>
               <th className="px-6 py-3 text-right text-xs font-medium text-gray-500 uppercase tracking-wider">
-                Сделки
+                {t('agents.table.deals')}
               </th>
               <th className="px-6 py-3 text-right text-xs font-medium text-gray-500 uppercase tracking-wider">
-                Win Rate
+                {t('agents.table.winRate')}
               </th>
               <th className="px-6 py-3 text-right text-xs font-medium text-gray-500 uppercase tracking-wider">
-                Выручка
+                {t('agents.table.revenue')}
               </th>
               <th className="px-6 py-3 text-right text-xs font-medium text-gray-500 uppercase tracking-wider">
-                Комиссии
+                {t('agents.table.commissions')}
               </th>
             </tr>
           </thead>
@@ -237,7 +239,7 @@ export default function AgentsAnalyticsPage() {
                 <td className="px-6 py-4 whitespace-nowrap text-right">
                   <div className="text-sm text-gray-900">{agent.totalLeads}</div>
                   <div className="text-xs text-gray-500">
-                    конвертировано: {agent.convertedLeads}
+                    {t('agents.converted')}: {agent.convertedLeads}
                   </div>
                 </td>
                 <td className="px-6 py-4 whitespace-nowrap text-right">
@@ -248,7 +250,7 @@ export default function AgentsAnalyticsPage() {
                 <td className="px-6 py-4 whitespace-nowrap text-right">
                   <div className="text-sm text-gray-900">{agent.totalDeals}</div>
                   <div className="text-xs text-gray-500">
-                    выиграно: {agent.wonDeals}
+                    {t('agents.won')}: {agent.wonDeals}
                   </div>
                 </td>
                 <td className="px-6 py-4 whitespace-nowrap text-right">
@@ -258,12 +260,12 @@ export default function AgentsAnalyticsPage() {
                 </td>
                 <td className="px-6 py-4 whitespace-nowrap text-right">
                   <div className="text-sm font-bold text-gray-900">
-                    {formatCurrency(agent.revenue)} у.е.
+                    {formatCurrency(agent.revenue)} {t('currency.ye')}
                   </div>
                 </td>
                 <td className="px-6 py-4 whitespace-nowrap text-right">
                   <div className="text-sm font-medium text-green-600">
-                    {formatCurrency(agent.commissions)} у.е.
+                    {formatCurrency(agent.commissions)} {t('currency.ye')}
                   </div>
                 </td>
               </tr>
@@ -273,9 +275,9 @@ export default function AgentsAnalyticsPage() {
 
         {data.leaderboard.length === 0 && (
           <div className="text-center py-12">
-            <div className="text-gray-500 mb-2">Нет данных за выбранный период</div>
+            <div className="text-gray-500 mb-2">{t('agents.noDataPeriod')}</div>
             <div className="text-sm text-gray-400">
-              Добавьте агентов и лиды, чтобы увидеть статистику
+              {t('agents.addAgentsHint')}
             </div>
           </div>
         )}
@@ -286,7 +288,7 @@ export default function AgentsAnalyticsPage() {
         <div className="mt-8 grid grid-cols-1 md:grid-cols-4 gap-6">
           <div className="bg-white rounded-lg shadow p-6">
             <div className="text-gray-600 text-sm font-medium mb-2">
-              Всего агентов
+              {t('agents.stats.totalAgents')}
             </div>
             <div className="text-3xl font-bold text-gray-900">
               {data.leaderboard.length}
@@ -295,31 +297,31 @@ export default function AgentsAnalyticsPage() {
 
           <div className="bg-white rounded-lg shadow p-6">
             <div className="text-gray-600 text-sm font-medium mb-2">
-              Общая выручка
+              {t('agents.stats.totalRevenue')}
             </div>
             <div className="text-3xl font-bold text-gray-900">
               {formatCurrency(
                 data.leaderboard.reduce((sum, agent) => sum + agent.revenue, 0)
               )}{' '}
-              у.е.
+              {t('currency.ye')}
             </div>
           </div>
 
           <div className="bg-white rounded-lg shadow p-6">
             <div className="text-gray-600 text-sm font-medium mb-2">
-              Общие комиссии
+              {t('agents.stats.totalCommissions')}
             </div>
             <div className="text-3xl font-bold text-green-600">
               {formatCurrency(
                 data.leaderboard.reduce((sum, agent) => sum + agent.commissions, 0)
               )}{' '}
-              у.е.
+              {t('currency.ye')}
             </div>
           </div>
 
           <div className="bg-white rounded-lg shadow p-6">
             <div className="text-gray-600 text-sm font-medium mb-2">
-              Средняя конверсия
+              {t('agents.stats.avgConversion')}
             </div>
             <div className="text-3xl font-bold text-gray-900">
               {data.leaderboard.length > 0

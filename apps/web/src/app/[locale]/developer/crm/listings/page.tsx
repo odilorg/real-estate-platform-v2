@@ -4,6 +4,7 @@ import { useState, useEffect } from 'react';
 import { Plus, Search, Filter, Building, Home, MapPin, DollarSign, Grid, List, Calendar } from 'lucide-react';
 import { Link } from '@/i18n/routing';
 import { api } from '@/lib/api';
+import { useTranslations } from 'next-intl';
 
 interface Listing {
   id: string;
@@ -34,30 +35,7 @@ interface Listing {
   updatedAt: string;
 }
 
-const propertyTypeLabels = {
-  APARTMENT: 'Квартира',
-  HOUSE: 'Дом',
-  CONDO: 'Кондоминиум',
-  TOWNHOUSE: 'Таунхаус',
-  LAND: 'Земля',
-  COMMERCIAL: 'Коммерческая',
-};
-
-const listingTypeLabels = {
-  SALE: 'Продажа',
-  RENT_LONG: 'Аренда',
-  RENT_DAILY: 'Посуточно',
-};
-
-const statusLabels = {
-  ACTIVE: 'Активно',
-  PENDING: 'Ожидание',
-  SOLD: 'Продано',
-  RENTED: 'Арендовано',
-  INACTIVE: 'Неактивно',
-};
-
-const statusColors = {
+const statusColors: Record<string, string> = {
   ACTIVE: 'bg-green-100 text-green-800',
   PENDING: 'bg-yellow-100 text-yellow-800',
   SOLD: 'bg-blue-100 text-blue-800',
@@ -66,6 +44,7 @@ const statusColors = {
 };
 
 export default function ListingsPage() {
+  const t = useTranslations('crm.listings');
   const [listings, setListings] = useState<Listing[]>([]);
   const [filteredListings, setFilteredListings] = useState<Listing[]>([]);
   const [loading, setLoading] = useState(true);
@@ -152,7 +131,7 @@ export default function ListingsPage() {
   if (loading) {
     return (
       <div className="flex items-center justify-center h-64">
-        <div className="text-gray-500">Загрузка...</div>
+        <div className="text-gray-500">{t('loading')}</div>
       </div>
     );
   }
@@ -163,13 +142,13 @@ export default function ListingsPage() {
       <div className="space-y-4 w-full">
         <div className="flex flex-col sm:flex-row sm:items-center sm:justify-between gap-3 w-full">
           <div>
-            <h1 className="text-xl md:text-2xl lg:text-3xl font-bold text-gray-900">Объекты</h1>
-            <p className="text-sm text-gray-500 mt-1">Управление портфелем недвижимости</p>
+            <h1 className="text-xl md:text-2xl lg:text-3xl font-bold text-gray-900">{t('title')}</h1>
+            <p className="text-sm text-gray-500 mt-1">{t('subtitle')}</p>
           </div>
           <Link href="/developer/crm/listings/new">
             <button className="w-full sm:w-auto flex items-center justify-center gap-2 bg-blue-600 hover:bg-blue-700 text-white px-4 py-2.5 rounded-lg font-medium transition-colors">
               <Plus className="h-5 w-5" />
-              <span>Добавить объект</span>
+              <span>{t('addListing')}</span>
             </button>
           </Link>
         </div>
@@ -177,19 +156,19 @@ export default function ListingsPage() {
         {/* Statistics */}
         <div className="grid grid-cols-2 md:grid-cols-4 gap-3 md:gap-4">
           <div className="bg-white p-4 rounded-lg border border-gray-200">
-            <div className="text-sm text-gray-600 mb-1">Всего объектов</div>
+            <div className="text-sm text-gray-600 mb-1">{t('stats.total')}</div>
             <div className="text-2xl font-bold text-gray-900">{stats.total}</div>
           </div>
           <div className="bg-white p-4 rounded-lg border border-gray-200">
-            <div className="text-sm text-gray-600 mb-1">Активные</div>
+            <div className="text-sm text-gray-600 mb-1">{t('stats.active')}</div>
             <div className="text-2xl font-bold text-green-600">{stats.active}</div>
           </div>
           <div className="bg-white p-4 rounded-lg border border-gray-200">
-            <div className="text-sm text-gray-600 mb-1">В ожидании</div>
+            <div className="text-sm text-gray-600 mb-1">{t('stats.pending')}</div>
             <div className="text-2xl font-bold text-yellow-600">{stats.pending}</div>
           </div>
           <div className="bg-white p-4 rounded-lg border border-gray-200">
-            <div className="text-sm text-gray-600 mb-1">Сделки закрыты</div>
+            <div className="text-sm text-gray-600 mb-1">{t('stats.closed')}</div>
             <div className="text-2xl font-bold text-blue-600">{stats.sold}</div>
           </div>
         </div>
@@ -203,7 +182,7 @@ export default function ListingsPage() {
                 <Search className="absolute left-3 top-1/2 -translate-y-1/2 h-5 w-5 text-gray-400" />
                 <input
                   type="text"
-                  placeholder="Поиск по адресу, названию..."
+                  placeholder={t('search')}
                   value={searchQuery}
                   onChange={(e) => setSearchQuery(e.target.value)}
                   className="w-full pl-10 pr-4 py-2.5 border border-gray-300 rounded-lg focus:ring-2 focus:ring-blue-500 focus:border-blue-500"
@@ -217,12 +196,12 @@ export default function ListingsPage() {
               onChange={(e) => setFilterStatus(e.target.value)}
               className="px-4 py-2.5 border border-gray-300 rounded-lg focus:ring-2 focus:ring-blue-500 focus:border-blue-500"
             >
-              <option value="ALL">Все статусы</option>
-              <option value="ACTIVE">Активно</option>
-              <option value="PENDING">Ожидание</option>
-              <option value="SOLD">Продано</option>
-              <option value="RENTED">Арендовано</option>
-              <option value="INACTIVE">Неактивно</option>
+              <option value="ALL">{t('filters.allStatuses')}</option>
+              <option value="ACTIVE">{t('status.ACTIVE')}</option>
+              <option value="PENDING">{t('status.PENDING')}</option>
+              <option value="SOLD">{t('status.SOLD')}</option>
+              <option value="RENTED">{t('status.RENTED')}</option>
+              <option value="INACTIVE">{t('status.INACTIVE')}</option>
             </select>
 
             {/* Property type filter */}
@@ -231,11 +210,11 @@ export default function ListingsPage() {
               onChange={(e) => setFilterType(e.target.value)}
               className="px-4 py-2.5 border border-gray-300 rounded-lg focus:ring-2 focus:ring-blue-500 focus:border-blue-500"
             >
-              <option value="ALL">Все типы</option>
-              <option value="APARTMENT">Квартира</option>
-              <option value="HOUSE">Дом</option>
-              <option value="COMMERCIAL">Коммерческая</option>
-              <option value="LAND">Земля</option>
+              <option value="ALL">{t('filters.allTypes')}</option>
+              <option value="APARTMENT">{t('propertyType.APARTMENT')}</option>
+              <option value="HOUSE">{t('propertyType.HOUSE')}</option>
+              <option value="COMMERCIAL">{t('propertyType.COMMERCIAL')}</option>
+              <option value="LAND">{t('propertyType.LAND')}</option>
             </select>
 
             {/* Listing type filter */}
@@ -244,10 +223,10 @@ export default function ListingsPage() {
               onChange={(e) => setFilterListingType(e.target.value)}
               className="px-4 py-2.5 border border-gray-300 rounded-lg focus:ring-2 focus:ring-blue-500 focus:border-blue-500"
             >
-              <option value="ALL">Все сделки</option>
-              <option value="SALE">Продажа</option>
-              <option value="RENT_LONG">Аренда</option>
-              <option value="RENT_DAILY">Посуточно</option>
+              <option value="ALL">{t('filters.allDeals')}</option>
+              <option value="SALE">{t('listingType.SALE')}</option>
+              <option value="RENT_LONG">{t('listingType.RENT_LONG')}</option>
+              <option value="RENT_DAILY">{t('listingType.RENT_DAILY')}</option>
             </select>
 
             {/* View mode toggle */}
@@ -275,16 +254,16 @@ export default function ListingsPage() {
       {filteredListings.length === 0 ? (
         <div className="bg-white rounded-lg border border-gray-200 p-12 text-center">
           <Building className="h-12 w-12 text-gray-400 mx-auto mb-4" />
-          <h3 className="text-lg font-semibold text-gray-900 mb-2">Нет объектов</h3>
+          <h3 className="text-lg font-semibold text-gray-900 mb-2">{t('noListings')}</h3>
           <p className="text-gray-500 mb-4">
             {searchQuery || filterStatus !== 'ALL' || filterType !== 'ALL'
-              ? 'Попробуйте изменить фильтры поиска'
-              : 'Начните добавлять объекты недвижимости'}
+              ? t('noListingsSearch')
+              : t('noListingsHint')}
           </p>
           {!searchQuery && filterStatus === 'ALL' && filterType === 'ALL' && (
             <Link href="/developer/crm/listings/new">
               <button className="bg-blue-600 hover:bg-blue-700 text-white px-6 py-2.5 rounded-lg font-medium transition-colors">
-                Добавить первый объект
+                {t('addFirst')}
               </button>
             </Link>
           )}
@@ -309,10 +288,10 @@ export default function ListingsPage() {
                   )}
                   <div className="absolute top-3 left-3 flex gap-2">
                     <span className={`px-2.5 py-1 rounded-full text-xs font-medium ${statusColors[listing.status]}`}>
-                      {statusLabels[listing.status]}
+                      {t(`status.${listing.status}` as any)}
                     </span>
                     <span className="px-2.5 py-1 rounded-full text-xs font-medium bg-blue-100 text-blue-800">
-                      {listingTypeLabels[listing.listingType]}
+                      {t(`listingType.${listing.listingType}` as any)}
                     </span>
                   </div>
                 </div>
@@ -327,7 +306,7 @@ export default function ListingsPage() {
                     </span>
                     {listing.area && (
                       <span className="text-sm text-gray-500">
-                        ({Math.round(listing.price / listing.area)} за м²)
+                        ({Math.round(listing.price / listing.area)} {t('perSqm')})
                       </span>
                     )}
                   </div>
@@ -340,15 +319,15 @@ export default function ListingsPage() {
 
                     <div className="flex items-center gap-2">
                       <Home className="h-4 w-4 flex-shrink-0" />
-                      <span>{propertyTypeLabels[listing.propertyType]}</span>
-                      {listing.bedrooms && <span>• {listing.bedrooms} комн.</span>}
+                      <span>{t(`propertyType.${listing.propertyType}` as any)}</span>
+                      {listing.bedrooms && <span>• {listing.bedrooms} {t('rooms')}</span>}
                       {listing.area && <span>• {listing.area} м²</span>}
                     </div>
 
                     {listing.floor && (
                       <div className="text-xs text-gray-500">
-                        Этаж {listing.floor}
-                        {listing.totalFloors && ` из ${listing.totalFloors}`}
+                        {t('floor')} {listing.floor}
+                        {listing.totalFloors && ` ${t('floorOf')} ${listing.totalFloors}`}
                       </div>
                     )}
                   </div>
@@ -389,7 +368,7 @@ export default function ListingsPage() {
                       <h3 className="font-semibold text-gray-900 line-clamp-1">{listing.title}</h3>
                       <div className="flex gap-2 flex-shrink-0">
                         <span className={`px-2.5 py-1 rounded-full text-xs font-medium ${statusColors[listing.status]}`}>
-                          {statusLabels[listing.status]}
+                          {t(`status.${listing.status}` as any)}
                         </span>
                       </div>
                     </div>
@@ -398,7 +377,7 @@ export default function ListingsPage() {
                       {formatPrice(listing.price, listing.currency)}
                       {listing.area && (
                         <span className="text-sm font-normal text-gray-500 ml-2">
-                          ({Math.round(listing.price / listing.area)} за м²)
+                          ({Math.round(listing.price / listing.area)} {t('perSqm')})
                         </span>
                       )}
                     </div>
@@ -410,10 +389,10 @@ export default function ListingsPage() {
                       </div>
                       <div className="flex items-center gap-2">
                         <Home className="h-4 w-4 flex-shrink-0" />
-                        <span>{propertyTypeLabels[listing.propertyType]}</span>
+                        <span>{t(`propertyType.${listing.propertyType}` as any)}</span>
                       </div>
                       {listing.bedrooms && (
-                        <div>{listing.bedrooms} комн.</div>
+                        <div>{listing.bedrooms} {t('rooms')}</div>
                       )}
                       {listing.area && (
                         <div>{listing.area} м²</div>
@@ -424,7 +403,7 @@ export default function ListingsPage() {
                       <span>{listing.member.user.firstName} {listing.member.user.lastName}</span>
                       <div className="flex items-center gap-4">
                         <span className="px-2 py-1 bg-blue-50 text-blue-700 rounded">
-                          {listingTypeLabels[listing.listingType]}
+                          {t(`listingType.${listing.listingType}` as any)}
                         </span>
                         <span>{formatDate(listing.createdAt)}</span>
                       </div>

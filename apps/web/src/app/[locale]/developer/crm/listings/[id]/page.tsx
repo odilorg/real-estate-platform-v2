@@ -2,6 +2,7 @@
 
 import { useState, useEffect } from 'react';
 import { useParams, useRouter } from 'next/navigation';
+import { useTranslations } from 'next-intl';
 import {
   ChevronLeft, Building, MapPin, Edit, Trash2, CheckCircle, XCircle,
   Home, DollarSign, Calendar, User, Phone, Mail, Eye
@@ -51,14 +52,6 @@ interface Listing {
   updatedAt: string;
 }
 
-const statusLabels: Record<string, string> = {
-  ACTIVE: 'Активно',
-  PENDING: 'Ожидание',
-  SOLD: 'Продано',
-  RENTED: 'Арендовано',
-  INACTIVE: 'Неактивно',
-};
-
 const statusColors: Record<string, string> = {
   ACTIVE: 'bg-green-100 text-green-800',
   PENDING: 'bg-yellow-100 text-yellow-800',
@@ -67,24 +60,10 @@ const statusColors: Record<string, string> = {
   INACTIVE: 'bg-gray-100 text-gray-800',
 };
 
-const propertyTypeLabels: Record<string, string> = {
-  APARTMENT: 'Квартира',
-  HOUSE: 'Дом',
-  CONDO: 'Кондоминиум',
-  TOWNHOUSE: 'Таунхаус',
-  LAND: 'Земля',
-  COMMERCIAL: 'Коммерческая',
-};
-
-const listingTypeLabels: Record<string, string> = {
-  SALE: 'Продажа',
-  RENT_LONG: 'Долгосрочная аренда',
-  RENT_DAILY: 'Посуточная аренда',
-};
-
 export default function ListingDetailPage() {
   const params = useParams();
   const router = useRouter();
+  const t = useTranslations('crm.listings');
   const [listing, setListing] = useState<Listing | null>(null);
   const [loading, setLoading] = useState(true);
   const [showDeleteConfirm, setShowDeleteConfirm] = useState(false);
@@ -111,7 +90,7 @@ export default function ListingDetailPage() {
       router.push('/developer/crm/listings');
     } catch (error) {
       console.error('Error deleting listing:', error);
-      alert('Ошибка при удалении объекта');
+      alert(t('alerts.deleteError'));
     }
   };
 
@@ -122,12 +101,12 @@ export default function ListingDetailPage() {
       setShowStatusMenu(false);
     } catch (error) {
       console.error('Error updating status:', error);
-      alert('Ошибка при обновлении статуса');
+      alert(t('alerts.statusError'));
     }
   };
 
   const handleMarkSold = async () => {
-    const soldPrice = prompt('Введите фактическую цену продажи:');
+    const soldPrice = prompt(t('detail.enterSoldPrice'));
     if (!soldPrice) return;
 
     try {
@@ -138,7 +117,7 @@ export default function ListingDetailPage() {
       setListing((prev) => (prev ? { ...prev, status: 'SOLD' } : null));
     } catch (error) {
       console.error('Error marking as sold:', error);
-      alert('Ошибка при обновлении статуса');
+      alert(t('alerts.statusError'));
     }
   };
 
@@ -163,7 +142,7 @@ export default function ListingDetailPage() {
   if (loading) {
     return (
       <div className="flex items-center justify-center h-64">
-        <div className="text-gray-500">Загрузка...</div>
+        <div className="text-gray-500">{t('loading')}</div>
       </div>
     );
   }
@@ -172,10 +151,10 @@ export default function ListingDetailPage() {
     return (
       <div className="text-center py-12">
         <Building className="h-16 w-16 text-gray-400 mx-auto mb-4" />
-        <h3 className="text-lg font-semibold text-gray-900 mb-2">Объект не найден</h3>
+        <h3 className="text-lg font-semibold text-gray-900 mb-2">{t('detail.notFound')}</h3>
         <Link href="/developer/crm/listings">
           <button className="text-blue-600 hover:text-blue-700">
-            Вернуться к списку
+            {t('detail.backToList')}
           </button>
         </Link>
       </div>
@@ -189,7 +168,7 @@ export default function ListingDetailPage() {
         <Link href="/developer/crm/listings">
           <button className="flex items-center gap-2 text-gray-600 hover:text-gray-900 mb-4">
             <ChevronLeft className="h-5 w-5" />
-            <span>Назад к списку</span>
+            <span>{t('detail.backToList')}</span>
           </button>
         </Link>
 
@@ -198,7 +177,7 @@ export default function ListingDetailPage() {
             <div className="flex items-center gap-3 mb-2">
               <h1 className="text-xl md:text-2xl lg:text-3xl font-bold text-gray-900">{listing.title}</h1>
               <span className={`px-3 py-1 rounded-full text-sm font-medium ${statusColors[listing.status]}`}>
-                {statusLabels[listing.status]}
+                {t(`status.${listing.status}` as any)}
               </span>
             </div>
             <div className="flex items-center gap-2 text-gray-500 text-sm">
@@ -214,7 +193,7 @@ export default function ListingDetailPage() {
                 className="px-4 py-2 border border-gray-300 text-gray-700 rounded-lg hover:bg-gray-50 font-medium flex items-center gap-2"
               >
                 <Eye className="h-4 w-4" />
-                Изменить статус
+                {t('detail.changeStatus')}
               </button>
               {showStatusMenu && (
                 <div className="absolute right-0 mt-2 w-48 bg-white border border-gray-200 rounded-lg shadow-lg z-10">
@@ -222,25 +201,25 @@ export default function ListingDetailPage() {
                     onClick={() => handleStatusChange('ACTIVE')}
                     className="w-full px-4 py-2 text-left hover:bg-gray-50 text-sm"
                   >
-                    Активно
+                    {t('status.ACTIVE')}
                   </button>
                   <button
                     onClick={() => handleStatusChange('PENDING')}
                     className="w-full px-4 py-2 text-left hover:bg-gray-50 text-sm"
                   >
-                    Ожидание
+                    {t('status.PENDING')}
                   </button>
                   <button
                     onClick={handleMarkSold}
                     className="w-full px-4 py-2 text-left hover:bg-gray-50 text-sm"
                   >
-                    Отметить как проданное
+                    {t('detail.markAsSold')}
                   </button>
                   <button
                     onClick={() => handleStatusChange('INACTIVE')}
                     className="w-full px-4 py-2 text-left hover:bg-gray-50 text-sm"
                   >
-                    Деактивировать
+                    {t('detail.deactivate')}
                   </button>
                 </div>
               )}
@@ -249,7 +228,7 @@ export default function ListingDetailPage() {
             <Link href={`/developer/crm/listings/${listing.id}/edit`}>
               <button className="px-4 py-2 border border-gray-300 text-gray-700 rounded-lg hover:bg-gray-50 font-medium flex items-center gap-2">
                 <Edit className="h-4 w-4" />
-                Редактировать
+                {t('actions.edit')}
               </button>
             </Link>
 
@@ -271,15 +250,15 @@ export default function ListingDetailPage() {
           </span>
           {listing.area && (
             <span className="text-lg text-blue-700">
-              ({Math.round(listing.price / listing.area)} за м²)
+              ({Math.round(listing.price / listing.area)} {t('detail.pricePerMeter')})
             </span>
           )}
         </div>
         <div className="mt-2 flex items-center gap-4 text-sm text-blue-700">
           <span className="px-2.5 py-1 bg-blue-100 rounded-full">
-            {listingTypeLabels[listing.listingType]}
+            {t(`listingType.${listing.listingType}` as any)}
           </span>
-          <span>{propertyTypeLabels[listing.propertyType]}</span>
+          <span>{t(`propertyType.${listing.propertyType}` as any)}</span>
         </div>
       </div>
 
@@ -289,62 +268,62 @@ export default function ListingDetailPage() {
           {/* Description */}
           {listing.description && (
             <div className="bg-white p-6 rounded-lg shadow">
-              <h2 className="text-lg font-semibold text-gray-900 mb-3">Описание</h2>
+              <h2 className="text-lg font-semibold text-gray-900 mb-3">{t('detail.description')}</h2>
               <p className="text-gray-700 whitespace-pre-wrap">{listing.description}</p>
             </div>
           )}
 
           {/* Property Details */}
           <div className="bg-white p-6 rounded-lg shadow">
-            <h2 className="text-lg font-semibold text-gray-900 mb-4">Характеристики</h2>
+            <h2 className="text-lg font-semibold text-gray-900 mb-4">{t('detail.characteristics')}</h2>
             <div className="grid grid-cols-2 gap-4">
               {listing.bedrooms !== undefined && (
                 <div>
-                  <div className="text-sm text-gray-500">Комнат</div>
+                  <div className="text-sm text-gray-500">{t('detail.bedrooms')}</div>
                   <div className="font-medium text-gray-900">{listing.bedrooms}</div>
                 </div>
               )}
               {listing.bathrooms !== undefined && (
                 <div>
-                  <div className="text-sm text-gray-500">Санузлов</div>
+                  <div className="text-sm text-gray-500">{t('detail.bathrooms')}</div>
                   <div className="font-medium text-gray-900">{listing.bathrooms}</div>
                 </div>
               )}
               {listing.area && (
                 <div>
-                  <div className="text-sm text-gray-500">Площадь</div>
+                  <div className="text-sm text-gray-500">{t('detail.area')}</div>
                   <div className="font-medium text-gray-900">{listing.area} м²</div>
                 </div>
               )}
               {listing.floor !== undefined && (
                 <div>
-                  <div className="text-sm text-gray-500">Этаж</div>
+                  <div className="text-sm text-gray-500">{t('detail.floor')}</div>
                   <div className="font-medium text-gray-900">
-                    {listing.floor}{listing.totalFloors ? ` из ${listing.totalFloors}` : ''}
+                    {listing.floor}{listing.totalFloors ? ` ${t('detail.floorOf')} ${listing.totalFloors}` : ''}
                   </div>
                 </div>
               )}
               {listing.buildingType && (
                 <div>
-                  <div className="text-sm text-gray-500">Тип здания</div>
-                  <div className="font-medium text-gray-900">{listing.buildingType}</div>
+                  <div className="text-sm text-gray-500">{t('detail.buildingType')}</div>
+                  <div className="font-medium text-gray-900">{t(`buildingType.${listing.buildingType}` as any)}</div>
                 </div>
               )}
               {listing.buildingClass && (
                 <div>
-                  <div className="text-sm text-gray-500">Класс здания</div>
-                  <div className="font-medium text-gray-900">{listing.buildingClass}</div>
+                  <div className="text-sm text-gray-500">{t('detail.buildingClass')}</div>
+                  <div className="font-medium text-gray-900">{t(`buildingClass.${listing.buildingClass}` as any)}</div>
                 </div>
               )}
               {listing.renovation && (
                 <div>
-                  <div className="text-sm text-gray-500">Ремонт</div>
-                  <div className="font-medium text-gray-900">{listing.renovation}</div>
+                  <div className="text-sm text-gray-500">{t('detail.renovation')}</div>
+                  <div className="font-medium text-gray-900">{t(`renovation.${listing.renovation}` as any)}</div>
                 </div>
               )}
               {listing.yearBuilt && (
                 <div>
-                  <div className="text-sm text-gray-500">Год постройки</div>
+                  <div className="text-sm text-gray-500">{t('detail.yearBuilt')}</div>
                   <div className="font-medium text-gray-900">{listing.yearBuilt}</div>
                 </div>
               )}
@@ -352,7 +331,7 @@ export default function ListingDetailPage() {
 
             {listing.amenities && listing.amenities.length > 0 && (
               <div className="mt-6">
-                <div className="text-sm text-gray-500 mb-2">Удобства</div>
+                <div className="text-sm text-gray-500 mb-2">{t('detail.amenities')}</div>
                 <div className="flex flex-wrap gap-2">
                   {listing.amenities.map((amenity) => (
                     <span
@@ -371,28 +350,28 @@ export default function ListingDetailPage() {
           <div className="bg-white p-6 rounded-lg shadow">
             <h2 className="text-lg font-semibold text-gray-900 mb-4 flex items-center gap-2">
               <MapPin className="h-5 w-5" />
-              Местоположение
+              {t('detail.location')}
             </h2>
             <div className="space-y-3">
               <div>
-                <div className="text-sm text-gray-500">Адрес</div>
+                <div className="text-sm text-gray-500">{t('detail.address')}</div>
                 <div className="font-medium text-gray-900">{listing.address}</div>
               </div>
               <div className="grid grid-cols-2 gap-4">
                 <div>
-                  <div className="text-sm text-gray-500">Город</div>
+                  <div className="text-sm text-gray-500">{t('detail.city')}</div>
                   <div className="font-medium text-gray-900">{listing.city}</div>
                 </div>
                 {listing.district && (
                   <div>
-                    <div className="text-sm text-gray-500">Район</div>
+                    <div className="text-sm text-gray-500">{t('detail.district')}</div>
                     <div className="font-medium text-gray-900">{listing.district}</div>
                   </div>
                 )}
               </div>
               {listing.mahalla && (
                 <div>
-                  <div className="text-sm text-gray-500">Махалля</div>
+                  <div className="text-sm text-gray-500">{t('detail.mahalla')}</div>
                   <div className="font-medium text-gray-900">{listing.mahalla}</div>
                 </div>
               )}
@@ -404,18 +383,18 @@ export default function ListingDetailPage() {
             <div className="bg-white p-6 rounded-lg shadow">
               <h2 className="text-lg font-semibold text-gray-900 mb-4 flex items-center gap-2">
                 <User className="h-5 w-5" />
-                Информация о собственнике
+                {t('detail.ownerInfo')}
               </h2>
               <div className="space-y-3">
                 {listing.ownerName && (
                   <div>
-                    <div className="text-sm text-gray-500">Имя</div>
+                    <div className="text-sm text-gray-500">{t('detail.ownerName')}</div>
                     <div className="font-medium text-gray-900">{listing.ownerName}</div>
                   </div>
                 )}
                 {listing.ownerPhone && (
                   <div>
-                    <div className="text-sm text-gray-500">Телефон</div>
+                    <div className="text-sm text-gray-500">{t('detail.ownerPhone')}</div>
                     <div className="font-medium text-gray-900">{listing.ownerPhone}</div>
                   </div>
                 )}
@@ -426,7 +405,7 @@ export default function ListingDetailPage() {
           {/* Notes */}
           {listing.notes && (
             <div className="bg-yellow-50 border border-yellow-200 p-6 rounded-lg">
-              <h2 className="text-lg font-semibold text-gray-900 mb-3">Внутренние заметки</h2>
+              <h2 className="text-lg font-semibold text-gray-900 mb-3">{t('detail.internalNotes')}</h2>
               <p className="text-gray-700 whitespace-pre-wrap">{listing.notes}</p>
             </div>
           )}
@@ -436,7 +415,7 @@ export default function ListingDetailPage() {
         <div className="space-y-6">
           {/* Agent Info */}
           <div className="bg-white p-6 rounded-lg shadow">
-            <h3 className="font-semibold text-gray-900 mb-4">Ответственный агент</h3>
+            <h3 className="font-semibold text-gray-900 mb-4">{t('detail.responsibleAgent')}</h3>
             <div className="flex items-center gap-3">
               <div className="w-12 h-12 bg-blue-100 rounded-full flex items-center justify-center">
                 <User className="h-6 w-6 text-blue-600" />
@@ -445,21 +424,21 @@ export default function ListingDetailPage() {
                 <div className="font-medium text-gray-900">
                   {listing.member.user.firstName} {listing.member.user.lastName}
                 </div>
-                <div className="text-sm text-gray-500">Агент</div>
+                <div className="text-sm text-gray-500">{t('detail.agentRole')}</div>
               </div>
             </div>
           </div>
 
           {/* Timestamps */}
           <div className="bg-white p-6 rounded-lg shadow">
-            <h3 className="font-semibold text-gray-900 mb-4">Информация о записи</h3>
+            <h3 className="font-semibold text-gray-900 mb-4">{t('detail.recordInfo')}</h3>
             <div className="space-y-3 text-sm">
               <div>
-                <div className="text-gray-500">Создано</div>
+                <div className="text-gray-500">{t('detail.createdAt')}</div>
                 <div className="text-gray-900">{formatDate(listing.createdAt)}</div>
               </div>
               <div>
-                <div className="text-gray-500">Обновлено</div>
+                <div className="text-gray-500">{t('detail.updatedAt')}</div>
                 <div className="text-gray-900">{formatDate(listing.updatedAt)}</div>
               </div>
             </div>
@@ -471,22 +450,22 @@ export default function ListingDetailPage() {
       {showDeleteConfirm && (
         <div className="fixed inset-0 bg-black bg-opacity-50 flex items-center justify-center z-50 p-4">
           <div className="bg-white rounded-lg p-6 max-w-md w-full">
-            <h3 className="text-lg font-semibold text-gray-900 mb-2">Удалить объект?</h3>
+            <h3 className="text-lg font-semibold text-gray-900 mb-2">{t('detail.deleteModal.title')}</h3>
             <p className="text-gray-600 mb-6">
-              Это действие нельзя отменить. Объект будет удален безвозвратно.
+              {t('detail.deleteModal.message')}
             </p>
             <div className="flex gap-3">
               <button
                 onClick={() => setShowDeleteConfirm(false)}
                 className="flex-1 px-4 py-2 border border-gray-300 text-gray-700 rounded-lg hover:bg-gray-50"
               >
-                Отмена
+                {t('detail.deleteModal.cancel')}
               </button>
               <button
                 onClick={handleDelete}
                 className="flex-1 px-4 py-2 bg-red-600 text-white rounded-lg hover:bg-red-700"
               >
-                Удалить
+                {t('detail.deleteModal.confirm')}
               </button>
             </div>
           </div>

@@ -223,6 +223,28 @@
       "featured": "Top",
       "writeReview": "Sharh yozish",
       "cancel": "Bekor qilish"
+    },
+    "detail": {
+      "videos": "Videolar",
+      "virtualTour": "3D-tur",
+      "roomsShort": "xona",
+      "bathroomsShort": "hammom",
+      "floorOf": "qavat",
+      "yearShort": "y.",
+      "description": "Tavsif",
+      "contact": "Aloqa",
+      "seller": "Sotuvchi",
+      "messageSent": "Xabar yuborildi!",
+      "messagePlaceholder": "Xabaringizni kiriting...",
+      "send": "Yuborish",
+      "writeToSeller": "Sotuvchiga yozish",
+      "views": "Ko'rishlar",
+      "publishedOn": "E'lon qilingan",
+      "telegram": {
+        "success": "E'lon Telegramga yuborildi!",
+        "error": "Nashr qilib bo'lmadi",
+        "networkError": "Telegramga nashr qilishda xatolik"
+      }
     }
   },
   "filters": {
@@ -362,7 +384,45 @@
       "error_one": "xato",
       "error_other": "xato",
       "createFailed": "E'lon yaratishda xatolik: {{message}}",
-      "unknownError": "Noma'lum xato"
+      "unknownError": "Noma'lum xato",
+      "validationAlert": "Tekshirish xatosi:",
+      "tryAgain": "E'lon yaratishda xatolik. Qaytadan urinib ko'ring."
+    },
+    "nav": {
+      "back": "Orqaga",
+      "next": "Keyingi",
+      "publish": "E'lon qilish",
+      "publishing": "Yuklanmoqda..."
+    },
+    "title": "E'lon yaratish",
+    "progress": "{current}/{total}-qadam",
+    "draft": {
+      "label": "Qoralama",
+      "saved": "Saqlandi ✓",
+      "save": "Saqlash",
+      "delete": "O'chirish",
+      "short": "Saql",
+      "shortSaved": "✓",
+      "justSaved": "✓ Saqlandi!"
+    },
+    "modals": {
+      "clearDraft": {
+        "title": "Qoralamani o'chirishni xohlaysizmi?",
+        "message": "Haqiqatan ham qoralamani o'chirib, qaytadan boshlashni xohlaysizmi? Barcha saqlanmagan ma'lumotlar yo'qoladi.",
+        "cancel": "Bekor qilish",
+        "confirm": "Qoralamani o'chirish"
+      },
+      "validation": {
+        "title": "Majburiy maydonlarni to'ldiring",
+        "close": "Yopish",
+        "goToStep": "{step}-qadamga o'tish"
+      },
+      "success": {
+        "title": "E'lon nashr qilindi!",
+        "description": "E'loningiz muvaffaqiyatli yaratildi va endi ko'rish uchun mavjud.",
+        "home": "Bosh sahifaga",
+        "view": "E'lonni ko'rish"
+      }
     }
   },
   "compare": {
@@ -492,6 +552,115 @@
       "errors": {
         "loadError": "Analitikani yuklashda xatolik"
       }
+    },
+    "main": {
+      "title": "Shaxsiy kabinet",
+      "createListing": "E'lon yaratish",
+      "welcome": "Xush kelibsiz",
+      "welcomeDescription": "Bu yerda e'lonlaringizni boshqarishingiz va statistikani kuzatishingiz mumkin",
+      "quickActions": {
+        "allListings": "Barcha e'lonlar",
+        "messages": "Xabarlar",
+        "newMessages": "ta yangi",
+        "favorites": "Sevimlilar",
+        "savedSearches": "Saqlangan",
+        "settings": "Sozlamalar"
+      },
+      "stats": {
+        "totalListings": "Jami e'lonlar",
+        "activeListings": "Faol",
+        "views": "Ko'rishlar",
+        "viewsPeriod": "Ko'rishlar (30 kun)",
+        "favoritesPeriod": "Sevimlilar (30 kun)",
+        "contactsPeriod": "Murojaatlar (30 kun)"
+      },
+      "trends": {
+        "vsPrevious": "oldingi davr bilan",
+        "noChange": "o'zgarishsiz"
+      },
+      "myListings": {
+        "title": "Mening e'lonlarim",
+        "count_one": "e'lon",
+        "count_few": "e'lon",
+        "count_many": "e'lon"
+      },
+      "listingTypes": {
+        "SALE": "Sotish",
+        "RENT_LONG": "Ijara",
+        "RENT_DAILY": "Kunlik ijara"
+      },
+      "statuses": {
+        "ACTIVE": "Faol",
+        "PENDING": "Tekshiruvda",
+        "SOLD": "Sotildi",
+        "RENTED": "Ijaraga berildi",
+        "INACTIVE": "Nofaol"
+      },
+      "empty": {
+        "title": "Sizda hali e'lonlar yo'q",
+        "description": "Hoziroq birinchi e'loningizni yarating va mijozlardan so'rovlar olishni boshlang"
+      },
+      "errors": {
+        "loadError": "E'lonlarni yuklashda xatolik",
+        "deleteError": "O'chirishda xatolik"
+      },
+      "confirmDelete": "Ushbu e'lonni o'chirishni xohlaysizmi?",
+      "currency": "y.e."
+    },
+    "agency": {
+      "authRequired": "Avtorizatsiya talab qilinadi",
+      "authDescription": "Agentlik paneliga kirish uchun tizimga kiring",
+      "login": "Kirish",
+      "accessDenied": "Kirish taqiqlangan",
+      "accessDeniedDesc": "Sizda agentlik paneliga kirish huquqi yo'q. Bu sahifa faqat agentlar uchun.",
+      "goToDeveloper": "Quruvchi paneliga o'tish",
+      "noAgency": "Siz hech qanday agentlikka biriktirilmagansiz",
+      "goToPersonal": "Shaxsiy kabinetga o'tish",
+      "agencyOwner": "Agentlik egasi",
+      "settings": "Sozlamalar",
+      "stats": {
+        "activeMembers": "Faol a'zolar",
+        "totalMembers": "jami",
+        "activeLeads": "Faol lidlar",
+        "totalLeads": "jami",
+        "agents": "Agentlar",
+        "viewAll": "Barchasini ko'rish →"
+      },
+      "info": {
+        "title": "Agentlik haqida ma'lumot",
+        "edit": "Tahrirlash",
+        "description": "Tavsif",
+        "email": "Email",
+        "phone": "Telefon",
+        "website": "Veb-sayt",
+        "address": "Manzil"
+      },
+      "quickActions": {
+        "title": "Tezkor harakatlar",
+        "browseProperties": "Mulklarni ko'rish",
+        "browsePropertiesDesc": "Barcha e'lonlar",
+        "addMember": "A'zo qo'shish",
+        "addMemberDesc": "Yangisini taklif qilish",
+        "addLead": "Lid qo'shish",
+        "addLeadDesc": "Yangi lid yaratish",
+        "agencySettings": "Agentlik sozlamalari",
+        "agencySettingsDesc": "Profilni yangilash"
+      },
+      "myListings": {
+        "title": "Mening e'lonlarim",
+        "create": "Yaratish",
+        "createListing": "E'lon yaratish",
+        "empty": "Sizda hali e'lonlar yo'q",
+        "views": "ko'rishlar",
+        "showAll": "Barchasini ko'rsatish",
+        "currency": "y.e."
+      },
+      "confirmDelete": "Ushbu e'lonni o'chirishni xohlaysizmi?",
+      "listingTypes": {
+        "SALE": "Sotish",
+        "RENT_LONG": "Ijara",
+        "RENT_DAILY": "Kunlik"
+      }
     }
   },
   "reviews": {
@@ -509,6 +678,59 @@
     "noReviews": "Hali sharhlar yo'q",
     "beFirst": "Ushbu mulk haqida birinchi bo'lib sharh qoldiring",
     "writeFirstReview": "Birinchi sharhni yozish"
+  },
+  "propertiesPage": {
+    "searchPlaceholder": "Manzil, turar-joy majmuasi...",
+    "findButton": "Topish",
+    "locationError": "Joylashuvni aniqlab bo'lmadi",
+    "searchNearMe": "Yaqinimda qidirish",
+    "searchNearYou": "Yaqiningizda qidirish:",
+    "cancel": "Bekor qilish",
+    "title": "Ko'chmas mulk",
+    "objectsCount": "ob'ekt",
+    "suggestions": {
+      "city": "Shahar",
+      "district": "Tuman",
+      "metro": "Metro",
+      "property": "Ob'ekt"
+    },
+    "sort": {
+      "placeholder": "Saralash",
+      "createdAt_desc": "Avval yangilari",
+      "createdAt_asc": "Avval eskilari",
+      "price_asc": "Avval arzonlari",
+      "price_desc": "Avval qimmatlari",
+      "area_desc": "Maydon bo'yicha (kam.)",
+      "area_asc": "Maydon bo'yicha (ko'p.)",
+      "rating_desc": "Reyting bo'yicha"
+    },
+    "viewMode": {
+      "grid": "Tarmoq",
+      "list": "Ro'yxat",
+      "listMap": "Ro'yxat + Xarita",
+      "map": "Xarita"
+    },
+    "saveSearch": "Qidiruvni saqlash",
+    "empty": {
+      "title": "Ob'ektlar topilmadi",
+      "description": "Qidiruv parametrlarini o'zgartirib ko'ring",
+      "resetFilters": "Filtrlarni tozalash"
+    },
+    "filters": {
+      "found": "Topildi:",
+      "search": "Qidiruv:",
+      "sale": "Sotish",
+      "rentLong": "Ijara",
+      "rentDaily": "Kunlik",
+      "inRadius": "Radiusda",
+      "km": "km",
+      "resetAll": "Barchasini tozalash"
+    },
+    "quickView": "Tezkor ko'rish",
+    "pagination": {
+      "prev": "Ortga",
+      "next": "Oldinga"
+    }
   },
   "agents": {
     "title": "Agentlar",
@@ -993,6 +1215,1021 @@
       "team": "Jamoa",
       "analytics": "Analitika",
       "settings": "Sozlamalar"
+    }
+  },
+  "crm": {
+    "sidebar": {
+      "main": "Asosiy",
+      "teamReports": "Jamoa va hisobotlar",
+      "dashboard": "Panel",
+      "leads": "Lidlar",
+      "deals": "Bitimlar",
+      "commissions": "Komissiyalar",
+      "team": "Jamoa",
+      "reports": "Hisobotlar",
+      "settings": "Sozlamalar",
+      "expandSidebar": "Menyuni kengaytirish",
+      "collapseSidebar": "Menyuni yig'ish"
+    },
+    "leads": {
+      "title": "Lidlar",
+      "subtitle": "Mijozlarni boshqarish",
+      "addLead": "Lid qo'shish",
+      "addFirstLead": "Birinchi lidni qo'shish",
+      "import": "Import",
+      "export": "Eksport",
+      "search": "Qidirish...",
+      "noLeads": "Lidlar yo'q",
+      "noLeadsDescription": "Ularni boshqarish uchun lidlar qo'shishni boshlang",
+      "viewModes": {
+        "list": "Ro'yxat",
+        "kanban": "Kanban",
+        "calendar": "Taqvim"
+      },
+      "stats": {
+        "total": "Jami lidlar",
+        "new": "Yangi",
+        "qualified": "Malakali",
+        "urgent": "Shoshilinch"
+      },
+      "followUp": {
+        "alert": "Bugun bog'lanish kerak",
+        "overdue": "Muddati o'tgan",
+        "call": "Qo'ng'iroq"
+      },
+      "filters": {
+        "allStatuses": "Barcha holatlar",
+        "allPriorities": "Barcha ustuvorliklar",
+        "allAgents": "Barcha agentlar",
+        "unassigned": "Tayinlanmagan"
+      },
+      "statuses": {
+        "NEW": "Yangi",
+        "CONTACTED": "Bog'lanildi",
+        "QUALIFIED": "Malakali",
+        "NEGOTIATING": "Muzokara",
+        "CONVERTED": "Aylantirildi",
+        "LOST": "Yo'qotildi"
+      },
+      "priorities": {
+        "URGENT": "Shoshilinch",
+        "HIGH": "Yuqori",
+        "MEDIUM": "O'rta",
+        "LOW": "Past"
+      },
+      "bulk": {
+        "selected": "Tanlandi",
+        "assign": "Tayinlash",
+        "delete": "O'chirish"
+      },
+      "assign": {
+        "title": "Agent tayinlash",
+        "button": "Tayinlash",
+        "selectedLeads": "Tanlangan lidlar"
+      },
+      "deleteModal": {
+        "title": "Lidlarni o'chirishni xohlaysizmi?",
+        "message": "{count} ta lidni o'chirmoqchimisiz? Bu amalni bekor qilib bo'lmaydi.",
+        "deleting": "O'chirilmoqda..."
+      },
+      "alerts": {
+        "assignError": "Lidni tayinlashda xatolik",
+        "unassignConfirm": "Bu lidning tayinlanishini bekor qilishni xohlaysizmi?",
+        "unassignError": "Tayinlashni bekor qilishda xatolik",
+        "statusError": "Lid holatini yangilashda xatolik",
+        "deleteSuccess": "O'chirildi: {success}, Xatoliklar: {failed}",
+        "deleteSuccessAll": "{count} ta lid muvaffaqiyatli o'chirildi",
+        "deleteError": "Lidlarni ommaviy o'chirishda xatolik",
+        "assignSuccess": "Tayinlandi: {success}, Xatoliklar: {failed}",
+        "assignSuccessAll": "{count} ta lid muvaffaqiyatli tayinlandi",
+        "assignError2": "Lidlarni ommaviy tayinlashda xatolik"
+      },
+      "time": {
+        "today": "Bugun",
+        "yesterday": "Kecha",
+        "daysAgo": "{days} kun oldin"
+      },
+      "priority": {
+        "urgentTag": "🔥 SHOSHILINCH",
+        "highTag": "⚡ MUHIM"
+      },
+      "importPage": {
+        "title": "Lidlarni import qilish",
+        "subtitle": "Lidlarni ommaviy qo'shish uchun CSV faylni yuklang",
+        "templateTitle": "Shablon kerakmi?",
+        "templateDescription": "Namuna ma'lumotlar bilan CSV fayl shablonini yuklab oling",
+        "downloadTemplate": "Shablonni yuklab olish",
+        "selectFile": "1. CSV faylni tanlang",
+        "selectOrDrag": "CSV faylni tanlang",
+        "dragHere": "yoki faylni shu yerga tashlang",
+        "duplicateHandling": "2. Dublikatlarni qayta ishlash",
+        "duplicateQuestion": "Bunday telefon raqamli lid mavjud bo'lsa nima qilish kerak?",
+        "duplicateSkip": "O'tkazib yuborish",
+        "duplicateSkipDesc": "Dublikatlarni import qilmaslik",
+        "duplicateUpdate": "Yangilash",
+        "duplicateUpdateDesc": "Mavjud ma'lumotlarni yangilash",
+        "duplicateError": "Xatolik",
+        "duplicateErrorDesc": "Hisobotda xatolik sifatida belgilash",
+        "cancel": "Bekor qilish",
+        "importing": "Import qilinmoqda...",
+        "importButton": "Import qilish",
+        "resultsTitle": "Import natijalari",
+        "success": "Muvaffaqiyatli",
+        "skipped": "O'tkazib yuborildi",
+        "errors": "Xatoliklar",
+        "errorsTitle": "Import xatoliklari:",
+        "row": "Qator",
+        "importMore": "Yana import qilish",
+        "backToLeads": "Lidlarga qaytish",
+        "selectFileAlert": "Iltimos, CSV faylni tanlang",
+        "importError": "Lidlarni import qilishda xatolik"
+      },
+      "exportPage": {
+        "title": "Lidlarni eksport qilish",
+        "subtitle": "Lidlarni filtrlar bilan CSV formatiga eksport qiling",
+        "filterInfo": "Eksportda filtrlash",
+        "filterDescription": "Faqat kerakli lidlarni eksport qilish uchun quyidagi filtrlardan foydalaning. Filtrlarsiz barcha lidlar eksport qilinadi.",
+        "filtersTitle": "Filtrlar",
+        "clearFilters": "Filtrlarni tozalash",
+        "status": "Holat",
+        "allStatuses": "Barcha holatlar",
+        "priority": "Ustuvorlik",
+        "allPriorities": "Barcha ustuvorliklar",
+        "source": "Manba",
+        "allSources": "Barcha manbalar",
+        "search": "Qidirish",
+        "searchPlaceholder": "Ism, telefon, email...",
+        "activeFilters": "Faol filtrlar:",
+        "statusLabel": "Holat",
+        "priorityLabel": "Ustuvorlik",
+        "sourceLabel": "Manba",
+        "searchLabel": "Qidirish",
+        "whatExported": "Nima eksport qilinadi?",
+        "exportedFields": {
+          "contacts": "Barcha lid maydonlari (ism, familiya, telefon, email, Telegram, WhatsApp)",
+          "property": "Ko'chmas mulk haqida ma'lumot (turi, byudjet, xonalar soni, tumanlar)",
+          "requirements": "Talablar va eslatmalar",
+          "status": "Manba, holat, ustuvorlik",
+          "manager": "Tayinlangan menejer",
+          "date": "Yaratilgan sana"
+        },
+        "note": "Eslatma:",
+        "noteText": "Eksport qilingan CSV faylni boshqa tizimlarga import qilish yoki qayta import qilish uchun ishlatish mumkin.",
+        "cancel": "Bekor qilish",
+        "exporting": "Eksport qilinmoqda...",
+        "exportButton": "Eksport qilish",
+        "exportSuccess": "Eksport yakunlandi!",
+        "exportError": "Lidlarni eksport qilishda xatolik"
+      },
+      "newPage": {
+        "title": "Lid qo'shish",
+        "subtitle": "Yangi potentsial mijoz yaratish",
+        "successMessage": "Lid muvaffaqiyatli yaratildi! Yo'naltirilmoqda...",
+        "contactInfo": "Kontakt ma'lumotlari",
+        "propertyRequirements": "Ko'chmas mulk talablari",
+        "leadInfo": "Lid haqida ma'lumot",
+        "firstName": "Ism",
+        "lastName": "Familiya",
+        "phone": "Telefon",
+        "phoneFormat": "Format: +998XXXXXXXXX",
+        "email": "Email",
+        "telegram": "Telegram",
+        "whatsapp": "WhatsApp",
+        "propertyType": "Ko'chmas mulk turi",
+        "selectType": "Turni tanlang",
+        "apartment": "Kvartira",
+        "house": "Uy",
+        "townhouse": "Taunxaus",
+        "land": "Yer",
+        "commercial": "Tijorat",
+        "listingType": "Bitim turi",
+        "sale": "Sotish",
+        "rentLong": "Ijara",
+        "rentDaily": "Kunlik ijara",
+        "budget": "Byudjet (so'm)",
+        "budgetHint": "Mijozning taxminiy byudjeti o'zbek so'mida",
+        "bedrooms": "Xonalar soni",
+        "additionalRequirements": "Qo'shimcha talablar",
+        "requirementsPlaceholder": "Metroga yaqin, ta'mirlangan, yaxshi infratuzilma...",
+        "leadSource": "Lid manbasi",
+        "sourceWalkIn": "Ofisga keldi",
+        "sourceAgent": "Agent olib keldi",
+        "sourcePhoneCall": "Telefon qo'ng'irog'i",
+        "sourceWebsite": "Veb-sayt",
+        "sourceSocialMedia": "Ijtimoiy tarmoqlar (Telegram/Instagram/Facebook)",
+        "sourceReferral": "Tavsiya",
+        "sourceOther": "Boshqa",
+        "priorityLabel": "Ustuvorlik",
+        "priorityLow": "Past",
+        "priorityMedium": "O'rta",
+        "priorityHigh": "Yuqori",
+        "priorityUrgent": "Shoshilinch",
+        "notes": "Eslatmalar",
+        "notesPlaceholder": "Mijoz haqida qo'shimcha ma'lumot...",
+        "cancel": "Bekor qilish",
+        "saving": "Saqlanmoqda...",
+        "save": "Saqlash"
+      },
+      "detailPage": {
+        "notFound": "Lid topilmadi",
+        "backToList": "Ro'yxatga qaytish",
+        "created": "Yaratilgan",
+        "delete": "O'chirish",
+        "edit": "Tahrirlash",
+        "contactInfo": "Kontakt ma'lumotlari",
+        "propertyRequirements": "Ko'chmas mulk talablari",
+        "propertyTypeLabel": "Turi:",
+        "listingTypeLabel": "Bitim:",
+        "budgetLabel": "Byudjet:",
+        "bedroomsLabel": "Xonalar:",
+        "additionalRequirements": "Qo'shimcha talablar",
+        "notes": "Eslatmalar",
+        "leadInfo": "Lid haqida ma'lumot",
+        "source": "Manba:",
+        "assignedTo": "Mas'ul:",
+        "lastContact": "Oxirgi aloqa:",
+        "nextFollowUp": "Keyingi qo'ng'iroq:",
+        "deleteConfirm": "Bu lidni o'chirishni xohlaysizmi?",
+        "deleteError": "Lidni o'chirishda xatolik"
+      },
+      "activities": {
+        "title": "Faoliyatlar tarixi",
+        "cancel": "Bekor qilish",
+        "add": "Qo'shish",
+        "delete": "O'chirish",
+        "activityType": "Faoliyat turi",
+        "types": {
+          "call": "Qo'ng'iroq",
+          "telegram": "Telegram",
+          "whatsapp": "WhatsApp",
+          "email": "Email",
+          "meeting": "Uchrashuv",
+          "viewing": "Ko'chmas mulkni ko'rish",
+          "note": "Eslatma",
+          "status_change": "Holat o'zgarishi"
+        },
+        "titleLabel": "Sarlavha",
+        "titlePlaceholder": "Masalan: Ko'rish bo'yicha qo'ng'iroq qildim",
+        "description": "Tavsif",
+        "descriptionPlaceholder": "Faoliyat tafsilotlari...",
+        "outcome": "Natija",
+        "selectOutcome": "Natijani tanlang",
+        "outcomes": {
+          "answered": "Javob berdi",
+          "noAnswer": "Javob bermadi",
+          "voicemail": "Ovozli pochta",
+          "busy": "Band"
+        },
+        "saving": "Saqlanmoqda...",
+        "save": "Saqlash",
+        "noActivities": "Faoliyatlar yo'q",
+        "startAdding": "Birinchi faoliyatni qo'shishdan boshlang",
+        "outcomeLabel": "Natija:",
+        "createError": "Faoliyatni yaratishda xatolik",
+        "deleteConfirm": "Bu faoliyatni o'chirishni xohlaysizmi?",
+        "deleteError": "Faoliyatni o'chirishda xatolik",
+        "time": {
+          "justNow": "Hozirgina",
+          "minutesAgo": "{count} daqiqa oldin",
+          "hoursAgo": "{count} soat oldin",
+          "daysAgo": "{count} kun oldin"
+        }
+      },
+      "sources": {
+        "WEBSITE": "Veb-sayt",
+        "REFERRAL": "Tavsiya",
+        "SOCIAL_MEDIA": "Ijtimoiy tarmoqlar",
+        "ADVERTISING": "Reklama",
+        "COLD_CALL": "Sovuq qo'ng'iroq",
+        "CSV_IMPORT": "CSV import",
+        "WALK_IN": "Ofisga keldi",
+        "AGENT": "Agent olib keldi",
+        "PHONE_CALL": "Telefon qo'ng'irog'i",
+        "OTHER": "Boshqa"
+      }
+    },
+    "deals": {
+      "title": "Bitimlar",
+      "subtitle": "Sotuvlar hunisini boshqarish",
+      "convertLead": "Lidni aylantirish",
+      "searchPlaceholder": "Mijoz nomi bo'yicha qidirish...",
+      "filters": "Filtrlar",
+      "stats": {
+        "total": "Jami bitimlar",
+        "totalValue": "Umumiy qiymat",
+        "viewing": "Ko'rishda",
+        "negotiation": "Muzokarada"
+      },
+      "stages": {
+        "QUALIFIED": "Malakali",
+        "VIEWING_SCHEDULED": "Ko'rish belgilangan",
+        "VIEWING_COMPLETED": "Ko'rish yakunlangan",
+        "OFFER_MADE": "Taklif qilingan",
+        "NEGOTIATION": "Muzokara",
+        "AGREEMENT_REACHED": "Kelishuvga erishildi",
+        "NOTARY_SCHEDULED": "Notarius belgilangan",
+        "DOCUMENTS_PENDING": "Hujjatlar kutilmoqda",
+        "REGISTRATION_PENDING": "Ro'yxatdan o'tish"
+      },
+      "currency": {
+        "ye": "y.b."
+      },
+      "statuses": {
+        "ACTIVE": "Faol",
+        "ON_HOLD": "To'xtatilgan",
+        "WON": "Yutilgan",
+        "LOST": "Yo'qotilgan"
+      },
+      "stagesClosed": {
+        "CLOSED_WON": "Yopilgan - yutilgan",
+        "CLOSED_LOST": "Yopilgan - yo'qotilgan"
+      },
+      "detailPage": {
+        "notFound": "Bitim topilmadi",
+        "backToList": "Ro'yxatga qaytish",
+        "created": "Bitim yaratilgan",
+        "closeDeal": "Bitimni yopish",
+        "edit": "Tahrirlash",
+        "dealValue": "Bitim qiymati",
+        "propertyValue": "Obyekt qiymati",
+        "commission": "Komissiya",
+        "expectedCloseDate": "Kutilayotgan yopilish sanasi",
+        "clientInfo": "Mijoz haqida ma'lumot",
+        "clientRequirements": "Mijoz talablari",
+        "openLeadProfile": "Lid profilini ochish →",
+        "propertyInfo": "Obyekt haqida ma'lumot",
+        "rooms": "xonalar",
+        "openProperty": "Obyektni ochish →",
+        "notes": "Eslatmalar",
+        "dealDetails": "Bitim tafsilotlari",
+        "dealType": "Bitim turi:",
+        "dealTypes": {
+          "BUYER": "Xaridor",
+          "SELLER": "Sotuvchi",
+          "BOTH": "Har ikki tomon"
+        },
+        "responsible": "Mas'ul:",
+        "closeDate": "Yopilish sanasi:",
+        "reason": "Sabab:",
+        "notaryAndRegistration": "Notarius va ro'yxatdan o'tish",
+        "notaryScheduled": "Notarius belgilangan:",
+        "notaryStatus": "Holat:",
+        "notaryCompleted": "Yakunlangan ✓",
+        "notaryInProgress": "Jarayonda",
+        "registrationNumber": "Ro'yxatdan o'tish raqami:",
+        "registrationDate": "Ro'yxatdan o'tish sanasi:",
+        "commissions": "Komissiyalar",
+        "commissionStatuses": {
+          "PAID": "To'langan",
+          "APPROVED": "Tasdiqlangan",
+          "PENDING": "Kutilmoqda"
+        },
+        "closeModal": {
+          "title": "Bitimni yopish",
+          "result": "Natija",
+          "won": "Yutilgan",
+          "lost": "Yo'qotilgan",
+          "closeReason": "Yopish sababi *",
+          "closeReasonPlaceholder": "Sababni ko'rsating...",
+          "confirm": "Tasdiqlash",
+          "closing": "Yopilmoqda...",
+          "cancel": "Bekor qilish"
+        },
+        "alerts": {
+          "closeReasonRequired": "Iltimos, bitimni yopish sababini ko'rsating",
+          "closeError": "Bitimni yopishda xatolik"
+        }
+      }
+    },
+    "commissions": {
+      "title": "Komissiyalar",
+      "subtitle": "Agentlarga to'lovlarni boshqarish",
+      "search": "Agent yoki mijoz bo'yicha qidirish...",
+      "stats": {
+        "total": "Jami komissiyalar",
+        "pending": "To'lanishi kerak",
+        "awaitingApproval": "Tasdiqlashni kutmoqda",
+        "paid": "To'langan"
+      },
+      "statuses": {
+        "all": "Barcha holatlar",
+        "PENDING": "Kutilmoqda",
+        "APPROVED": "Tasdiqlangan",
+        "PAID": "To'langan",
+        "DISPUTED": "Bahsli"
+      },
+      "table": {
+        "agent": "Agent",
+        "deal": "Bitim",
+        "dealAmount": "Bitim summasi",
+        "commission": "Komissiya",
+        "status": "Holat",
+        "date": "Sana",
+        "actions": "Amallar",
+        "noCommissions": "Komissiyalar topilmadi",
+        "gross": "Yalpi"
+      },
+      "actions": {
+        "approve": "Tasdiqlash",
+        "pay": "To'lash",
+        "paidDone": "To'langan ✓"
+      },
+      "alerts": {
+        "approveConfirm": "Bu komissiyani to'lov uchun tasdiqlaysizmi?",
+        "approveError": "Komissiyani tasdiqlashda xatolik",
+        "paymentMethodRequired": "Iltimos, to'lov usulini belgilang",
+        "payError": "To'lovni belgilashda xatolik"
+      },
+      "payModal": {
+        "title": "To'langan deb belgilash",
+        "agent": "Agent",
+        "amount": "To'lanishi kerak summa",
+        "paymentMethod": "To'lov usuli *",
+        "selectMethod": "Usulni tanlang",
+        "bankTransfer": "Bank o'tkazmasi",
+        "cash": "Naqd pul",
+        "card": "Karta",
+        "other": "Boshqa",
+        "notes": "Izohlar",
+        "notesPlaceholder": "Tranzaksiya raqami, tafsilotlar...",
+        "confirm": "To'lovni tasdiqlash",
+        "saving": "Saqlanmoqda..."
+      },
+      "currency": {
+        "ye": "s.b."
+      }
+    },
+    "analytics": {
+      "title": "CRM Analitika",
+      "loading": "Analitika yuklanmoqda...",
+      "noData": "Ma'lumot yo'q",
+      "loadError": "Analitikani yuklashda xatolik",
+      "periods": {
+        "week": "Hafta",
+        "month": "Oy",
+        "quarter": "Chorak",
+        "year": "Yil"
+      },
+      "kpis": {
+        "leads": "Lidlar",
+        "newLeads": "Yangi",
+        "conversion": "Konversiya",
+        "converted": "Konvertatsiya qilingan",
+        "deals": "Bitimlar",
+        "total": "Jami",
+        "winRate": "Win Rate",
+        "won": "Yutilgan",
+        "revenue": "Daromad",
+        "avgDeal": "O'rtacha summa",
+        "commissions": "Komissiyalar",
+        "payouts": "To'lovlar"
+      },
+      "sections": {
+        "detailed": "Batafsil analitika",
+        "leadsLink": "→ Lidlar",
+        "dealsLink": "→ Bitimlar",
+        "agentsLink": "→ Agentlar",
+        "revenueLink": "→ Daromad",
+        "leadsBySource": "Manba bo'yicha lidlar",
+        "dealsByStage": "Bosqich bo'yicha bitimlar",
+        "noDataPeriod": "Tanlangan davr uchun ma'lumot yo'q",
+        "noActiveDeals": "Faol bitimlar yo'q"
+      },
+      "sources": {
+        "WEBSITE": "Sayt",
+        "PHONE": "Telefon",
+        "EMAIL": "Email",
+        "REFERRAL": "Tavsiya",
+        "SOCIAL": "Ijtimoiy tarmoqlar",
+        "WALK_IN": "Shaxsiy tashrif",
+        "OTHER": "Boshqa"
+      },
+      "stages": {
+        "NEW": "Yangi",
+        "QUALIFIED": "Kvalifikatsiyalangan",
+        "PROPOSAL": "Taklif",
+        "NEGOTIATION": "Muzokaralar",
+        "CLOSED_WON": "Yutilgan",
+        "CLOSED_LOST": "Yo'qotilgan"
+      },
+      "currency": {
+        "ye": "s.b."
+      },
+      "agents": {
+        "title": "Agentlar reytingi",
+        "subtitle": "Jamoa samaradorligi reytingi",
+        "loadError": "Reytingni yuklashda xatolik",
+        "loading": "Yuklanmoqda...",
+        "noData": "Ma'lumot yo'q",
+        "noDataPeriod": "Tanlangan davr uchun ma'lumot yo'q",
+        "addAgentsHint": "Statistikani ko'rish uchun agentlar va lidlarni qo'shing",
+        "table": {
+          "rank": "O'rin",
+          "agent": "Agent",
+          "leads": "Lidlar",
+          "conversion": "Konversiya",
+          "deals": "Bitimlar",
+          "revenue": "Daromad",
+          "commissions": "Komissiyalar",
+          "converted": "konvertatsiya qilingan",
+          "won": "yutilgan"
+        },
+        "stats": {
+          "totalAgents": "Jami agentlar",
+          "totalRevenue": "Umumiy daromad",
+          "totalCommissions": "Umumiy komissiyalar",
+          "avgConversion": "O'rtacha konversiya"
+        },
+        "dealsCount": "bitim"
+      },
+      "revenue": {
+        "title": "Daromad analitikasi",
+        "subtitle": "Sotuvlar va komissiyalar dinamikasi",
+        "loadError": "Daromad analitikasini yuklashda xatolik",
+        "loading": "Yuklanmoqda...",
+        "noData": "Ma'lumot yo'q",
+        "kpis": {
+          "totalRevenue": "Umumiy daromad",
+          "commissions": "Komissiyalar",
+          "closedDeals": "Yopilgan bitimlar",
+          "avgDeal": "O'rtacha summa",
+          "dealsUnit": "bitim"
+        },
+        "chart": {
+          "title": "Daromad dinamikasi",
+          "noDeals": "Tanlangan davr uchun yopilgan bitimlar yo'q",
+          "completeHint": "Daromad dinamikasini ko'rish uchun bitimlarni yakunlang"
+        },
+        "legend": {
+          "revenue": "Daromad",
+          "commissions": "Komissiyalar"
+        },
+        "table": {
+          "title": "Batafsil tahlil",
+          "period": "Davr",
+          "deals": "Bitimlar",
+          "revenue": "Daromad",
+          "commissions": "Komissiyalar",
+          "avgDeal": "O'rtacha",
+          "commissionRate": "% komissiya",
+          "total": "Jami"
+        }
+      }
+    },
+    "members": {
+      "title": "Jamoa",
+      "subtitle": "Agentlik xodimlarini boshqarish",
+      "addMember": "Xodim qo'shish",
+      "search": "Ism yoki email bo'yicha qidirish...",
+      "noMembers": "Xodimlar yo'q",
+      "noMembersHint": "Jamoaga birinchi xodimni qo'shishdan boshlang",
+      "notFound": "Xodim topilmadi",
+      "backToList": "Ro'yxatga qaytish",
+      "stats": {
+        "total": "Jami xodimlar",
+        "active": "Faol",
+        "inactive": "Faol emas",
+        "owners": "Egalar",
+        "leads": "Lidlar",
+        "deals": "Bitimlar",
+        "commissions": "Komissiyalar",
+        "activities": "Faoliyatlar"
+      },
+      "filters": {
+        "allRoles": "Barcha rollar",
+        "allStatuses": "Barcha holatlar",
+        "active": "Faol",
+        "inactive": "Faol emas"
+      },
+      "roles": {
+        "OWNER": "Ega",
+        "ADMIN": "Administrator",
+        "SENIOR_AGENT": "Katta agent",
+        "AGENT": "Agent",
+        "COORDINATOR": "Koordinator"
+      },
+      "agentTypes": {
+        "BUYER_AGENT": "Xaridor agenti",
+        "SELLER_AGENT": "Sotuvchi agenti",
+        "DUAL_AGENT": "Ikki tomonlama agent",
+        "GENERAL": "Umumiy",
+        "RESIDENTIAL": "Turar-joy",
+        "COMMERCIAL": "Tijorat",
+        "RENTAL": "Ijara",
+        "LUXURY": "Lyuks",
+        "notSelected": "Tanlanmagan"
+      },
+      "status": {
+        "active": "Faol",
+        "inactive": "Faol emas"
+      },
+      "sections": {
+        "user": "Foydalanuvchi",
+        "roleAndType": "Rol va turi",
+        "contactInfo": "Aloqa ma'lumotlari",
+        "professionalInfo": "Kasbiy ma'lumotlar",
+        "optionalNote": "Ixtiyoriy izoh",
+        "currentLeads": "Joriy lidlar",
+        "memberInfo": "Xodim haqida ma'lumot"
+      },
+      "form": {
+        "newUser": "Yangi foydalanuvchi",
+        "existingUser": "Mavjud foydalanuvchi",
+        "selectUser": "Tizimdan foydalanuvchini tanlash",
+        "selectUserPlaceholder": "Foydalanuvchi tanlang",
+        "noUsersFound": "Mavjud foydalanuvchilar topilmadi",
+        "firstName": "Ism",
+        "lastName": "Familiya",
+        "email": "Email",
+        "phone": "Telefon",
+        "workPhone": "Ish telefoni",
+        "telegram": "Telegram",
+        "whatsapp": "WhatsApp",
+        "role": "Rol",
+        "agentType": "Agent turi",
+        "licenseNumber": "Litsenziya raqami",
+        "licenseExpiry": "Litsenziya muddati",
+        "specializations": "Mutaxassisliklar (vergul bilan ajrating)",
+        "specializationsPlaceholder": "Kvartiralar, Tijorat ko'chmas mulki",
+        "districts": "Ish hududlari (vergul bilan ajrating)",
+        "districtsPlaceholder": "Chilonzor, Yunusobod, Mirzo-Ulug'bek",
+        "languages": "Tillar (vergul bilan ajrating)",
+        "languagesPlaceholder": "Ruscha, O'zbekcha, Inglizcha",
+        "isActive": "Faol xodim",
+        "bio": "Ma'lumot",
+        "bioPlaceholder": "Qisqa tavsif...",
+        "note": "Ichki eslatma",
+        "notePlaceholder": "Faqat jamoa uchun izoh...",
+        "password": "Parol",
+        "passwordPlaceholder": "Kamida 6 belgi"
+      },
+      "detail": {
+        "registrationDate": "Ro'yxatdan o'tish sanasi",
+        "addedToTeam": "Jamoaga qo'shildi",
+        "lastActivity": "Oxirgi faollik",
+        "phone": "Telefon",
+        "email": "Email",
+        "licenseNumber": "Litsenziya raqami",
+        "notSpecified": "ko'rsatilmagan",
+        "specializations": "Mutaxassisliklar",
+        "bio": "Ma'lumot",
+        "role": "Rol",
+        "type": "Turi",
+        "status": "Holat",
+        "internalNote": "Ichki eslatma",
+        "currentLeads": "Joriy lidlar",
+        "noLeads": "Hozirda tayinlangan lidlar yo'q"
+      },
+      "actions": {
+        "add": "Qo'shish",
+        "adding": "Qo'shilmoqda...",
+        "edit": "Tahrirlash",
+        "save": "Saqlash",
+        "saving": "Saqlanmoqda...",
+        "cancel": "Bekor qilish",
+        "deactivate": "Faolsizlantirish",
+        "generate": "Yaratish"
+      },
+      "alerts": {
+        "deactivateConfirm": "Rostdan ham bu xodimni faolsizlantirmoqchimisiz? Uning barcha faol lidlari tayinlanmagan holda qoladi.",
+        "deactivateError": "Xodimni faolsizlantirishda xatolik"
+      },
+      "new": {
+        "title": "Xodim qo'shish",
+        "subtitle": "Jamoaga yangi a'zo qo'shish"
+      },
+      "edit": {
+        "title": "Xodimni tahrirlash",
+        "subtitle": "Xodim ma'lumotlarini o'zgartirish"
+      }
+    },
+    "tasks": {
+      "title": "Vazifalar",
+      "subtitle": "Vazifalar va eslatmalarni boshqarish",
+      "newTask": "Yangi vazifa",
+      "noTasks": "Vazifalar topilmadi",
+      "loading": "Yuklanmoqda...",
+      "stats": {
+        "total": "Jami",
+        "pending": "Kutilmoqda",
+        "inProgress": "Jarayonda",
+        "completed": "Bajarildi",
+        "overdue": "Muddati o'tgan"
+      },
+      "filters": {
+        "allStatuses": "Barcha holatlar",
+        "allPriorities": "Barcha muhimliklar"
+      },
+      "status": {
+        "PENDING": "Kutilmoqda",
+        "IN_PROGRESS": "Jarayonda",
+        "COMPLETED": "Bajarildi",
+        "CANCELLED": "Bekor qilindi"
+      },
+      "priority": {
+        "URGENT": "Shoshilinch",
+        "HIGH": "Yuqori",
+        "MEDIUM": "O'rta",
+        "LOW": "Past"
+      },
+      "type": {
+        "CALL": "Qo'ng'iroq",
+        "MEETING": "Uchrashuv",
+        "EMAIL": "Email",
+        "VIEWING": "Ko'rsatuv",
+        "FOLLOW_UP": "Eslatma",
+        "DOCUMENT": "Hujjat",
+        "OTHER": "Boshqa"
+      },
+      "detail": {
+        "title": "Vazifa tafsilotlari",
+        "description": "Tavsif",
+        "dueDate": "Muddat",
+        "createdAt": "Yaratildi",
+        "assignee": "Ijrochi",
+        "type": "Turi",
+        "priority": "Muhimlik",
+        "status": "Holat",
+        "lead": "Lid",
+        "deal": "Bitim",
+        "notFound": "Vazifa topilmadi",
+        "backToList": "Ro'yxatga qaytish"
+      },
+      "form": {
+        "title": "Nomi",
+        "titlePlaceholder": "Vazifa nomini kiriting",
+        "description": "Tavsif",
+        "descriptionPlaceholder": "Vazifa tavsifi",
+        "type": "Turi",
+        "priority": "Muhimlik",
+        "status": "Holat",
+        "dueDate": "Muddat",
+        "assignee": "Ijrochi",
+        "selectAssignee": "Ijrochi tanlang",
+        "lead": "Lidga bog'lash",
+        "selectLead": "Lid tanlang",
+        "noLead": "Lidsiz"
+      },
+      "actions": {
+        "create": "Yaratish",
+        "creating": "Yaratilmoqda...",
+        "save": "Saqlash",
+        "saving": "Saqlanmoqda...",
+        "cancel": "Bekor qilish",
+        "edit": "Tahrirlash",
+        "delete": "O'chirish",
+        "complete": "Bajarish",
+        "markInProgress": "Ishni boshlash"
+      },
+      "new": {
+        "title": "Yangi vazifa",
+        "subtitle": "Yangi vazifa yaratish"
+      },
+      "edit": {
+        "title": "Vazifani tahrirlash",
+        "subtitle": "Vazifani o'zgartirish"
+      },
+      "alerts": {
+        "deleteConfirm": "Rostdan ham bu vazifani o'chirmoqchimisiz?",
+        "deleteError": "Vazifani o'chirishda xatolik"
+      }
+    },
+    "listings": {
+      "title": "Ob'ektlar",
+      "subtitle": "Ko'chmas mulk portfelini boshqarish",
+      "addListing": "Ob'ekt qo'shish",
+      "addFirst": "Birinchi ob'ektni qo'shish",
+      "noListings": "Ob'ektlar yo'q",
+      "noListingsHint": "Ko'chmas mulk ob'ektlarini qo'shishni boshlang",
+      "noListingsSearch": "Qidiruv filtrlarini o'zgartirib ko'ring",
+      "loading": "Yuklanmoqda...",
+      "search": "Manzil, nom bo'yicha qidirish...",
+      "perSqm": "m² uchun",
+      "rooms": "xona",
+      "floor": "Qavat",
+      "floorOf": "dan",
+      "stats": {
+        "total": "Jami ob'ektlar",
+        "active": "Faol",
+        "pending": "Kutilmoqda",
+        "closed": "Bitimlar yopildi"
+      },
+      "filters": {
+        "allStatuses": "Barcha holatlar",
+        "allTypes": "Barcha turlar",
+        "allDeals": "Barcha bitimlar"
+      },
+      "propertyType": {
+        "APARTMENT": "Kvartira",
+        "HOUSE": "Uy",
+        "CONDO": "Kondominium",
+        "TOWNHOUSE": "Taunhaus",
+        "LAND": "Yer",
+        "COMMERCIAL": "Tijorat"
+      },
+      "listingType": {
+        "SALE": "Sotish",
+        "RENT_LONG": "Ijara",
+        "RENT_DAILY": "Kunlik"
+      },
+      "status": {
+        "ACTIVE": "Faol",
+        "PENDING": "Kutilmoqda",
+        "SOLD": "Sotildi",
+        "RENTED": "Ijaraga berildi",
+        "INACTIVE": "Nofaol"
+      },
+      "detail": {
+        "title": "Ob'ekt tafsilotlari",
+        "description": "Tavsif",
+        "price": "Narx",
+        "pricePerMeter": "m² uchun",
+        "address": "Manzil",
+        "city": "Shahar",
+        "district": "Tuman",
+        "mahalla": "Mahalla",
+        "bedrooms": "Xonalar",
+        "bathrooms": "Hammomlar",
+        "area": "Maydon",
+        "floor": "Qavat",
+        "floorOf": "dan",
+        "totalFloors": "Jami qavatlar",
+        "buildingType": "Bino turi",
+        "buildingClass": "Bino klassi",
+        "renovation": "Ta'mir",
+        "yearBuilt": "Qurilgan yili",
+        "amenities": "Qulayliklar",
+        "agent": "Agent",
+        "agentRole": "Agent",
+        "createdAt": "Yaratildi",
+        "updatedAt": "Yangilandi",
+        "notFound": "Ob'ekt topilmadi",
+        "backToList": "Ro'yxatga qaytish",
+        "backToListing": "Ob'ektga qaytish",
+        "changeStatus": "Holatni o'zgartirish",
+        "markAsSold": "Sotilgan deb belgilash",
+        "deactivate": "Faolsizlantirish",
+        "enterSoldPrice": "Haqiqiy sotuv narxini kiriting:",
+        "characteristics": "Xususiyatlar",
+        "location": "Joylashuv",
+        "ownerInfo": "Egasi haqida ma'lumot",
+        "ownerName": "Ism",
+        "ownerPhone": "Telefon",
+        "internalNotes": "Ichki eslatmalar",
+        "responsibleAgent": "Mas'ul agent",
+        "recordInfo": "Yozuv ma'lumoti",
+        "deleteModal": {
+          "title": "Ob'ektni o'chirishni xohlaysizmi?",
+          "message": "Bu amalni bekor qilib bo'lmaydi. Ob'ekt butunlay o'chiriladi.",
+          "cancel": "Bekor qilish",
+          "confirm": "O'chirish"
+        }
+      },
+      "form": {
+        "title": "Nomi",
+        "titlePlaceholder": "Masalan: Markazda keng kvartira",
+        "description": "Tavsif",
+        "descriptionPlaceholder": "Ob'ektning batafsil tavsifi...",
+        "price": "Narx",
+        "currency": "Valyuta",
+        "propertyType": "Ko'chmas mulk turi",
+        "listingType": "Bitim turi",
+        "status": "Holat",
+        "address": "Manzil",
+        "addressPlaceholder": "Ko'cha, uy",
+        "city": "Shahar",
+        "district": "Tuman",
+        "mahalla": "Mahalla",
+        "latitude": "Kenglik",
+        "longitude": "Uzunlik",
+        "bedrooms": "Xonalar",
+        "bathrooms": "Hammomlar",
+        "area": "Maydon (m²)",
+        "floor": "Qavat",
+        "totalFloors": "Jami qavatlar",
+        "buildingType": "Bino turi",
+        "buildingClass": "Bino klassi",
+        "renovation": "Ta'mir",
+        "yearBuilt": "Qurilgan yili",
+        "amenities": "Qulayliklar",
+        "ownerName": "Egasining ismi",
+        "ownerPhone": "Egasining telefoni",
+        "ownerAnonymous": "Egasi anonim",
+        "notes": "Eslatmalar",
+        "notesPlaceholder": "Jamoa uchun ichki eslatmalar...",
+        "images": "Rasmlar",
+        "selectAgent": "Agentni tanlang",
+        "market": "Bozor"
+      },
+      "sections": {
+        "basicInfo": "Asosiy ma'lumot",
+        "location": "Joylashuv",
+        "propertyDetails": "Ob'ekt xususiyatlari",
+        "ownerInfo": "Egasi haqida ma'lumot",
+        "additionalInfo": "Qo'shimcha ma'lumot"
+      },
+      "currency": {
+        "UZS": "So'm (UZS)",
+        "USD": "Dollar (USD)"
+      },
+      "marketType": {
+        "NEW_BUILDING": "Yangi bino",
+        "SECONDARY": "Ikkilamchi bozor"
+      },
+      "buildingType": {
+        "BRICK": "G'ishtli",
+        "PANEL": "Panelli",
+        "MONOLITHIC": "Monolitik",
+        "WOOD": "Yog'ochli",
+        "BLOCK": "Blokli"
+      },
+      "buildingClass": {
+        "ECONOMY": "Ekonom",
+        "COMFORT": "Komfort",
+        "BUSINESS": "Biznes",
+        "ELITE": "Elit"
+      },
+      "renovation": {
+        "NONE": "Ta'mirsiz",
+        "COSMETIC": "Kosmetik",
+        "EURO": "Yevrota'mir",
+        "DESIGNER": "Dizaynerlik",
+        "NEEDS_REPAIR": "Ta'mir talab qiladi"
+      },
+      "actions": {
+        "create": "Yaratish",
+        "creating": "Yaratilmoqda...",
+        "save": "Saqlash",
+        "saving": "Saqlanmoqda...",
+        "cancel": "Bekor qilish",
+        "edit": "Tahrirlash",
+        "delete": "O'chirish"
+      },
+      "new": {
+        "title": "Yangi ob'ekt",
+        "subtitle": "Ko'chmas mulk ob'ekti qo'shish"
+      },
+      "edit": {
+        "title": "Ob'ektni tahrirlash",
+        "subtitle": "Ko'chmas mulk ob'ekti ma'lumotlarini yangilash",
+        "backToListing": "Ob'ektga qaytish",
+        "success": "Ob'ekt muvaffaqiyatli yangilandi! Yo'naltirilmoqda..."
+      },
+      "alerts": {
+        "deleteConfirm": "Rostdan ham bu ob'ektni o'chirmoqchimisiz?",
+        "deleteError": "Ob'ektni o'chirishda xatolik",
+        "createError": "Ob'ektni yaratishda xatolik",
+        "createSuccess": "Ob'ekt muvaffaqiyatli yaratildi! Yo'naltirilmoqda...",
+        "saveSuccess": "O'zgarishlar saqlandi",
+        "saveError": "Saqlashda xatolik",
+        "updateError": "Ob'ektni yangilashda xatolik",
+        "statusError": "Holatni yangilashda xatolik",
+        "loadError": "Ma'lumotlarni yuklashda xatolik"
+      }
+    },
+    "notifications": {
+      "title": "Bildirishnomalar",
+      "loading": "Yuklanmoqda...",
+      "unreadCount": "{count} ta o'qilmagan",
+      "unreadCountOne": "{count} ta o'qilmagan",
+      "markAllAsRead": "Barchasini o'qilgan deb belgilash",
+      "filters": {
+        "all": "Barchasi",
+        "unread": "O'qilmaganlar"
+      },
+      "empty": {
+        "all": "Sizda hali bildirishnomalar yo'q",
+        "unread": "O'qilmagan bildirishnomalar yo'q"
+      },
+      "types": {
+        "TASK_ASSIGNED": "Vazifa tayinlandi",
+        "TASK_DUE_SOON": "Vazifa muddati yaqinlashmoqda",
+        "TASK_OVERDUE": "Vazifa muddati o'tgan",
+        "TASK_COMPLETED": "Vazifa bajarildi",
+        "LEAD_ASSIGNED": "Lid tayinlandi",
+        "LEAD_STATUS_CHANGE": "Lid holati o'zgartirildi",
+        "DEAL_STATUS_CHANGE": "Bitim holati o'zgartirildi"
+      },
+      "time": {
+        "justNow": "Hozirgina",
+        "minutesAgo": "{count} daqiqa oldin",
+        "hoursAgo": "{count} soat oldin",
+        "today": "Bugun",
+        "yesterday": "Kecha",
+        "daysAgo": "{count} kun oldin"
+      },
+      "actions": {
+        "goTo": "O'tish →",
+        "markAsRead": "O'qildi",
+        "delete": "O'chirish"
+      }
+    },
+    "common": {
+      "cancel": "Bekor qilish",
+      "save": "Saqlash",
+      "delete": "O'chirish",
+      "close": "Yopish",
+      "loading": "Yuklanmoqda..."
     }
   }
 }

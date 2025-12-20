@@ -5,9 +5,14 @@ import { useRouter } from '@/i18n/routing';
 import { ArrowLeft, Download, Filter, Loader2 } from 'lucide-react';
 import { Link } from '@/i18n/routing';
 import { api } from '@/lib/api';
+import { useTranslations } from 'next-intl';
 
 export default function LeadsExportPage() {
   const router = useRouter();
+  const t = useTranslations('crm.leads.exportPage');
+  const tStatuses = useTranslations('crm.leads.statuses');
+  const tPriorities = useTranslations('crm.leads.priorities');
+  const tSources = useTranslations('crm.leads.sources');
   const [exporting, setExporting] = useState(false);
 
   // Filters
@@ -40,10 +45,10 @@ export default function LeadsExportPage() {
       link.click();
 
       // Show success message
-      alert('Экспорт завершен!');
+      alert(t('exportSuccess'));
     } catch (error) {
       console.error('Export error:', error);
-      alert('Ошибка при экспорте лидов');
+      alert(t('exportError'));
     } finally {
       setExporting(false);
     }
@@ -70,8 +75,8 @@ export default function LeadsExportPage() {
             </button>
           </Link>
           <div>
-            <h1 className="text-3xl font-bold text-gray-900">Экспорт лидов</h1>
-            <p className="mt-1 text-sm text-gray-500">Экспортируйте лиды в CSV формат с фильтрами</p>
+            <h1 className="text-3xl font-bold text-gray-900">{t('title')}</h1>
+            <p className="mt-1 text-sm text-gray-500">{t('subtitle')}</p>
           </div>
         </div>
       </div>
@@ -81,9 +86,9 @@ export default function LeadsExportPage() {
         <div className="flex items-start gap-3">
           <Filter className="h-5 w-5 text-blue-600 flex-shrink-0 mt-0.5" />
           <div className="flex-1">
-            <h3 className="font-semibold text-blue-900">Фильтрация при экспорте</h3>
+            <h3 className="font-semibold text-blue-900">{t('filterInfo')}</h3>
             <p className="text-sm text-blue-700 mt-1">
-              Используйте фильтры ниже, чтобы экспортировать только нужные лиды. Без фильтров будут экспортированы все лиды.
+              {t('filterDescription')}
             </p>
           </div>
         </div>
@@ -92,13 +97,13 @@ export default function LeadsExportPage() {
       {/* Filters */}
       <div className="bg-white p-6 rounded-lg shadow">
         <div className="flex items-center justify-between mb-4">
-          <h2 className="text-xl font-semibold text-gray-900">Фильтры</h2>
+          <h2 className="text-xl font-semibold text-gray-900">{t('filtersTitle')}</h2>
           {hasFilters && (
             <button
               onClick={handleClearFilters}
               className="text-sm text-blue-600 hover:text-blue-700 font-medium"
             >
-              Очистить фильтры
+              {t('clearFilters')}
             </button>
           )}
         </div>
@@ -106,65 +111,65 @@ export default function LeadsExportPage() {
         <div className="grid grid-cols-1 md:grid-cols-2 gap-4">
           {/* Status Filter */}
           <div>
-            <label className="block text-sm font-medium text-gray-700 mb-2">Статус</label>
+            <label className="block text-sm font-medium text-gray-700 mb-2">{t('status')}</label>
             <select
               value={status}
               onChange={(e) => setStatus(e.target.value)}
               className="w-full px-4 py-2 border border-gray-300 rounded-lg focus:ring-2 focus:ring-blue-500"
             >
-              <option value="">Все статусы</option>
-              <option value="NEW">Новый</option>
-              <option value="CONTACTED">Связались</option>
-              <option value="QUALIFIED">Квалифицирован</option>
-              <option value="NEGOTIATION">Переговоры</option>
-              <option value="WON">Выигран</option>
-              <option value="LOST">Проигран</option>
+              <option value="">{t('allStatuses')}</option>
+              <option value="NEW">{tStatuses('NEW')}</option>
+              <option value="CONTACTED">{tStatuses('CONTACTED')}</option>
+              <option value="QUALIFIED">{tStatuses('QUALIFIED')}</option>
+              <option value="NEGOTIATING">{tStatuses('NEGOTIATING')}</option>
+              <option value="CONVERTED">{tStatuses('CONVERTED')}</option>
+              <option value="LOST">{tStatuses('LOST')}</option>
             </select>
           </div>
 
           {/* Priority Filter */}
           <div>
-            <label className="block text-sm font-medium text-gray-700 mb-2">Приоритет</label>
+            <label className="block text-sm font-medium text-gray-700 mb-2">{t('priority')}</label>
             <select
               value={priority}
               onChange={(e) => setPriority(e.target.value)}
               className="w-full px-4 py-2 border border-gray-300 rounded-lg focus:ring-2 focus:ring-blue-500"
             >
-              <option value="">Все приоритеты</option>
-              <option value="URGENT">Срочный</option>
-              <option value="HIGH">Высокий</option>
-              <option value="MEDIUM">Средний</option>
-              <option value="LOW">Низкий</option>
+              <option value="">{t('allPriorities')}</option>
+              <option value="URGENT">{tPriorities('URGENT')}</option>
+              <option value="HIGH">{tPriorities('HIGH')}</option>
+              <option value="MEDIUM">{tPriorities('MEDIUM')}</option>
+              <option value="LOW">{tPriorities('LOW')}</option>
             </select>
           </div>
 
           {/* Source Filter */}
           <div>
-            <label className="block text-sm font-medium text-gray-700 mb-2">Источник</label>
+            <label className="block text-sm font-medium text-gray-700 mb-2">{t('source')}</label>
             <select
               value={source}
               onChange={(e) => setSource(e.target.value)}
               className="w-full px-4 py-2 border border-gray-300 rounded-lg focus:ring-2 focus:ring-blue-500"
             >
-              <option value="">Все источники</option>
-              <option value="WEBSITE">Сайт</option>
-              <option value="REFERRAL">Рекомендация</option>
-              <option value="SOCIAL_MEDIA">Соц. сети</option>
-              <option value="ADVERTISING">Реклама</option>
-              <option value="COLD_CALL">Холодный звонок</option>
-              <option value="CSV_IMPORT">CSV импорт</option>
-              <option value="OTHER">Другое</option>
+              <option value="">{t('allSources')}</option>
+              <option value="WEBSITE">{tSources('WEBSITE')}</option>
+              <option value="REFERRAL">{tSources('REFERRAL')}</option>
+              <option value="SOCIAL_MEDIA">{tSources('SOCIAL_MEDIA')}</option>
+              <option value="ADVERTISING">{tSources('ADVERTISING')}</option>
+              <option value="COLD_CALL">{tSources('COLD_CALL')}</option>
+              <option value="CSV_IMPORT">{tSources('CSV_IMPORT')}</option>
+              <option value="OTHER">{tSources('OTHER')}</option>
             </select>
           </div>
 
           {/* Search Filter */}
           <div>
-            <label className="block text-sm font-medium text-gray-700 mb-2">Поиск</label>
+            <label className="block text-sm font-medium text-gray-700 mb-2">{t('search')}</label>
             <input
               type="text"
               value={search}
               onChange={(e) => setSearch(e.target.value)}
-              placeholder="Имя, телефон, email..."
+              placeholder={t('searchPlaceholder')}
               className="w-full px-4 py-2 border border-gray-300 rounded-lg focus:ring-2 focus:ring-blue-500"
             />
           </div>
@@ -174,12 +179,12 @@ export default function LeadsExportPage() {
         {hasFilters && (
           <div className="mt-4 p-3 bg-gray-50 rounded-lg">
             <p className="text-sm text-gray-700">
-              <span className="font-medium">Активные фильтры:</span>{' '}
+              <span className="font-medium">{t('activeFilters')}</span>{' '}
               {[
-                status && `Статус: ${status}`,
-                priority && `Приоритет: ${priority}`,
-                source && `Источник: ${source}`,
-                search && `Поиск: "${search}"`,
+                status && `${t('statusLabel')}: ${status}`,
+                priority && `${t('priorityLabel')}: ${priority}`,
+                source && `${t('sourceLabel')}: ${source}`,
+                search && `${t('searchLabel')}: "${search}"`,
               ]
                 .filter(Boolean)
                 .join(', ')}
@@ -190,18 +195,18 @@ export default function LeadsExportPage() {
 
       {/* Export Info */}
       <div className="bg-white p-6 rounded-lg shadow">
-        <h2 className="text-xl font-semibold text-gray-900 mb-4">Что будет экспортировано?</h2>
+        <h2 className="text-xl font-semibold text-gray-900 mb-4">{t('whatExported')}</h2>
         <div className="space-y-2 text-sm text-gray-600">
-          <p>• Все поля лидов (имя, фамилия, телефон, email, Telegram, WhatsApp)</p>
-          <p>• Информация о недвижимости (тип, бюджет, количество комнат, районы)</p>
-          <p>• Требования и заметки</p>
-          <p>• Источник, статус, приоритет</p>
-          <p>• Назначенный менеджер</p>
-          <p>• Дата создания</p>
+          <p>• {t('exportedFields.contacts')}</p>
+          <p>• {t('exportedFields.property')}</p>
+          <p>• {t('exportedFields.requirements')}</p>
+          <p>• {t('exportedFields.status')}</p>
+          <p>• {t('exportedFields.manager')}</p>
+          <p>• {t('exportedFields.date')}</p>
         </div>
         <div className="mt-4 p-3 bg-yellow-50 border border-yellow-200 rounded-lg">
           <p className="text-sm text-yellow-800">
-            <span className="font-medium">Примечание:</span> Экспортированный CSV файл можно использовать для импорта в другие системы или обратного импорта.
+            <span className="font-medium">{t('note')}</span> {t('noteText')}
           </p>
         </div>
       </div>
@@ -210,7 +215,7 @@ export default function LeadsExportPage() {
       <div className="flex justify-end gap-3">
         <Link href="/developer/crm/leads">
           <button className="px-6 py-3 border border-gray-300 rounded-lg hover:bg-gray-50">
-            Отмена
+            {t('cancel')}
           </button>
         </Link>
         <button
@@ -221,12 +226,12 @@ export default function LeadsExportPage() {
           {exporting ? (
             <>
               <Loader2 className="h-5 w-5 animate-spin" />
-              Экспорт...
+              {t('exporting')}
             </>
           ) : (
             <>
               <Download className="h-5 w-5" />
-              Экспортировать
+              {t('exportButton')}
             </>
           )}
         </button>

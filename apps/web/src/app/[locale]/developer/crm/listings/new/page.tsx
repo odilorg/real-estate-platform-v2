@@ -5,9 +5,11 @@ import { useRouter } from 'next/navigation';
 import { ChevronLeft, Building, MapPin, Info, User } from 'lucide-react';
 import { Link } from '@/i18n/routing';
 import { api } from '@/lib/api';
+import { useTranslations } from 'next-intl';
 
 export default function NewListingPage() {
   const router = useRouter();
+  const t = useTranslations('crm.listings');
   const [loading, setLoading] = useState(false);
   const [success, setSuccess] = useState(false);
 
@@ -76,7 +78,7 @@ export default function NewListingPage() {
       }, 1500);
     } catch (error) {
       console.error('Error creating listing:', error);
-      alert('Ошибка при создании объекта');
+      alert(t('alerts.createError'));
     } finally {
       setLoading(false);
     }
@@ -103,17 +105,17 @@ export default function NewListingPage() {
         <Link href="/developer/crm/listings">
           <button className="flex items-center gap-2 text-gray-600 hover:text-gray-900 mb-4">
             <ChevronLeft className="h-5 w-5" />
-            <span>Назад к списку</span>
+            <span>{t('detail.backToList')}</span>
           </button>
         </Link>
 
-        <h1 className="text-xl md:text-2xl lg:text-3xl font-bold text-gray-900">Добавить объект</h1>
-        <p className="text-sm text-gray-500 mt-1">Добавление нового объекта недвижимости в портфель</p>
+        <h1 className="text-xl md:text-2xl lg:text-3xl font-bold text-gray-900">{t('new.title')}</h1>
+        <p className="text-sm text-gray-500 mt-1">{t('new.subtitle')}</p>
       </div>
 
       {success && (
         <div className="bg-green-50 border border-green-200 text-green-800 px-4 py-3 rounded-lg mb-6">
-          ✅ Объект успешно создан! Перенаправление...
+          ✅ {t('alerts.createSuccess')}
         </div>
       )}
 
@@ -122,34 +124,34 @@ export default function NewListingPage() {
         <div className="bg-white p-4 md:p-6 rounded-lg shadow" role="region" aria-labelledby="basic-info">
           <h2 id="basic-info" className="text-lg md:text-xl font-semibold text-gray-900 mb-4 flex items-center gap-2">
             <Building className="h-5 w-5" />
-            Основная информация
+            {t('sections.basicInfo')}
           </h2>
 
           <div className="space-y-4">
             <div>
               <label className="block text-sm font-medium text-gray-700 mb-1">
-                Название объявления *
+                {t('form.title')} *
               </label>
               <input
                 type="text"
                 required
                 value={formData.title}
                 onChange={(e) => setFormData({ ...formData, title: e.target.value })}
-                placeholder="Например: 3-комнатная квартира в центре"
+                placeholder={t('form.titlePlaceholder')}
                 className="w-full px-4 py-2.5 border border-gray-300 rounded-lg focus:ring-2 focus:ring-blue-500 focus:border-blue-500"
               />
             </div>
 
             <div>
               <label className="block text-sm font-medium text-gray-700 mb-1">
-                Описание *
+                {t('form.description')} *
               </label>
               <textarea
                 required
                 value={formData.description}
                 onChange={(e) => setFormData({ ...formData, description: e.target.value })}
                 rows={4}
-                placeholder="Подробное описание объекта..."
+                placeholder={t('form.descriptionPlaceholder')}
                 className="w-full px-4 py-2.5 border border-gray-300 rounded-lg focus:ring-2 focus:ring-blue-500 focus:border-blue-500"
               />
             </div>
@@ -157,7 +159,7 @@ export default function NewListingPage() {
             <div className="grid grid-cols-1 md:grid-cols-2 gap-4">
               <div>
                 <label className="block text-sm font-medium text-gray-700 mb-1">
-                  Цена *
+                  {t('form.price')} *
                 </label>
                 <input
                   type="number"
@@ -172,15 +174,15 @@ export default function NewListingPage() {
 
               <div>
                 <label className="block text-sm font-medium text-gray-700 mb-1">
-                  Валюта *
+                  {t('form.currency')} *
                 </label>
                 <select
                   value={formData.currency}
                   onChange={(e) => setFormData({ ...formData, currency: e.target.value })}
                   className="w-full px-4 py-2.5 border border-gray-300 rounded-lg focus:ring-2 focus:ring-blue-500 focus:border-blue-500"
                 >
-                  <option value="UZS">Сум (UZS)</option>
-                  <option value="YE">Доллар (USD)</option>
+                  <option value="UZS">{t('currency.UZS')}</option>
+                  <option value="YE">{t('currency.USD')}</option>
                 </select>
               </div>
             </div>
@@ -188,49 +190,49 @@ export default function NewListingPage() {
             <div className="grid grid-cols-1 md:grid-cols-2 gap-4">
               <div>
                 <label className="block text-sm font-medium text-gray-700 mb-1">
-                  Тип недвижимости *
+                  {t('form.propertyType')} *
                 </label>
                 <select
                   value={formData.propertyType}
                   onChange={(e) => setFormData({ ...formData, propertyType: e.target.value })}
                   className="w-full px-4 py-2.5 border border-gray-300 rounded-lg focus:ring-2 focus:ring-blue-500 focus:border-blue-500"
                 >
-                  <option value="APARTMENT">Квартира</option>
-                  <option value="HOUSE">Дом</option>
-                  <option value="CONDO">Кондоминиум</option>
-                  <option value="TOWNHOUSE">Таунхаус</option>
-                  <option value="LAND">Земля</option>
-                  <option value="COMMERCIAL">Коммерческая</option>
+                  <option value="APARTMENT">{t('propertyType.APARTMENT')}</option>
+                  <option value="HOUSE">{t('propertyType.HOUSE')}</option>
+                  <option value="CONDO">{t('propertyType.CONDO')}</option>
+                  <option value="TOWNHOUSE">{t('propertyType.TOWNHOUSE')}</option>
+                  <option value="LAND">{t('propertyType.LAND')}</option>
+                  <option value="COMMERCIAL">{t('propertyType.COMMERCIAL')}</option>
                 </select>
               </div>
 
               <div>
                 <label className="block text-sm font-medium text-gray-700 mb-1">
-                  Тип сделки *
+                  {t('form.listingType')} *
                 </label>
                 <select
                   value={formData.listingType}
                   onChange={(e) => setFormData({ ...formData, listingType: e.target.value })}
                   className="w-full px-4 py-2.5 border border-gray-300 rounded-lg focus:ring-2 focus:ring-blue-500 focus:border-blue-500"
                 >
-                  <option value="SALE">Продажа</option>
-                  <option value="RENT_LONG">Долгосрочная аренда</option>
-                  <option value="RENT_DAILY">Посуточная аренда</option>
+                  <option value="SALE">{t('listingType.SALE')}</option>
+                  <option value="RENT_LONG">{t('listingType.RENT_LONG')}</option>
+                  <option value="RENT_DAILY">{t('listingType.RENT_DAILY')}</option>
                 </select>
               </div>
             </div>
 
             <div>
               <label className="block text-sm font-medium text-gray-700 mb-1">
-                Рынок
+                {t('form.market')}
               </label>
               <select
                 value={formData.marketType}
                 onChange={(e) => setFormData({ ...formData, marketType: e.target.value })}
                 className="w-full px-4 py-2.5 border border-gray-300 rounded-lg focus:ring-2 focus:ring-blue-500 focus:border-blue-500"
               >
-                <option value="NEW_BUILDING">Новостройка</option>
-                <option value="SECONDARY">Вторичный рынок</option>
+                <option value="NEW_BUILDING">{t('marketType.NEW_BUILDING')}</option>
+                <option value="SECONDARY">{t('marketType.SECONDARY')}</option>
               </select>
             </div>
           </div>
@@ -240,20 +242,20 @@ export default function NewListingPage() {
         <div className="bg-white p-4 md:p-6 rounded-lg shadow" role="region" aria-labelledby="location-info">
           <h2 id="location-info" className="text-lg md:text-xl font-semibold text-gray-900 mb-4 flex items-center gap-2">
             <MapPin className="h-5 w-5" />
-            Местоположение
+            {t('sections.location')}
           </h2>
 
           <div className="space-y-4">
             <div>
               <label className="block text-sm font-medium text-gray-700 mb-1">
-                Адрес *
+                {t('form.address')} *
               </label>
               <input
                 type="text"
                 required
                 value={formData.address}
                 onChange={(e) => setFormData({ ...formData, address: e.target.value })}
-                placeholder="Улица, номер дома"
+                placeholder={t('form.addressPlaceholder')}
                 className="w-full px-4 py-2.5 border border-gray-300 rounded-lg focus:ring-2 focus:ring-blue-500 focus:border-blue-500"
               />
             </div>
@@ -261,7 +263,7 @@ export default function NewListingPage() {
             <div className="grid grid-cols-1 md:grid-cols-2 gap-4">
               <div>
                 <label className="block text-sm font-medium text-gray-700 mb-1">
-                  Город *
+                  {t('form.city')} *
                 </label>
                 <input
                   type="text"
@@ -274,7 +276,7 @@ export default function NewListingPage() {
 
               <div>
                 <label className="block text-sm font-medium text-gray-700 mb-1">
-                  Район
+                  {t('form.district')}
                 </label>
                 <input
                   type="text"
@@ -288,7 +290,7 @@ export default function NewListingPage() {
             <div className="grid grid-cols-1 md:grid-cols-2 gap-4">
               <div>
                 <label className="block text-sm font-medium text-gray-700 mb-1">
-                  Махалля
+                  {t('form.mahalla')}
                 </label>
                 <input
                   type="text"
@@ -302,7 +304,7 @@ export default function NewListingPage() {
             <div className="grid grid-cols-1 md:grid-cols-2 gap-4">
               <div>
                 <label className="block text-sm font-medium text-gray-700 mb-1">
-                  Широта (latitude)
+                  {t('form.latitude')}
                 </label>
                 <input
                   type="number"
@@ -316,7 +318,7 @@ export default function NewListingPage() {
 
               <div>
                 <label className="block text-sm font-medium text-gray-700 mb-1">
-                  Долгота (longitude)
+                  {t('form.longitude')}
                 </label>
                 <input
                   type="number"
@@ -335,14 +337,14 @@ export default function NewListingPage() {
         <div className="bg-white p-4 md:p-6 rounded-lg shadow" role="region" aria-labelledby="property-details">
           <h2 id="property-details" className="text-lg md:text-xl font-semibold text-gray-900 mb-4 flex items-center gap-2">
             <Info className="h-5 w-5" />
-            Характеристики объекта
+            {t('sections.propertyDetails')}
           </h2>
 
           <div className="space-y-4">
             <div className="grid grid-cols-1 md:grid-cols-3 gap-4">
               <div>
                 <label className="block text-sm font-medium text-gray-700 mb-1">
-                  Комнат
+                  {t('form.bedrooms')}
                 </label>
                 <input
                   type="number"
@@ -355,7 +357,7 @@ export default function NewListingPage() {
 
               <div>
                 <label className="block text-sm font-medium text-gray-700 mb-1">
-                  Санузлов
+                  {t('form.bathrooms')}
                 </label>
                 <input
                   type="number"
@@ -369,7 +371,7 @@ export default function NewListingPage() {
 
               <div>
                 <label className="block text-sm font-medium text-gray-700 mb-1">
-                  Площадь (м²)
+                  {t('form.area')}
                 </label>
                 <input
                   type="number"
@@ -385,7 +387,7 @@ export default function NewListingPage() {
             <div className="grid grid-cols-1 md:grid-cols-2 gap-4">
               <div>
                 <label className="block text-sm font-medium text-gray-700 mb-1">
-                  Этаж
+                  {t('form.floor')}
                 </label>
                 <input
                   type="number"
@@ -398,7 +400,7 @@ export default function NewListingPage() {
 
               <div>
                 <label className="block text-sm font-medium text-gray-700 mb-1">
-                  Всего этажей
+                  {t('form.totalFloors')}
                 </label>
                 <input
                   type="number"
@@ -413,34 +415,34 @@ export default function NewListingPage() {
             <div className="grid grid-cols-1 md:grid-cols-2 gap-4">
               <div>
                 <label className="block text-sm font-medium text-gray-700 mb-1">
-                  Тип здания
+                  {t('form.buildingType')}
                 </label>
                 <select
                   value={formData.buildingType}
                   onChange={(e) => setFormData({ ...formData, buildingType: e.target.value })}
                   className="w-full px-4 py-2.5 border border-gray-300 rounded-lg focus:ring-2 focus:ring-blue-500 focus:border-blue-500"
                 >
-                  <option value="BRICK">Кирпичный</option>
-                  <option value="PANEL">Панельный</option>
-                  <option value="MONOLITHIC">Монолитный</option>
-                  <option value="WOOD">Деревянный</option>
-                  <option value="BLOCK">Блочный</option>
+                  <option value="BRICK">{t('buildingType.BRICK')}</option>
+                  <option value="PANEL">{t('buildingType.PANEL')}</option>
+                  <option value="MONOLITHIC">{t('buildingType.MONOLITHIC')}</option>
+                  <option value="WOOD">{t('buildingType.WOOD')}</option>
+                  <option value="BLOCK">{t('buildingType.BLOCK')}</option>
                 </select>
               </div>
 
               <div>
                 <label className="block text-sm font-medium text-gray-700 mb-1">
-                  Класс здания
+                  {t('form.buildingClass')}
                 </label>
                 <select
                   value={formData.buildingClass}
                   onChange={(e) => setFormData({ ...formData, buildingClass: e.target.value })}
                   className="w-full px-4 py-2.5 border border-gray-300 rounded-lg focus:ring-2 focus:ring-blue-500 focus:border-blue-500"
                 >
-                  <option value="ECONOMY">Эконом</option>
-                  <option value="COMFORT">Комфорт</option>
-                  <option value="BUSINESS">Бизнес</option>
-                  <option value="ELITE">Элитный</option>
+                  <option value="ECONOMY">{t('buildingClass.ECONOMY')}</option>
+                  <option value="COMFORT">{t('buildingClass.COMFORT')}</option>
+                  <option value="BUSINESS">{t('buildingClass.BUSINESS')}</option>
+                  <option value="ELITE">{t('buildingClass.ELITE')}</option>
                 </select>
               </div>
             </div>
@@ -448,24 +450,24 @@ export default function NewListingPage() {
             <div className="grid grid-cols-1 md:grid-cols-2 gap-4">
               <div>
                 <label className="block text-sm font-medium text-gray-700 mb-1">
-                  Ремонт
+                  {t('form.renovation')}
                 </label>
                 <select
                   value={formData.renovation}
                   onChange={(e) => setFormData({ ...formData, renovation: e.target.value })}
                   className="w-full px-4 py-2.5 border border-gray-300 rounded-lg focus:ring-2 focus:ring-blue-500 focus:border-blue-500"
                 >
-                  <option value="NONE">Без ремонта</option>
-                  <option value="COSMETIC">Косметический</option>
-                  <option value="EURO">Евроремонт</option>
-                  <option value="DESIGNER">Дизайнерский</option>
-                  <option value="NEEDS_REPAIR">Требует ремонта</option>
+                  <option value="NONE">{t('renovation.NONE')}</option>
+                  <option value="COSMETIC">{t('renovation.COSMETIC')}</option>
+                  <option value="EURO">{t('renovation.EURO')}</option>
+                  <option value="DESIGNER">{t('renovation.DESIGNER')}</option>
+                  <option value="NEEDS_REPAIR">{t('renovation.NEEDS_REPAIR')}</option>
                 </select>
               </div>
 
               <div>
                 <label className="block text-sm font-medium text-gray-700 mb-1">
-                  Год постройки
+                  {t('form.yearBuilt')}
                 </label>
                 <input
                   type="number"
@@ -481,7 +483,7 @@ export default function NewListingPage() {
 
             <div>
               <label className="block text-sm font-medium text-gray-700 mb-2">
-                Удобства
+                {t('form.amenities')}
               </label>
               <div className="grid grid-cols-2 md:grid-cols-3 gap-3">
                 {amenitiesList.map((amenity) => (
@@ -504,7 +506,7 @@ export default function NewListingPage() {
         <div className="bg-white p-4 md:p-6 rounded-lg shadow" role="region" aria-labelledby="owner-info">
           <h2 id="owner-info" className="text-lg md:text-xl font-semibold text-gray-900 mb-4 flex items-center gap-2">
             <User className="h-5 w-5" />
-            Информация о собственнике
+            {t('sections.ownerInfo')}
           </h2>
 
           <div className="space-y-4">
@@ -517,7 +519,7 @@ export default function NewListingPage() {
                 className="w-4 h-4 text-blue-600 border-gray-300 rounded focus:ring-blue-500"
               />
               <label htmlFor="anonymous" className="text-sm text-gray-700 cursor-pointer">
-                Собственник анонимный
+                {t('form.ownerAnonymous')}
               </label>
             </div>
 
@@ -525,7 +527,7 @@ export default function NewListingPage() {
               <div className="grid grid-cols-1 md:grid-cols-2 gap-4">
                 <div>
                   <label className="block text-sm font-medium text-gray-700 mb-1">
-                    Имя собственника
+                    {t('form.ownerName')}
                   </label>
                   <input
                     type="text"
@@ -537,7 +539,7 @@ export default function NewListingPage() {
 
                 <div>
                   <label className="block text-sm font-medium text-gray-700 mb-1">
-                    Телефон собственника
+                    {t('form.ownerPhone')}
                   </label>
                   <input
                     type="tel"
@@ -555,18 +557,18 @@ export default function NewListingPage() {
         {/* Notes */}
         <div className="bg-white p-4 md:p-6 rounded-lg shadow">
           <h2 className="text-lg md:text-xl font-semibold text-gray-900 mb-4">
-            Дополнительная информация
+            {t('sections.additionalInfo')}
           </h2>
 
           <div>
             <label className="block text-sm font-medium text-gray-700 mb-1">
-              Заметки
+              {t('form.notes')}
             </label>
             <textarea
               value={formData.notes}
               onChange={(e) => setFormData({ ...formData, notes: e.target.value })}
               rows={4}
-              placeholder="Внутренние заметки для команды..."
+              placeholder={t('form.notesPlaceholder')}
               className="w-full px-4 py-2.5 border border-gray-300 rounded-lg focus:ring-2 focus:ring-blue-500 focus:border-blue-500"
             />
           </div>
@@ -579,7 +581,7 @@ export default function NewListingPage() {
               type="button"
               className="w-full px-6 py-3 border border-gray-300 text-gray-700 rounded-lg hover:bg-gray-50 font-medium transition-colors"
             >
-              Отмена
+              {t('actions.cancel')}
             </button>
           </Link>
           <button
@@ -587,7 +589,7 @@ export default function NewListingPage() {
             disabled={loading}
             className="flex-1 px-6 py-3 bg-blue-600 hover:bg-blue-700 text-white rounded-lg font-medium transition-colors disabled:opacity-50 disabled:cursor-not-allowed"
           >
-            {loading ? 'Сохранение...' : 'Сохранить объект'}
+            {loading ? t('actions.saving') : t('actions.save')}
           </button>
         </div>
       </form>

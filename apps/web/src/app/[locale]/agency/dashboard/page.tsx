@@ -5,6 +5,7 @@ import { Link } from '@/i18n/routing';
 import { Building, Users, UserPlus, FileText, Settings, Loader2, Edit, Search, Plus, Eye, Trash2, MapPin, ShieldAlert } from 'lucide-react';
 import { api } from '@/lib/api';
 import { useAuth } from '@/context/AuthContext';
+import { useTranslations } from 'next-intl';
 
 interface AgencyStats {
   leads: {
@@ -54,11 +55,6 @@ interface Property {
   createdAt: string;
 }
 
-const LISTING_TYPE_LABELS: Record<string, string> = {
-  SALE: 'Продажа',
-  RENT_LONG: 'Аренда',
-  RENT_DAILY: 'Посуточно',
-};
 
 const STATUS_COLORS: Record<string, string> = {
   ACTIVE: 'bg-green-100 text-green-800',
@@ -70,6 +66,7 @@ const STATUS_COLORS: Record<string, string> = {
 
 export default function AgencyDashboardPage() {
   const { user, loading: authLoading } = useAuth();
+  const t = useTranslations('dashboard.agency');
   const [agency, setAgency] = useState<Agency | null>(null);
   const [stats, setStats] = useState<AgencyStats | null>(null);
   const [role, setRole] = useState<string>('');
@@ -130,7 +127,7 @@ export default function AgencyDashboardPage() {
   };
 
   const handleDeleteProperty = async (id: string) => {
-    if (!confirm('Вы уверены, что хотите удалить это объявление?')) return;
+    if (!confirm(t('confirmDelete'))) return;
     setDeletingId(id);
     try {
       const token = localStorage.getItem('token');
@@ -162,10 +159,10 @@ export default function AgencyDashboardPage() {
     return (
       <div className="flex flex-col items-center justify-center min-h-[60vh] text-center">
         <ShieldAlert className="h-16 w-16 text-yellow-500 mb-4" />
-        <h2 className="text-xl font-semibold text-gray-900 mb-2">Требуется авторизация</h2>
-        <p className="text-gray-600 mb-4">Войдите в систему для доступа к панели агентства</p>
+        <h2 className="text-xl font-semibold text-gray-900 mb-2">{t('authRequired')}</h2>
+        <p className="text-gray-600 mb-4">{t('authDescription')}</p>
         <Link href="/login" className="px-4 py-2 bg-blue-600 text-white rounded-lg hover:bg-blue-700">
-          Войти
+          {t('login')}
         </Link>
       </div>
     );
@@ -176,13 +173,12 @@ export default function AgencyDashboardPage() {
     return (
       <div className="flex flex-col items-center justify-center min-h-[60vh] text-center">
         <ShieldAlert className="h-16 w-16 text-red-500 mb-4" />
-        <h2 className="text-xl font-semibold text-gray-900 mb-2">Доступ запрещен</h2>
+        <h2 className="text-xl font-semibold text-gray-900 mb-2">{t('accessDenied')}</h2>
         <p className="text-gray-600 mb-4">
-          У вас нет доступа к панели агентства.
-          Эта страница доступна только для агентов.
+          {t('accessDeniedDesc')}
         </p>
         <Link href="/developer" className="px-4 py-2 bg-blue-600 text-white rounded-lg hover:bg-blue-700">
-          Перейти в панель застройщика
+          {t('goToDeveloper')}
         </Link>
       </div>
     );
@@ -193,9 +189,9 @@ export default function AgencyDashboardPage() {
       <div className="flex items-center justify-center h-screen">
         <div className="text-center">
           <Building className="mx-auto h-12 w-12 text-gray-400 mb-4" />
-          <p className="text-gray-600">Вы не привязаны ни к одному агентству</p>
+          <p className="text-gray-600">{t('noAgency')}</p>
           <Link href="/dashboard" className="mt-4 inline-block px-4 py-2 bg-blue-600 text-white rounded-lg hover:bg-blue-700">
-            Перейти в личный кабинет
+            {t('goToPersonal')}
           </Link>
         </div>
       </div>
@@ -218,14 +214,14 @@ export default function AgencyDashboardPage() {
             <div>
               <h1 className="text-3xl font-bold text-gray-900">{agency.name}</h1>
               <p className="mt-1 text-sm text-gray-500">
-                {role === 'OWNER' ? 'Agency Owner' : role}
+                {role === 'OWNER' ? t('agencyOwner') : role}
               </p>
             </div>
           </div>
           <Link href="/agency/settings">
             <button className="inline-flex items-center gap-2 px-4 py-2 border border-gray-300 rounded-lg text-gray-700 hover:bg-gray-50">
               <Settings className="h-5 w-5" />
-              Settings
+              {t('settings')}
             </button>
           </Link>
         </div>
@@ -240,16 +236,16 @@ export default function AgencyDashboardPage() {
               <Users className="h-6 w-6 text-blue-600" />
             </div>
             <Link href="/developer/crm/members" className="text-sm text-blue-600 hover:text-blue-700">
-              View all →
+              {t('stats.viewAll')}
             </Link>
           </div>
           <div>
             <p className="text-2xl font-bold text-gray-900">
               {stats?.members.active || 0}
             </p>
-            <p className="text-sm text-gray-500">Active Team Members</p>
+            <p className="text-sm text-gray-500">{t('stats.activeMembers')}</p>
             <p className="text-xs text-gray-400 mt-1">
-              {stats?.members.total || 0} total
+              {stats?.members.total || 0} {t('stats.totalMembers')}
             </p>
           </div>
         </div>
@@ -261,16 +257,16 @@ export default function AgencyDashboardPage() {
               <FileText className="h-6 w-6 text-green-600" />
             </div>
             <Link href="/developer/crm/leads" className="text-sm text-green-600 hover:text-green-700">
-              View all →
+              {t('stats.viewAll')}
             </Link>
           </div>
           <div>
             <p className="text-2xl font-bold text-gray-900">
               {stats?.leads.active || 0}
             </p>
-            <p className="text-sm text-gray-500">Active Leads</p>
+            <p className="text-sm text-gray-500">{t('stats.activeLeads')}</p>
             <p className="text-xs text-gray-400 mt-1">
-              {stats?.leads.total || 0} total
+              {stats?.leads.total || 0} {t('stats.totalLeads')}
             </p>
           </div>
         </div>
@@ -286,7 +282,7 @@ export default function AgencyDashboardPage() {
             <p className="text-2xl font-bold text-gray-900">
               {agency._count.agents || 0}
             </p>
-            <p className="text-sm text-gray-500">Agents</p>
+            <p className="text-sm text-gray-500">{t('stats.agents')}</p>
           </div>
         </div>
       </div>
@@ -294,11 +290,11 @@ export default function AgencyDashboardPage() {
       {/* Agency Information */}
       <div className="bg-white rounded-lg shadow p-6 mb-8">
         <div className="flex items-center justify-between mb-6">
-          <h2 className="text-xl font-semibold text-gray-900">Agency Information</h2>
+          <h2 className="text-xl font-semibold text-gray-900">{t('info.title')}</h2>
           <Link href="/agency/settings">
             <button className="text-sm text-blue-600 hover:text-blue-700 flex items-center gap-1">
               <Edit className="h-4 w-4" />
-              Edit
+              {t('info.edit')}
             </button>
           </Link>
         </div>
@@ -306,28 +302,28 @@ export default function AgencyDashboardPage() {
         <div className="grid grid-cols-1 md:grid-cols-2 gap-6">
           {agency.description && (
             <div className="col-span-2">
-              <p className="text-sm font-medium text-gray-500 mb-1">Description</p>
+              <p className="text-sm font-medium text-gray-500 mb-1">{t('info.description')}</p>
               <p className="text-gray-900">{agency.description}</p>
             </div>
           )}
 
           {agency.email && (
             <div>
-              <p className="text-sm font-medium text-gray-500 mb-1">Email</p>
+              <p className="text-sm font-medium text-gray-500 mb-1">{t('info.email')}</p>
               <p className="text-gray-900">{agency.email}</p>
             </div>
           )}
 
           {agency.phone && (
             <div>
-              <p className="text-sm font-medium text-gray-500 mb-1">Phone</p>
+              <p className="text-sm font-medium text-gray-500 mb-1">{t('info.phone')}</p>
               <p className="text-gray-900">{agency.phone}</p>
             </div>
           )}
 
           {agency.website && (
             <div>
-              <p className="text-sm font-medium text-gray-500 mb-1">Website</p>
+              <p className="text-sm font-medium text-gray-500 mb-1">{t('info.website')}</p>
               <a
                 href={agency.website}
                 target="_blank"
@@ -341,7 +337,7 @@ export default function AgencyDashboardPage() {
 
           {agency.address && (
             <div>
-              <p className="text-sm font-medium text-gray-500 mb-1">Address</p>
+              <p className="text-sm font-medium text-gray-500 mb-1">{t('info.address')}</p>
               <p className="text-gray-900">{agency.address}</p>
             </div>
           )}
@@ -350,7 +346,7 @@ export default function AgencyDashboardPage() {
 
       {/* Quick Actions */}
       <div className="bg-white rounded-lg shadow p-6">
-        <h2 className="text-xl font-semibold text-gray-900 mb-4">Quick Actions</h2>
+        <h2 className="text-xl font-semibold text-gray-900 mb-4">{t('quickActions.title')}</h2>
         <div className="grid grid-cols-1 md:grid-cols-4 gap-4">
           <Link href="/properties">
             <button className="w-full flex items-center gap-3 p-4 border border-gray-200 rounded-lg hover:bg-gray-50 text-left">
@@ -358,8 +354,8 @@ export default function AgencyDashboardPage() {
                 <Search className="h-5 w-5 text-emerald-600" />
               </div>
               <div>
-                <p className="font-medium text-gray-900">Browse Properties</p>
-                <p className="text-sm text-gray-500">View all listings</p>
+                <p className="font-medium text-gray-900">{t('quickActions.browseProperties')}</p>
+                <p className="text-sm text-gray-500">{t('quickActions.browsePropertiesDesc')}</p>
               </div>
             </button>
           </Link>
@@ -370,8 +366,8 @@ export default function AgencyDashboardPage() {
                 <UserPlus className="h-5 w-5 text-blue-600" />
               </div>
               <div>
-                <p className="font-medium text-gray-900">Add Team Member</p>
-                <p className="text-sm text-gray-500">Invite a new member</p>
+                <p className="font-medium text-gray-900">{t('quickActions.addMember')}</p>
+                <p className="text-sm text-gray-500">{t('quickActions.addMemberDesc')}</p>
               </div>
             </button>
           </Link>
@@ -382,8 +378,8 @@ export default function AgencyDashboardPage() {
                 <FileText className="h-5 w-5 text-green-600" />
               </div>
               <div>
-                <p className="font-medium text-gray-900">Add Lead</p>
-                <p className="text-sm text-gray-500">Create new lead</p>
+                <p className="font-medium text-gray-900">{t('quickActions.addLead')}</p>
+                <p className="text-sm text-gray-500">{t('quickActions.addLeadDesc')}</p>
               </div>
             </button>
           </Link>
@@ -394,8 +390,8 @@ export default function AgencyDashboardPage() {
                 <Settings className="h-5 w-5 text-purple-600" />
               </div>
               <div>
-                <p className="font-medium text-gray-900">Agency Settings</p>
-                <p className="text-sm text-gray-500">Update profile</p>
+                <p className="font-medium text-gray-900">{t('quickActions.agencySettings')}</p>
+                <p className="text-sm text-gray-500">{t('quickActions.agencySettingsDesc')}</p>
               </div>
             </button>
           </Link>
@@ -405,11 +401,11 @@ export default function AgencyDashboardPage() {
       {/* My Properties Section */}
       <div className="bg-white rounded-lg shadow p-6 mt-8">
         <div className="flex items-center justify-between mb-6">
-          <h2 className="text-xl font-semibold text-gray-900">Мои объявления</h2>
+          <h2 className="text-xl font-semibold text-gray-900">{t('myListings.title')}</h2>
           <Link href="/properties/new">
             <button className="inline-flex items-center gap-2 px-4 py-2 bg-blue-600 text-white rounded-lg hover:bg-blue-700">
               <Plus className="h-4 w-4" />
-              Создать
+              {t('myListings.create')}
             </button>
           </Link>
         </div>
@@ -421,11 +417,11 @@ export default function AgencyDashboardPage() {
         ) : properties.length === 0 ? (
           <div className="text-center py-8">
             <Building className="mx-auto h-12 w-12 text-gray-300 mb-4" />
-            <p className="text-gray-500 mb-4">У вас пока нет объявлений</p>
+            <p className="text-gray-500 mb-4">{t('myListings.empty')}</p>
             <Link href="/properties/new">
               <button className="inline-flex items-center gap-2 px-4 py-2 bg-blue-600 text-white rounded-lg hover:bg-blue-700">
                 <Plus className="h-4 w-4" />
-                Создать объявление
+                {t('myListings.createListing')}
               </button>
             </Link>
           </div>
@@ -449,15 +445,15 @@ export default function AgencyDashboardPage() {
                         {property.status}
                       </span>
                       <span className="hidden sm:inline text-xs text-gray-500">
-                        {LISTING_TYPE_LABELS[property.listingType] || property.listingType}
+                        {t(`listingTypes.${property.listingType}`)}
                       </span>
                     </div>
                     {/* Price - visible on all screens */}
-                    <p className="text-sm sm:text-lg font-bold text-blue-600 whitespace-nowrap">{property.price.toLocaleString()} у.е.</p>
+                    <p className="text-sm sm:text-lg font-bold text-blue-600 whitespace-nowrap">{property.price.toLocaleString()} {t('myListings.currency')}</p>
                   </div>
                   <h3 className="font-medium text-gray-900 text-sm sm:text-base line-clamp-1 sm:truncate">{property.title}</h3>
                   <div className="flex items-center justify-between mt-1">
-                    <p className="text-xs text-gray-500">{property.views} просмотров</p>
+                    <p className="text-xs text-gray-500">{property.views} {t('myListings.views')}</p>
                     {/* Mobile action buttons */}
                     <div className="flex sm:hidden items-center gap-1">
                       <Link href={`/properties/${property.id}`}>
@@ -517,7 +513,7 @@ export default function AgencyDashboardPage() {
             {properties.length > 5 && (
               <div className="text-center pt-4">
                 <Link href="/dashboard" className="text-blue-600 hover:text-blue-700 text-sm font-medium">
-                  Показать все ({properties.length}) →
+                  {t('myListings.showAll')} ({properties.length}) →
                 </Link>
               </div>
             )}

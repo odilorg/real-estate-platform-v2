@@ -2,6 +2,7 @@
 
 import { useState, useEffect } from 'react';
 import { useRouter } from 'next/navigation';
+import { useTranslations } from 'next-intl';
 import { api } from '@/lib/api';
 import { ChevronLeft, Save } from 'lucide-react';
 
@@ -21,6 +22,7 @@ interface Lead {
 
 export default function NewTaskPage() {
   const router = useRouter();
+  const t = useTranslations('crm.tasks');
   const [loading, setLoading] = useState(false);
   const [members, setMembers] = useState<Member[]>([]);
   const [leads, setLeads] = useState<Lead[]>([]);
@@ -85,16 +87,17 @@ export default function NewTaskPage() {
             className="flex items-center gap-2 text-gray-600 hover:text-gray-900 mb-4"
           >
             <ChevronLeft className="w-5 h-5" />
-            Назад
+            {t('actions.cancel')}
           </button>
-          <h1 className="text-3xl font-bold text-gray-900">Новая задача</h1>
+          <h1 className="text-3xl font-bold text-gray-900">{t('new.title')}</h1>
+          <p className="text-gray-500 mt-1">{t('new.subtitle')}</p>
         </div>
 
         <form onSubmit={handleSubmit} className="bg-white rounded-lg shadow p-6 space-y-6">
           {/* Title */}
           <div>
             <label className="block text-sm font-medium text-gray-700 mb-2">
-              Название задачи *
+              {t('form.title')} *
             </label>
             <input
               type="text"
@@ -102,21 +105,21 @@ export default function NewTaskPage() {
               value={formData.title}
               onChange={(e) => setFormData({ ...formData, title: e.target.value })}
               className="w-full px-4 py-2 border rounded-lg focus:outline-none focus:ring-2 focus:ring-blue-500"
-              placeholder="Например: Позвонить клиенту"
+              placeholder={t('form.titlePlaceholder')}
             />
           </div>
 
           {/* Description */}
           <div>
             <label className="block text-sm font-medium text-gray-700 mb-2">
-              Описание
+              {t('form.description')}
             </label>
             <textarea
               value={formData.description}
               onChange={(e) => setFormData({ ...formData, description: e.target.value })}
               rows={4}
               className="w-full px-4 py-2 border rounded-lg focus:outline-none focus:ring-2 focus:ring-blue-500"
-              placeholder="Детали задачи..."
+              placeholder={t('form.descriptionPlaceholder')}
             />
           </div>
 
@@ -124,7 +127,7 @@ export default function NewTaskPage() {
           <div className="grid grid-cols-2 gap-4">
             <div>
               <label className="block text-sm font-medium text-gray-700 mb-2">
-                Тип задачи *
+                {t('form.type')} *
               </label>
               <select
                 required
@@ -132,18 +135,18 @@ export default function NewTaskPage() {
                 onChange={(e) => setFormData({ ...formData, type: e.target.value })}
                 className="w-full px-4 py-2 border rounded-lg focus:outline-none focus:ring-2 focus:ring-blue-500"
               >
-                <option value="FOLLOW_UP">Связаться с клиентом</option>
-                <option value="VIEWING">Показ объекта</option>
-                <option value="SEND_LISTINGS">Отправить варианты</option>
-                <option value="DOCUMENT">Документы</option>
-                <option value="MEETING">Встреча</option>
-                <option value="OTHER">Другое</option>
+                <option value="FOLLOW_UP">{t('type.FOLLOW_UP')}</option>
+                <option value="VIEWING">{t('type.VIEWING')}</option>
+                <option value="CALL">{t('type.CALL')}</option>
+                <option value="DOCUMENT">{t('type.DOCUMENT')}</option>
+                <option value="MEETING">{t('type.MEETING')}</option>
+                <option value="OTHER">{t('type.OTHER')}</option>
               </select>
             </div>
 
             <div>
               <label className="block text-sm font-medium text-gray-700 mb-2">
-                Приоритет *
+                {t('form.priority')} *
               </label>
               <select
                 required
@@ -151,10 +154,10 @@ export default function NewTaskPage() {
                 onChange={(e) => setFormData({ ...formData, priority: e.target.value })}
                 className="w-full px-4 py-2 border rounded-lg focus:outline-none focus:ring-2 focus:ring-blue-500"
               >
-                <option value="URGENT">Срочно</option>
-                <option value="HIGH">Высокий</option>
-                <option value="MEDIUM">Средний</option>
-                <option value="LOW">Низкий</option>
+                <option value="URGENT">{t('priority.URGENT')}</option>
+                <option value="HIGH">{t('priority.HIGH')}</option>
+                <option value="MEDIUM">{t('priority.MEDIUM')}</option>
+                <option value="LOW">{t('priority.LOW')}</option>
               </select>
             </div>
           </div>
@@ -162,7 +165,7 @@ export default function NewTaskPage() {
           {/* Assigned To */}
           <div>
             <label className="block text-sm font-medium text-gray-700 mb-2">
-              Назначить сотруднику *
+              {t('form.assignee')} *
             </label>
             <select
               required
@@ -170,7 +173,7 @@ export default function NewTaskPage() {
               onChange={(e) => setFormData({ ...formData, assignedToId: e.target.value })}
               className="w-full px-4 py-2 border rounded-lg focus:outline-none focus:ring-2 focus:ring-blue-500"
             >
-              <option value="">Выберите сотрудника</option>
+              <option value="">{t('form.selectAssignee')}</option>
               {members.map((member) => (
                 <option key={member.id} value={member.id}>
                   {member.user.firstName} {member.user.lastName}
@@ -182,14 +185,14 @@ export default function NewTaskPage() {
           {/* Lead (optional) */}
           <div>
             <label className="block text-sm font-medium text-gray-700 mb-2">
-              Связать с лидом (необязательно)
+              {t('form.lead')}
             </label>
             <select
               value={formData.leadId}
               onChange={(e) => setFormData({ ...formData, leadId: e.target.value })}
               className="w-full px-4 py-2 border rounded-lg focus:outline-none focus:ring-2 focus:ring-blue-500"
             >
-              <option value="">Без лида</option>
+              <option value="">{t('form.noLead')}</option>
               {leads.map((lead) => (
                 <option key={lead.id} value={lead.id}>
                   {lead.firstName} {lead.lastName}
@@ -201,7 +204,7 @@ export default function NewTaskPage() {
           {/* Due Date */}
           <div>
             <label className="block text-sm font-medium text-gray-700 mb-2">
-              Срок выполнения *
+              {t('form.dueDate')} *
             </label>
             <input
               type="datetime-local"
@@ -220,14 +223,14 @@ export default function NewTaskPage() {
               className="flex-1 flex items-center justify-center gap-2 px-6 py-3 bg-blue-600 text-white rounded-lg hover:bg-blue-700 disabled:opacity-50"
             >
               <Save className="w-5 h-5" />
-              {loading ? 'Создание...' : 'Создать задачу'}
+              {loading ? t('actions.creating') : t('actions.create')}
             </button>
             <button
               type="button"
               onClick={() => router.back()}
               className="px-6 py-3 border rounded-lg hover:bg-gray-50"
             >
-              Отмена
+              {t('actions.cancel')}
             </button>
           </div>
         </form>

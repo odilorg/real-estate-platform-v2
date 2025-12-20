@@ -404,17 +404,17 @@ export default function PropertyDetailPage({
       if (response.ok) {
         const data = await response.json();
         if (data.success) {
-          showToast('Объявление опубликовано в Telegram!', 'success');
+          showToast(t('detail.telegram.success'), 'success');
         } else {
-          showToast(data.error || 'Не удалось опубликовать', 'error');
+          showToast(data.error || t('detail.telegram.error'), 'error');
         }
       } else {
         const errorData = await response.json();
-        showToast(errorData.message || 'Не удалось опубликовать', 'error');
+        showToast(errorData.message || t('detail.telegram.error'), 'error');
       }
     } catch (error) {
       console.error('Error posting to Telegram:', error);
-      showToast('Ошибка при публикации в Telegram', 'error');
+      showToast(t('detail.telegram.networkError'), 'error');
     } finally {
       setTelegramLoading(false);
     }
@@ -631,7 +631,7 @@ export default function PropertyDetailPage({
                 {/* Video Player */}
                 {property.videos && property.videos.length > 0 && (
                   <div>
-                    <h2 className="text-xl font-bold mb-4">Videos</h2>
+                    <h2 className="text-xl font-bold mb-4">{t('detail.videos')}</h2>
                     <PropertyVideoPlayer videos={property.videos} />
                   </div>
                 )}
@@ -639,7 +639,7 @@ export default function PropertyDetailPage({
                 {/* 360 Panoramic Tours */}
                 {property.tours360 && property.tours360.length > 0 && (
                   <div>
-                    <h2 className="text-xl font-bold mb-4">360° Virtual Tour</h2>
+                    <h2 className="text-xl font-bold mb-4">{t('detail.virtualTour')}</h2>
                     <Property360Viewer tours={property.tours360} />
                   </div>
                 )}
@@ -696,13 +696,13 @@ export default function PropertyDetailPage({
                 {property.bedrooms !== null && (
                   <div className="flex items-center gap-1 text-gray-600">
                     <Bed className="h-5 w-5" />
-                    <span>{property.bedrooms} комн.</span>
+                    <span>{property.bedrooms} {t('detail.roomsShort')}</span>
                   </div>
                 )}
                 {property.bathrooms !== null && (
                   <div className="flex items-center gap-1 text-gray-600">
                     <Bath className="h-5 w-5" />
-                    <span>{property.bathrooms} сан.</span>
+                    <span>{property.bathrooms} {t('detail.bathroomsShort')}</span>
                   </div>
                 )}
                 <div className="flex items-center gap-1 text-gray-600">
@@ -713,14 +713,14 @@ export default function PropertyDetailPage({
                   <div className="flex items-center gap-1 text-gray-600">
                     <Building2 className="h-5 w-5" />
                     <span>
-                      {property.floor}/{property.totalFloors} этаж
+                      {property.floor}/{property.totalFloors} {t('detail.floorOf')}
                     </span>
                   </div>
                 )}
                 {property.yearBuilt && (
                   <div className="flex items-center gap-1 text-gray-600">
                     <Calendar className="h-5 w-5" />
-                    <span>{property.yearBuilt} г.</span>
+                    <span>{property.yearBuilt} {t('detail.yearShort')}</span>
                   </div>
                 )}
               </div>
@@ -739,7 +739,7 @@ export default function PropertyDetailPage({
             {/* Description */}
             <Card>
               <CardContent className="p-6">
-                <h2 className="text-xl font-semibold mb-4">Описание</h2>
+                <h2 className="text-xl font-semibold mb-4">{t('detail.description')}</h2>
                 <p className="text-gray-700 whitespace-pre-line">{property.description}</p>
               </CardContent>
             </Card>
@@ -799,12 +799,12 @@ export default function PropertyDetailPage({
               {/* Contact Card */}
               <Card>
                 <CardContent className="p-6">
-                  <h3 className="text-lg font-semibold mb-4">Контакт</h3>
+                  <h3 className="text-lg font-semibold mb-4">{t('detail.contact')}</h3>
                   <div className="mb-4">
                     <div className="font-medium">
                       {property.user.firstName} {property.user.lastName}
                     </div>
-                    <div className="text-sm text-gray-500">Продавец</div>
+                    <div className="text-sm text-gray-500">{t('detail.seller')}</div>
                   </div>
                   <div className="space-y-3">
                     {property.user.phone && (
@@ -819,14 +819,14 @@ export default function PropertyDetailPage({
                           <div className="space-y-3">
                             {messageSent ? (
                               <div className="p-3 text-sm text-green-600 bg-green-50 rounded-md text-center">
-                                Сообщение отправлено!
+                                {t('detail.messageSent')}
                               </div>
                             ) : (
                               <>
                                 <textarea
                                   value={message}
                                   onChange={(e) => setMessage(e.target.value)}
-                                  placeholder="Введите ваше сообщение..."
+                                  placeholder={t('detail.messagePlaceholder')}
                                   className="w-full p-3 border rounded-md resize-none h-24 text-sm focus:outline-none focus:ring-2 focus:ring-blue-500"
                                   disabled={sendingMessage}
                                 />
@@ -837,7 +837,7 @@ export default function PropertyDetailPage({
                                     onClick={() => setShowMessageForm(false)}
                                     disabled={sendingMessage}
                                   >
-                                    Отмена
+                                    {t('actions.cancel')}
                                   </Button>
                                   <Button
                                     className="flex-1"
@@ -849,7 +849,7 @@ export default function PropertyDetailPage({
                                     ) : (
                                       <>
                                         <Send className="h-4 w-4 mr-2" />
-                                        Отправить
+                                        {t('detail.send')}
                                       </>
                                     )}
                                   </Button>
@@ -871,7 +871,7 @@ export default function PropertyDetailPage({
                             }}
                           >
                             <MessageSquare className="h-4 w-4 mr-2" />
-                            Написать продавцу
+                            {t('detail.writeToSeller')}
                           </Button>
                         )}
                       </>
@@ -887,10 +887,10 @@ export default function PropertyDetailPage({
             {/* Stats */}
             <Card>
               <CardContent className="p-6">
-                <div className="text-sm text-gray-500 mb-1">Просмотров</div>
+                <div className="text-sm text-gray-500 mb-1">{t('detail.views')}</div>
                 <div className="text-2xl font-bold">{property.views}</div>
                 <div className="text-xs text-gray-400 mt-2">
-                  Опубликовано{' '}
+                  {t('detail.publishedOn')}{' '}
                   {new Date(property.createdAt).toLocaleDateString('ru-RU', {
                     day: 'numeric',
                     month: 'long',

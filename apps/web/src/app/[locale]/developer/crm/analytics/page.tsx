@@ -2,6 +2,7 @@
 
 import { useEffect, useState } from 'react';
 import { useRouter } from '@/i18n/routing';
+import { useTranslations } from 'next-intl';
 import { api } from '@/lib/api';
 
 interface DashboardData {
@@ -36,6 +37,7 @@ interface DashboardData {
 
 export default function AnalyticsPage() {
   const router = useRouter();
+  const t = useTranslations('crm.analytics');
   const [loading, setLoading] = useState(true);
   const [data, setData] = useState<DashboardData | null>(null);
   const [period, setPeriod] = useState<'WEEK' | 'MONTH' | 'QUARTER' | 'YEAR'>('MONTH');
@@ -53,7 +55,7 @@ export default function AnalyticsPage() {
       setData(response);
     } catch (error: any) {
       console.error('Failed to fetch dashboard:', error);
-      alert('Ошибка загрузки аналитики');
+      alert(t('loadError'));
     } finally {
       setLoading(false);
     }
@@ -72,35 +74,18 @@ export default function AnalyticsPage() {
   };
 
   const getSourceLabel = (source: string) => {
-    const labels: Record<string, string> = {
-      WEBSITE: 'Сайт',
-      PHONE: 'Телефон',
-      EMAIL: 'Email',
-      REFERRAL: 'Рекомендация',
-      SOCIAL: 'Соц. сети',
-      WALK_IN: 'Личный визит',
-      OTHER: 'Другое',
-    };
-    return labels[source] || source;
+    return t(`sources.${source}` as any, { defaultValue: source });
   };
 
   const getStageLabel = (stage: string) => {
-    const labels: Record<string, string> = {
-      NEW: 'Новая',
-      QUALIFIED: 'Квалифицирована',
-      PROPOSAL: 'Предложение',
-      NEGOTIATION: 'Переговоры',
-      CLOSED_WON: 'Выиграна',
-      CLOSED_LOST: 'Проиграна',
-    };
-    return labels[stage] || stage;
+    return t(`stages.${stage}` as any, { defaultValue: stage });
   };
 
   if (loading && !data) {
     return (
       <div className="p-8">
         <div className="flex items-center justify-center h-64">
-          <div className="text-gray-500">Загрузка аналитики...</div>
+          <div className="text-gray-500">{t('loading')}</div>
         </div>
       </div>
     );
@@ -110,7 +95,7 @@ export default function AnalyticsPage() {
     return (
       <div className="p-8">
         <div className="flex items-center justify-center h-64">
-          <div className="text-gray-500">Нет данных</div>
+          <div className="text-gray-500">{t('noData')}</div>
         </div>
       </div>
     );
@@ -121,7 +106,7 @@ export default function AnalyticsPage() {
       {/* Header */}
       <div className="mb-8 flex items-center justify-between">
         <div>
-          <h1 className="text-2xl font-bold text-gray-900">Аналитика CRM</h1>
+          <h1 className="text-2xl font-bold text-gray-900">{t('title')}</h1>
           <p className="text-gray-600 mt-1">
             {formatDate(data.period.startDate)} — {formatDate(data.period.endDate)}
           </p>
@@ -137,7 +122,7 @@ export default function AnalyticsPage() {
                 : 'bg-gray-100 text-gray-700 hover:bg-gray-200'
             }`}
           >
-            Неделя
+            {t('periods.week')}
           </button>
           <button
             onClick={() => setPeriod('MONTH')}
@@ -147,7 +132,7 @@ export default function AnalyticsPage() {
                 : 'bg-gray-100 text-gray-700 hover:bg-gray-200'
             }`}
           >
-            Месяц
+            {t('periods.month')}
           </button>
           <button
             onClick={() => setPeriod('QUARTER')}
@@ -157,7 +142,7 @@ export default function AnalyticsPage() {
                 : 'bg-gray-100 text-gray-700 hover:bg-gray-200'
             }`}
           >
-            Квартал
+            {t('periods.quarter')}
           </button>
           <button
             onClick={() => setPeriod('YEAR')}
@@ -167,7 +152,7 @@ export default function AnalyticsPage() {
                 : 'bg-gray-100 text-gray-700 hover:bg-gray-200'
             }`}
           >
-            Год
+            {t('periods.year')}
           </button>
         </div>
       </div>
@@ -177,126 +162,126 @@ export default function AnalyticsPage() {
         {/* Total Leads */}
         <div className="bg-white rounded-lg shadow p-6">
           <div className="flex items-center justify-between mb-2">
-            <div className="text-gray-600 text-sm font-medium">Лиды</div>
+            <div className="text-gray-600 text-sm font-medium">{t('kpis.leads')}</div>
             <div className="text-2xl">📊</div>
           </div>
           <div className="text-3xl font-bold text-gray-900">
             {data.overview.totalLeads}
           </div>
           <div className="mt-2 text-sm text-gray-600">
-            Новых: {data.overview.newLeads}
+            {t('kpis.newLeads')}: {data.overview.newLeads}
           </div>
         </div>
 
         {/* Conversion Rate */}
         <div className="bg-white rounded-lg shadow p-6">
           <div className="flex items-center justify-between mb-2">
-            <div className="text-gray-600 text-sm font-medium">Конверсия</div>
+            <div className="text-gray-600 text-sm font-medium">{t('kpis.conversion')}</div>
             <div className="text-2xl">📈</div>
           </div>
           <div className="text-3xl font-bold text-gray-900">
             {data.overview.conversionRate}%
           </div>
           <div className="mt-2 text-sm text-gray-600">
-            Конвертировано: {data.overview.convertedLeads}
+            {t('kpis.converted')}: {data.overview.convertedLeads}
           </div>
         </div>
 
         {/* Active Deals */}
         <div className="bg-white rounded-lg shadow p-6">
           <div className="flex items-center justify-between mb-2">
-            <div className="text-gray-600 text-sm font-medium">Сделки</div>
+            <div className="text-gray-600 text-sm font-medium">{t('kpis.deals')}</div>
             <div className="text-2xl">🤝</div>
           </div>
           <div className="text-3xl font-bold text-gray-900">
             {data.overview.activeDeals}
           </div>
           <div className="mt-2 text-sm text-gray-600">
-            Всего: {data.overview.totalDeals}
+            {t('kpis.total')}: {data.overview.totalDeals}
           </div>
         </div>
 
         {/* Win Rate */}
         <div className="bg-white rounded-lg shadow p-6">
           <div className="flex items-center justify-between mb-2">
-            <div className="text-gray-600 text-sm font-medium">Win Rate</div>
+            <div className="text-gray-600 text-sm font-medium">{t('kpis.winRate')}</div>
             <div className="text-2xl">🎯</div>
           </div>
           <div className="text-3xl font-bold text-gray-900">
             {data.overview.winRate}%
           </div>
           <div className="mt-2 text-sm text-gray-600">
-            Выиграно: {data.overview.wonDeals}
+            {t('kpis.won')}: {data.overview.wonDeals}
           </div>
         </div>
 
         {/* Total Revenue */}
         <div className="bg-white rounded-lg shadow p-6">
           <div className="flex items-center justify-between mb-2">
-            <div className="text-gray-600 text-sm font-medium">Выручка</div>
+            <div className="text-gray-600 text-sm font-medium">{t('kpis.revenue')}</div>
             <div className="text-2xl">💰</div>
           </div>
           <div className="text-3xl font-bold text-gray-900">
             {formatCurrency(data.overview.totalRevenue)}
           </div>
-          <div className="mt-2 text-sm text-gray-600">у.е.</div>
+          <div className="mt-2 text-sm text-gray-600">{t('currency.ye')}</div>
         </div>
 
         {/* Avg Deal Value */}
         <div className="bg-white rounded-lg shadow p-6">
           <div className="flex items-center justify-between mb-2">
-            <div className="text-gray-600 text-sm font-medium">Средний чек</div>
+            <div className="text-gray-600 text-sm font-medium">{t('kpis.avgDeal')}</div>
             <div className="text-2xl">💵</div>
           </div>
           <div className="text-3xl font-bold text-gray-900">
             {formatCurrency(data.overview.avgDealValue)}
           </div>
-          <div className="mt-2 text-sm text-gray-600">у.е.</div>
+          <div className="mt-2 text-sm text-gray-600">{t('currency.ye')}</div>
         </div>
 
         {/* Total Commissions */}
         <div className="bg-white rounded-lg shadow p-6">
           <div className="flex items-center justify-between mb-2">
-            <div className="text-gray-600 text-sm font-medium">Комиссии</div>
+            <div className="text-gray-600 text-sm font-medium">{t('kpis.commissions')}</div>
             <div className="text-2xl">💳</div>
           </div>
           <div className="text-3xl font-bold text-gray-900">
             {formatCurrency(data.overview.totalCommissions)}
           </div>
           <div className="mt-2 text-sm text-gray-600">
-            Выплат: {data.overview.commissionsCount}
+            {t('kpis.payouts')}: {data.overview.commissionsCount}
           </div>
         </div>
 
         {/* Quick Actions */}
         <div className="bg-gradient-to-br from-blue-50 to-indigo-50 rounded-lg shadow p-6 flex flex-col justify-center">
           <div className="text-gray-700 text-sm font-medium mb-4">
-            Детальная аналитика
+            {t('sections.detailed')}
           </div>
           <div className="space-y-2">
             <button
               onClick={() => router.push('/agency-crm/analytics/leads')}
               className="w-full text-left px-3 py-2 text-sm text-blue-700 hover:bg-white rounded transition-colors"
             >
-              → Лиды
+              {t('sections.leadsLink')}
             </button>
             <button
               onClick={() => router.push('/agency-crm/analytics/deals')}
               className="w-full text-left px-3 py-2 text-sm text-blue-700 hover:bg-white rounded transition-colors"
             >
-              → Сделки
+              {t('sections.dealsLink')}
             </button>
             <button
               onClick={() => router.push('/agency-crm/analytics/agents')}
               className="w-full text-left px-3 py-2 text-sm text-blue-700 hover:bg-white rounded transition-colors"
             >
-              → Агенты
+              {t('sections.agentsLink')}
             </button>
             <button
               onClick={() => router.push('/agency-crm/analytics/revenue')}
               className="w-full text-left px-3 py-2 text-sm text-blue-700 hover:bg-white rounded transition-colors"
             >
-              → Выручка
+              {t('sections.revenueLink')}
             </button>
           </div>
         </div>
@@ -307,7 +292,7 @@ export default function AnalyticsPage() {
         {/* Leads by Source */}
         <div className="bg-white rounded-lg shadow p-6">
           <h2 className="text-lg font-semibold text-gray-900 mb-4">
-            Лиды по источникам
+            {t('sections.leadsBySource')}
           </h2>
           <div className="space-y-3">
             {data.leadsBySource.map((item) => {
@@ -334,7 +319,7 @@ export default function AnalyticsPage() {
             })}
             {data.leadsBySource.length === 0 && (
               <div className="text-center text-gray-500 py-8">
-                Нет данных за выбранный период
+                {t('sections.noDataPeriod')}
               </div>
             )}
           </div>
@@ -343,7 +328,7 @@ export default function AnalyticsPage() {
         {/* Deals by Stage */}
         <div className="bg-white rounded-lg shadow p-6">
           <h2 className="text-lg font-semibold text-gray-900 mb-4">
-            Сделки по этапам
+            {t('sections.dealsByStage')}
           </h2>
           <div className="space-y-3">
             {data.dealsByStage.map((item) => {
@@ -359,7 +344,7 @@ export default function AnalyticsPage() {
                       {getStageLabel(item.stage)}
                     </span>
                     <span className="text-sm font-medium text-gray-900">
-                      {item.count} / {formatCurrency(item.value)} у.е.
+                      {item.count} / {formatCurrency(item.value)} {t('currency.ye')}
                     </span>
                   </div>
                   <div className="w-full bg-gray-200 rounded-full h-2">
@@ -373,7 +358,7 @@ export default function AnalyticsPage() {
             })}
             {data.dealsByStage.length === 0 && (
               <div className="text-center text-gray-500 py-8">
-                Нет активных сделок
+                {t('sections.noActiveDeals')}
               </div>
             )}
           </div>

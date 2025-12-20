@@ -2,6 +2,7 @@
 
 import { useState, useEffect } from 'react';
 import { useParams, useRouter } from 'next/navigation';
+import { useTranslations } from 'next-intl';
 import { api } from '@/lib/api';
 import { ChevronLeft, Edit, Trash2, CheckCircle, XCircle, Clock } from 'lucide-react';
 
@@ -31,6 +32,7 @@ interface Task {
 export default function TaskDetailPage() {
   const params = useParams();
   const router = useRouter();
+  const t = useTranslations('crm.tasks');
   const [task, setTask] = useState<Task | null>(null);
   const [loading, setLoading] = useState(true);
   const [editing, setEditing] = useState(false);
@@ -61,14 +63,14 @@ export default function TaskDetailPage() {
   };
 
   const deleteTask = async () => {
-    if (!confirm('Удалить эту задачу?')) return;
+    if (!confirm(t('alerts.deleteConfirm'))) return;
 
     try {
       await api.delete(`/agency-crm/tasks/${params.id}`);
       router.push('/developer/crm/tasks');
     } catch (error) {
       console.error('Error deleting task:', error);
-      alert('Ошибка при удалении задачи');
+      alert(t('alerts.deleteError'));
     }
   };
 
@@ -96,7 +98,7 @@ export default function TaskDetailPage() {
     return (
       <div className="min-h-screen bg-gray-50 p-6">
         <div className="flex items-center justify-center py-12">
-          <div className="text-gray-500">Загрузка...</div>
+          <div className="text-gray-500">{t('loading')}</div>
         </div>
       </div>
     );
@@ -106,7 +108,13 @@ export default function TaskDetailPage() {
     return (
       <div className="min-h-screen bg-gray-50 p-6">
         <div className="text-center py-12">
-          <p className="text-gray-500">Задача не найдена</p>
+          <p className="text-gray-500">{t('detail.notFound')}</p>
+          <button
+            onClick={() => router.push('/developer/crm/tasks')}
+            className="mt-4 text-blue-600 hover:underline"
+          >
+            {t('detail.backToList')}
+          </button>
         </div>
       </div>
     );
@@ -121,7 +129,7 @@ export default function TaskDetailPage() {
             className="flex items-center gap-2 text-gray-600 hover:text-gray-900 mb-4"
           >
             <ChevronLeft className="w-5 h-5" />
-            Назад к задачам
+            {t('detail.backToList')}
           </button>
         </div>
 
@@ -133,10 +141,10 @@ export default function TaskDetailPage() {
                 <h1 className="text-2xl font-bold text-gray-900 mb-2">{task.title}</h1>
                 <div className="flex gap-2">
                   <span className={`px-3 py-1 rounded-full text-xs font-medium ${getStatusColor(task.status)}`}>
-                    {task.status}
+                    {t(`status.${task.status}` as any, { defaultValue: task.status })}
                   </span>
                   <span className={`px-3 py-1 rounded-full text-xs font-medium ${getPriorityColor(task.priority)}`}>
-                    {task.priority}
+                    {t(`priority.${task.priority}` as any, { defaultValue: task.priority })}
                   </span>
                 </div>
               </div>
@@ -144,7 +152,7 @@ export default function TaskDetailPage() {
                 <button
                   onClick={deleteTask}
                   className="p-2 text-red-600 hover:bg-red-50 rounded-lg"
-                  title="Удалить"
+                  title={t('actions.delete')}
                 >
                   <Trash2 className="w-5 h-5" />
                 </button>
@@ -159,7 +167,7 @@ export default function TaskDetailPage() {
                   className="flex items-center gap-2 px-4 py-2 bg-blue-600 text-white rounded-lg hover:bg-blue-700"
                 >
                   <Clock className="w-4 h-4" />
-                  Начать работу
+                  {t('actions.markInProgress')}
                 </button>
               )}
               {task.status !== 'COMPLETED' && (
@@ -168,7 +176,7 @@ export default function TaskDetailPage() {
                   className="flex items-center gap-2 px-4 py-2 bg-green-600 text-white rounded-lg hover:bg-green-700"
                 >
                   <CheckCircle className="w-4 h-4" />
-                  Завершить
+                  {t('actions.complete')}
                 </button>
               )}
               {task.status !== 'CANCELLED' && task.status !== 'COMPLETED' && (
@@ -177,7 +185,7 @@ export default function TaskDetailPage() {
                   className="flex items-center gap-2 px-4 py-2 border rounded-lg hover:bg-gray-50"
                 >
                   <XCircle className="w-4 h-4" />
-                  Отменить
+                  {t('actions.cancel')}
                 </button>
               )}
             </div>
@@ -187,26 +195,26 @@ export default function TaskDetailPage() {
           <div className="p-6 space-y-6">
             {task.description && (
               <div>
-                <h3 className="text-sm font-medium text-gray-500 mb-2">Описание</h3>
+                <h3 className="text-sm font-medium text-gray-500 mb-2">{t('detail.description')}</h3>
                 <p className="text-gray-900 whitespace-pre-wrap">{task.description}</p>
               </div>
             )}
 
             <div className="grid grid-cols-2 gap-6">
               <div>
-                <h3 className="text-sm font-medium text-gray-500 mb-2">Тип задачи</h3>
-                <p className="text-gray-900">{task.type}</p>
+                <h3 className="text-sm font-medium text-gray-500 mb-2">{t('detail.type')}</h3>
+                <p className="text-gray-900">{t(`type.${task.type}` as any, { defaultValue: task.type })}</p>
               </div>
 
               <div>
-                <h3 className="text-sm font-medium text-gray-500 mb-2">Назначено</h3>
+                <h3 className="text-sm font-medium text-gray-500 mb-2">{t('detail.assignee')}</h3>
                 <p className="text-gray-900">
                   {task.assignedTo.user.firstName} {task.assignedTo.user.lastName}
                 </p>
               </div>
 
               <div>
-                <h3 className="text-sm font-medium text-gray-500 mb-2">Срок выполнения</h3>
+                <h3 className="text-sm font-medium text-gray-500 mb-2">{t('detail.dueDate')}</h3>
                 <p className="text-gray-900">
                   {new Date(task.dueDate).toLocaleString('ru-RU', {
                     day: '2-digit',
@@ -219,7 +227,7 @@ export default function TaskDetailPage() {
               </div>
 
               <div>
-                <h3 className="text-sm font-medium text-gray-500 mb-2">Создано</h3>
+                <h3 className="text-sm font-medium text-gray-500 mb-2">{t('detail.createdAt')}</h3>
                 <p className="text-gray-900">
                   {new Date(task.createdAt).toLocaleString('ru-RU', {
                     day: '2-digit',
@@ -232,7 +240,7 @@ export default function TaskDetailPage() {
 
             {task.lead && (
               <div>
-                <h3 className="text-sm font-medium text-gray-500 mb-2">Связанный лид</h3>
+                <h3 className="text-sm font-medium text-gray-500 mb-2">{t('detail.lead')}</h3>
                 <button
                   onClick={() => router.push(`/developer/crm/leads/${task.lead!.id}`)}
                   className="text-blue-600 hover:underline"
@@ -244,7 +252,7 @@ export default function TaskDetailPage() {
 
             {task.completedAt && (
               <div>
-                <h3 className="text-sm font-medium text-gray-500 mb-2">Завершено</h3>
+                <h3 className="text-sm font-medium text-gray-500 mb-2">{t('stats.completed')}</h3>
                 <p className="text-gray-900">
                   {new Date(task.completedAt).toLocaleString('ru-RU', {
                     day: '2-digit',
