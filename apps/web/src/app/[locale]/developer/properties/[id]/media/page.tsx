@@ -1,12 +1,21 @@
 'use client';
 
-import { useState, useEffect, useRef } from 'react';
+import { useState, useEffect, useRef, useCallback } from 'react';
 import { useParams } from 'next/navigation';
-import { ArrowLeft, Upload, Trash2, Star, GripVertical, Loader2, Eye, Edit2, Check, X } from 'lucide-react';
+import { ArrowLeft, Upload, Trash2, Star, GripVertical, Loader2, Eye, Edit2, Check, X, CheckCircle2, AlertCircle } from 'lucide-react';
 import { Link } from '@/i18n/routing';
 import Image from 'next/image';
 import dynamic from 'next/dynamic';
 import { api } from '@/lib/api';
+
+// Upload progress tracking interface
+interface UploadingFile {
+  file: File;
+  progress: number;
+  status: 'pending' | 'uploading' | 'complete' | 'error';
+  error?: string;
+  previewUrl?: string;
+}
 
 // Dynamic import for 360 viewer preview
 const PannellumViewer = dynamic(() => import('@/components/PannellumViewer'), {
@@ -68,6 +77,19 @@ export default function PropertyMediaPage() {
   const [loading, setLoading] = useState(true);
   const [uploading, setUploading] = useState(false);
   const [activeTab, setActiveTab] = useState<'images' | 'videos' | 'tours'>('images');
+
+  // Upload progress tracking
+  const [uploadingImages, setUploadingImages] = useState<UploadingFile[]>([]);
+  const [uploadingVideos, setUploadingVideos] = useState<UploadingFile[]>([]);
+
+  const apiUrl = process.env.NEXT_PUBLIC_API_URL || 'http://localhost:3001/api';
+
+  const getAuthToken = () => {
+    if (typeof window !== 'undefined') {
+      return localStorage.getItem('token');
+    }
+    return null;
+  };
 
   // 360 tour upload state
   const [tourRoomName, setTourRoomName] = useState('');
@@ -132,6 +154,12 @@ export default function PropertyMediaPage() {
       invalidYoutubeUrl: 'Неверная ссылка на YouTube',
       or: 'или',
       uploadVideoFile: 'Загрузить видеофайл',
+      uploadProgress: 'Загрузка файлов',
+      parseError: 'Ошибка парсинга ответа',
+      sessionExpired: 'Сессия истекла',
+      uploadError: 'Ошибка загрузки',
+      networkError: 'Ошибка сети',
+      filesNotUploaded: 'файл(ов) не удалось загрузить',
     },
     uz: {
       title: 'Media materiallar',
@@ -176,6 +204,12 @@ export default function PropertyMediaPage() {
       invalidYoutubeUrl: 'Noto\'g\'ri YouTube havolasi',
       or: 'yoki',
       uploadVideoFile: 'Video faylni yuklash',
+      uploadProgress: 'Fayllar yuklanmoqda',
+      parseError: 'Javob o\'qishda xatolik',
+      sessionExpired: 'Sessiya tugadi',
+      uploadError: 'Yuklashda xatolik',
+      networkError: 'Tarmoq xatosi',
+      filesNotUploaded: 'fayl(lar) yuklanmadi',
     },
   };
 
@@ -214,43 +248,211 @@ export default function PropertyMediaPage() {
     }
   };
 
-  const handleImageUpload = async (e: React.ChangeEvent<HTMLInputElement>) => {
-    const file = e.target.files?.[0];
-    if (!file) return;
-
-    try {
-      setUploading(true);
+  // Upload single image with progress tracking
+  const uploadImageFile = useCallback((file: File, index: number): Promise<PropertyImage | null> => {
+    return new Promise((resolve) => {
       const formData = new FormData();
       formData.append('file', file);
       formData.append('caption', '');
       formData.append('roomType', '');
 
-      const response = await api.post<PropertyImage>(`/properties/${propertyId}/media/images/upload`, formData);
-      setImages([...images, response]);
+      const xhr = new XMLHttpRequest();
+      const token = getAuthToken();
+
+      // Update progress
+      xhr.upload.onprogress = (event) => {
+        if (event.lengthComputable) {
+          const progress = Math.round((event.loaded / event.total) * 100);
+          setUploadingImages((prev) =>
+            prev.map((f, i) => (i === index ? { ...f, progress, status: 'uploading' } : f))
+          );
+        }
+      };
+
+      xhr.onload = () => {
+        if (xhr.status >= 200 && xhr.status < 300) {
+          try {
+            const response: PropertyImage = JSON.parse(xhr.responseText);
+            setUploadingImages((prev) =>
+              prev.map((f, i) => (i === index ? { ...f, progress: 100, status: 'complete' } : f))
+            );
+            resolve(response);
+          } catch {
+            setUploadingImages((prev) =>
+              prev.map((f, i) => (i === index ? { ...f, status: 'error', error: text.parseError } : f))
+            );
+            resolve(null);
+          }
+        } else {
+          const errorMsg = xhr.status === 401 ? text.sessionExpired : `${text.uploadError} (${xhr.status})`;
+          setUploadingImages((prev) =>
+            prev.map((f, i) => (i === index ? { ...f, status: 'error', error: errorMsg } : f))
+          );
+          resolve(null);
+        }
+      };
+
+      xhr.onerror = () => {
+        setUploadingImages((prev) =>
+          prev.map((f, i) => (i === index ? { ...f, status: 'error', error: text.networkError } : f))
+        );
+        resolve(null);
+      };
+
+      xhr.open('POST', `${apiUrl}/properties/${propertyId}/media/images/upload`);
+      if (token) {
+        xhr.setRequestHeader('Authorization', `Bearer ${token}`);
+      }
+      xhr.withCredentials = true;
+      xhr.send(formData);
+    });
+  }, [apiUrl, propertyId, text]);
+
+  const handleImageUpload = async (e: React.ChangeEvent<HTMLInputElement>) => {
+    const files = e.target.files;
+    if (!files || files.length === 0) return;
+
+    const fileArray = Array.from(files);
+    setUploading(true);
+
+    // Create preview URLs and initialize uploading files
+    const newUploadingFiles: UploadingFile[] = fileArray.map((file) => ({
+      file,
+      progress: 0,
+      status: 'pending' as const,
+      previewUrl: URL.createObjectURL(file),
+    }));
+    setUploadingImages(newUploadingFiles);
+
+    try {
+      // Upload files in parallel
+      const uploadPromises = fileArray.map((file, index) => uploadImageFile(file, index));
+      const results = await Promise.all(uploadPromises);
+
+      // Filter successful uploads
+      const successfulUploads = results.filter((img): img is PropertyImage => img !== null);
+
+      if (successfulUploads.length > 0) {
+        setImages((prev) => [...prev, ...successfulUploads]);
+      }
+
+      // Clear uploading files after a short delay to show completion
+      setTimeout(() => {
+        newUploadingFiles.forEach((f) => {
+          if (f.previewUrl) URL.revokeObjectURL(f.previewUrl);
+        });
+        setUploadingImages([]);
+      }, 1500);
     } catch (err) {
-      console.error('Error uploading image:', err);
+      console.error('Error uploading images:', err);
     } finally {
       setUploading(false);
+      // Reset file input
+      e.target.value = '';
     }
   };
 
-  const handleVideoUpload = async (e: React.ChangeEvent<HTMLInputElement>) => {
-    const file = e.target.files?.[0];
-    if (!file) return;
-
-    try {
-      setUploading(true);
+  // Upload single video with progress tracking
+  const uploadVideoFile = useCallback((file: File, index: number): Promise<PropertyVideo | null> => {
+    return new Promise((resolve) => {
       const formData = new FormData();
       formData.append('file', file);
       formData.append('title', '');
       formData.append('type', 'UPLOADED');
 
-      const response = await api.post<PropertyVideo>(`/properties/${propertyId}/media/videos/upload`, formData);
-      setVideos([...videos, response]);
+      const xhr = new XMLHttpRequest();
+      const token = getAuthToken();
+
+      // Update progress
+      xhr.upload.onprogress = (event) => {
+        if (event.lengthComputable) {
+          const progress = Math.round((event.loaded / event.total) * 100);
+          setUploadingVideos((prev) =>
+            prev.map((f, i) => (i === index ? { ...f, progress, status: 'uploading' } : f))
+          );
+        }
+      };
+
+      xhr.onload = () => {
+        if (xhr.status >= 200 && xhr.status < 300) {
+          try {
+            const response: PropertyVideo = JSON.parse(xhr.responseText);
+            setUploadingVideos((prev) =>
+              prev.map((f, i) => (i === index ? { ...f, progress: 100, status: 'complete' } : f))
+            );
+            resolve(response);
+          } catch {
+            setUploadingVideos((prev) =>
+              prev.map((f, i) => (i === index ? { ...f, status: 'error', error: text.parseError } : f))
+            );
+            resolve(null);
+          }
+        } else {
+          const errorMsg = xhr.status === 401 ? text.sessionExpired : `${text.uploadError} (${xhr.status})`;
+          setUploadingVideos((prev) =>
+            prev.map((f, i) => (i === index ? { ...f, status: 'error', error: errorMsg } : f))
+          );
+          resolve(null);
+        }
+      };
+
+      xhr.onerror = () => {
+        setUploadingVideos((prev) =>
+          prev.map((f, i) => (i === index ? { ...f, status: 'error', error: text.networkError } : f))
+        );
+        resolve(null);
+      };
+
+      xhr.open('POST', `${apiUrl}/properties/${propertyId}/media/videos/upload`);
+      if (token) {
+        xhr.setRequestHeader('Authorization', `Bearer ${token}`);
+      }
+      xhr.withCredentials = true;
+      xhr.send(formData);
+    });
+  }, [apiUrl, propertyId, text]);
+
+  const handleVideoUpload = async (e: React.ChangeEvent<HTMLInputElement>) => {
+    const files = e.target.files;
+    if (!files || files.length === 0) return;
+
+    const fileArray = Array.from(files);
+    setUploading(true);
+
+    // Create preview URLs and initialize uploading files
+    const newUploadingFiles: UploadingFile[] = fileArray.map((file) => ({
+      file,
+      progress: 0,
+      status: 'pending' as const,
+      previewUrl: file.type.startsWith('video/') ? URL.createObjectURL(file) : undefined,
+    }));
+    setUploadingVideos(newUploadingFiles);
+
+    try {
+      // Upload files in parallel
+      const uploadPromises = fileArray.map((file, index) => uploadVideoFile(file, index));
+      const results = await Promise.all(uploadPromises);
+
+      // Filter successful uploads
+      const successfulUploads = results.filter((vid): vid is PropertyVideo => vid !== null);
+
+      if (successfulUploads.length > 0) {
+        setVideos((prev) => [...prev, ...successfulUploads]);
+      }
+
+      // Clear uploading files after a short delay to show completion
+      setTimeout(() => {
+        newUploadingFiles.forEach((f) => {
+          if (f.previewUrl) URL.revokeObjectURL(f.previewUrl);
+        });
+        setUploadingVideos([]);
+      }, 1500);
     } catch (err) {
-      console.error('Error uploading video:', err);
+      console.error('Error uploading videos:', err);
     } finally {
       setUploading(false);
+      // Reset file input
+      e.target.value = '';
     }
   };
 
@@ -692,8 +894,8 @@ export default function PropertyMediaPage() {
             </div>
 
             {/* File Upload */}
-            <div>
-              <p className="text-sm font-medium text-gray-700 mb-2">{text.uploadVideoFile}</p>
+            <div className="space-y-4">
+              <p className="text-sm font-medium text-gray-700">{text.uploadVideoFile}</p>
               <label className="flex items-center justify-center w-full px-4 py-6 border-2 border-dashed border-gray-300 rounded-lg cursor-pointer hover:border-blue-500 transition-colors">
                 <input
                   type="file"
@@ -701,8 +903,9 @@ export default function PropertyMediaPage() {
                   accept="video/mp4,video/quicktime"
                   onChange={handleVideoUpload}
                   disabled={uploading}
+                  multiple
                 />
-                {uploading ? (
+                {uploading && uploadingVideos.length === 0 ? (
                   <div className="flex items-center gap-2">
                     <Loader2 className="w-5 h-5 animate-spin text-blue-600" />
                     <span>{text.uploading}</span>
@@ -714,30 +917,145 @@ export default function PropertyMediaPage() {
                   </div>
                 )}
               </label>
+
+              {/* Video Upload Progress */}
+              {uploadingVideos.length > 0 && (
+                <div className="space-y-3 p-4 bg-gray-50 rounded-lg border">
+                  <div className="flex items-center justify-between">
+                    <p className="text-sm font-medium text-gray-700">
+                      {text.uploadProgress} ({uploadingVideos.filter(f => f.status === 'complete').length}/{uploadingVideos.length})
+                    </p>
+                    {uploading && <Loader2 className="h-4 w-4 animate-spin text-blue-600" />}
+                  </div>
+                  <div className="space-y-2">
+                    {uploadingVideos.map((file, index) => (
+                      <div key={index} className="flex items-center gap-3">
+                        {/* Video icon */}
+                        <div className="w-10 h-10 rounded overflow-hidden flex-shrink-0 bg-gray-800 flex items-center justify-center">
+                          <svg className="w-5 h-5 text-white" fill="none" stroke="currentColor" viewBox="0 0 24 24">
+                            <path strokeLinecap="round" strokeLinejoin="round" strokeWidth={1.5} d="M15 10l4.553-2.276A1 1 0 0121 8.618v6.764a1 1 0 01-1.447.894L15 14M5 18h8a2 2 0 002-2V8a2 2 0 00-2-2H5a2 2 0 00-2 2v8a2 2 0 002 2z" />
+                          </svg>
+                        </div>
+                        {/* File info and progress */}
+                        <div className="flex-1 min-w-0">
+                          <div className="flex items-center justify-between mb-1">
+                            <p className="text-xs text-gray-600 truncate">{file.file.name}</p>
+                            <div className="flex items-center gap-1 flex-shrink-0">
+                              {file.status === 'uploading' && (
+                                <span className="text-xs text-blue-600">{file.progress}%</span>
+                              )}
+                              {file.status === 'complete' && (
+                                <CheckCircle2 className="w-4 h-4 text-green-500" />
+                              )}
+                              {file.status === 'error' && (
+                                <AlertCircle className="w-4 h-4 text-red-500" />
+                              )}
+                            </div>
+                          </div>
+                          {/* Progress bar */}
+                          <div className="h-1.5 bg-gray-200 rounded-full overflow-hidden">
+                            <div
+                              className={`h-full transition-all duration-300 ${
+                                file.status === 'error' ? 'bg-red-500' :
+                                file.status === 'complete' ? 'bg-green-500' : 'bg-blue-500'
+                              }`}
+                              style={{ width: `${file.progress}%` }}
+                            />
+                          </div>
+                          {file.status === 'error' && file.error && (
+                            <p className="text-xs text-red-500 mt-0.5">{file.error}</p>
+                          )}
+                        </div>
+                      </div>
+                    ))}
+                  </div>
+                </div>
+              )}
             </div>
           </div>
         ) : (
           // Standard upload for images only
-          <label className="flex items-center justify-center w-full px-4 py-8 border-2 border-dashed border-gray-300 rounded-lg cursor-pointer hover:border-blue-500 transition-colors">
-            <input
-              type="file"
-              className="hidden"
-              accept="image/jpeg,image/png,image/webp"
-              onChange={handleImageUpload}
-              disabled={uploading}
-            />
-            {uploading ? (
-              <div className="flex items-center gap-2">
-                <Loader2 className="w-5 h-5 animate-spin text-blue-600" />
-                <span>{text.uploading}</span>
-              </div>
-            ) : (
-              <div className="text-center">
-                <p className="font-medium text-gray-900">{text.uploadDrag}</p>
-                <p className="text-sm text-gray-500 mt-1">{text.imagesHint}</p>
+          <div className="space-y-4">
+            <label className="flex items-center justify-center w-full px-4 py-8 border-2 border-dashed border-gray-300 rounded-lg cursor-pointer hover:border-blue-500 transition-colors">
+              <input
+                type="file"
+                className="hidden"
+                accept="image/jpeg,image/png,image/webp"
+                onChange={handleImageUpload}
+                disabled={uploading}
+                multiple
+              />
+              {uploading && uploadingImages.length === 0 ? (
+                <div className="flex items-center gap-2">
+                  <Loader2 className="w-5 h-5 animate-spin text-blue-600" />
+                  <span>{text.uploading}</span>
+                </div>
+              ) : (
+                <div className="text-center">
+                  <p className="font-medium text-gray-900">{text.uploadDrag}</p>
+                  <p className="text-sm text-gray-500 mt-1">{text.imagesHint}</p>
+                </div>
+              )}
+            </label>
+
+            {/* Image Upload Progress */}
+            {uploadingImages.length > 0 && (
+              <div className="space-y-3 p-4 bg-gray-50 rounded-lg border">
+                <div className="flex items-center justify-between">
+                  <p className="text-sm font-medium text-gray-700">
+                    {text.uploadProgress} ({uploadingImages.filter(f => f.status === 'complete').length}/{uploadingImages.length})
+                  </p>
+                  {uploading && <Loader2 className="h-4 w-4 animate-spin text-blue-600" />}
+                </div>
+                <div className="space-y-2">
+                  {uploadingImages.map((file, index) => (
+                    <div key={index} className="flex items-center gap-3">
+                      {/* Preview thumbnail */}
+                      {file.previewUrl && (
+                        <div className="w-10 h-10 rounded overflow-hidden flex-shrink-0 bg-gray-200">
+                          <img
+                            src={file.previewUrl}
+                            alt=""
+                            className="w-full h-full object-cover"
+                          />
+                        </div>
+                      )}
+                      {/* File info and progress */}
+                      <div className="flex-1 min-w-0">
+                        <div className="flex items-center justify-between mb-1">
+                          <p className="text-xs text-gray-600 truncate">{file.file.name}</p>
+                          <div className="flex items-center gap-1 flex-shrink-0">
+                            {file.status === 'uploading' && (
+                              <span className="text-xs text-blue-600">{file.progress}%</span>
+                            )}
+                            {file.status === 'complete' && (
+                              <CheckCircle2 className="w-4 h-4 text-green-500" />
+                            )}
+                            {file.status === 'error' && (
+                              <AlertCircle className="w-4 h-4 text-red-500" />
+                            )}
+                          </div>
+                        </div>
+                        {/* Progress bar */}
+                        <div className="h-1.5 bg-gray-200 rounded-full overflow-hidden">
+                          <div
+                            className={`h-full transition-all duration-300 ${
+                              file.status === 'error' ? 'bg-red-500' :
+                              file.status === 'complete' ? 'bg-green-500' : 'bg-blue-500'
+                            }`}
+                            style={{ width: `${file.progress}%` }}
+                          />
+                        </div>
+                        {file.status === 'error' && file.error && (
+                          <p className="text-xs text-red-500 mt-0.5">{file.error}</p>
+                        )}
+                      </div>
+                    </div>
+                  ))}
+                </div>
               </div>
             )}
-          </label>
+          </div>
         )}
       </div>
 
