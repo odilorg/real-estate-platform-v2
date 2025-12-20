@@ -4,7 +4,7 @@ import { useState, useEffect, use } from 'react';
 import { Link } from '@/i18n/routing';
 import { useRouter } from '@/i18n/routing';
 import { Button, Badge, Card, CardContent } from '@repo/ui';
-import { ImageGallery, MortgageCalculator, PropertyKeyFacts, PropertyDetailedInfo, PropertyLocationMap, PropertyAmenities, PriceHistoryChart, NearbyPOIs, PropertyReviews, SocialShare, LoginModal, PropertyMediaGallery, PropertyVideoPlayer, Property360Viewer } from '@/components';
+import { ImageGallery, MortgageCalculator, PropertyKeyFacts, PropertyDetailedInfo, PropertyLocationMap, PropertyAmenities, PriceHistoryChart, NearbyPOIs, PropertyReviews, SocialShare, LoginModal, PropertyVideoPlayer, Property360Viewer } from '@/components';
 import { useAuth } from '@/context/AuthContext';
 import { useTranslations } from 'next-intl';
 import {
@@ -617,17 +617,9 @@ export default function PropertyDetailPage({
             {/* Image Gallery */}
             <ImageGallery images={imageUrls} alt={property.title} />
 
-            {/* Property Media - Images, Videos, 360 Tours */}
-            {(property.images?.length > 0 || property.videos?.length > 0 || property.tours360?.length > 0) && (
+            {/* Property Media - Videos, 360 Tours (Images already shown in ImageGallery above) */}
+            {(property.videos?.length > 0 || property.tours360?.length > 0) && (
               <div className="space-y-6">
-                {/* Enhanced Image Gallery */}
-                {property.images && property.images.length > 0 && (
-                  <div>
-                    <h2 className="text-xl font-bold mb-4">Photo Gallery</h2>
-                    <PropertyMediaGallery images={property.images} />
-                  </div>
-                )}
-
                 {/* Video Player */}
                 {property.videos && property.videos.length > 0 && (
                   <div>
