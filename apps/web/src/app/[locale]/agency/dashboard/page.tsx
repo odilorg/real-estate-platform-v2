@@ -432,36 +432,64 @@ export default function AgencyDashboardPage() {
         ) : (
           <div className="space-y-4">
             {properties.slice(0, 5).map((property) => (
-              <div key={property.id} className="flex items-center gap-4 p-4 border border-gray-200 rounded-lg hover:bg-gray-50">
-                <div className="w-20 h-20 flex-shrink-0 bg-gray-100 rounded-lg overflow-hidden">
+              <div key={property.id} className="flex items-start gap-3 p-3 sm:p-4 border border-gray-200 rounded-lg hover:bg-gray-50">
+                <div className="w-16 h-16 sm:w-20 sm:h-20 flex-shrink-0 bg-gray-100 rounded-lg overflow-hidden">
                   {property.images?.[0]?.url ? (
                     <img src={property.images[0].url} alt={property.title} className="w-full h-full object-cover" />
                   ) : (
                     <div className="w-full h-full flex items-center justify-center">
-                      <Building className="h-8 w-8 text-gray-300" />
+                      <Building className="h-6 w-6 sm:h-8 sm:w-8 text-gray-300" />
                     </div>
                   )}
                 </div>
                 <div className="flex-1 min-w-0">
-                  <div className="flex items-center gap-2 mb-1">
-                    <span className={`px-2 py-0.5 text-xs font-medium rounded ${STATUS_COLORS[property.status] || 'bg-gray-100 text-gray-800'}`}>
-                      {property.status}
-                    </span>
-                    <span className="text-xs text-gray-500">
-                      {LISTING_TYPE_LABELS[property.listingType] || property.listingType}
-                    </span>
+                  <div className="flex items-center justify-between gap-2 mb-1">
+                    <div className="flex items-center gap-1 sm:gap-2">
+                      <span className={`px-1.5 sm:px-2 py-0.5 text-xs font-medium rounded ${STATUS_COLORS[property.status] || 'bg-gray-100 text-gray-800'}`}>
+                        {property.status}
+                      </span>
+                      <span className="hidden sm:inline text-xs text-gray-500">
+                        {LISTING_TYPE_LABELS[property.listingType] || property.listingType}
+                      </span>
+                    </div>
+                    {/* Price - visible on all screens */}
+                    <p className="text-sm sm:text-lg font-bold text-blue-600 whitespace-nowrap">{property.price.toLocaleString()} у.е.</p>
                   </div>
-                  <h3 className="font-medium text-gray-900 truncate">{property.title}</h3>
-                  <div className="flex items-center text-sm text-gray-500 mt-1">
+                  <h3 className="font-medium text-gray-900 text-sm sm:text-base line-clamp-1 sm:truncate">{property.title}</h3>
+                  <div className="flex items-center justify-between mt-1">
+                    <p className="text-xs text-gray-500">{property.views} просмотров</p>
+                    {/* Mobile action buttons */}
+                    <div className="flex sm:hidden items-center gap-1">
+                      <Link href={`/properties/${property.id}`}>
+                        <button className="p-1.5 text-gray-500 hover:text-blue-600 hover:bg-blue-50 rounded">
+                          <Eye className="h-3.5 w-3.5" />
+                        </button>
+                      </Link>
+                      <Link href={`/properties/${property.id}/edit`}>
+                        <button className="p-1.5 text-gray-500 hover:text-green-600 hover:bg-green-50 rounded">
+                          <Edit className="h-3.5 w-3.5" />
+                        </button>
+                      </Link>
+                      <button
+                        onClick={() => handleDeleteProperty(property.id)}
+                        disabled={deletingId === property.id}
+                        className="p-1.5 text-gray-500 hover:text-red-600 hover:bg-red-50 rounded disabled:opacity-50"
+                      >
+                        {deletingId === property.id ? (
+                          <Loader2 className="h-3.5 w-3.5 animate-spin" />
+                        ) : (
+                          <Trash2 className="h-3.5 w-3.5" />
+                        )}
+                      </button>
+                    </div>
+                  </div>
+                  <div className="hidden sm:flex items-center text-sm text-gray-500 mt-1">
                     <MapPin className="h-3 w-3 mr-1" />
                     <span className="truncate">{property.address}, {property.city}</span>
                   </div>
                 </div>
-                <div className="text-right">
-                  <p className="text-lg font-bold text-blue-600">{property.price.toLocaleString()} у.е.</p>
-                  <p className="text-xs text-gray-500">{property.views} просмотров</p>
-                </div>
-                <div className="flex items-center gap-2">
+                {/* Desktop action buttons */}
+                <div className="hidden sm:flex items-center gap-2">
                   <Link href={`/properties/${property.id}`}>
                     <button className="p-2 text-gray-500 hover:text-blue-600 hover:bg-blue-50 rounded-lg">
                       <Eye className="h-4 w-4" />
