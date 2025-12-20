@@ -53,45 +53,6 @@ export default function DeveloperDashboard() {
   // Check if user has developer role
   const isDeveloper = user?.role === 'DEVELOPER_ADMIN' || user?.role === 'DEVELOPER_SALES_AGENT';
 
-  // Show loading while checking auth
-  if (authLoading) {
-    return (
-      <div className="flex items-center justify-center min-h-[60vh]">
-        <Loader2 className="h-8 w-8 text-blue-600 animate-spin" />
-      </div>
-    );
-  }
-
-  // Redirect or show access denied if not a developer
-  if (!user) {
-    return (
-      <div className="flex flex-col items-center justify-center min-h-[60vh] text-center">
-        <ShieldAlert className="h-16 w-16 text-yellow-500 mb-4" />
-        <h2 className="text-xl font-semibold text-gray-900 mb-2">Требуется авторизация</h2>
-        <p className="text-gray-600 mb-4">Войдите в систему для доступа к панели застройщика</p>
-        <Link href="/login" className="px-4 py-2 bg-blue-600 text-white rounded-lg hover:bg-blue-700">
-          Войти
-        </Link>
-      </div>
-    );
-  }
-
-  if (!isDeveloper) {
-    return (
-      <div className="flex flex-col items-center justify-center min-h-[60vh] text-center">
-        <ShieldAlert className="h-16 w-16 text-red-500 mb-4" />
-        <h2 className="text-xl font-semibold text-gray-900 mb-2">Доступ запрещен</h2>
-        <p className="text-gray-600 mb-4">
-          У вас нет доступа к панели застройщика.
-          Эта страница доступна только для застройщиков.
-        </p>
-        <Link href="/dashboard" className="px-4 py-2 bg-blue-600 text-white rounded-lg hover:bg-blue-700">
-          Перейти в личный кабинет
-        </Link>
-      </div>
-    );
-  }
-
   // TODO: Fetch developer data from API
   const stats = {
     totalProjects: 3,
@@ -103,8 +64,10 @@ export default function DeveloperDashboard() {
   };
 
   useEffect(() => {
-    fetchMyProperties();
-  }, []);
+    if (!authLoading && user && isDeveloper) {
+      fetchMyProperties();
+    }
+  }, [authLoading, user, isDeveloper]);
 
   const fetchMyProperties = async () => {
     setPropertiesLoading(true);
@@ -147,6 +110,46 @@ export default function DeveloperDashboard() {
       setDeletingId(null);
     }
   };
+
+  // Show loading while checking auth
+  if (authLoading) {
+    return (
+      <div className="flex items-center justify-center min-h-[60vh]">
+        <Loader2 className="h-8 w-8 text-blue-600 animate-spin" />
+      </div>
+    );
+  }
+
+  // Require login
+  if (!user) {
+    return (
+      <div className="flex flex-col items-center justify-center min-h-[60vh] text-center">
+        <ShieldAlert className="h-16 w-16 text-yellow-500 mb-4" />
+        <h2 className="text-xl font-semibold text-gray-900 mb-2">Требуется авторизация</h2>
+        <p className="text-gray-600 mb-4">Войдите в систему для доступа к панели застройщика</p>
+        <Link href="/login" className="px-4 py-2 bg-blue-600 text-white rounded-lg hover:bg-blue-700">
+          Войти
+        </Link>
+      </div>
+    );
+  }
+
+  // Only developers can access this page
+  if (!isDeveloper) {
+    return (
+      <div className="flex flex-col items-center justify-center min-h-[60vh] text-center">
+        <ShieldAlert className="h-16 w-16 text-red-500 mb-4" />
+        <h2 className="text-xl font-semibold text-gray-900 mb-2">Доступ запрещен</h2>
+        <p className="text-gray-600 mb-4">
+          У вас нет доступа к панели застройщика.
+          Эта страница доступна только для застройщиков.
+        </p>
+        <Link href="/dashboard" className="px-4 py-2 bg-blue-600 text-white rounded-lg hover:bg-blue-700">
+          Перейти в личный кабинет
+        </Link>
+      </div>
+    );
+  }
 
   return (
     <div className="space-y-6">
