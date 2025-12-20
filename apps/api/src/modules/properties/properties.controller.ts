@@ -3,6 +3,7 @@ import {
   Get,
   Post,
   Put,
+  Patch,
   Delete,
   Body,
   Param,
@@ -446,6 +447,16 @@ export class PropertiesController {
   @Put(':id')
   @UseGuards(JwtAuthGuard)
   async update(
+    @Param('id') id: string,
+    @CurrentUser() user: User,
+    @Body(new ZodValidationPipe(UpdatePropertyDto)) dto: UpdatePropertyDto,
+  ) {
+    return this.propertiesService.update(id, user.id, dto);
+  }
+
+  @Patch(':id')
+  @UseGuards(JwtAuthGuard)
+  async partialUpdate(
     @Param('id') id: string,
     @CurrentUser() user: User,
     @Body(new ZodValidationPipe(UpdatePropertyDto)) dto: UpdatePropertyDto,
