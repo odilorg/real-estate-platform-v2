@@ -101,6 +101,15 @@ export class MediaController {
     return this.mediaService.uploadVideo(propertyId, file, dto);
   }
 
+  // Add external video (YouTube/Vimeo) - no file upload needed
+  @Post('videos')
+  async addExternalVideo(
+    @Param('propertyId') propertyId: string,
+    @Body() dto: { url: string; thumbnailUrl?: string; title?: string; type: 'YOUTUBE' | 'VIMEO' },
+  ) {
+    return this.mediaService.addExternalVideo(propertyId, dto);
+  }
+
   @Get('videos')
   async getVideos(@Param('propertyId') propertyId: string) {
     return this.mediaService.getVideos(propertyId);

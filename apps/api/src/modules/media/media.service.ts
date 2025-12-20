@@ -349,6 +349,47 @@ export class MediaService {
     return updated;
   }
 
+  async addExternalVideo(
+    propertyId: string,
+    data: { url: string; thumbnailUrl?: string; title?: string; type: 'YOUTUBE' | 'VIMEO' },
+  ) {
+    // Validate property exists
+    const property = await this.prisma.property.findUnique({
+      where: { id: propertyId },
+    });
+
+    if (!property) {
+      throw new NotFoundException('Property not found');
+    }
+
+    if (!data.url) {
+      throw new BadRequestException('URL is required for external videos');
+    }
+
+    if (!['YOUTUBE', 'VIMEO'].includes(data.type)) {
+      throw new BadRequestException('Type must be YOUTUBE or VIMEO');
+    }
+
+    // Get max order for videos
+    const maxOrder = await this.prisma.propertyVideo.findFirst({
+      where: { propertyId },
+      orderBy: { order: 'desc' },
+      select: { order: true },
+    });
+
+    // Create the video record
+    return await this.prisma.propertyVideo.create({
+      data: {
+        propertyId,
+        url: data.url,
+        thumbnailUrl: data.thumbnailUrl,
+        title: data.title,
+        type: data.type,
+        order: (maxOrder?.order ?? -1) + 1,
+      },
+    });
+  }
+
   // ============= 360° TOURS =============
 
   async upload360Tour(propertyId: string, file: Express.Multer.File, metadata: any) {

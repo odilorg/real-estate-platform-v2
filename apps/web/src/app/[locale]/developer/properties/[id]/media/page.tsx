@@ -31,6 +31,7 @@ interface PropertyImage {
 interface PropertyVideo {
   id: string;
   url: string;
+  thumbnailUrl?: string;
   title?: string;
   type: string;
   order: number;
@@ -76,6 +77,12 @@ export default function PropertyMediaPage() {
   const [showTourPreview, setShowTourPreview] = useState(false);
   const tourFileInputRef = useRef<HTMLInputElement>(null);
 
+  // YouTube video state
+  const [youtubeUrl, setYoutubeUrl] = useState('');
+  const [youtubeTitle, setYoutubeTitle] = useState('');
+  const [addingYoutube, setAddingYoutube] = useState(false);
+  const [youtubeError, setYoutubeError] = useState('');
+
   // Edit state for existing tours
   const [editingTourId, setEditingTourId] = useState<string | null>(null);
   const [editRoomName, setEditRoomName] = useState('');
@@ -115,6 +122,16 @@ export default function PropertyMediaPage() {
       tip2: 'Соотношение сторон должно быть 2:1 (equirectangular)',
       tip3: 'Снимайте при хорошем освещении',
       suggestedRooms: 'Популярные названия',
+      // YouTube
+      addYoutubeVideo: 'Добавить видео с YouTube',
+      youtubeUrl: 'Ссылка на YouTube видео',
+      youtubeUrlPlaceholder: 'https://www.youtube.com/watch?v=...',
+      videoTitle: 'Название видео (необязательно)',
+      videoTitlePlaceholder: 'например: Видеотур по квартире',
+      addVideo: 'Добавить видео',
+      invalidYoutubeUrl: 'Неверная ссылка на YouTube',
+      or: 'или',
+      uploadVideoFile: 'Загрузить видеофайл',
     },
     uz: {
       title: 'Media materiallar',
@@ -149,6 +166,16 @@ export default function PropertyMediaPage() {
       tip2: 'Tomonlar nisbati 2:1 (equirectangular) bo\'lishi kerak',
       tip3: 'Yaxshi yorug\'likda suring',
       suggestedRooms: 'Mashhur nomlar',
+      // YouTube
+      addYoutubeVideo: 'YouTube dan video qo\'shish',
+      youtubeUrl: 'YouTube video havolasi',
+      youtubeUrlPlaceholder: 'https://www.youtube.com/watch?v=...',
+      videoTitle: 'Video nomi (ixtiyoriy)',
+      videoTitlePlaceholder: 'masalan: Kvartira video sayohati',
+      addVideo: 'Video qo\'shish',
+      invalidYoutubeUrl: 'Noto\'g\'ri YouTube havolasi',
+      or: 'yoki',
+      uploadVideoFile: 'Video faylni yuklash',
     },
   };
 
@@ -347,6 +374,56 @@ export default function PropertyMediaPage() {
     setEditRoomName(tour.roomName || '');
   };
 
+  // YouTube URL parser - extracts video ID from various YouTube URL formats
+  const extractYoutubeVideoId = (url: string): string | null => {
+    const patterns = [
+      /(?:youtube\.com\/watch\?v=|youtu\.be\/|youtube\.com\/embed\/|youtube\.com\/v\/|youtube\.com\/shorts\/)([a-zA-Z0-9_-]{11})/,
+      /^([a-zA-Z0-9_-]{11})$/, // Just the video ID
+    ];
+
+    for (const pattern of patterns) {
+      const match = url.match(pattern);
+      if (match) return match[1];
+    }
+    return null;
+  };
+
+  // Get YouTube thumbnail URL
+  const getYoutubeThumbnail = (videoId: string): string => {
+    return `https://img.youtube.com/vi/${videoId}/hqdefault.jpg`;
+  };
+
+  // Handle adding YouTube video
+  const handleAddYoutubeVideo = async () => {
+    setYoutubeError('');
+
+    const videoId = extractYoutubeVideoId(youtubeUrl.trim());
+    if (!videoId) {
+      setYoutubeError(text.invalidYoutubeUrl);
+      return;
+    }
+
+    try {
+      setAddingYoutube(true);
+
+      const response = await api.post<PropertyVideo>(`/properties/${propertyId}/media/videos`, {
+        url: `https://www.youtube.com/watch?v=${videoId}`,
+        thumbnailUrl: getYoutubeThumbnail(videoId),
+        title: youtubeTitle.trim() || undefined,
+        type: 'YOUTUBE',
+      });
+
+      setVideos([...videos, response]);
+      setYoutubeUrl('');
+      setYoutubeTitle('');
+    } catch (err) {
+      console.error('Error adding YouTube video:', err);
+      setYoutubeError('Failed to add video');
+    } finally {
+      setAddingYoutube(false);
+    }
+  };
+
   return (
     <div className="space-y-6">
       {/* Header */}
@@ -532,18 +609,121 @@ export default function PropertyMediaPage() {
               </ul>
             </div>
           </div>
+        ) : activeTab === 'videos' ? (
+          // Video upload with YouTube support
+          <div className="space-y-6">
+            {/* YouTube URL Input */}
+            <div className="bg-red-50 border border-red-200 rounded-lg p-4">
+              <div className="flex items-center gap-2 mb-3">
+                <svg className="w-6 h-6 text-red-600" viewBox="0 0 24 24" fill="currentColor">
+                  <path d="M23.498 6.186a3.016 3.016 0 0 0-2.122-2.136C19.505 3.545 12 3.545 12 3.545s-7.505 0-9.377.505A3.017 3.017 0 0 0 .502 6.186C0 8.07 0 12 0 12s0 3.93.502 5.814a3.016 3.016 0 0 0 2.122 2.136c1.871.505 9.376.505 9.376.505s7.505 0 9.377-.505a3.015 3.015 0 0 0 2.122-2.136C24 15.93 24 12 24 12s0-3.93-.502-5.814zM9.545 15.568V8.432L15.818 12l-6.273 3.568z"/>
+                </svg>
+                <h3 className="font-semibold text-gray-900">{text.addYoutubeVideo}</h3>
+              </div>
+
+              <div className="space-y-3">
+                <div>
+                  <label className="block text-sm font-medium text-gray-700 mb-1">
+                    {text.youtubeUrl} *
+                  </label>
+                  <input
+                    type="url"
+                    value={youtubeUrl}
+                    onChange={e => {
+                      setYoutubeUrl(e.target.value);
+                      setYoutubeError('');
+                    }}
+                    placeholder={text.youtubeUrlPlaceholder}
+                    className="w-full px-3 py-2 border border-gray-300 rounded-lg focus:ring-2 focus:ring-red-500 focus:border-red-500"
+                  />
+                </div>
+
+                <div>
+                  <label className="block text-sm font-medium text-gray-700 mb-1">
+                    {text.videoTitle}
+                  </label>
+                  <input
+                    type="text"
+                    value={youtubeTitle}
+                    onChange={e => setYoutubeTitle(e.target.value)}
+                    placeholder={text.videoTitlePlaceholder}
+                    className="w-full px-3 py-2 border border-gray-300 rounded-lg focus:ring-2 focus:ring-red-500 focus:border-red-500"
+                  />
+                </div>
+
+                {youtubeError && (
+                  <p className="text-sm text-red-600">{youtubeError}</p>
+                )}
+
+                {/* YouTube Preview */}
+                {youtubeUrl && extractYoutubeVideoId(youtubeUrl) && (
+                  <div className="aspect-video rounded-lg overflow-hidden bg-black">
+                    <iframe
+                      src={`https://www.youtube.com/embed/${extractYoutubeVideoId(youtubeUrl)}`}
+                      className="w-full h-full"
+                      allow="accelerometer; autoplay; clipboard-write; encrypted-media; gyroscope; picture-in-picture"
+                      allowFullScreen
+                    />
+                  </div>
+                )}
+
+                <button
+                  onClick={handleAddYoutubeVideo}
+                  disabled={addingYoutube || !youtubeUrl.trim()}
+                  className="w-full flex items-center justify-center gap-2 px-4 py-2 bg-red-600 text-white rounded-lg hover:bg-red-700 disabled:opacity-50 disabled:cursor-not-allowed transition-colors"
+                >
+                  {addingYoutube ? (
+                    <>
+                      <Loader2 className="w-4 h-4 animate-spin" />
+                      {text.uploading}
+                    </>
+                  ) : (
+                    text.addVideo
+                  )}
+                </button>
+              </div>
+            </div>
+
+            {/* Divider */}
+            <div className="flex items-center gap-4">
+              <div className="flex-1 border-t border-gray-300"></div>
+              <span className="text-sm text-gray-500">{text.or}</span>
+              <div className="flex-1 border-t border-gray-300"></div>
+            </div>
+
+            {/* File Upload */}
+            <div>
+              <p className="text-sm font-medium text-gray-700 mb-2">{text.uploadVideoFile}</p>
+              <label className="flex items-center justify-center w-full px-4 py-6 border-2 border-dashed border-gray-300 rounded-lg cursor-pointer hover:border-blue-500 transition-colors">
+                <input
+                  type="file"
+                  className="hidden"
+                  accept="video/mp4,video/quicktime"
+                  onChange={handleVideoUpload}
+                  disabled={uploading}
+                />
+                {uploading ? (
+                  <div className="flex items-center gap-2">
+                    <Loader2 className="w-5 h-5 animate-spin text-blue-600" />
+                    <span>{text.uploading}</span>
+                  </div>
+                ) : (
+                  <div className="text-center">
+                    <p className="font-medium text-gray-900">{text.uploadDrag}</p>
+                    <p className="text-sm text-gray-500 mt-1">{text.videosHint}</p>
+                  </div>
+                )}
+              </label>
+            </div>
+          </div>
         ) : (
-          // Standard upload for images and videos
+          // Standard upload for images only
           <label className="flex items-center justify-center w-full px-4 py-8 border-2 border-dashed border-gray-300 rounded-lg cursor-pointer hover:border-blue-500 transition-colors">
             <input
               type="file"
               className="hidden"
-              accept={
-                activeTab === 'images'
-                  ? 'image/jpeg,image/png,image/webp'
-                  : 'video/mp4,video/quicktime'
-              }
-              onChange={activeTab === 'images' ? handleImageUpload : handleVideoUpload}
+              accept="image/jpeg,image/png,image/webp"
+              onChange={handleImageUpload}
               disabled={uploading}
             />
             {uploading ? (
@@ -554,9 +734,7 @@ export default function PropertyMediaPage() {
             ) : (
               <div className="text-center">
                 <p className="font-medium text-gray-900">{text.uploadDrag}</p>
-                <p className="text-sm text-gray-500 mt-1">
-                  {activeTab === 'images' ? text.imagesHint : text.videosHint}
-                </p>
+                <p className="text-sm text-gray-500 mt-1">{text.imagesHint}</p>
               </div>
             )}
           </label>
@@ -609,26 +787,74 @@ export default function PropertyMediaPage() {
           )}
         </div>
       ) : activeTab === 'videos' ? (
-        // Videos List
-        <div className="space-y-3">
-          {videos.map(video => (
-            <div key={video.id} className="flex items-center gap-4 p-4 bg-white rounded-lg shadow">
-              <GripVertical className="w-5 h-5 text-gray-400" />
-              <div className="flex-1">
-                <p className="font-medium text-gray-900">{video.title || text.untitledVideo}</p>
-                <p className="text-sm text-gray-500">{video.type}</p>
+        // Videos Grid
+        <div className="grid grid-cols-1 md:grid-cols-2 gap-4">
+          {videos.map(video => {
+            const videoId = video.type === 'YOUTUBE' ? extractYoutubeVideoId(video.url) : null;
+            return (
+              <div key={video.id} className="bg-white rounded-lg shadow overflow-hidden">
+                {/* Video Preview */}
+                <div className="aspect-video relative bg-gray-900">
+                  {video.type === 'YOUTUBE' && videoId ? (
+                    <iframe
+                      src={`https://www.youtube.com/embed/${videoId}`}
+                      className="w-full h-full"
+                      allow="accelerometer; autoplay; clipboard-write; encrypted-media; gyroscope; picture-in-picture"
+                      allowFullScreen
+                    />
+                  ) : video.thumbnailUrl ? (
+                    <Image
+                      src={video.thumbnailUrl}
+                      alt={video.title || text.untitledVideo}
+                      fill
+                      className="object-cover"
+                    />
+                  ) : (
+                    <div className="w-full h-full flex items-center justify-center">
+                      <svg className="w-16 h-16 text-gray-600" fill="none" stroke="currentColor" viewBox="0 0 24 24">
+                        <path strokeLinecap="round" strokeLinejoin="round" strokeWidth={1.5} d="M15 10l4.553-2.276A1 1 0 0121 8.618v6.764a1 1 0 01-1.447.894L15 14M5 18h8a2 2 0 002-2V8a2 2 0 00-2-2H5a2 2 0 00-2 2v8a2 2 0 002 2z" />
+                      </svg>
+                    </div>
+                  )}
+                  {/* Type Badge */}
+                  <div className={`absolute top-2 right-2 text-white text-xs px-2 py-1 rounded-full ${
+                    video.type === 'YOUTUBE' ? 'bg-red-600' : video.type === 'VIMEO' ? 'bg-blue-500' : 'bg-gray-600'
+                  }`}>
+                    {video.type === 'YOUTUBE' ? 'YouTube' : video.type === 'VIMEO' ? 'Vimeo' : 'Video'}
+                  </div>
+                </div>
+
+                {/* Video Info */}
+                <div className="p-4 flex items-center justify-between">
+                  <div className="flex items-center gap-3 flex-1 min-w-0">
+                    <GripVertical className="w-5 h-5 text-gray-400 flex-shrink-0" />
+                    <div className="min-w-0">
+                      <p className="font-medium text-gray-900 truncate">{video.title || text.untitledVideo}</p>
+                      {video.type === 'YOUTUBE' && (
+                        <a
+                          href={video.url}
+                          target="_blank"
+                          rel="noopener noreferrer"
+                          className="text-xs text-blue-600 hover:underline"
+                        >
+                          {text.preview}
+                        </a>
+                      )}
+                    </div>
+                  </div>
+                  <button
+                    onClick={() => handleDeleteVideo(video.id)}
+                    className="p-2 text-red-600 hover:bg-red-50 rounded-lg transition-colors flex-shrink-0"
+                  >
+                    <Trash2 className="w-5 h-5" />
+                  </button>
+                </div>
               </div>
-              <button
-                onClick={() => handleDeleteVideo(video.id)}
-                className="p-2 text-red-600 hover:bg-red-50 rounded-lg transition-colors"
-              >
-                <Trash2 className="w-5 h-5" />
-              </button>
-            </div>
-          ))}
+            );
+          })}
 
           {videos.length === 0 && (
-            <div className="text-center py-12 text-gray-500 bg-white rounded-lg">{text.noVideos}</div>
+            <div className="col-span-full text-center py-12 text-gray-500 bg-white rounded-lg">{text.noVideos}</div>
           )}
         </div>
       ) : (
