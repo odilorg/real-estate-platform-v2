@@ -492,7 +492,7 @@ export default function DashboardPage() {
               <Card key={property.id} className="overflow-hidden">
                 <div className="flex">
                   {/* Image */}
-                  <div className="w-48 h-36 flex-shrink-0 bg-gray-100">
+                  <div className="w-24 h-24 sm:w-48 sm:h-36 flex-shrink-0 bg-gray-100">
                     {property.images?.[0]?.url ? (
                       <img
                         src={property.images[0].url}
@@ -507,46 +507,82 @@ export default function DashboardPage() {
                   </div>
 
                   {/* Content */}
-                  <CardContent className="flex-1 p-4">
-                    <div className="flex items-start justify-between gap-4">
+                  <CardContent className="flex-1 p-3 sm:p-4">
+                    <div className="flex flex-col sm:flex-row sm:items-start sm:justify-between gap-2 sm:gap-4">
                       <div className="flex-1 min-w-0">
-                        <div className="flex items-center gap-2 mb-1 flex-wrap">
-                          <Badge
-                            variant={
-                              STATUS_LABELS[property.status]?.variant || 'default'
-                            }
-                          >
-                            {STATUS_LABELS[property.status]?.label ||
-                              property.status}
-                          </Badge>
-                          <Badge variant="outline">
-                            {LISTING_TYPE_LABELS[property.listingType] ||
-                              property.listingType}
-                          </Badge>
+                        <div className="flex items-center justify-between gap-2 mb-1 sm:mb-2">
+                          <div className="flex items-center gap-1 sm:gap-2 flex-wrap">
+                            <Badge
+                              variant={
+                                STATUS_LABELS[property.status]?.variant || 'default'
+                              }
+                              className="flex-shrink-0 text-xs"
+                            >
+                              {STATUS_LABELS[property.status]?.label ||
+                                property.status}
+                            </Badge>
+                            <Badge variant="outline" className="flex-shrink-0 text-xs">
+                              {LISTING_TYPE_LABELS[property.listingType] ||
+                                property.listingType}
+                            </Badge>
+                          </div>
+                          {/* Price on mobile - inline with badges */}
+                          <div className="sm:hidden text-base font-bold text-blue-600 whitespace-nowrap">
+                            {property.price.toLocaleString()} <span className="text-xs font-normal text-gray-500">у.е.</span>
+                          </div>
                         </div>
-                        <h3 className="font-semibold text-base mb-2 text-gray-900 line-clamp-2">
+                        <h3 className="font-semibold text-sm sm:text-base mb-1 sm:mb-2 text-gray-900 line-clamp-2">
                           {property.title}
                         </h3>
-                        <div className="flex items-center text-sm text-gray-600 mb-3">
+                        <div className="hidden sm:flex items-center text-sm text-gray-600 mb-3">
                           <MapPin className="h-4 w-4 mr-1 flex-shrink-0" />
                           <span className="line-clamp-1">{property.address}, {property.city}</span>
                         </div>
-                        <div className="flex items-center gap-4 text-xs text-gray-500">
-                          <span className="flex items-center">
-                            <Eye className="h-4 w-4 mr-1" />
-                            {property.views}
-                          </span>
-                          <span className="flex items-center">
-                            <Calendar className="h-4 w-4 mr-1" />
-                            {new Date(property.createdAt).toLocaleDateString(
-                              'ru-RU'
-                            )}
-                          </span>
+                        <div className="flex items-center justify-between">
+                          <div className="flex items-center gap-3 sm:gap-4 text-xs text-gray-500">
+                            <span className="flex items-center">
+                              <Eye className="h-3 w-3 sm:h-4 sm:w-4 mr-1" />
+                              {property.views}
+                            </span>
+                            <span className="hidden sm:flex items-center">
+                              <Calendar className="h-4 w-4 mr-1" />
+                              {new Date(property.createdAt).toLocaleDateString(
+                                'ru-RU'
+                              )}
+                            </span>
+                          </div>
+                          {/* Mobile action buttons */}
+                          <div className="flex sm:hidden items-center gap-1">
+                            <Link href={`/properties/${property.id}`}>
+                              <Button variant="ghost" size="sm" className="h-7 w-7 p-0">
+                                <Eye className="h-3.5 w-3.5 text-gray-500" />
+                              </Button>
+                            </Link>
+                            <Link href={`/properties/${property.id}/edit`}>
+                              <Button variant="ghost" size="sm" className="h-7 w-7 p-0">
+                                <Edit className="h-3.5 w-3.5 text-gray-500" />
+                              </Button>
+                            </Link>
+                            <Button
+                              variant="ghost"
+                              size="sm"
+                              className="h-7 w-7 p-0"
+                              onClick={() => handleDelete(property.id)}
+                              disabled={deletingId === property.id}
+                            >
+                              {deletingId === property.id ? (
+                                <Loader2 className="h-3.5 w-3.5 animate-spin" />
+                              ) : (
+                                <Trash2 className="h-3.5 w-3.5 text-red-500" />
+                              )}
+                            </Button>
+                          </div>
                         </div>
                       </div>
 
-                      <div className="text-right flex flex-col items-end flex-shrink-0">
-                        <div className="text-2xl font-bold text-blue-600 mb-4 whitespace-nowrap">
+                      {/* Desktop price and actions */}
+                      <div className="hidden sm:flex text-right flex-col items-end flex-shrink-0 ml-4">
+                        <div className="text-xl font-bold text-blue-600 mb-4 whitespace-nowrap">
                           {property.price.toLocaleString()} <span className="text-sm font-normal text-gray-500">у.е.</span>
                         </div>
                         <div className="flex items-center gap-2">
