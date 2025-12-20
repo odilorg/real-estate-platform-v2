@@ -65,37 +65,65 @@ export class TelegramShareService {
 
     let message = `${emoji} ${property.title}\n\n`;
 
+    // Listing Type (SALE/RENT) - Critical info
+    const listingTypeLabels: Record<string, string> = {
+      'SALE': '🏷 Продажа',
+      'RENT_LONG': '🔑 Аренда (долгосрочная)',
+      'RENT_DAILY': '🔑 Аренда (посуточно)',
+    };
+    message += `${listingTypeLabels[property.listingType] || property.listingType}\n`;
+
+    // Property Type
+    const propertyTypeLabels: Record<string, string> = {
+      'APARTMENT': 'Квартира',
+      'HOUSE': 'Дом',
+      'VILLA': 'Вилла',
+      'TOWNHOUSE': 'Таунхаус',
+      'LAND': 'Участок',
+      'COMMERCIAL': 'Коммерция',
+      'OFFICE': 'Офис',
+    };
+    message += `🏠 Тип: ${propertyTypeLabels[property.propertyType] || property.propertyType}\n\n`;
+
     // Location
-    message += `📍 Location: ${property.city}`;
+    message += `📍 Локация: ${property.city}`;
     if (property.district) {
       message += `, ${property.district}`;
     }
     message += `\n`;
 
     // Price
-    message += `💵 Price: ${priceFormatted}\n`;
+    message += `💵 Цена: ${priceFormatted}`;
+
+    // Price per m² (if area is available)
+    if (property.area && property.area > 0) {
+      const pricePerSqm = Math.round(property.price / property.area);
+      const pricePerSqmFormatted = this.formatPrice(pricePerSqm, property.currency);
+      message += ` (${pricePerSqmFormatted}/м²)`;
+    }
+    message += `\n`;
 
     // Property details
     if (property.area) {
-      message += `📐 Area: ${property.area} m²\n`;
+      message += `📐 Площадь: ${property.area} м²\n`;
     }
     if (property.bedrooms) {
-      message += `🛏 Bedrooms: ${property.bedrooms}`;
+      message += `🛏 Комнат: ${property.bedrooms}`;
       if (property.bathrooms) {
-        message += ` | 🚿 Bathrooms: ${property.bathrooms}`;
+        message += ` | 🚿 Санузлов: ${property.bathrooms}`;
       }
       message += `\n`;
     }
     if (property.floor && property.totalFloors) {
-      message += `🏢 Floor: ${property.floor}/${property.totalFloors}\n`;
+      message += `🏢 Этаж: ${property.floor}/${property.totalFloors}\n`;
     }
 
     // Developer/Project info
     if (property.developer) {
-      message += `🏗 Developer: ${property.developer.companyName}\n`;
+      message += `🏗 Застройщик: ${property.developer.companyName}\n`;
     }
     if (property.developerProject) {
-      message += `🏘 Project: ${property.developerProject.name}\n`;
+      message += `🏘 Проект: ${property.developerProject.name}\n`;
     }
 
     // Description (truncated if too long)
@@ -108,7 +136,7 @@ export class TelegramShareService {
 
     // Link to listing
     const frontendUrl = this.config.get('FRONTEND_URL') || 'https://staging.jahongir-app.uz';
-    message += `\n🔗 View details: ${frontendUrl}/ru/properties/${property.id}`;
+    message += `\n🔗 Подробнее: ${frontendUrl}/ru/properties/${property.id}`;
 
     return message;
   }
