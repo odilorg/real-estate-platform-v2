@@ -2,8 +2,10 @@
 
 import { useState, useEffect } from 'react';
 import Link from 'next/link';
+import { useRouter } from 'next/navigation';
 import { DeveloperStats } from './components/DeveloperStats';
-import { Search, FolderPlus, Users, FileText, Building, Plus, Eye, Edit, Trash2, MapPin, Loader2 } from 'lucide-react';
+import { Search, FolderPlus, Users, FileText, Building, Plus, Eye, Edit, Trash2, MapPin, Loader2, ShieldAlert } from 'lucide-react';
+import { useAuth } from '@/context/AuthContext';
 
 interface PropertyImage {
   id: string;
@@ -40,11 +42,55 @@ const STATUS_COLORS: Record<string, string> = {
 };
 
 export default function DeveloperDashboard() {
+  const { user, loading: authLoading } = useAuth();
+  const router = useRouter();
   const [properties, setProperties] = useState<Property[]>([]);
   const [propertiesLoading, setPropertiesLoading] = useState(true);
   const [deletingId, setDeletingId] = useState<string | null>(null);
 
   const apiUrl = process.env.NEXT_PUBLIC_API_URL || 'http://localhost:3001/api';
+
+  // Check if user has developer role
+  const isDeveloper = user?.role === 'DEVELOPER_ADMIN' || user?.role === 'DEVELOPER_SALES_AGENT';
+
+  // Show loading while checking auth
+  if (authLoading) {
+    return (
+      <div className="flex items-center justify-center min-h-[60vh]">
+        <Loader2 className="h-8 w-8 text-blue-600 animate-spin" />
+      </div>
+    );
+  }
+
+  // Redirect or show access denied if not a developer
+  if (!user) {
+    return (
+      <div className="flex flex-col items-center justify-center min-h-[60vh] text-center">
+        <ShieldAlert className="h-16 w-16 text-yellow-500 mb-4" />
+        <h2 className="text-xl font-semibold text-gray-900 mb-2">Требуется авторизация</h2>
+        <p className="text-gray-600 mb-4">Войдите в систему для доступа к панели застройщика</p>
+        <Link href="/login" className="px-4 py-2 bg-blue-600 text-white rounded-lg hover:bg-blue-700">
+          Войти
+        </Link>
+      </div>
+    );
+  }
+
+  if (!isDeveloper) {
+    return (
+      <div className="flex flex-col items-center justify-center min-h-[60vh] text-center">
+        <ShieldAlert className="h-16 w-16 text-red-500 mb-4" />
+        <h2 className="text-xl font-semibold text-gray-900 mb-2">Доступ запрещен</h2>
+        <p className="text-gray-600 mb-4">
+          У вас нет доступа к панели застройщика.
+          Эта страница доступна только для застройщиков.
+        </p>
+        <Link href="/dashboard" className="px-4 py-2 bg-blue-600 text-white rounded-lg hover:bg-blue-700">
+          Перейти в личный кабинет
+        </Link>
+      </div>
+    );
+  }
 
   // TODO: Fetch developer data from API
   const stats = {

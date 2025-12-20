@@ -9,13 +9,15 @@ import type {
   PhoneLoginVerifyDto,
 } from '@repo/shared';
 
+export type UserRole = 'USER' | 'AGENT' | 'ADMIN' | 'DEVELOPER_ADMIN' | 'DEVELOPER_SALES_AGENT';
+
 export type User = {
   id: string;
   email?: string;
   phone?: string;
   firstName: string;
   lastName: string;
-  role: 'USER' | 'AGENT' | 'ADMIN';
+  role: UserRole;
 };
 
 export async function login(data: LoginDto): Promise<AuthResponseDto> {

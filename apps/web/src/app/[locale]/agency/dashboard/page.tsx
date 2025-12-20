@@ -2,8 +2,9 @@
 
 import { useState, useEffect } from 'react';
 import { Link } from '@/i18n/routing';
-import { Building, Users, UserPlus, FileText, Settings, Loader2, Edit, Search, Plus, Eye, Trash2, MapPin } from 'lucide-react';
+import { Building, Users, UserPlus, FileText, Settings, Loader2, Edit, Search, Plus, Eye, Trash2, MapPin, ShieldAlert } from 'lucide-react';
 import { api } from '@/lib/api';
+import { useAuth } from '@/context/AuthContext';
 
 interface AgencyStats {
   leads: {
@@ -68,6 +69,7 @@ const STATUS_COLORS: Record<string, string> = {
 };
 
 export default function AgencyDashboardPage() {
+  const { user, loading: authLoading } = useAuth();
   const [agency, setAgency] = useState<Agency | null>(null);
   const [stats, setStats] = useState<AgencyStats | null>(null);
   const [role, setRole] = useState<string>('');
@@ -78,10 +80,15 @@ export default function AgencyDashboardPage() {
 
   const apiUrl = process.env.NEXT_PUBLIC_API_URL || 'http://localhost:3001/api';
 
+  // Check if user is a developer (should not access agency dashboard)
+  const isDeveloper = user?.role === 'DEVELOPER_ADMIN' || user?.role === 'DEVELOPER_SALES_AGENT';
+
   useEffect(() => {
-    fetchAgencyData();
-    fetchMyProperties();
-  }, []);
+    if (!authLoading && user && !isDeveloper) {
+      fetchAgencyData();
+      fetchMyProperties();
+    }
+  }, [authLoading, user, isDeveloper]);
 
   const fetchAgencyData = async () => {
     try {
@@ -141,10 +148,42 @@ export default function AgencyDashboardPage() {
     }
   };
 
-  if (loading) {
+  // Show loading while checking auth
+  if (authLoading || loading) {
     return (
       <div className="flex items-center justify-center h-screen">
         <Loader2 className="w-8 h-8 text-blue-600 animate-spin" />
+      </div>
+    );
+  }
+
+  // Require login
+  if (!user) {
+    return (
+      <div className="flex flex-col items-center justify-center min-h-[60vh] text-center">
+        <ShieldAlert className="h-16 w-16 text-yellow-500 mb-4" />
+        <h2 className="text-xl font-semibold text-gray-900 mb-2">Требуется авторизация</h2>
+        <p className="text-gray-600 mb-4">Войдите в систему для доступа к панели агентства</p>
+        <Link href="/login" className="px-4 py-2 bg-blue-600 text-white rounded-lg hover:bg-blue-700">
+          Войти
+        </Link>
+      </div>
+    );
+  }
+
+  // Developers should not access agency dashboard
+  if (isDeveloper) {
+    return (
+      <div className="flex flex-col items-center justify-center min-h-[60vh] text-center">
+        <ShieldAlert className="h-16 w-16 text-red-500 mb-4" />
+        <h2 className="text-xl font-semibold text-gray-900 mb-2">Доступ запрещен</h2>
+        <p className="text-gray-600 mb-4">
+          У вас нет доступа к панели агентства.
+          Эта страница доступна только для агентов.
+        </p>
+        <Link href="/developer" className="px-4 py-2 bg-blue-600 text-white rounded-lg hover:bg-blue-700">
+          Перейти в панель застройщика
+        </Link>
       </div>
     );
   }
@@ -154,7 +193,10 @@ export default function AgencyDashboardPage() {
       <div className="flex items-center justify-center h-screen">
         <div className="text-center">
           <Building className="mx-auto h-12 w-12 text-gray-400 mb-4" />
-          <p className="text-gray-600">You are not associated with any agency</p>
+          <p className="text-gray-600">Вы не привязаны ни к одному агентству</p>
+          <Link href="/dashboard" className="mt-4 inline-block px-4 py-2 bg-blue-600 text-white rounded-lg hover:bg-blue-700">
+            Перейти в личный кабинет
+          </Link>
         </div>
       </div>
     );
