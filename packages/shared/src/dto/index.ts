@@ -9,6 +9,8 @@ import {
   RenovationType,
   ParkingType,
   Currency,
+  SellerType,
+  HeatingType,
 } from '../constants';
 
 // Auth DTOs
@@ -115,13 +117,19 @@ export const CreatePropertyDto = z.object({
   parking: z.number().int().min(0).optional(),
   parkingType: z.nativeEnum(ParkingType).optional(),
   balcony: z.number().int().min(0).optional(),
-  loggia: z.number().int().min(0).optional(),
+
+  // Climate & Utilities
+  hasAirConditioning: z.boolean().optional(),
+  heatingType: z.nativeEnum(HeatingType).optional(),
+  hasGas: z.boolean().optional(),
+
+  // Seller info
+  sellerType: z.nativeEnum(SellerType).optional(),
 
   // Building characteristics
   buildingType: z.nativeEnum(BuildingType).optional(),
   buildingClass: z.nativeEnum(BuildingClass).optional(),
   buildingName: z.string().optional(),
-  hasGarbageChute: z.boolean().default(false),
   hasConcierge: z.boolean().default(false),
   hasGatedArea: z.boolean().default(false),
 

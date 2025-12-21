@@ -1,7 +1,8 @@
 'use client';
 
-import { Building, Calendar, Wrench, Car, Wind, ArrowUpDown } from 'lucide-react';
+import { Building, Calendar, Wrench, Car, Wind, ArrowUpDown, Snowflake, Flame, Fuel } from 'lucide-react';
 import { WizardFormData } from '../PropertyCreationWizard';
+import { useTranslations } from 'next-intl';
 
 interface Step4BuildingFeaturesProps {
   formData: WizardFormData;
@@ -66,15 +67,24 @@ const WINDOW_VIEW_LABELS: Record<string, string> = {
   YARD_STREET: 'Во двор и на улицу',
 };
 
+const HEATING_TYPES = ['CENTRAL', 'INDIVIDUAL', 'NONE'];
+
+const HEATING_LABELS: Record<string, string> = {
+  CENTRAL: 'Центральное',
+  INDIVIDUAL: 'Индивидуальное',
+  NONE: 'Отсутствует',
+};
+
 export default function Step4BuildingFeatures({
   formData,
   updateFormData,
   errors,
 }: Step4BuildingFeaturesProps) {
-  const showBuildingFields = ['APARTMENT', 'CONDO'].includes(
-    formData.propertyType
-  );
+  const t = useTranslations('wizard.step4');
+
+  const showBuildingFields = formData.propertyType === 'APARTMENT';
   const showHouseFields = ['HOUSE', 'TOWNHOUSE'].includes(formData.propertyType);
+  const showClimateFields = ['APARTMENT', 'HOUSE', 'TOWNHOUSE'].includes(formData.propertyType);
 
   return (
     <div className="space-y-6">
@@ -261,86 +271,47 @@ export default function Step4BuildingFeatures({
         </div>
       </div>
 
-      {/* Balcony & Loggia */}
-      <div className="grid grid-cols-1 md:grid-cols-2 gap-4">
-        <div>
-          <label className="block text-sm font-medium text-gray-700 mb-2">
-            <div className="flex items-center gap-1">
-              <Wind className="h-4 w-4" />
-              Балконов
-            </div>
-          </label>
-          <input
-            type="number"
-            value={formData.balcony}
-            onChange={(e) => updateFormData({ balcony: e.target.value })}
-            placeholder="0"
-            min="0"
-            max="5"
-            className="w-full px-4 py-2 border border-gray-300 rounded-lg focus:ring-2 focus:ring-blue-500 focus:border-transparent"
-          />
-        </div>
-
-        <div>
-          <label className="block text-sm font-medium text-gray-700 mb-2">
-            <div className="flex items-center gap-1">
-              <Wind className="h-4 w-4" />
-              Лоджий
-            </div>
-          </label>
-          <input
-            type="number"
-            value={formData.loggia}
-            onChange={(e) => updateFormData({ loggia: e.target.value })}
-            placeholder="0"
-            min="0"
-            max="5"
-            className="w-full px-4 py-2 border border-gray-300 rounded-lg focus:ring-2 focus:ring-blue-500 focus:border-transparent"
-          />
-        </div>
+      {/* Balcony */}
+      <div>
+        <label className="block text-sm font-medium text-gray-700 mb-2">
+          <div className="flex items-center gap-1">
+            <Wind className="h-4 w-4" />
+            Балконов
+          </div>
+        </label>
+        <input
+          type="number"
+          value={formData.balcony}
+          onChange={(e) => updateFormData({ balcony: e.target.value })}
+          placeholder="0"
+          min="0"
+          max="5"
+          className="w-full md:w-1/2 px-4 py-2 border border-gray-300 rounded-lg focus:ring-2 focus:ring-blue-500 focus:border-transparent"
+        />
       </div>
 
       {/* Elevators - for apartments */}
       {showBuildingFields && (
-        <div className="grid grid-cols-1 md:grid-cols-2 gap-4">
-          <div>
-            <label className="block text-sm font-medium text-gray-700 mb-2">
-              Пассажирских лифтов
-            </label>
-            <input
-              type="number"
-              value={formData.elevatorPassenger}
-              onChange={(e) =>
-                updateFormData({ elevatorPassenger: e.target.value })
-              }
-              placeholder="0"
-              min="0"
-              max="10"
-              className="w-full px-4 py-2 border border-gray-300 rounded-lg focus:ring-2 focus:ring-blue-500 focus:border-transparent"
-            />
-          </div>
-
-          <div>
-            <label className="block text-sm font-medium text-gray-700 mb-2">
-              Грузовых лифтов
-            </label>
-            <input
-              type="number"
-              value={formData.elevatorCargo}
-              onChange={(e) => updateFormData({ elevatorCargo: e.target.value })}
-              placeholder="0"
-              min="0"
-              max="5"
-              className="w-full px-4 py-2 border border-gray-300 rounded-lg focus:ring-2 focus:ring-blue-500 focus:border-transparent"
-            />
-          </div>
+        <div>
+          <label className="block text-sm font-medium text-gray-700 mb-2">
+            Количество лифтов
+          </label>
+          <input
+            type="number"
+            value={formData.elevatorPassenger}
+            onChange={(e) =>
+              updateFormData({ elevatorPassenger: e.target.value })
+            }
+            placeholder="0"
+            min="0"
+            max="10"
+            className="w-full md:w-1/2 px-4 py-2 border border-gray-300 rounded-lg focus:ring-2 focus:ring-blue-500 focus:border-transparent"
+          />
         </div>
       )}
 
       {/* Bathroom Type */}
-      {['APARTMENT', 'HOUSE', 'TOWNHOUSE', 'CONDO'].includes(
-        formData.propertyType
-      ) && (
+      {['APARTMENT', 'HOUSE', 'TOWNHOUSE'].includes(formData.propertyType) && (
         <div>
           <label className="block text-sm font-medium text-gray-700 mb-2">
             Санузел
@@ -405,18 +376,6 @@ export default function Step4BuildingFeatures({
             <label className="flex items-center gap-2 cursor-pointer">
               <input
                 type="checkbox"
-                checked={formData.hasGarbageChute}
-                onChange={(e) =>
-                  updateFormData({ hasGarbageChute: e.target.checked })
-                }
-                className="w-4 h-4 text-blue-600 border-gray-300 rounded focus:ring-blue-500"
-              />
-              <span className="text-sm text-gray-700">Мусоропровод</span>
-            </label>
-
-            <label className="flex items-center gap-2 cursor-pointer">
-              <input
-                type="checkbox"
                 checked={formData.hasConcierge}
                 onChange={(e) =>
                   updateFormData({ hasConcierge: e.target.checked })
@@ -436,6 +395,73 @@ export default function Step4BuildingFeatures({
                 className="w-4 h-4 text-blue-600 border-gray-300 rounded focus:ring-blue-500"
               />
               <span className="text-sm text-gray-700">Закрытая территория</span>
+            </label>
+          </div>
+        </div>
+      )}
+
+      {/* Climate Features */}
+      {showClimateFields && (
+        <div>
+          <label className="block text-sm font-medium text-gray-700 mb-3">
+            <div className="flex items-center gap-1">
+              <Flame className="h-4 w-4" />
+              Климат и коммуникации
+            </div>
+          </label>
+
+          {/* Heating Type */}
+          <div className="mb-4">
+            <label className="block text-sm text-gray-600 mb-2">
+              Отопление
+            </label>
+            <div className="grid grid-cols-1 md:grid-cols-3 gap-3">
+              {HEATING_TYPES.map((type) => {
+                const isSelected = formData.heatingType === type;
+                return (
+                  <button
+                    key={type}
+                    type="button"
+                    onClick={() => updateFormData({ heatingType: type })}
+                    className={`px-4 py-2 rounded-lg border-2 transition-all ${
+                      isSelected
+                        ? 'border-blue-600 bg-blue-50 text-blue-600 font-semibold'
+                        : 'border-gray-200 bg-white text-gray-700 hover:border-blue-300'
+                    }`}
+                  >
+                    {HEATING_LABELS[type]}
+                  </button>
+                );
+              })}
+            </div>
+          </div>
+
+          {/* Climate Checkboxes */}
+          <div className="space-y-2">
+            <label className="flex items-center gap-2 cursor-pointer">
+              <input
+                type="checkbox"
+                checked={formData.hasAirConditioning}
+                onChange={(e) =>
+                  updateFormData({ hasAirConditioning: e.target.checked })
+                }
+                className="w-4 h-4 text-blue-600 border-gray-300 rounded focus:ring-blue-500"
+              />
+              <Snowflake className="h-4 w-4 text-blue-500" />
+              <span className="text-sm text-gray-700">Кондиционер</span>
+            </label>
+
+            <label className="flex items-center gap-2 cursor-pointer">
+              <input
+                type="checkbox"
+                checked={formData.hasGas}
+                onChange={(e) =>
+                  updateFormData({ hasGas: e.target.checked })
+                }
+                className="w-4 h-4 text-blue-600 border-gray-300 rounded focus:ring-blue-500"
+              />
+              <Fuel className="h-4 w-4 text-orange-500" />
+              <span className="text-sm text-gray-700">Газ</span>
             </label>
           </div>
         </div>

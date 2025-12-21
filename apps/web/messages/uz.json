@@ -358,12 +358,17 @@
     "validation": {
       "propertyType": "Mulk turini tanlang",
       "listingType": "E'lon turini tanlang",
+      "sellerType": "Kim ekanligingizni ko'rsating",
       "address": "Manzilni kiriting",
       "city": "Shaharni tanlang",
       "price": "To'g'ri narxni kiriting",
       "currency": "Valyutani tanlang",
       "area": "0 m²dan katta maydonni kiriting",
+      "rooms": "Xonalar sonini kiriting",
+      "floor": "Qavatni kiriting",
+      "totalFloors": "Bino qavatlarini kiriting",
       "images": "Kamida bitta rasm yuklang",
+      "imagesMin": "Kamida 3 ta rasm yuklang",
       "title": "Sarlavha kamida 10 ta belgidan iborat bo'lishi kerak",
       "description": "Tavsif kamida 50 ta belgidan iborat bo'lishi kerak"
     },
@@ -423,6 +428,63 @@
         "home": "Bosh sahifaga",
         "view": "E'lonni ko'rish"
       }
+    },
+    "step1": {
+      "propertyTypeTitle": "Mulk turi",
+      "listingTypeTitle": "E'lon turi",
+      "sellerTypeTitle": "Siz kimsiz",
+      "marketTypeTitle": "Bozor turi",
+      "propertyTypes": {
+        "apartment": "Kvartira",
+        "apartmentDesc": "Ko'p qavatli uy",
+        "house": "Uy",
+        "houseDesc": "Xususiy uy",
+        "townhouse": "Taunxaus",
+        "townhouseDesc": "Blokli uy",
+        "land": "Yer uchastkasi",
+        "landDesc": "Yer maydoni",
+        "commercial": "Tijorat",
+        "commercialDesc": "Ofis, ombor, do'kon"
+      },
+      "listingTypes": {
+        "sale": "Sotish",
+        "saleDesc": "Mulkni sotish",
+        "rentLong": "Uzoq muddatli ijara",
+        "rentLongDesc": "Uzoq muddatga ijaraga berish",
+        "rentDaily": "Kunlik ijara",
+        "rentDailyDesc": "Kunlik ijaraga berish"
+      },
+      "sellerTypes": {
+        "owner": "Egasi",
+        "ownerDesc": "Men mulk egasiman",
+        "agent": "Agent",
+        "agentDesc": "Men egasini vakili etaman",
+        "developer": "Quruvchi",
+        "developerDesc": "Men qurilish kompaniyasiman"
+      },
+      "marketTypes": {
+        "newBuilding": "Yangi bino",
+        "newBuildingDesc": "Birlamchi bozor",
+        "secondary": "Ikkilamchi",
+        "secondaryDesc": "Ikkilamchi bozor"
+      },
+      "tips": {
+        "title": "Maslahatlar",
+        "tip1": "To'g'ri turni tanlash xaridorlarga e'loningizni tezroq topishga yordam beradi",
+        "tip2": "Yaxshiroq ko'rinish uchun aniq mulk turini ko'rsating",
+        "tip3": "Mulk egalari 20% ko'proq javob oladi"
+      }
+    },
+    "step4": {
+      "climateTitle": "Iqlim va kommunikatsiyalar",
+      "heatingLabel": "Isitish",
+      "heatingTypes": {
+        "central": "Markaziy",
+        "individual": "Individual",
+        "none": "Yo'q"
+      },
+      "hasAirConditioning": "Konditsioner",
+      "hasGas": "Gaz"
     }
   },
   "compare": {

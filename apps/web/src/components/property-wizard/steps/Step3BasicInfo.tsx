@@ -111,15 +111,13 @@ export default function Step3BasicInfo({
       </div>
 
       {/* Rooms - only for apartments/houses */}
-      {['APARTMENT', 'HOUSE', 'TOWNHOUSE', 'CONDO'].includes(
-        formData.propertyType
-      ) && (
+      {['APARTMENT', 'HOUSE', 'TOWNHOUSE'].includes(formData.propertyType) && (
         <div className="grid grid-cols-1 md:grid-cols-3 gap-4">
           <div>
             <label className="block text-sm font-medium text-gray-700 mb-2">
               <div className="flex items-center gap-1">
                 <Home className="h-4 w-4" />
-                Комнат
+                Комнат <span className="text-red-500">*</span>
               </div>
             </label>
             <input
@@ -129,8 +127,13 @@ export default function Step3BasicInfo({
               placeholder="3"
               min="1"
               max="20"
-              className="w-full px-4 py-2 border border-gray-300 rounded-lg focus:ring-2 focus:ring-blue-500 focus:border-transparent"
+              className={`w-full px-4 py-2 border rounded-lg focus:ring-2 focus:ring-blue-500 focus:border-transparent ${
+                errors.rooms ? 'border-red-500' : 'border-gray-300'
+              }`}
             />
+            {errors.rooms && (
+              <p className="mt-1 text-sm text-red-600">{errors.rooms}</p>
+            )}
           </div>
 
           <div>
@@ -173,13 +176,13 @@ export default function Step3BasicInfo({
       )}
 
       {/* Floor and Total Floors - for apartments */}
-      {['APARTMENT', 'CONDO'].includes(formData.propertyType) && (
+      {formData.propertyType === 'APARTMENT' && (
         <div className="grid grid-cols-1 md:grid-cols-2 gap-4">
           <div>
             <label className="block text-sm font-medium text-gray-700 mb-2">
               <div className="flex items-center gap-1">
                 <Layers className="h-4 w-4" />
-                Этаж
+                Этаж <span className="text-red-500">*</span>
               </div>
             </label>
             <input
@@ -189,18 +192,24 @@ export default function Step3BasicInfo({
               placeholder="5"
               min="1"
               max="100"
-              className="w-full px-4 py-2 border border-gray-300 rounded-lg focus:ring-2 focus:ring-blue-500 focus:border-transparent"
+              className={`w-full px-4 py-2 border rounded-lg focus:ring-2 focus:ring-blue-500 focus:border-transparent ${
+                errors.floor ? 'border-red-500' : 'border-gray-300'
+              }`}
             />
-            <p className="mt-1 text-xs text-gray-500">
-              Укажите на каком этаже находится квартира
-            </p>
+            {errors.floor ? (
+              <p className="mt-1 text-sm text-red-600">{errors.floor}</p>
+            ) : (
+              <p className="mt-1 text-xs text-gray-500">
+                Укажите на каком этаже находится квартира
+              </p>
+            )}
           </div>
 
           <div>
             <label className="block text-sm font-medium text-gray-700 mb-2">
               <div className="flex items-center gap-1">
                 <Layers className="h-4 w-4" />
-                Этажей в здании
+                Этажей в здании <span className="text-red-500">*</span>
               </div>
             </label>
             <input
@@ -210,11 +219,17 @@ export default function Step3BasicInfo({
               placeholder="16"
               min="1"
               max="150"
-              className="w-full px-4 py-2 border border-gray-300 rounded-lg focus:ring-2 focus:ring-blue-500 focus:border-transparent"
+              className={`w-full px-4 py-2 border rounded-lg focus:ring-2 focus:ring-blue-500 focus:border-transparent ${
+                errors.totalFloors ? 'border-red-500' : 'border-gray-300'
+              }`}
             />
-            <p className="mt-1 text-xs text-gray-500">
-              Общее количество этажей в доме
-            </p>
+            {errors.totalFloors ? (
+              <p className="mt-1 text-sm text-red-600">{errors.totalFloors}</p>
+            ) : (
+              <p className="mt-1 text-xs text-gray-500">
+                Общее количество этажей в доме
+              </p>
+            )}
           </div>
         </div>
       )}

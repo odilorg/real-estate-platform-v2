@@ -1,7 +1,8 @@
 'use client';
 
-import { Building2, Home, Building, Store, LandPlot, Factory } from 'lucide-react';
+import { Building2, Home, Building, Store, LandPlot, Factory, User, Briefcase, HardHat } from 'lucide-react';
 import { WizardFormData } from '../PropertyCreationWizard';
+import { useTranslations } from 'next-intl';
 
 interface Step1PropertyTypeProps {
   formData: WizardFormData;
@@ -12,59 +13,77 @@ interface Step1PropertyTypeProps {
 const PROPERTY_TYPES = [
   {
     value: 'APARTMENT',
-    label: 'Квартира',
+    labelKey: 'propertyTypes.apartment',
+    descKey: 'propertyTypes.apartmentDesc',
     icon: Building2,
-    description: 'Квартира в многоквартирном доме',
   },
   {
     value: 'HOUSE',
-    label: 'Дом',
+    labelKey: 'propertyTypes.house',
+    descKey: 'propertyTypes.houseDesc',
     icon: Home,
-    description: 'Частный дом или коттедж',
   },
   {
     value: 'TOWNHOUSE',
-    label: 'Таунхаус',
+    labelKey: 'propertyTypes.townhouse',
+    descKey: 'propertyTypes.townhouseDesc',
     icon: Building,
-    description: 'Таунхаус или блокированный дом',
-  },
-  {
-    value: 'CONDO',
-    label: 'Кондоминиум',
-    icon: Building2,
-    description: 'Кондоминиум с общей территорией',
   },
   {
     value: 'LAND',
-    label: 'Земельный участок',
+    labelKey: 'propertyTypes.land',
+    descKey: 'propertyTypes.landDesc',
     icon: LandPlot,
-    description: 'Участок земли для строительства',
   },
   {
     value: 'COMMERCIAL',
-    label: 'Коммерческая',
+    labelKey: 'propertyTypes.commercial',
+    descKey: 'propertyTypes.commercialDesc',
     icon: Factory,
-    description: 'Офис, торговое помещение, склад',
+  },
+];
+
+const SELLER_TYPES = [
+  {
+    value: 'OWNER',
+    labelKey: 'sellerTypes.owner',
+    descKey: 'sellerTypes.ownerDesc',
+    icon: User,
+    color: 'blue',
+  },
+  {
+    value: 'AGENT',
+    labelKey: 'sellerTypes.agent',
+    descKey: 'sellerTypes.agentDesc',
+    icon: Briefcase,
+    color: 'green',
+  },
+  {
+    value: 'DEVELOPER',
+    labelKey: 'sellerTypes.developer',
+    descKey: 'sellerTypes.developerDesc',
+    icon: HardHat,
+    color: 'purple',
   },
 ];
 
 const LISTING_TYPES = [
   {
     value: 'SALE',
-    label: 'Продажа',
-    description: 'Продать недвижимость',
+    labelKey: 'listingTypes.sale',
+    descKey: 'listingTypes.saleDesc',
     color: 'blue',
   },
   {
     value: 'RENT_LONG',
-    label: 'Длительная аренда',
-    description: 'Сдать в аренду на длительный срок',
+    labelKey: 'listingTypes.rentLong',
+    descKey: 'listingTypes.rentLongDesc',
     color: 'green',
   },
   {
     value: 'RENT_DAILY',
-    label: 'Посуточная аренда',
-    description: 'Сдать посуточно',
+    labelKey: 'listingTypes.rentDaily',
+    descKey: 'listingTypes.rentDailyDesc',
     color: 'purple',
   },
 ];
@@ -72,14 +91,14 @@ const LISTING_TYPES = [
 const MARKET_TYPES = [
   {
     value: 'NEW_BUILDING',
-    label: 'Новостройка',
-    description: 'Первичный рынок, новое строительство',
+    labelKey: 'marketTypes.newBuilding',
+    descKey: 'marketTypes.newBuildingDesc',
     color: 'blue',
   },
   {
     value: 'SECONDARY',
-    label: 'Вторичка',
-    description: 'Вторичный рынок, готовое жилье',
+    labelKey: 'marketTypes.secondary',
+    descKey: 'marketTypes.secondaryDesc',
     color: 'green',
   },
 ];
@@ -89,11 +108,37 @@ export default function Step1PropertyType({
   updateFormData,
   errors,
 }: Step1PropertyTypeProps) {
+  const t = useTranslations('wizard.step1');
+
+  const colorClasses = {
+    blue: {
+      border: 'border-blue-600',
+      bg: 'bg-blue-50',
+      iconBg: 'bg-blue-100',
+      text: 'text-blue-600',
+      hover: 'hover:border-blue-300',
+    },
+    green: {
+      border: 'border-green-600',
+      bg: 'bg-green-50',
+      iconBg: 'bg-green-100',
+      text: 'text-green-600',
+      hover: 'hover:border-green-300',
+    },
+    purple: {
+      border: 'border-purple-600',
+      bg: 'bg-purple-50',
+      iconBg: 'bg-purple-100',
+      text: 'text-purple-600',
+      hover: 'hover:border-purple-300',
+    },
+  };
+
   return (
     <div className="space-y-8">
       {/* Property Type Selection */}
       <div>
-        <h3 className="text-lg font-semibold mb-4">Тип недвижимости</h3>
+        <h3 className="text-lg font-semibold mb-4">{t('propertyTypeTitle')}</h3>
         <div className="grid grid-cols-1 md:grid-cols-2 lg:grid-cols-3 gap-4">
           {PROPERTY_TYPES.map((type) => {
             const Icon = type.icon;
@@ -128,10 +173,10 @@ export default function Step1PropertyType({
                         isSelected ? 'text-blue-600' : 'text-gray-900'
                       }`}
                     >
-                      {type.label}
+                      {t(type.labelKey as any)}
                     </div>
                     <div className="text-sm text-gray-500">
-                      {type.description}
+                      {t(type.descKey as any)}
                     </div>
                   </div>
                   {isSelected && (
@@ -163,34 +208,10 @@ export default function Step1PropertyType({
 
       {/* Listing Type Selection */}
       <div>
-        <h3 className="text-lg font-semibold mb-4">Тип объявления</h3>
+        <h3 className="text-lg font-semibold mb-4">{t('listingTypeTitle')}</h3>
         <div className="grid grid-cols-1 md:grid-cols-3 gap-4">
           {LISTING_TYPES.map((type) => {
             const isSelected = formData.listingType === type.value;
-            const colorClasses = {
-              blue: {
-                border: 'border-blue-600',
-                bg: 'bg-blue-50',
-                iconBg: 'bg-blue-100',
-                text: 'text-blue-600',
-                hover: 'hover:border-blue-300',
-              },
-              green: {
-                border: 'border-green-600',
-                bg: 'bg-green-50',
-                iconBg: 'bg-green-100',
-                text: 'text-green-600',
-                hover: 'hover:border-green-300',
-              },
-              purple: {
-                border: 'border-purple-600',
-                bg: 'bg-purple-50',
-                iconBg: 'bg-purple-100',
-                text: 'text-purple-600',
-                hover: 'hover:border-purple-300',
-              },
-            };
-
             const colors = colorClasses[type.color as keyof typeof colorClasses];
 
             return (
@@ -210,9 +231,9 @@ export default function Step1PropertyType({
                       isSelected ? colors.text : 'text-gray-900'
                     }`}
                   >
-                    {type.label}
+                    {t(type.labelKey as any)}
                   </div>
-                  <div className="text-sm text-gray-500">{type.description}</div>
+                  <div className="text-sm text-gray-500">{t(type.descKey as any)}</div>
                   {isSelected && (
                     <div className="pt-2">
                       <div
@@ -242,30 +263,65 @@ export default function Step1PropertyType({
         )}
       </div>
 
+      {/* Seller Type Selection */}
+      <div>
+        <h3 className="text-lg font-semibold mb-4">
+          {t('sellerTypeTitle')} <span className="text-red-500">*</span>
+        </h3>
+        <div className="grid grid-cols-1 md:grid-cols-3 gap-4">
+          {SELLER_TYPES.map((type) => {
+            const Icon = type.icon;
+            const isSelected = formData.sellerType === type.value;
+            const colors = colorClasses[type.color as keyof typeof colorClasses];
+
+            return (
+              <button
+                key={type.value}
+                type="button"
+                onClick={() => updateFormData({ sellerType: type.value })}
+                className={`p-5 rounded-lg border-2 transition-all text-center hover:shadow-md ${
+                  isSelected
+                    ? `${colors.border} ${colors.bg} shadow-md`
+                    : `border-gray-200 bg-white ${colors.hover}`
+                }`}
+              >
+                <div className="flex flex-col items-center gap-2">
+                  <div
+                    className={`p-3 rounded-full ${
+                      isSelected ? colors.iconBg : 'bg-gray-100'
+                    }`}
+                  >
+                    <Icon
+                      className={`h-6 w-6 ${
+                        isSelected ? colors.text : 'text-gray-600'
+                      }`}
+                    />
+                  </div>
+                  <div
+                    className={`text-lg font-bold ${
+                      isSelected ? colors.text : 'text-gray-900'
+                    }`}
+                  >
+                    {t(type.labelKey as any)}
+                  </div>
+                  <div className="text-sm text-gray-500">{t(type.descKey as any)}</div>
+                </div>
+              </button>
+            );
+          })}
+        </div>
+        {errors.sellerType && (
+          <p className="mt-2 text-sm text-red-600">{errors.sellerType}</p>
+        )}
+      </div>
+
       {/* Market Type Selection (only for apartments) */}
       {formData.propertyType === 'APARTMENT' && (
         <div>
-          <h3 className="text-lg font-semibold mb-4">Тип жилья</h3>
+          <h3 className="text-lg font-semibold mb-4">{t('marketTypeTitle')}</h3>
           <div className="grid grid-cols-1 md:grid-cols-2 gap-4">
             {MARKET_TYPES.map((type) => {
               const isSelected = formData.marketType === type.value;
-              const colorClasses = {
-                blue: {
-                  border: 'border-blue-600',
-                  bg: 'bg-blue-50',
-                  iconBg: 'bg-blue-100',
-                  text: 'text-blue-600',
-                  hover: 'hover:border-blue-300',
-                },
-                green: {
-                  border: 'border-green-600',
-                  bg: 'bg-green-50',
-                  iconBg: 'bg-green-100',
-                  text: 'text-green-600',
-                  hover: 'hover:border-green-300',
-                },
-              };
-
               const colors = colorClasses[type.color as keyof typeof colorClasses];
 
               return (
@@ -285,9 +341,9 @@ export default function Step1PropertyType({
                         isSelected ? colors.text : 'text-gray-900'
                       }`}
                     >
-                      {type.label}
+                      {t(type.labelKey as any)}
                     </div>
-                    <div className="text-sm text-gray-500">{type.description}</div>
+                    <div className="text-sm text-gray-500">{t(type.descKey as any)}</div>
                     {isSelected && (
                       <div className="pt-2">
                         <div
@@ -320,13 +376,11 @@ export default function Step1PropertyType({
 
       {/* Helpful Tips */}
       <div className="bg-blue-50 border border-blue-200 rounded-lg p-4">
-        <h4 className="font-semibold text-blue-900 mb-2">💡 Полезные советы</h4>
+        <h4 className="font-semibold text-blue-900 mb-2">{t('tips.title')}</h4>
         <ul className="space-y-1 text-sm text-blue-800">
-          <li>• Выберите тип недвижимости, который точно описывает ваш объект</li>
-          <li>
-            • Для посуточной аренды лучше подходят квартиры в центре города
-          </li>
-          <li>• Коммерческая недвижимость имеет дополнительные параметры</li>
+          <li>• {t('tips.tip1')}</li>
+          <li>• {t('tips.tip2')}</li>
+          <li>• {t('tips.tip3')}</li>
         </ul>
       </div>
     </div>

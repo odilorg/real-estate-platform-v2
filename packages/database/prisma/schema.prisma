@@ -128,15 +128,20 @@ model Property {
   parking     Int?
   parkingType ParkingType?
   balcony     Int?
-  loggia      Int?
+
+  // Climate & Utilities
+  hasAirConditioning Boolean?
+  heatingType        HeatingType?
+  hasGas             Boolean?
+
+  // Seller info
+  sellerType SellerType?
 
   // Building characteristics
   buildingType      BuildingType?
   buildingClass     BuildingClass?
   buildingName      String?
   elevatorPassenger Int?
-  elevatorCargo     Int?
-  hasGarbageChute   Boolean        @default(false)
   hasConcierge      Boolean        @default(false)
   hasGatedArea      Boolean        @default(false)
 
@@ -236,10 +241,21 @@ model Property {
 enum PropertyType {
   APARTMENT
   HOUSE
-  CONDO
   TOWNHOUSE
   LAND
   COMMERCIAL
+}
+
+enum SellerType {
+  OWNER
+  AGENT
+  DEVELOPER
+}
+
+enum HeatingType {
+  CENTRAL
+  INDIVIDUAL
+  NONE
 }
 
 enum ListingType {

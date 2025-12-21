@@ -17,6 +17,7 @@ export interface WizardFormData {
   propertyType: string;
   listingType: string;
   marketType: string; // NEW_BUILDING or SECONDARY (mainly for apartments)
+  sellerType: string; // OWNER, AGENT, DEVELOPER
 
   // Step 2: Location
   address: string;
@@ -49,15 +50,16 @@ export interface WizardFormData {
   parking: string;
   parkingType: string;
   balcony: string;
-  loggia: string;
   elevatorPassenger: string;
-  elevatorCargo: string;
-  hasGarbageChute: boolean;
   hasConcierge: boolean;
   hasGatedArea: boolean;
   windowView: string;
   bathroomType: string;
   furnished: string;
+  // Climate & Utilities
+  hasAirConditioning: boolean;
+  heatingType: string;
+  hasGas: boolean;
 
   // Step 5: Photos & Description
   images: string[];
@@ -106,6 +108,7 @@ export default function PropertyCreationWizard() {
     propertyType: '',
     listingType: 'SALE',
     marketType: '',
+    sellerType: '',
     address: '',
     city: t('defaultCity'),
     district: '',
@@ -132,15 +135,15 @@ export default function PropertyCreationWizard() {
     parking: '',
     parkingType: '',
     balcony: '',
-    loggia: '',
     elevatorPassenger: '',
-    elevatorCargo: '',
-    hasGarbageChute: false,
     hasConcierge: false,
     hasGatedArea: false,
     windowView: '',
     bathroomType: '',
     furnished: '',
+    hasAirConditioning: false,
+    heatingType: '',
+    hasGas: false,
     images: [],
     title: '',
     description: '',
@@ -282,6 +285,7 @@ export default function PropertyCreationWizard() {
 
   const validateStep = (step: number): boolean => {
     const newErrors: Record<string, string> = {};
+    const residentialTypes = ['APARTMENT', 'HOUSE', 'TOWNHOUSE'];
 
     switch (step) {
       case 1:
@@ -290,6 +294,9 @@ export default function PropertyCreationWizard() {
         }
         if (!formData.listingType) {
           newErrors.listingType = t('validation.listingType');
+        }
+        if (!formData.sellerType) {
+          newErrors.sellerType = t('validation.sellerType');
         }
         break;
 
@@ -309,11 +316,24 @@ export default function PropertyCreationWizard() {
         if (!formData.area || parseFloat(formData.area) <= 0) {
           newErrors.area = t('validation.area');
         }
+        // Rooms mandatory for residential types
+        if (residentialTypes.includes(formData.propertyType) && !formData.rooms) {
+          newErrors.rooms = t('validation.rooms');
+        }
+        // Floor mandatory for apartments
+        if (formData.propertyType === 'APARTMENT') {
+          if (!formData.floor) {
+            newErrors.floor = t('validation.floor');
+          }
+          if (!formData.totalFloors) {
+            newErrors.totalFloors = t('validation.totalFloors');
+          }
+        }
         break;
 
       case 5:
-        if (formData.images.length === 0) {
-          newErrors.images = t('validation.images');
+        if (formData.images.length < 3) {
+          newErrors.images = t('validation.imagesMin');
         }
         if (!formData.title || formData.title.length < 10) {
           newErrors.title = t('validation.title');
@@ -330,6 +350,7 @@ export default function PropertyCreationWizard() {
 
   const validateAllSteps = (): Array<{ step: number; field: string; message: string }> => {
     const allErrors: Array<{ step: number; field: string; message: string }> = [];
+    const residentialTypes = ['APARTMENT', 'HOUSE', 'TOWNHOUSE'];
 
     // Step 1: Property Type
     if (!formData.propertyType) {
@@ -337,6 +358,9 @@ export default function PropertyCreationWizard() {
     }
     if (!formData.listingType) {
       allErrors.push({ step: 1, field: t('fields.listingType'), message: t('validation.listingType') });
+    }
+    if (!formData.sellerType) {
+      allErrors.push({ step: 1, field: t('fields.sellerType'), message: t('validation.sellerType') });
     }
 
     // Step 2: Location
@@ -357,10 +381,23 @@ export default function PropertyCreationWizard() {
     if (!formData.area || parseFloat(formData.area) <= 0) {
       allErrors.push({ step: 3, field: t('fields.area'), message: t('validation.area') });
     }
+    // Rooms mandatory for residential types
+    if (residentialTypes.includes(formData.propertyType) && !formData.rooms) {
+      allErrors.push({ step: 3, field: t('fields.rooms'), message: t('validation.rooms') });
+    }
+    // Floor mandatory for apartments
+    if (formData.propertyType === 'APARTMENT') {
+      if (!formData.floor) {
+        allErrors.push({ step: 3, field: t('fields.floor'), message: t('validation.floor') });
+      }
+      if (!formData.totalFloors) {
+        allErrors.push({ step: 3, field: t('fields.totalFloors'), message: t('validation.totalFloors') });
+      }
+    }
 
     // Step 5: Photos & Description
-    if (formData.images.length === 0) {
-      allErrors.push({ step: 5, field: t('fields.photos'), message: t('validation.images') });
+    if (formData.images.length < 3) {
+      allErrors.push({ step: 5, field: t('fields.photos'), message: t('validation.imagesMin') });
     }
     if (!formData.title || formData.title.length < 10) {
       allErrors.push({ step: 5, field: t('fields.title'), message: t('validation.title') });
@@ -411,6 +448,7 @@ export default function PropertyCreationWizard() {
         propertyType: formData.propertyType,
         listingType: formData.listingType,
         marketType: cleanValue(formData.marketType),
+        sellerType: cleanValue(formData.sellerType),
         title: formData.title,
         description: formData.description,
         price: parseFloat(formData.price),
@@ -444,9 +482,12 @@ export default function PropertyCreationWizard() {
         parking: formData.parking ? parseInt(formData.parking) : undefined,
         parkingType: cleanValue(formData.parkingType),
         balcony: formData.balcony ? parseInt(formData.balcony) : undefined,
-        loggia: formData.loggia ? parseInt(formData.loggia) : undefined,
         elevatorPassenger: formData.elevatorPassenger ? parseInt(formData.elevatorPassenger) : undefined,
-        elevatorCargo: formData.elevatorCargo ? parseInt(formData.elevatorCargo) : undefined,
+
+        // Climate & Utilities
+        hasAirConditioning: formData.hasAirConditioning || undefined,
+        heatingType: cleanValue(formData.heatingType),
+        hasGas: formData.hasGas || undefined,
 
         // Building characteristics
         buildingType: cleanValue(formData.buildingType),
@@ -455,7 +496,6 @@ export default function PropertyCreationWizard() {
         windowView: cleanValue(formData.windowView),
         bathroomType: cleanValue(formData.bathroomType),
         furnished: cleanValue(formData.furnished),
-        hasGarbageChute: formData.hasGarbageChute,
         hasConcierge: formData.hasConcierge,
         hasGatedArea: formData.hasGatedArea,
 

@@ -10,12 +10,27 @@ export type UserRole = (typeof UserRole)[keyof typeof UserRole];
 export const PropertyType = {
   APARTMENT: 'APARTMENT',
   HOUSE: 'HOUSE',
-  CONDO: 'CONDO',
   TOWNHOUSE: 'TOWNHOUSE',
   LAND: 'LAND',
   COMMERCIAL: 'COMMERCIAL',
 } as const;
 export type PropertyType = (typeof PropertyType)[keyof typeof PropertyType];
+
+// Seller Types
+export const SellerType = {
+  OWNER: 'OWNER',
+  AGENT: 'AGENT',
+  DEVELOPER: 'DEVELOPER',
+} as const;
+export type SellerType = (typeof SellerType)[keyof typeof SellerType];
+
+// Heating Types
+export const HeatingType = {
+  CENTRAL: 'CENTRAL',
+  INDIVIDUAL: 'INDIVIDUAL',
+  NONE: 'NONE',
+} as const;
+export type HeatingType = (typeof HeatingType)[keyof typeof HeatingType];
 
 // Listing Types (must match Prisma enum)
 export const ListingType = {
