@@ -99,9 +99,7 @@ interface Property {
   bathroomType: string | null;
   elevatorPassenger: number | null;
   elevatorCargo: number | null;
-  hasGarbageChute: boolean;
   balcony: number | null;
-  loggia: number | null;
   images: PropertyImage[];
   videos?: Array<{
     id: string;
@@ -764,9 +762,7 @@ export default function PropertyDetailPage({
               parkingType={property.parkingType}
               windowView={property.windowView}
               bathroomType={property.bathroomType}
-              hasGarbageChute={property.hasGarbageChute}
               balcony={property.balcony}
-              loggia={property.loggia}
             />
 
             {/* Location Map */}

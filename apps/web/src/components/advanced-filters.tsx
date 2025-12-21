@@ -59,7 +59,6 @@ interface AdvancedFiltersProps {
 const PROPERTY_TYPES = [
   { value: 'APARTMENT', label: 'Квартира' },
   { value: 'HOUSE', label: 'Дом' },
-  { value: 'CONDO', label: 'Апартаменты' },
   { value: 'TOWNHOUSE', label: 'Таунхаус' },
   { value: 'VILLA', label: 'Вилла' },
   { value: 'STUDIO', label: 'Студия' },

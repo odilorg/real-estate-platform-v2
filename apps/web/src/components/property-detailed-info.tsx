@@ -24,15 +24,12 @@ interface PropertyDetailedInfoProps {
   parkingType?: string | null;
   windowView?: string | null;
   bathroomType?: string | null;
-  hasGarbageChute?: boolean;
   balcony?: number | null;
-  loggia?: number | null;
 }
 
 const PROPERTY_TYPE_LABELS: Record<string, string> = {
   APARTMENT: 'Квартира',
   HOUSE: 'Дом',
-  CONDO: 'Апартаменты',
   TOWNHOUSE: 'Таунхаус',
   VILLA: 'Вилла',
   STUDIO: 'Студия',
@@ -95,9 +92,7 @@ export function PropertyDetailedInfo(props: PropertyDetailedInfoProps) {
     parkingType,
     windowView,
     bathroomType,
-    hasGarbageChute,
     balcony,
-    loggia,
   } = props;
 
   const InfoRow = ({ label, value }: { label: string; value: string | number | null | undefined }) => {
@@ -164,15 +159,14 @@ export function PropertyDetailedInfo(props: PropertyDetailedInfoProps) {
             <InfoRow label="Тип дома" value={buildingType ? BUILDING_TYPE_LABELS[buildingType] || buildingType : null} />
             <InfoRow label="Тип перекрытий" value={buildingClass ? BUILDING_CLASS_LABELS[buildingClass] || buildingClass : null} />
             <InfoRow
-              label="Подъезды"
-              value={balcony || loggia ? `${balcony || 0} балкон${balcony && balcony > 1 ? 'ов' : ''}, ${loggia || 0} лоджи${loggia && loggia > 1 ? 'й' : ''}` : null}
+              label="Балкон"
+              value={balcony ? `${balcony} балкон${balcony > 1 ? 'ов' : ''}` : null}
             />
             <InfoRow
               label="Парковка"
               value={parking && parkingType ? `${PARKING_TYPE_LABELS[parkingType] || parkingType}` : parking ? `${parking} мест` : null}
             />
-            <InfoRow label="Отопление" value={windowView || null} />
-            <InfoRow label="Аварийность" value={hasGarbageChute ? 'Да' : 'Нет'} />
+            <InfoRow label="Вид из окон" value={windowView || null} />
           </div>
         </CardContent>
       </Card>

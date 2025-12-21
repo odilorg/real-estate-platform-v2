@@ -136,7 +136,7 @@ export default function Step6Review({ formData }: Step6ReviewProps) {
       </div>
 
       {/* Property Details */}
-      {['APARTMENT', 'HOUSE', 'TOWNHOUSE', 'CONDO'].includes(
+      {['APARTMENT', 'HOUSE', 'TOWNHOUSE'].includes(
         formData.propertyType
       ) && (
         <div className="bg-white border border-gray-200 rounded-lg p-6">
@@ -210,23 +210,13 @@ export default function Step6Review({ formData }: Step6ReviewProps) {
           {formData.balcony && parseInt(formData.balcony) > 0 && (
             <ReviewItem label="Балконов" value={formData.balcony} />
           )}
-          {formData.loggia && parseInt(formData.loggia) > 0 && (
-            <ReviewItem label="Лоджий" value={formData.loggia} />
-          )}
         </div>
 
         {/* Checkboxes */}
-        {(formData.hasGarbageChute ||
-          formData.hasConcierge ||
+        {(formData.hasConcierge ||
           formData.hasGatedArea) && (
           <div className="mt-4 pt-4 border-t border-gray-200">
             <div className="flex flex-wrap gap-2">
-              {formData.hasGarbageChute && (
-                <span className="inline-flex items-center gap-1 px-3 py-1 bg-green-100 text-green-800 text-sm rounded-full">
-                  <CheckCircle2 className="h-3 w-3" />
-                  Мусоропровод
-                </span>
-              )}
               {formData.hasConcierge && (
                 <span className="inline-flex items-center gap-1 px-3 py-1 bg-green-100 text-green-800 text-sm rounded-full">
                   <CheckCircle2 className="h-3 w-3" />

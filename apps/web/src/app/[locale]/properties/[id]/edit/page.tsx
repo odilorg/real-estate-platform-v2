@@ -25,7 +25,6 @@ import { ArrowLeft, Loader2, Save, Eye, Trash2, Youtube } from 'lucide-react';
 const PROPERTY_TYPES = [
   { value: 'APARTMENT', label: 'Квартира' },
   { value: 'HOUSE', label: 'Дом' },
-  { value: 'CONDO', label: 'Апартаменты' },
   { value: 'TOWNHOUSE', label: 'Таунхаус' },
   { value: 'LAND', label: 'Участок' },
   { value: 'COMMERCIAL', label: 'Коммерческая' },
@@ -115,7 +114,6 @@ interface FormData {
   ceilingHeight: string;
   nearestMetro: string;
   metroDistance: string;
-  hasGarbageChute: boolean;
   hasConcierge: boolean;
   hasGatedArea: boolean;
   images: string[];
@@ -147,7 +145,6 @@ const initialFormData: FormData = {
   ceilingHeight: '',
   nearestMetro: '',
   metroDistance: '',
-  hasGarbageChute: false,
   hasConcierge: false,
   hasGatedArea: false,
   images: [],
@@ -261,7 +258,6 @@ export default function EditPropertyPage() {
           ceilingHeight: property.ceilingHeight?.toString() || '',
           nearestMetro: property.nearestMetro || '',
           metroDistance: property.metroDistance?.toString() || '',
-          hasGarbageChute: property.hasGarbageChute || false,
           hasConcierge: property.hasConcierge || false,
           hasGatedArea: property.hasGatedArea || false,
           images: property.images?.map((img: { url: string }) => img.url) || [],
@@ -395,7 +391,6 @@ export default function EditPropertyPage() {
       ceilingHeight: formData.ceilingHeight ? parseFloat(formData.ceilingHeight) : undefined,
       nearestMetro: formData.nearestMetro || undefined,
       metroDistance: formData.metroDistance ? parseInt(formData.metroDistance) : undefined,
-      hasGarbageChute: formData.hasGarbageChute,
       hasConcierge: formData.hasConcierge,
       hasGatedArea: formData.hasGatedArea,
       images: formData.images,
@@ -876,16 +871,6 @@ export default function EditPropertyPage() {
                 <div className="space-y-3">
                   <Label>Дополнительно</Label>
                   <div className="flex flex-wrap gap-6">
-                    <label className="flex items-center gap-2 cursor-pointer">
-                      <Checkbox
-                        checked={formData.hasGarbageChute}
-                        onCheckedChange={(checked) =>
-                          handleChange('hasGarbageChute', checked === true)
-                        }
-                      />
-                      <span className="text-sm">Мусоропровод</span>
-                    </label>
-
                     <label className="flex items-center gap-2 cursor-pointer">
                       <Checkbox
                         checked={formData.hasConcierge}

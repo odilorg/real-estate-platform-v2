@@ -199,7 +199,6 @@ export default function NewListingPage() {
                 >
                   <option value="APARTMENT">{t('propertyType.APARTMENT')}</option>
                   <option value="HOUSE">{t('propertyType.HOUSE')}</option>
-                  <option value="CONDO">{t('propertyType.CONDO')}</option>
                   <option value="TOWNHOUSE">{t('propertyType.TOWNHOUSE')}</option>
                   <option value="LAND">{t('propertyType.LAND')}</option>
                   <option value="COMMERCIAL">{t('propertyType.COMMERCIAL')}</option>

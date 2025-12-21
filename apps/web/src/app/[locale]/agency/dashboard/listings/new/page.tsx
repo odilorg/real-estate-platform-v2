@@ -152,7 +152,6 @@ export default function NewListingPage() {
                 >
                   <option value="APARTMENT">Apartment</option>
                   <option value="HOUSE">House</option>
-                  <option value="CONDO">Condo</option>
                   <option value="TOWNHOUSE">Townhouse</option>
                   <option value="LAND">Land</option>
                   <option value="COMMERCIAL">Commercial</option>

@@ -12,7 +12,7 @@ interface Listing {
   description?: string;
   price: number;
   currency: string;
-  propertyType: 'APARTMENT' | 'HOUSE' | 'CONDO' | 'TOWNHOUSE' | 'LAND' | 'COMMERCIAL';
+  propertyType: 'APARTMENT' | 'HOUSE' | 'TOWNHOUSE' | 'LAND' | 'COMMERCIAL';
   listingType: 'SALE' | 'RENT_LONG' | 'RENT_DAILY';
   status: 'ACTIVE' | 'PENDING' | 'SOLD' | 'RENTED' | 'INACTIVE';
   address: string;
