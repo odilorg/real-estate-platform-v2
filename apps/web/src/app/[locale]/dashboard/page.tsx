@@ -249,54 +249,54 @@ export default function DashboardPage() {
     <div className="min-h-screen bg-gray-50 pb-20 lg:pb-0">
       <main className="container mx-auto px-4 py-8">
         {/* Dashboard Header */}
-        <div className="flex items-center justify-between mb-8">
-          <h1 className="text-3xl font-bold text-gray-900">{t('title')}</h1>
+        <div className="flex items-center justify-between mb-6">
+          <h1 className="text-xl md:text-2xl font-bold text-gray-900">{t('title')}</h1>
           <Link href="/properties/new">
-            <Button size="lg" className="bg-blue-600 hover:bg-blue-700">
-              <Plus className="h-5 w-5 mr-2" />
+            <Button className="bg-blue-600 hover:bg-blue-700">
+              <Plus className="h-4 w-4 mr-2" />
               {t('createListing')}
             </Button>
           </Link>
         </div>
 
         {/* Welcome Message */}
-        <div className="mb-8 bg-gradient-to-r from-blue-50 to-indigo-50 rounded-xl p-6 border border-blue-100">
-          <h2 className="text-xl font-semibold text-gray-800 mb-1">
+        <div className="mb-6 md:mb-8 bg-gradient-to-r from-blue-50 to-indigo-50 rounded-xl p-4 md:p-6 border border-blue-100">
+          <h2 className="text-base md:text-xl font-semibold text-gray-800 mb-0.5 md:mb-1">
             {t('welcome')}, <span className="text-blue-600">{user?.firstName}</span>!
           </h2>
-          <p className="text-base text-gray-600">
+          <p className="text-sm md:text-base text-gray-600">
             {t('welcomeDescription')}
           </p>
         </div>
 
         {/* Quick Actions */}
-        <div className="grid grid-cols-2 md:grid-cols-5 gap-4 mb-8">
+        <div className="grid grid-cols-2 md:grid-cols-5 gap-3 md:gap-4 mb-6">
           <Link href="/properties">
             <Card className="hover:shadow-md transition-shadow cursor-pointer">
-              <CardContent className="p-4 flex items-center gap-3">
-                <div className="p-3 bg-green-100 rounded-lg">
-                  <Search className="h-6 w-6 text-green-600" />
+              <CardContent className="p-3 md:p-4 flex items-center gap-2 md:gap-3">
+                <div className="p-2 md:p-2.5 bg-green-100 rounded-lg">
+                  <Search className="h-4 w-4 md:h-5 md:w-5 text-green-600" />
                 </div>
-                <div className="font-semibold text-gray-900">{t('quickActions.allListings')}</div>
+                <div className="text-sm md:text-base font-medium text-gray-900">{t('quickActions.allListings')}</div>
               </CardContent>
             </Card>
           </Link>
 
           <Link href="/dashboard/messages">
             <Card className="hover:shadow-md transition-shadow cursor-pointer">
-              <CardContent className="p-4 flex items-center gap-3">
-                <div className="p-3 bg-blue-100 rounded-lg relative">
-                  <MessageSquare className="h-6 w-6 text-blue-600" />
+              <CardContent className="p-3 md:p-4 flex items-center gap-2 md:gap-3">
+                <div className="p-2 md:p-2.5 bg-blue-100 rounded-lg relative">
+                  <MessageSquare className="h-4 w-4 md:h-5 md:w-5 text-blue-600" />
                   {unreadCount > 0 && (
-                    <span className="absolute -top-1 -right-1 bg-red-500 text-white text-xs rounded-full h-5 w-5 flex items-center justify-center font-semibold">
+                    <span className="absolute -top-1 -right-1 bg-red-500 text-white text-[10px] rounded-full h-4 w-4 flex items-center justify-center font-semibold">
                       {unreadCount > 9 ? '9+' : unreadCount}
                     </span>
                   )}
                 </div>
                 <div>
-                  <div className="font-semibold text-gray-900">{t('quickActions.messages')}</div>
+                  <div className="text-sm md:text-base font-medium text-gray-900">{t('quickActions.messages')}</div>
                   {unreadCount > 0 && (
-                    <div className="text-xs text-blue-600">{unreadCount} {t('quickActions.newMessages')}</div>
+                    <div className="text-[10px] md:text-xs text-blue-600">{unreadCount} {t('quickActions.newMessages')}</div>
                   )}
                 </div>
               </CardContent>
@@ -305,86 +305,86 @@ export default function DashboardPage() {
 
           <Link href="/dashboard/favorites">
             <Card className="hover:shadow-md transition-shadow cursor-pointer">
-              <CardContent className="p-4 flex items-center gap-3">
-                <div className="p-3 bg-pink-100 rounded-lg">
-                  <Heart className="h-6 w-6 text-pink-600" />
+              <CardContent className="p-3 md:p-4 flex items-center gap-2 md:gap-3">
+                <div className="p-2 md:p-2.5 bg-pink-100 rounded-lg">
+                  <Heart className="h-4 w-4 md:h-5 md:w-5 text-pink-600" />
                 </div>
-                <div className="font-semibold text-gray-900">{t('quickActions.favorites')}</div>
+                <div className="text-sm md:text-base font-medium text-gray-900">{t('quickActions.favorites')}</div>
               </CardContent>
             </Card>
           </Link>
 
           <Link href="/dashboard/saved-searches">
             <Card className="hover:shadow-md transition-shadow cursor-pointer">
-              <CardContent className="p-4 flex items-center gap-3">
-                <div className="p-3 bg-purple-100 rounded-lg">
-                  <BookmarkCheck className="h-6 w-6 text-purple-600" />
+              <CardContent className="p-3 md:p-4 flex items-center gap-2 md:gap-3">
+                <div className="p-2 md:p-2.5 bg-purple-100 rounded-lg">
+                  <BookmarkCheck className="h-4 w-4 md:h-5 md:w-5 text-purple-600" />
                 </div>
-                <div className="font-semibold text-gray-900">{t('quickActions.savedSearches')}</div>
+                <div className="text-sm md:text-base font-medium text-gray-900">{t('quickActions.savedSearches')}</div>
               </CardContent>
             </Card>
           </Link>
 
           <Link href="/dashboard/profile">
             <Card className="hover:shadow-md transition-shadow cursor-pointer">
-              <CardContent className="p-4 flex items-center gap-3">
-                <div className="p-3 bg-gray-100 rounded-lg">
-                  <Settings className="h-6 w-6 text-gray-600" />
+              <CardContent className="p-3 md:p-4 flex items-center gap-2 md:gap-3">
+                <div className="p-2 md:p-2.5 bg-gray-100 rounded-lg">
+                  <Settings className="h-4 w-4 md:h-5 md:w-5 text-gray-600" />
                 </div>
-                <div className="font-semibold text-gray-900">{t('quickActions.settings')}</div>
+                <div className="text-sm md:text-base font-medium text-gray-900">{t('quickActions.settings')}</div>
               </CardContent>
             </Card>
           </Link>
         </div>
 
         {/* Stats Cards */}
-        <div className="grid grid-cols-1 md:grid-cols-2 lg:grid-cols-5 gap-6 mb-10">
+        <div className="grid grid-cols-2 md:grid-cols-3 lg:grid-cols-5 gap-3 md:gap-4 mb-8">
           {/* Total Listings */}
-          <Card className="hover:shadow-lg transition-shadow">
-            <CardContent className="p-6">
-              <div className="flex items-center justify-between mb-3">
-                <div className="p-3 bg-blue-100 rounded-lg">
-                  <FileText className="h-6 w-6 text-blue-600" />
+          <Card className="hover:shadow-md transition-shadow">
+            <CardContent className="p-4">
+              <div className="flex items-center justify-between mb-2">
+                <div className="p-2 bg-blue-100 rounded-lg">
+                  <FileText className="h-4 w-4 md:h-5 md:w-5 text-blue-600" />
                 </div>
               </div>
-              <div className="text-4xl font-bold text-gray-900 mb-1">
+              <div className="text-2xl md:text-3xl font-bold text-gray-900">
                 {properties.length}
               </div>
-              <div className="text-sm font-medium text-gray-600">{t('stats.totalListings')}</div>
+              <div className="text-xs md:text-sm text-gray-500">{t('stats.totalListings')}</div>
             </CardContent>
           </Card>
 
           {/* Active Listings */}
-          <Card className="hover:shadow-lg transition-shadow">
-            <CardContent className="p-6">
-              <div className="flex items-center justify-between mb-3">
-                <div className="p-3 bg-green-100 rounded-lg">
-                  <CheckCircle className="h-6 w-6 text-green-600" />
+          <Card className="hover:shadow-md transition-shadow">
+            <CardContent className="p-4">
+              <div className="flex items-center justify-between mb-2">
+                <div className="p-2 bg-green-100 rounded-lg">
+                  <CheckCircle className="h-4 w-4 md:h-5 md:w-5 text-green-600" />
                 </div>
               </div>
-              <div className="text-4xl font-bold text-gray-900 mb-1">
+              <div className="text-2xl md:text-3xl font-bold text-gray-900">
                 {properties.filter((p) => p.status === 'ACTIVE').length}
               </div>
-              <div className="text-sm font-medium text-gray-600">{t('stats.activeListings')}</div>
+              <div className="text-xs md:text-sm text-gray-500">{t('stats.activeListings')}</div>
             </CardContent>
           </Card>
 
           {/* Views */}
-          <Card className="hover:shadow-lg transition-shadow">
-            <CardContent className="p-6">
+          <Card className="hover:shadow-md transition-shadow">
+            <CardContent className="p-4">
               {analyticsLoading ? (
-                <Loader2 className="h-8 w-8 animate-spin text-gray-400" />
+                <Loader2 className="h-6 w-6 animate-spin text-gray-400" />
               ) : (
                 <>
-                  <div className="flex items-center justify-between mb-3">
-                    <div className="p-3 bg-purple-100 rounded-lg">
-                      <Eye className="h-6 w-6 text-purple-600" />
+                  <div className="flex items-center justify-between mb-2">
+                    <div className="p-2 bg-purple-100 rounded-lg">
+                      <Eye className="h-4 w-4 md:h-5 md:w-5 text-purple-600" />
                     </div>
                   </div>
-                  <div className="text-4xl font-bold text-gray-900 mb-1">
+                  <div className="text-2xl md:text-3xl font-bold text-gray-900">
                     {analytics?.totalViews.toLocaleString() || 0}
                   </div>
-                  <div className="text-sm font-medium text-gray-600">{t('stats.viewsPeriod')}</div>
+                  <div className="text-xs md:text-sm text-gray-500">{t('stats.viewsPeriod')}</div>
                   {analytics && renderTrend(analytics.viewsTrend)}
                 </>
               )}
@@ -392,21 +392,21 @@ export default function DashboardPage() {
           </Card>
 
           {/* Favorites */}
-          <Card className="hover:shadow-lg transition-shadow">
-            <CardContent className="p-6">
+          <Card className="hover:shadow-md transition-shadow">
+            <CardContent className="p-4">
               {analyticsLoading ? (
-                <Loader2 className="h-8 w-8 animate-spin text-gray-400" />
+                <Loader2 className="h-6 w-6 animate-spin text-gray-400" />
               ) : (
                 <>
-                  <div className="flex items-center justify-between mb-3">
-                    <div className="p-3 bg-pink-100 rounded-lg">
-                      <Star className="h-6 w-6 text-pink-600" />
+                  <div className="flex items-center justify-between mb-2">
+                    <div className="p-2 bg-pink-100 rounded-lg">
+                      <Star className="h-4 w-4 md:h-5 md:w-5 text-pink-600" />
                     </div>
                   </div>
-                  <div className="text-4xl font-bold text-gray-900 mb-1">
+                  <div className="text-2xl md:text-3xl font-bold text-gray-900">
                     {analytics?.totalFavorites.toLocaleString() || 0}
                   </div>
-                  <div className="text-sm font-medium text-gray-600">{t('stats.favoritesPeriod')}</div>
+                  <div className="text-xs md:text-sm text-gray-500">{t('stats.favoritesPeriod')}</div>
                   {analytics && renderTrend(analytics.favoritesTrend)}
                 </>
               )}
@@ -414,21 +414,21 @@ export default function DashboardPage() {
           </Card>
 
           {/* Contacts */}
-          <Card className="hover:shadow-lg transition-shadow">
-            <CardContent className="p-6">
+          <Card className="hover:shadow-md transition-shadow col-span-2 md:col-span-1">
+            <CardContent className="p-4">
               {analyticsLoading ? (
-                <Loader2 className="h-8 w-8 animate-spin text-gray-400" />
+                <Loader2 className="h-6 w-6 animate-spin text-gray-400" />
               ) : (
                 <>
-                  <div className="flex items-center justify-between mb-3">
-                    <div className="p-3 bg-orange-100 rounded-lg">
-                      <Mail className="h-6 w-6 text-orange-600" />
+                  <div className="flex items-center justify-between mb-2">
+                    <div className="p-2 bg-orange-100 rounded-lg">
+                      <Mail className="h-4 w-4 md:h-5 md:w-5 text-orange-600" />
                     </div>
                   </div>
-                  <div className="text-4xl font-bold text-gray-900 mb-1">
+                  <div className="text-2xl md:text-3xl font-bold text-gray-900">
                     {analytics?.totalContacts.toLocaleString() || 0}
                   </div>
-                  <div className="text-sm font-medium text-gray-600">{t('stats.contactsPeriod')}</div>
+                  <div className="text-xs md:text-sm text-gray-500">{t('stats.contactsPeriod')}</div>
                   {analytics && renderTrend(analytics.contactsTrend)}
                 </>
               )}
@@ -437,9 +437,9 @@ export default function DashboardPage() {
         </div>
 
         {/* Properties Section Header */}
-        <div className="mb-6 flex items-center justify-between">
-          <h2 className="text-2xl font-bold text-gray-900">{t('myListings.title')}</h2>
-          <div className="text-sm text-gray-500">
+        <div className="mb-4 flex items-center justify-between">
+          <h2 className="text-lg md:text-xl font-bold text-gray-900">{t('myListings.title')}</h2>
+          <div className="text-xs md:text-sm text-gray-500">
             {properties.length} {properties.length === 1 ? t('myListings.count_one') : t('myListings.count_many')}
           </div>
         </div>
@@ -461,19 +461,19 @@ export default function DashboardPage() {
         {/* Empty State */}
         {!loading && !error && properties.length === 0 && (
           <Card className="border-2 border-dashed border-gray-300">
-            <CardContent className="p-16 text-center">
-              <div className="inline-flex items-center justify-center w-20 h-20 bg-gray-100 rounded-full mb-6">
-                <Building2 className="h-10 w-10 text-gray-400" />
+            <CardContent className="p-8 md:p-12 text-center">
+              <div className="inline-flex items-center justify-center w-16 h-16 bg-gray-100 rounded-full mb-4">
+                <Building2 className="h-8 w-8 text-gray-400" />
               </div>
-              <h3 className="text-xl font-bold text-gray-900 mb-2">
+              <h3 className="text-base md:text-lg font-bold text-gray-900 mb-2">
                 {t('empty.title')}
               </h3>
-              <p className="text-base text-gray-600 mb-8 max-w-md mx-auto">
+              <p className="text-sm text-gray-600 mb-6 max-w-md mx-auto">
                 {t('empty.description')}
               </p>
               <Link href="/properties/new">
-                <Button size="lg" className="bg-blue-600 hover:bg-blue-700">
-                  <Plus className="h-5 w-5 mr-2" />
+                <Button className="bg-blue-600 hover:bg-blue-700">
+                  <Plus className="h-4 w-4 mr-2" />
                   {t('createListing')}
                 </Button>
               </Link>
