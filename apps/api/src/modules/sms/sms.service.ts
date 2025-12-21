@@ -136,7 +136,7 @@ export class SmsService {
     const isEskizTestMode = this.configService.get('ESKIZ_TEST_MODE') === 'true';
     const message = isEskizTestMode
       ? 'Bu Eskiz dan test' // Exact test message required by Eskiz
-      : `Kod: ${code}`; // Simple format that doesn't require moderation
+      : `Код подтверждения для регистрации на сайте zilla.uz: ${code}`; // Approved Eskiz template
 
     // Log OTP code for debugging
     this.logger.log(`OTP Code for ${phone}: ${code}`);
