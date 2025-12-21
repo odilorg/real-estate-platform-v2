@@ -97,9 +97,4 @@ export class CreateUnitDto {
   @Type(() => Number)
   @IsOptional()
   balcony?: number;
-
-  @IsNumber()
-  @Type(() => Number)
-  @IsOptional()
-  loggia?: number;
 }

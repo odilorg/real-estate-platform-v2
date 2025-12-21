@@ -15,7 +15,7 @@ export class CreateListingDto {
   @IsEnum(['YE', 'UZS'])
   currency!: string;
 
-  @IsEnum(['APARTMENT', 'HOUSE', 'CONDO', 'TOWNHOUSE', 'LAND', 'COMMERCIAL'])
+  @IsEnum(['APARTMENT', 'HOUSE', 'TOWNHOUSE', 'LAND', 'COMMERCIAL'])
   propertyType!: string;
 
   @IsEnum(['SALE', 'RENT_LONG', 'RENT_DAILY'])

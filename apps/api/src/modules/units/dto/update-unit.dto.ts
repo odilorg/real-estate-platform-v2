@@ -102,9 +102,4 @@ export class UpdateUnitDto {
   @Type(() => Number)
   @IsOptional()
   balcony?: number;
-
-  @IsNumber()
-  @Type(() => Number)
-  @IsOptional()
-  loggia?: number;
 }
