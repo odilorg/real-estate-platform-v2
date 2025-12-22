@@ -5,33 +5,35 @@ import { usePathname } from '@/i18n/routing';
 import { Home, Search, Heart, User } from 'lucide-react';
 import { cn } from '@/lib/utils';
 import { useAuth } from '@/context/AuthContext';
+import { useTranslations } from 'next-intl';
 
 export function MobileBottomNav() {
   const pathname = usePathname();
   const { isAuthenticated } = useAuth();
+  const t = useTranslations('navigation.mobile');
 
   const navItems = [
     {
       href: '/',
-      label: 'Главная',
+      label: t('home'),
       icon: Home,
       active: pathname === '/',
     },
     {
       href: '/properties',
-      label: 'Поиск',
+      label: t('search'),
       icon: Search,
       active: pathname.startsWith('/properties'),
     },
     {
       href: isAuthenticated ? '/dashboard/favorites' : '/auth/login',
-      label: 'Избранное',
+      label: t('favorites'),
       icon: Heart,
       active: pathname.startsWith('/dashboard/favorites'),
     },
     {
       href: isAuthenticated ? '/dashboard' : '/auth/login',
-      label: 'Профиль',
+      label: t('profile'),
       icon: User,
       active: pathname.startsWith('/dashboard'),
     },

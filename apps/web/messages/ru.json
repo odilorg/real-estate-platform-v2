@@ -24,6 +24,14 @@
     "previous": "Предыдущий",
     "submit": "Отправить"
   },
+  "navigation": {
+    "mobile": {
+      "home": "Главная",
+      "search": "Поиск",
+      "favorites": "Избранное",
+      "profile": "Профиль"
+    }
+  },
   "home": {
     "title": "Недвижимость Узбекистана",
     "description": "Найдите идеальную недвижимость в Узбекистане",
@@ -1330,6 +1338,13 @@
       "settings": "Настройки",
       "expandSidebar": "Развернуть меню",
       "collapseSidebar": "Свернуть меню"
+    },
+    "mobileNav": {
+      "menu": "Меню",
+      "more": "Ещё",
+      "moreOptions": "Дополнительно",
+      "agentPerformance": "Эффективность агентов",
+      "revenueAnalytics": "Аналитика доходов"
     },
     "leads": {
       "title": "Лиды",

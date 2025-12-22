@@ -16,20 +16,7 @@ import {
   Menu,
 } from 'lucide-react';
 import { cn } from '@/lib/utils';
-
-const primaryNavItems = [
-  { href: '/developer/crm/analytics', icon: LayoutDashboard, label: 'Dashboard' },
-  { href: '/developer/crm/leads', icon: FileText, label: 'Leads' },
-  { href: '/developer/crm/deals', icon: Handshake, label: 'Deals' },
-  { href: '/developer/crm/commissions', icon: DollarSign, label: 'Commissions' },
-];
-
-const moreNavItems = [
-  { href: '/developer/crm/members', icon: Users, label: 'Team Members' },
-  { href: '/developer/crm/analytics/agents', icon: BarChart3, label: 'Agent Performance' },
-  { href: '/developer/crm/analytics/revenue', icon: BarChart3, label: 'Revenue Analytics' },
-  { href: '/agency/settings', icon: Settings, label: 'Settings' },
-];
+import { useTranslations } from 'next-intl';
 
 interface CrmMobileNavProps {
   className?: string;
@@ -40,6 +27,22 @@ export function CrmMobileNav({ className, title = 'CRM' }: CrmMobileNavProps) {
   const pathname = usePathname();
   const [drawerOpen, setDrawerOpen] = useState(false);
   const [menuOpen, setMenuOpen] = useState(false);
+  const t = useTranslations('crm.sidebar');
+  const tMobile = useTranslations('crm.mobileNav');
+
+  const primaryNavItems = [
+    { href: '/developer/crm/analytics', icon: LayoutDashboard, label: t('dashboard') },
+    { href: '/developer/crm/leads', icon: FileText, label: t('leads') },
+    { href: '/developer/crm/deals', icon: Handshake, label: t('deals') },
+    { href: '/developer/crm/commissions', icon: DollarSign, label: t('commissions') },
+  ];
+
+  const moreNavItems = [
+    { href: '/developer/crm/members', icon: Users, label: t('team') },
+    { href: '/developer/crm/analytics/agents', icon: BarChart3, label: tMobile('agentPerformance') },
+    { href: '/developer/crm/analytics/revenue', icon: BarChart3, label: tMobile('revenueAnalytics') },
+    { href: '/agency/settings', icon: Settings, label: t('settings') },
+  ];
 
   // Close drawer when route changes
   useEffect(() => {
@@ -107,10 +110,10 @@ export function CrmMobileNav({ className, title = 'CRM' }: CrmMobileNavProps) {
           <button
             onClick={() => setDrawerOpen(true)}
             className="flex flex-col items-center justify-center gap-1 min-w-[60px] h-12 rounded-lg text-gray-600 hover:text-gray-900 hover:bg-gray-50 transition-colors"
-            aria-label="More options"
+            aria-label={tMobile('moreOptions')}
           >
             <MoreHorizontal className="w-6 h-6" />
-            <span className="text-xs font-medium">More</span>
+            <span className="text-xs font-medium">{tMobile('more')}</span>
           </button>
         </div>
       </nav>
@@ -126,7 +129,7 @@ export function CrmMobileNav({ className, title = 'CRM' }: CrmMobileNavProps) {
           {/* Drawer */}
           <div className="lg:hidden fixed inset-y-0 left-0 w-64 bg-white z-50 shadow-xl animate-in slide-in-from-left duration-200">
             <div className="flex items-center justify-between h-14 px-4 border-b border-gray-200">
-              <h2 className="text-lg font-bold text-gray-900">Menu</h2>
+              <h2 className="text-lg font-bold text-gray-900">{tMobile('menu')}</h2>
               <button
                 onClick={() => setMenuOpen(false)}
                 className="p-2 rounded-md hover:bg-gray-100"
@@ -138,7 +141,7 @@ export function CrmMobileNav({ className, title = 'CRM' }: CrmMobileNavProps) {
             <nav className="p-4 space-y-2">
               <div className="mb-4">
                 <h3 className="px-3 mb-2 text-xs font-semibold text-gray-500 uppercase tracking-wider">
-                  Main
+                  {t('main')}
                 </h3>
                 {primaryNavItems.map((item) => {
                   const Icon = item.icon;
@@ -162,7 +165,7 @@ export function CrmMobileNav({ className, title = 'CRM' }: CrmMobileNavProps) {
               </div>
               <div>
                 <h3 className="px-3 mb-2 text-xs font-semibold text-gray-500 uppercase tracking-wider">
-                  More
+                  {tMobile('more')}
                 </h3>
                 {moreNavItems.map((item) => {
                   const Icon = item.icon;
@@ -200,7 +203,7 @@ export function CrmMobileNav({ className, title = 'CRM' }: CrmMobileNavProps) {
           {/* Drawer */}
           <div className="lg:hidden fixed inset-x-0 bottom-0 bg-white rounded-t-2xl z-50 shadow-2xl animate-in slide-in-from-bottom duration-200">
             <div className="flex items-center justify-between h-14 px-4 border-b border-gray-200">
-              <h2 className="text-lg font-bold text-gray-900">More Options</h2>
+              <h2 className="text-lg font-bold text-gray-900">{tMobile('moreOptions')}</h2>
               <button
                 onClick={() => setDrawerOpen(false)}
                 className="p-2 rounded-md hover:bg-gray-100"

@@ -24,6 +24,14 @@
     "previous": "Oldingi",
     "submit": "Yuborish"
   },
+  "navigation": {
+    "mobile": {
+      "home": "Bosh sahifa",
+      "search": "Qidirish",
+      "favorites": "Sevimlilar",
+      "profile": "Profil"
+    }
+  },
   "home": {
     "title": "O'zbekiston Ko'chmas Mulki",
     "description": "O'zbekistonda ideal mulkingizni toping",
@@ -1330,6 +1338,13 @@
       "settings": "Sozlamalar",
       "expandSidebar": "Menyuni kengaytirish",
       "collapseSidebar": "Menyuni yig'ish"
+    },
+    "mobileNav": {
+      "menu": "Menyu",
+      "more": "Yana",
+      "moreOptions": "Qo'shimcha",
+      "agentPerformance": "Agent samaradorligi",
+      "revenueAnalytics": "Daromad tahlili"
     },
     "leads": {
       "title": "Lidlar",
