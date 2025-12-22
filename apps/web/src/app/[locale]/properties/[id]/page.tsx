@@ -568,13 +568,13 @@ export default function PropertyDetailPage({
   return (
     <div className="min-h-screen bg-gray-50">
       <main className="container mx-auto px-4 py-8">
-        {/* Action Bar */}
-        <div className="flex items-center justify-between mb-6">
-          <Button variant="ghost" onClick={() => router.back()}>
+        {/* Action Bar - Mobile Responsive */}
+        <div className="flex flex-wrap items-center justify-between gap-2 mb-6">
+          <Button variant="ghost" onClick={() => router.back()} className="shrink-0">
             <ArrowLeft className="h-4 w-4 mr-2" />
             {t('actions.back')}
           </Button>
-          <div className="flex items-center gap-2">
+          <div className="flex items-center gap-1 sm:gap-2 flex-wrap">
             <Button
               variant="outline"
               size="icon"
@@ -594,23 +594,24 @@ export default function PropertyDetailPage({
             {isOwner && (
               <>
                 <Link href={`/properties/${id}/edit`}>
-                  <Button variant="outline">
-                    <Edit className="h-4 w-4 mr-2" />
-                    {t('actions.edit')}
+                  <Button variant="outline" size="icon" className="sm:w-auto sm:px-3">
+                    <Edit className="h-4 w-4 sm:mr-2" />
+                    <span className="hidden sm:inline">{t('actions.edit')}</span>
                   </Button>
                 </Link>
                 <Button
                   variant="outline"
+                  size="icon"
                   onClick={handlePostToTelegram}
                   disabled={telegramLoading}
-                  className="bg-blue-50 hover:bg-blue-100 border-blue-200"
+                  className="bg-blue-50 hover:bg-blue-100 border-blue-200 sm:w-auto sm:px-3"
                 >
                   {telegramLoading ? (
-                    <Loader2 className="h-4 w-4 mr-2 animate-spin" />
+                    <Loader2 className="h-4 w-4 sm:mr-2 animate-spin" />
                   ) : (
-                    <Send className="h-4 w-4 mr-2" />
+                    <Send className="h-4 w-4 sm:mr-2" />
                   )}
-                  Telegram
+                  <span className="hidden sm:inline">Telegram</span>
                 </Button>
               </>
             )}
