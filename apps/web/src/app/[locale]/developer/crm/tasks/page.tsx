@@ -51,7 +51,7 @@ export default function TasksPage() {
   const router = useRouter();
   const locale = useLocale();
   const t = useTranslations('crm.tasks');
-  const { isAuthenticated, isLoading: authLoading } = useAuth();
+  const { isAuthenticated, loading: authLoading } = useAuth();
   const [tasks, setTasks] = useState<Task[]>([]);
   const [stats, setStats] = useState<TaskStats | null>(null);
   const [loading, setLoading] = useState(true);
