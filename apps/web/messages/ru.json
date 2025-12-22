@@ -368,7 +368,14 @@
     "profile": "Профиль",
     "signIn": "Войти",
     "signOut": "Выйти",
-    "register": "Регистрация"
+    "register": "Регистрация",
+    "agencyCrm": "Agency CRM",
+    "developerCrm": "Developer CRM",
+    "crmDashboard": "Панель управления",
+    "crmTeamMembers": "Команда",
+    "crmLeads": "Лиды",
+    "crmSettings": "Настройки",
+    "agencySettings": "Настройки агентства"
   },
   "currency": {
     "YE": "у.е.",

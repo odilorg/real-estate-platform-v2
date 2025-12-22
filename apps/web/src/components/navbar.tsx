@@ -162,7 +162,7 @@ export function Navbar() {
   };
 
   const agencyCrmActive = pathname?.startsWith('/agency') || pathname?.startsWith('/developer/crm');
-  const crmLabel = pathname?.startsWith('/developer/crm') ? 'Developer CRM' : 'Agency CRM';
+  const crmLabel = pathname?.startsWith('/developer/crm') ? t('developerCrm') : t('agencyCrm');
 
   return (
     <nav className="bg-white border-b border-gray-200 sticky top-0 z-50">
@@ -324,7 +324,7 @@ export function Navbar() {
                             onClick={() => setActiveDropdown(null)}
                           >
                             <Building2 className="h-4 w-4" />
-                            Dashboard
+                            {t('crmDashboard')}
                           </Link>
                           <Link
                             href="/developer/crm/members"
@@ -337,7 +337,7 @@ export function Navbar() {
                             onClick={() => setActiveDropdown(null)}
                           >
                             <Users className="h-4 w-4" />
-                            Team Members
+                            {t('crmTeamMembers')}
                           </Link>
                           <Link
                             href="/developer/crm/leads"
@@ -350,7 +350,7 @@ export function Navbar() {
                             onClick={() => setActiveDropdown(null)}
                           >
                             <FileText className="h-4 w-4" />
-                            Leads
+                            {t('crmLeads')}
                           </Link>
                           <div className="border-t border-gray-200 my-2"></div>
                           <Link
@@ -364,7 +364,7 @@ export function Navbar() {
                             onClick={() => setActiveDropdown(null)}
                           >
                             <SettingsIcon className="h-4 w-4" />
-                            Agency Settings
+                            {t('agencySettings')}
                           </Link>
                         </div>
                       </div>
@@ -517,7 +517,7 @@ export function Navbar() {
                       onClick={() => setMobileMenuOpen(false)}
                     >
                       <Building2 className="h-4 w-4" />
-                      Dashboard
+                      {t('crmDashboard')}
                     </Link>
                     <Link
                       href="/developer/crm/members"
@@ -525,7 +525,7 @@ export function Navbar() {
                       onClick={() => setMobileMenuOpen(false)}
                     >
                       <Users className="h-4 w-4" />
-                      Team Members
+                      {t('crmTeamMembers')}
                     </Link>
                     <Link
                       href="/developer/crm/leads"
@@ -533,7 +533,7 @@ export function Navbar() {
                       onClick={() => setMobileMenuOpen(false)}
                     >
                       <FileText className="h-4 w-4" />
-                      Leads
+                      {t('crmLeads')}
                     </Link>
                     <Link
                       href="/agency/settings"
@@ -541,7 +541,7 @@ export function Navbar() {
                       onClick={() => setMobileMenuOpen(false)}
                     >
                       <SettingsIcon className="h-4 w-4" />
-                      Settings
+                      {t('crmSettings')}
                     </Link>
                   </div>
                 )}

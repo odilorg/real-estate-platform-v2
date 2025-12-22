@@ -368,7 +368,14 @@
     "profile": "Profil",
     "signIn": "Kirish",
     "signOut": "Chiqish",
-    "register": "Ro'yxatdan o'tish"
+    "register": "Ro'yxatdan o'tish",
+    "agencyCrm": "Agentlik CRM",
+    "developerCrm": "Quruvchi CRM",
+    "crmDashboard": "Boshqaruv paneli",
+    "crmTeamMembers": "Jamoa",
+    "crmLeads": "Lidlar",
+    "crmSettings": "Sozlamalar",
+    "agencySettings": "Agentlik sozlamalari"
   },
   "currency": {
     "YE": "y.e.",
