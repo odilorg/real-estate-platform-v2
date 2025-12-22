@@ -63,24 +63,24 @@ export default function NewProjectPage() {
   };
 
   return (
-    <div className="max-w-3xl mx-auto">
+    <div className="max-w-3xl mx-auto px-4 sm:px-0">
       {/* Header */}
-      <div className="mb-8">
+      <div className="mb-4 sm:mb-8">
         <Link
           href="/developer/projects"
-          className="inline-flex items-center text-sm text-gray-500 hover:text-blue-600 transition-colors mb-4 group"
+          className="inline-flex items-center text-sm text-gray-500 hover:text-blue-600 transition-colors mb-3 sm:mb-4 group"
         >
           <ArrowLeft className="w-4 h-4 mr-1.5 group-hover:-translate-x-0.5 transition-transform" />
           Назад к проектам
         </Link>
-        <div className="flex items-center gap-3">
-          <div className="p-2.5 bg-blue-100 rounded-xl">
-            <Building2 className="w-6 h-6 text-blue-600" />
+        <div className="flex items-center gap-2 sm:gap-3">
+          <div className="p-2 sm:p-2.5 bg-blue-100 rounded-lg sm:rounded-xl">
+            <Building2 className="w-5 h-5 sm:w-6 sm:h-6 text-blue-600" />
           </div>
           <div>
-            <h1 className="text-2xl font-bold text-gray-900">Новый проект</h1>
-            <p className="text-sm text-gray-500">
-              Создайте новый жилой комплекс для вашего портфолио
+            <h1 className="text-lg sm:text-xl md:text-2xl font-bold text-gray-900">Новый проект</h1>
+            <p className="text-xs sm:text-sm text-gray-500">
+              Создайте новый жилой комплекс
             </p>
           </div>
         </div>
@@ -94,18 +94,18 @@ export default function NewProjectPage() {
       )}
 
       {/* Form */}
-      <form onSubmit={handleSubmit} className="space-y-6">
+      <form onSubmit={handleSubmit} className="space-y-4 sm:space-y-6">
         {/* Project Name Section */}
-        <div className="bg-white shadow-sm rounded-xl border border-gray-100 overflow-hidden">
-          <div className="px-6 py-4 bg-gray-50 border-b border-gray-100">
+        <div className="bg-white shadow-sm rounded-lg sm:rounded-xl border border-gray-100 overflow-hidden">
+          <div className="px-4 sm:px-6 py-3 sm:py-4 bg-gray-50 border-b border-gray-100">
             <div className="flex items-center gap-2">
               <Globe className="w-4 h-4 text-gray-500" />
-              <h2 className="font-semibold text-gray-900">Название проекта</h2>
+              <h2 className="text-sm sm:text-base font-semibold text-gray-900">Название проекта</h2>
             </div>
-            <p className="text-xs text-gray-500 mt-0.5 ml-6">Укажите название на двух языках для лучшего охвата</p>
+            <p className="text-xs text-gray-500 mt-0.5 ml-6 hidden sm:block">Укажите название на двух языках для лучшего охвата</p>
           </div>
 
-          <div className="p-6 space-y-4">
+          <div className="p-4 sm:p-6 space-y-3 sm:space-y-4">
             <div>
               <label className="flex items-center gap-2 text-sm font-medium text-gray-700 mb-1.5">
                 <span className="text-base">🇷🇺</span>
@@ -142,16 +142,16 @@ export default function NewProjectPage() {
         </div>
 
         {/* Location Section */}
-        <div className="bg-white shadow-sm rounded-xl border border-gray-100 overflow-hidden">
-          <div className="px-6 py-4 bg-gray-50 border-b border-gray-100">
+        <div className="bg-white shadow-sm rounded-lg sm:rounded-xl border border-gray-100 overflow-hidden">
+          <div className="px-4 sm:px-6 py-3 sm:py-4 bg-gray-50 border-b border-gray-100">
             <div className="flex items-center gap-2">
               <MapPin className="w-4 h-4 text-gray-500" />
-              <h2 className="font-semibold text-gray-900">Расположение</h2>
+              <h2 className="text-sm sm:text-base font-semibold text-gray-900">Расположение</h2>
             </div>
-            <p className="text-xs text-gray-500 mt-0.5 ml-6">Укажите точный адрес объекта</p>
+            <p className="text-xs text-gray-500 mt-0.5 ml-6 hidden sm:block">Укажите точный адрес объекта</p>
           </div>
 
-          <div className="p-6 space-y-4">
+          <div className="p-4 sm:p-6 space-y-3 sm:space-y-4">
             <div>
               <label className="block text-sm font-medium text-gray-700 mb-1.5">
                 Адрес <span className="text-red-500">*</span>
@@ -221,16 +221,16 @@ export default function NewProjectPage() {
         </div>
 
         {/* Project Details Section */}
-        <div className="bg-white shadow-sm rounded-xl border border-gray-100 overflow-hidden">
-          <div className="px-6 py-4 bg-gray-50 border-b border-gray-100">
+        <div className="bg-white shadow-sm rounded-lg sm:rounded-xl border border-gray-100 overflow-hidden">
+          <div className="px-4 sm:px-6 py-3 sm:py-4 bg-gray-50 border-b border-gray-100">
             <div className="flex items-center gap-2">
               <Home className="w-4 h-4 text-gray-500" />
-              <h2 className="font-semibold text-gray-900">Параметры проекта</h2>
+              <h2 className="text-sm sm:text-base font-semibold text-gray-900">Параметры проекта</h2>
             </div>
-            <p className="text-xs text-gray-500 mt-0.5 ml-6">Основные характеристики жилого комплекса</p>
+            <p className="text-xs text-gray-500 mt-0.5 ml-6 hidden sm:block">Основные характеристики жилого комплекса</p>
           </div>
 
-          <div className="p-6">
+          <div className="p-4 sm:p-6">
             <div className="grid grid-cols-1 gap-4 sm:grid-cols-2">
               <div>
                 <label className="block text-sm font-medium text-gray-700 mb-1.5">
@@ -274,7 +274,7 @@ export default function NewProjectPage() {
         </div>
 
         {/* Submit Buttons */}
-        <div className="flex items-center justify-between pt-4 pb-8">
+        <div className="flex flex-col-reverse sm:flex-row items-stretch sm:items-center justify-between gap-3 pt-4 pb-8">
           <Link
             href="/developer/projects"
             className="inline-flex items-center justify-center px-4 py-2.5 rounded-lg border border-gray-200 bg-white text-sm font-medium text-gray-700 hover:bg-gray-50 hover:border-gray-300 transition-all"
@@ -284,7 +284,7 @@ export default function NewProjectPage() {
           <button
             type="submit"
             disabled={loading}
-            className="inline-flex items-center justify-center gap-2 px-6 py-2.5 rounded-lg bg-blue-600 text-sm font-medium text-white shadow-sm hover:bg-blue-700 hover:shadow-md focus:outline-none focus:ring-2 focus:ring-blue-500 focus:ring-offset-2 disabled:opacity-50 disabled:cursor-not-allowed transition-all"
+            className="inline-flex items-center justify-center gap-2 px-4 sm:px-6 py-2.5 rounded-lg bg-blue-600 text-sm font-medium text-white shadow-sm hover:bg-blue-700 hover:shadow-md focus:outline-none focus:ring-2 focus:ring-blue-500 focus:ring-offset-2 disabled:opacity-50 disabled:cursor-not-allowed transition-all"
           >
             {loading ? (
               <>

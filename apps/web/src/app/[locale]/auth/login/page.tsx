@@ -252,7 +252,15 @@ export default function LoginPage() {
                 />
               </div>
               <div className="space-y-2">
-                <Label htmlFor="password">{tCommon('password')}</Label>
+                <div className="flex items-center justify-between">
+                  <Label htmlFor="password">{tCommon('password')}</Label>
+                  <Link
+                    href="/auth/forgot-password"
+                    className="text-xs text-primary hover:underline"
+                  >
+                    {t('forgotPassword') || 'Забыли пароль?'}
+                  </Link>
+                </div>
                 <Input
                   id="password"
                   type="password"
@@ -318,7 +326,13 @@ export default function LoginPage() {
             {t('continueWithGoogle')}
           </Button>
         </CardContent>
-        <CardFooter className="justify-center">
+        <CardFooter className="flex-col gap-3">
+          <Link
+            href="/auth/forgot-password"
+            className="text-sm text-primary hover:underline"
+          >
+            {t('forgotPassword') || 'Забыли пароль?'}
+          </Link>
           <p className="text-sm text-muted-foreground">
             {t('noAccount')}{' '}
             <Link href="/auth/register" className="text-primary hover:underline">

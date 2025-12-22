@@ -255,7 +255,16 @@ export function LoginModal({ open, onOpenChange, onSwitchToRegister }: LoginModa
                 />
               </div>
               <div className="space-y-2">
-                <Label htmlFor="password">{tCommon('password')}</Label>
+                <div className="flex items-center justify-between">
+                  <Label htmlFor="password">{tCommon('password')}</Label>
+                  <Link
+                    href="/auth/forgot-password"
+                    className="text-xs text-primary hover:underline"
+                    onClick={() => onOpenChange(false)}
+                  >
+                    {t('forgotPassword') || 'Забыли пароль?'}
+                  </Link>
+                </div>
                 <Input
                   id="password"
                   type="password"
@@ -330,8 +339,15 @@ export function LoginModal({ open, onOpenChange, onSwitchToRegister }: LoginModa
             {t('continueWithGoogle')}
           </Button>
 
-          {/* Switch to Register */}
-          <div className="mt-6 text-center">
+          {/* Forgot Password & Switch to Register */}
+          <div className="mt-6 text-center space-y-2">
+            <Link
+              href="/auth/forgot-password"
+              className="text-sm text-primary hover:underline block"
+              onClick={() => onOpenChange(false)}
+            >
+              {t('forgotPassword') || 'Забыли пароль?'}
+            </Link>
             <p className="text-sm text-muted-foreground">
               {t('noAccount')}{' '}
               {onSwitchToRegister ? (

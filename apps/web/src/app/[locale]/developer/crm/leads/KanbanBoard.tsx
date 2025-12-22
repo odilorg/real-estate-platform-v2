@@ -105,11 +105,24 @@ function DraggableItem({ id, lead, formatTime }: { id: string; lead: Lead; forma
     id: id,
   });
 
-  const style = transform
-    ? {
-        transform: `translate3d(${transform.x}px, ${transform.y}px, 0)`,
-      }
-    : undefined;
+  const style: React.CSSProperties = {
+    // CRITICAL: touch-action: none is required for mobile drag and drop
+    touchAction: 'none',
+    ...(transform
+      ? {
+          transform: `translate3d(${transform.x}px, ${transform.y}px, 0)`,
+        }
+      : {}),
+  };
+
+  // On mobile: tap navigates, long-press drags
+  // The TouchSensor delay (250ms) allows quick taps to navigate
+  const handleClick = (e: React.MouseEvent | React.TouchEvent) => {
+    if (isDragging) {
+      e.preventDefault();
+      e.stopPropagation();
+    }
+  };
 
   return (
     <div
@@ -117,17 +130,13 @@ function DraggableItem({ id, lead, formatTime }: { id: string; lead: Lead; forma
       style={style}
       {...listeners}
       {...attributes}
-      className={`cursor-move ${isDragging ? 'opacity-50' : ''}`}
+      className={`cursor-grab active:cursor-grabbing select-none ${isDragging ? 'opacity-50 z-50' : ''}`}
     >
       <Link
         href={`/developer/crm/leads/${lead.id}`}
         className="block"
-        onClick={(e) => {
-          // Prevent navigation when dragging
-          if (isDragging) {
-            e.preventDefault();
-          }
-        }}
+        onClick={handleClick}
+        draggable={false}
       >
         <LeadCard lead={lead} formatTime={formatTime} />
       </Link>
@@ -185,19 +194,20 @@ export default function KanbanBoard({ leads, onStatusChange }: KanbanBoardProps)
   const [scrollContainer, setScrollContainer] = useState<HTMLDivElement | null>(null);
 
   // Configure sensors for both mouse and touch (MOBILE SUPPORT!)
+  // TouchSensor is critical for mobile drag and drop
   const sensors = useSensors(
-    useSensor(PointerSensor, {
-      activationConstraint: {
-        distance: 8, // 8px of movement before drag starts
-      },
-    }),
     useSensor(TouchSensor, {
       activationConstraint: {
-        delay: 200, // 200ms press before drag on touch devices
-        tolerance: 5, // 5px tolerance for movement
+        delay: 250, // 250ms long-press before drag starts (allows quick taps to navigate)
+        tolerance: 8, // 8px tolerance for finger movement during delay
       },
     }),
     useSensor(MouseSensor, {
+      activationConstraint: {
+        distance: 8, // 8px mouse movement before drag starts
+      },
+    }),
+    useSensor(PointerSensor, {
       activationConstraint: {
         distance: 8,
       },
@@ -261,10 +271,11 @@ export default function KanbanBoard({ leads, onStatusChange }: KanbanBoardProps)
       onDragEnd={handleDragEnd}
     >
       <div className="relative">
-        {/* Scroll hint - shows there are more columns */}
-        <div className="mb-2 text-sm text-gray-500 flex items-center gap-2">
-          <span>📱 Нажмите и тяните для перемещения</span>
-          <span className="text-xs">6 статусов</span>
+        {/* Mobile drag hint */}
+        <div className="mb-2 text-xs sm:text-sm text-gray-500 flex items-center gap-2 px-4 sm:px-0">
+          <span className="hidden sm:inline">📱 Удерживайте карточку для перетаскивания</span>
+          <span className="sm:hidden">📱 Удерживайте 0.5 сек для перетаскивания</span>
+          <span className="text-xs text-gray-400">• 6 статусов</span>
         </div>
 
         <div className="relative w-full max-w-[1200px] mx-auto">
@@ -294,11 +305,12 @@ export default function KanbanBoard({ leads, onStatusChange }: KanbanBoardProps)
           {/* Kanban Columns */}
           <div
             ref={setScrollContainer}
-            className="flex gap-3 overflow-x-auto pb-4 px-12 snap-x snap-proximity scroll-smooth"
+            className="flex gap-3 overflow-x-auto pb-4 px-4 sm:px-12 snap-x snap-proximity scroll-smooth"
             style={{
               scrollbarWidth: 'thin',
               scrollbarColor: '#CBD5E1 #F1F5F9',
-              touchAction: 'pan-x pan-y', // Allow touch scrolling
+              // Note: touchAction is set on individual draggable items, not here
+              // This allows the container to scroll naturally
             }}
           >
             {statusColumns.map((column) => {
