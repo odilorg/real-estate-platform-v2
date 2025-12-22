@@ -165,7 +165,7 @@ export default function DeveloperDashboard() {
       {/* Quick Actions */}
       <div className="bg-white shadow rounded-lg p-6">
         <h2 className="text-lg font-medium mb-4">Quick Actions</h2>
-        <div className="grid grid-cols-1 md:grid-cols-4 gap-4">
+        <div className="grid grid-cols-2 lg:grid-cols-4 gap-3 sm:gap-4">
           <Link href="/properties" className="flex items-center gap-3 p-4 border border-gray-200 rounded-lg hover:bg-gray-50">
             <div className="p-2 bg-emerald-100 rounded-lg">
               <Search className="h-5 w-5 text-emerald-600" />
