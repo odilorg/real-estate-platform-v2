@@ -322,19 +322,19 @@ export default function AgencyCRMLeadsPage() {
       </div>
 
       {/* Stats Cards - 2x2 grid on mobile, 4 columns on desktop */}
-      <div className="grid grid-cols-2 lg:grid-cols-4 gap-3">
+      <div className="grid grid-cols-2 lg:grid-cols-4 gap-2 sm:gap-3">
         {[
           { label: t('stats.total'), value: total, icon: '📊', color: 'text-gray-900' },
           { label: t('stats.new'), value: safeLeads.filter(l => l.status === 'NEW').length, icon: '🆕', color: 'text-blue-600' },
           { label: t('stats.qualified'), value: safeLeads.filter(l => l.status === 'QUALIFIED').length, icon: '✅', color: 'text-green-600' },
           { label: t('stats.urgent'), value: safeLeads.filter(l => l.priority === 'URGENT').length, icon: '🔥', color: 'text-red-600' },
         ].map((stat, i) => (
-          <div key={i} className="bg-white p-3 sm:p-4 lg:p-5 rounded-lg shadow-sm border border-gray-100">
+          <div key={i} className="bg-white p-2.5 sm:p-4 rounded-lg shadow-sm border border-gray-100">
             <div className="flex items-center justify-between gap-1">
-              <div className="text-xs sm:text-sm font-medium text-gray-600 truncate">{stat.label}</div>
-              <span className="text-base sm:text-lg flex-shrink-0">{stat.icon}</span>
+              <div className="text-[11px] sm:text-xs lg:text-sm font-medium text-gray-500 truncate">{stat.label}</div>
+              <span className="text-sm sm:text-base flex-shrink-0">{stat.icon}</span>
             </div>
-            <div className={`text-lg sm:text-2xl lg:text-3xl font-bold mt-1 sm:mt-2 ${stat.color}`}>{stat.value}</div>
+            <div className={`text-base sm:text-xl lg:text-2xl font-bold mt-1 sm:mt-2 ${stat.color}`}>{stat.value}</div>
           </div>
         ))}
       </div>
@@ -342,7 +342,7 @@ export default function AgencyCRMLeadsPage() {
       {/* Follow-up Alert - Mobile optimized */}
       {followUpLeads.length > 0 && (
         <div className="bg-orange-50 border-l-4 border-orange-500 p-4 rounded-r-lg">
-          <div className="flex items-start gap-3">
+          <div className="flex items-start gap-2 sm:gap-3">
             <AlertCircle className="h-5 w-5 text-orange-500 flex-shrink-0 mt-0.5" />
             <div className="flex-1 min-w-0">
               <h3 className="text-sm md:text-base font-semibold text-orange-900 mb-2">{t('followUp.alert')} ({followUpLeads.length})</h3>
@@ -386,7 +386,7 @@ export default function AgencyCRMLeadsPage() {
             className="w-full pl-10 pr-4 py-2 sm:py-2.5 border border-gray-200 rounded-lg focus:outline-none focus:ring-2 focus:ring-blue-500 focus:border-transparent min-h-[38px] sm:min-h-[44px]"
           />
         </div>
-        <div className="grid grid-cols-1 sm:grid-cols-3 gap-3">
+        <div className="grid grid-cols-1 sm:grid-cols-3 gap-2 sm:gap-3">
           <select
             value={statusFilter}
             onChange={(e) => setStatusFilter(e.target.value)}
@@ -431,7 +431,7 @@ export default function AgencyCRMLeadsPage() {
       {selectedLeads.length > 0 && viewMode === 'list' && (
         <div className="bg-blue-50 border border-blue-200 rounded-lg p-4">
           <div className="flex items-center justify-between gap-4">
-            <div className="flex items-center gap-3">
+            <div className="flex items-center gap-2 sm:gap-3">
               <button
                 onClick={toggleSelectAll}
                 className="text-blue-600 hover:text-blue-700 font-medium text-sm"
@@ -505,7 +505,7 @@ export default function AgencyCRMLeadsPage() {
           <div className="block md:hidden space-y-3">
             {leads.map((lead) => (
               <div key={lead.id} className="bg-white rounded-xl shadow-sm border border-gray-200 hover:shadow-md transition-all">
-                <div className="p-4 flex gap-3">
+                <div className="p-4 flex gap-2 sm:gap-3">
                   {/* Checkbox */}
                   <div className="flex-shrink-0 pt-1">
                     <button

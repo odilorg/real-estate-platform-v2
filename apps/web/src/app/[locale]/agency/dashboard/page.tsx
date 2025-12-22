@@ -213,7 +213,7 @@ export default function AgencyDashboardPage() {
             )}
             <div>
               <h1 className="text-3xl font-bold text-gray-900">{agency.name}</h1>
-              <p className="mt-1 text-sm text-gray-500">
+              <p className="mt-1 text-xs sm:text-sm text-gray-500">
                 {role === 'OWNER' ? t('agencyOwner') : role}
               </p>
             </div>
@@ -230,65 +230,65 @@ export default function AgencyDashboardPage() {
       {/* Stats Grid */}
       <div className="grid grid-cols-2 lg:grid-cols-3 gap-3 sm:gap-6 mb-8">
         {/* Total Members */}
-        <div className="bg-white rounded-lg shadow p-6">
-          <div className="flex items-center justify-between mb-4">
-            <div className="p-3 bg-blue-100 rounded-lg">
-              <Users className="h-6 w-6 text-blue-600" />
+        <div className="bg-white rounded-lg shadow p-3 sm:p-6">
+          <div className="flex items-center justify-between mb-2 sm:mb-4">
+            <div className="p-2 sm:p-3 bg-blue-100 rounded-lg">
+              <Users className="h-5 w-5 sm:h-6 sm:w-6 text-blue-600" />
             </div>
-            <Link href="/developer/crm/members" className="text-sm text-blue-600 hover:text-blue-700">
+            <Link href="/developer/crm/members" className="text-xs sm:text-sm text-blue-600 hover:text-blue-700">
               {t('stats.viewAll')}
             </Link>
           </div>
           <div>
-            <p className="text-2xl font-bold text-gray-900">
+            <p className="text-xl sm:text-2xl font-bold text-gray-900">
               {stats?.members.active || 0}
             </p>
-            <p className="text-sm text-gray-500">{t('stats.activeMembers')}</p>
-            <p className="text-xs text-gray-400 mt-1">
+            <p className="text-xs sm:text-sm text-gray-500">{t('stats.activeMembers')}</p>
+            <p className="text-[10px] sm:text-xs text-gray-400 mt-0.5 sm:mt-1">
               {stats?.members.total || 0} {t('stats.totalMembers')}
             </p>
           </div>
         </div>
 
         {/* Total Leads */}
-        <div className="bg-white rounded-lg shadow p-6">
-          <div className="flex items-center justify-between mb-4">
-            <div className="p-3 bg-green-100 rounded-lg">
-              <FileText className="h-6 w-6 text-green-600" />
+        <div className="bg-white rounded-lg shadow p-3 sm:p-6">
+          <div className="flex items-center justify-between mb-2 sm:mb-4">
+            <div className="p-2 sm:p-3 bg-green-100 rounded-lg">
+              <FileText className="h-5 w-5 sm:h-6 sm:w-6 text-green-600" />
             </div>
-            <Link href="/developer/crm/leads" className="text-sm text-green-600 hover:text-green-700">
+            <Link href="/developer/crm/leads" className="text-xs sm:text-sm text-green-600 hover:text-green-700">
               {t('stats.viewAll')}
             </Link>
           </div>
           <div>
-            <p className="text-2xl font-bold text-gray-900">
+            <p className="text-xl sm:text-2xl font-bold text-gray-900">
               {stats?.leads.active || 0}
             </p>
-            <p className="text-sm text-gray-500">{t('stats.activeLeads')}</p>
-            <p className="text-xs text-gray-400 mt-1">
+            <p className="text-xs sm:text-sm text-gray-500">{t('stats.activeLeads')}</p>
+            <p className="text-[10px] sm:text-xs text-gray-400 mt-0.5 sm:mt-1">
               {stats?.leads.total || 0} {t('stats.totalLeads')}
             </p>
           </div>
         </div>
 
         {/* Agents */}
-        <div className="bg-white rounded-lg shadow p-6">
-          <div className="flex items-center justify-between mb-4">
-            <div className="p-3 bg-purple-100 rounded-lg">
-              <UserPlus className="h-6 w-6 text-purple-600" />
+        <div className="bg-white rounded-lg shadow p-3 sm:p-6">
+          <div className="flex items-center justify-between mb-2 sm:mb-4">
+            <div className="p-2 sm:p-3 bg-purple-100 rounded-lg">
+              <UserPlus className="h-5 w-5 sm:h-6 sm:w-6 text-purple-600" />
             </div>
           </div>
           <div>
-            <p className="text-2xl font-bold text-gray-900">
+            <p className="text-xl sm:text-2xl font-bold text-gray-900">
               {agency._count.agents || 0}
             </p>
-            <p className="text-sm text-gray-500">{t('stats.agents')}</p>
+            <p className="text-xs sm:text-sm text-gray-500">{t('stats.agents')}</p>
           </div>
         </div>
       </div>
 
       {/* Agency Information */}
-      <div className="bg-white rounded-lg shadow p-6 mb-8">
+      <div className="bg-white rounded-lg shadow p-3 sm:p-6 mb-8">
         <div className="flex items-center justify-between mb-6">
           <h2 className="text-xl font-semibold text-gray-900">{t('info.title')}</h2>
           <Link href="/agency/settings">
@@ -345,53 +345,53 @@ export default function AgencyDashboardPage() {
       </div>
 
       {/* Quick Actions */}
-      <div className="bg-white rounded-lg shadow p-6">
-        <h2 className="text-xl font-semibold text-gray-900 mb-4">{t('quickActions.title')}</h2>
-        <div className="grid grid-cols-2 lg:grid-cols-4 gap-3 sm:gap-4">
+      <div className="bg-white rounded-lg shadow p-4 sm:p-6">
+        <h2 className="text-lg sm:text-xl font-semibold text-gray-900 mb-3 sm:mb-4">{t('quickActions.title')}</h2>
+        <div className="grid grid-cols-2 lg:grid-cols-4 gap-2 sm:gap-4">
           <Link href="/properties">
-            <button className="w-full flex items-center gap-3 p-4 border border-gray-200 rounded-lg hover:bg-gray-50 text-left">
-              <div className="p-2 bg-emerald-100 rounded-lg">
-                <Search className="h-5 w-5 text-emerald-600" />
+            <button className="w-full flex flex-col sm:flex-row items-center sm:items-center gap-2 sm:gap-3 p-3 sm:p-4 border border-gray-200 rounded-lg hover:bg-gray-50 text-center sm:text-left">
+              <div className="p-2 bg-emerald-100 rounded-lg shrink-0">
+                <Search className="h-4 w-4 sm:h-5 sm:w-5 text-emerald-600" />
               </div>
               <div>
-                <p className="font-medium text-gray-900">{t('quickActions.browseProperties')}</p>
-                <p className="text-sm text-gray-500">{t('quickActions.browsePropertiesDesc')}</p>
+                <p className="text-xs sm:text-sm font-medium text-gray-900 leading-tight">{t('quickActions.browseProperties')}</p>
+                <p className="text-[10px] sm:text-xs text-gray-500 hidden sm:block">{t('quickActions.browsePropertiesDesc')}</p>
               </div>
             </button>
           </Link>
 
           <Link href="/developer/crm/members/new">
-            <button className="w-full flex items-center gap-3 p-4 border border-gray-200 rounded-lg hover:bg-gray-50 text-left">
-              <div className="p-2 bg-blue-100 rounded-lg">
-                <UserPlus className="h-5 w-5 text-blue-600" />
+            <button className="w-full flex flex-col sm:flex-row items-center sm:items-center gap-2 sm:gap-3 p-3 sm:p-4 border border-gray-200 rounded-lg hover:bg-gray-50 text-center sm:text-left">
+              <div className="p-2 bg-blue-100 rounded-lg shrink-0">
+                <UserPlus className="h-4 w-4 sm:h-5 sm:w-5 text-blue-600" />
               </div>
               <div>
-                <p className="font-medium text-gray-900">{t('quickActions.addMember')}</p>
-                <p className="text-sm text-gray-500">{t('quickActions.addMemberDesc')}</p>
+                <p className="text-xs sm:text-sm font-medium text-gray-900 leading-tight">{t('quickActions.addMember')}</p>
+                <p className="text-[10px] sm:text-xs text-gray-500 hidden sm:block">{t('quickActions.addMemberDesc')}</p>
               </div>
             </button>
           </Link>
 
           <Link href="/developer/crm/leads/new">
-            <button className="w-full flex items-center gap-3 p-4 border border-gray-200 rounded-lg hover:bg-gray-50 text-left">
-              <div className="p-2 bg-green-100 rounded-lg">
-                <FileText className="h-5 w-5 text-green-600" />
+            <button className="w-full flex flex-col sm:flex-row items-center sm:items-center gap-2 sm:gap-3 p-3 sm:p-4 border border-gray-200 rounded-lg hover:bg-gray-50 text-center sm:text-left">
+              <div className="p-2 bg-green-100 rounded-lg shrink-0">
+                <FileText className="h-4 w-4 sm:h-5 sm:w-5 text-green-600" />
               </div>
               <div>
-                <p className="font-medium text-gray-900">{t('quickActions.addLead')}</p>
-                <p className="text-sm text-gray-500">{t('quickActions.addLeadDesc')}</p>
+                <p className="text-xs sm:text-sm font-medium text-gray-900 leading-tight">{t('quickActions.addLead')}</p>
+                <p className="text-[10px] sm:text-xs text-gray-500 hidden sm:block">{t('quickActions.addLeadDesc')}</p>
               </div>
             </button>
           </Link>
 
           <Link href="/agency/settings">
-            <button className="w-full flex items-center gap-3 p-4 border border-gray-200 rounded-lg hover:bg-gray-50 text-left">
-              <div className="p-2 bg-purple-100 rounded-lg">
-                <Settings className="h-5 w-5 text-purple-600" />
+            <button className="w-full flex flex-col sm:flex-row items-center sm:items-center gap-2 sm:gap-3 p-3 sm:p-4 border border-gray-200 rounded-lg hover:bg-gray-50 text-center sm:text-left">
+              <div className="p-2 bg-purple-100 rounded-lg shrink-0">
+                <Settings className="h-4 w-4 sm:h-5 sm:w-5 text-purple-600" />
               </div>
               <div>
-                <p className="font-medium text-gray-900">{t('quickActions.agencySettings')}</p>
-                <p className="text-sm text-gray-500">{t('quickActions.agencySettingsDesc')}</p>
+                <p className="text-xs sm:text-sm font-medium text-gray-900 leading-tight">{t('quickActions.agencySettings')}</p>
+                <p className="text-[10px] sm:text-xs text-gray-500 hidden sm:block">{t('quickActions.agencySettingsDesc')}</p>
               </div>
             </button>
           </Link>
@@ -399,7 +399,7 @@ export default function AgencyDashboardPage() {
       </div>
 
       {/* My Properties Section */}
-      <div className="bg-white rounded-lg shadow p-6 mt-8">
+      <div className="bg-white rounded-lg shadow p-3 sm:p-6 mt-8">
         <div className="flex items-center justify-between mb-6">
           <h2 className="text-xl font-semibold text-gray-900">{t('myListings.title')}</h2>
           <Link href="/properties/new">
@@ -479,7 +479,7 @@ export default function AgencyDashboardPage() {
                       </button>
                     </div>
                   </div>
-                  <div className="hidden sm:flex items-center text-sm text-gray-500 mt-1">
+                  <div className="hidden sm:flex items-center text-xs sm:text-sm text-gray-500 mt-1">
                     <MapPin className="h-3 w-3 mr-1" />
                     <span className="truncate">{property.address}, {property.city}</span>
                   </div>
