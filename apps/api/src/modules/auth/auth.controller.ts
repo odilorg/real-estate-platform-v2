@@ -64,10 +64,26 @@ export class AuthController {
   @Throttle({ default: { limit: 10, ttl: 60000 } }) // Stricter rate limit for login
   @Post('login')
   @HttpCode(HttpStatus.OK)
-  async login(@Body() dto: LoginDto) {
+  async login(
+    @Body() dto: LoginDto,
+    @Res({ passthrough: true }) res: Response,
+  ) {
     // Validate with Zod
     const validated = LoginDto.parse(dto);
-    return this.authService.login(validated);
+    const result = await this.authService.login(validated);
+    
+    // Set the auth_token cookie to match localStorage token
+    if (result.accessToken) {
+      res.cookie('auth_token', result.accessToken, {
+        httpOnly: true,
+        secure: process.env.NODE_ENV === 'production',
+        sameSite: 'lax',
+        path: '/',
+        maxAge: 7 * 24 * 60 * 60 * 1000, // 7 days
+      });
+    }
+    
+    return result;
   }
 
   @Get('me')
@@ -213,9 +229,26 @@ export class AuthController {
   @Throttle({ default: { limit: 10, ttl: 60000 } })
   @Post('phone/login/verify')
   @HttpCode(HttpStatus.OK)
-  async verifyPhoneLogin(@Body() dto: PhoneLoginVerifyDto) {
+  async verifyPhoneLogin(
+    @Body() dto: PhoneLoginVerifyDto,
+    @Res({ passthrough: true }) res: Response,
+  ) {
     const validated = PhoneLoginVerifyDto.parse(dto);
-    return this.authService.loginWithPhone(validated);
+    const result = await this.authService.loginWithPhone(validated);
+    
+    // Set the auth_token cookie to match localStorage token
+    // This ensures cookie and header have the same user
+    if (result.accessToken) {
+      res.cookie('auth_token', result.accessToken, {
+        httpOnly: true,
+        secure: process.env.NODE_ENV === 'production',
+        sameSite: 'lax',
+        path: '/',
+        maxAge: 7 * 24 * 60 * 60 * 1000, // 7 days
+      });
+    }
+    
+    return result;
   }
 
   @Post('set-password')
