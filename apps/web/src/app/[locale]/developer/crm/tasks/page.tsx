@@ -49,17 +49,28 @@ interface TaskStats {
 
 export default function TasksPage() {
   const router = useRouter();
+  const locale = useLocale();
   const t = useTranslations('crm.tasks');
+  const { isAuthenticated, isLoading: authLoading } = useAuth();
   const [tasks, setTasks] = useState<Task[]>([]);
   const [stats, setStats] = useState<TaskStats | null>(null);
   const [loading, setLoading] = useState(true);
   const [filterStatus, setFilterStatus] = useState<string>('');
   const [filterPriority, setFilterPriority] = useState<string>('');
 
+  // Redirect to login if not authenticated
   useEffect(() => {
-    fetchTasks();
-    fetchStats();
-  }, [filterStatus, filterPriority]);
+    if (!authLoading && !isAuthenticated) {
+      router.push(`/${locale}/auth/login`);
+    }
+  }, [authLoading, isAuthenticated, router, locale]);
+
+  useEffect(() => {
+    if (isAuthenticated) {
+      fetchTasks();
+      fetchStats();
+    }
+  }, [filterStatus, filterPriority, isAuthenticated]);
 
   const fetchTasks = async () => {
     try {
@@ -117,6 +128,15 @@ export default function TasksPage() {
     if (status === 'COMPLETED' || status === 'CANCELLED') return false;
     return new Date(dueDate) < new Date();
   };
+
+  // Show loading state while checking auth
+  if (authLoading || !isAuthenticated) {
+    return (
+      <div className="min-h-screen bg-gray-50 flex items-center justify-center">
+        <Loader2 className="w-8 h-8 animate-spin text-blue-600" />
+      </div>
+    );
+  }
 
   return (
     <div className="min-h-screen bg-gray-50 p-6">
