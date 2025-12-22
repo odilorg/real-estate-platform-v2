@@ -39,15 +39,18 @@ export function CrmMobileNav({ className, title = 'CRM' }: CrmMobileNavProps) {
     router.replace(pathname, { locale: newLocale });
   };
 
+  // Primary nav: Most frequently used daily actions
+  // Tasks replaces Commissions (daily use vs monthly review)
   const primaryNavItems = [
     { href: '/developer/crm/analytics', icon: LayoutDashboard, label: t('dashboard') },
     { href: '/developer/crm/leads', icon: FileText, label: t('leads') },
     { href: '/developer/crm/deals', icon: Handshake, label: t('deals') },
-    { href: '/developer/crm/commissions', icon: DollarSign, label: t('commissions') },
+    { href: '/developer/crm/tasks', icon: CheckSquare, label: t('tasks') },
   ];
 
+  // Secondary nav: Less frequent actions
   const moreNavItems = [
-    { href: '/developer/crm/tasks', icon: CheckSquare, label: t('tasks') },
+    { href: '/developer/crm/commissions', icon: DollarSign, label: t('commissions') },
     { href: '/developer/crm/members', icon: Users, label: t('team') },
     { href: '/developer/crm/analytics/agents', icon: BarChart3, label: tMobile('agentPerformance') },
     { href: '/developer/crm/analytics/revenue', icon: BarChart3, label: tMobile('revenueAnalytics') },
