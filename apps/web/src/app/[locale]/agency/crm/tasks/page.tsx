@@ -133,28 +133,28 @@ export default function TasksPage() {
           </button>
         </div>
 
-        {/* Stats */}
+        {/* Stats - 2x3 grid on mobile (with last row having 1 centered), 5 columns on desktop */}
         {stats && (
-          <div className="grid grid-cols-1 md:grid-cols-5 gap-4 mb-6">
-            <div className="bg-white rounded-lg shadow p-4">
-              <div className="text-sm text-gray-500">Всего</div>
-              <div className="text-2xl font-bold text-gray-900">{stats.totalTasks}</div>
+          <div className="grid grid-cols-2 sm:grid-cols-3 lg:grid-cols-5 gap-3 sm:gap-4 mb-6">
+            <div className="bg-white rounded-lg shadow p-3 sm:p-4">
+              <div className="text-xs sm:text-sm text-gray-500">Всего</div>
+              <div className="text-lg sm:text-2xl font-bold text-gray-900">{stats.totalTasks}</div>
             </div>
-            <div className="bg-white rounded-lg shadow p-4">
-              <div className="text-sm text-gray-500">Ожидают</div>
-              <div className="text-2xl font-bold text-yellow-600">{stats.pendingTasks}</div>
+            <div className="bg-white rounded-lg shadow p-3 sm:p-4">
+              <div className="text-xs sm:text-sm text-gray-500">Ожидают</div>
+              <div className="text-lg sm:text-2xl font-bold text-yellow-600">{stats.pendingTasks}</div>
             </div>
-            <div className="bg-white rounded-lg shadow p-4">
-              <div className="text-sm text-gray-500">В работе</div>
-              <div className="text-2xl font-bold text-blue-600">{stats.inProgressTasks}</div>
+            <div className="bg-white rounded-lg shadow p-3 sm:p-4">
+              <div className="text-xs sm:text-sm text-gray-500">В работе</div>
+              <div className="text-lg sm:text-2xl font-bold text-blue-600">{stats.inProgressTasks}</div>
             </div>
-            <div className="bg-white rounded-lg shadow p-4">
-              <div className="text-sm text-gray-500">Завершено</div>
-              <div className="text-2xl font-bold text-green-600">{stats.completedTasks}</div>
+            <div className="bg-white rounded-lg shadow p-3 sm:p-4">
+              <div className="text-xs sm:text-sm text-gray-500">Завершено</div>
+              <div className="text-lg sm:text-2xl font-bold text-green-600">{stats.completedTasks}</div>
             </div>
-            <div className="bg-white rounded-lg shadow p-4">
-              <div className="text-sm text-gray-500">Просрочено</div>
-              <div className="text-2xl font-bold text-red-600">{stats.overdueTasks}</div>
+            <div className="bg-white rounded-lg shadow p-3 sm:p-4 col-span-2 sm:col-span-1">
+              <div className="text-xs sm:text-sm text-gray-500">Просрочено</div>
+              <div className="text-lg sm:text-2xl font-bold text-red-600">{stats.overdueTasks}</div>
             </div>
           </div>
         )}

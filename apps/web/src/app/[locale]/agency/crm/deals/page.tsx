@@ -174,60 +174,60 @@ export default function DealsPage() {
         </button>
       </div>
 
-      {/* Pipeline Stats */}
-      <div className="grid grid-cols-1 md:grid-cols-4 gap-4">
-        <div className="bg-white p-6 rounded-lg shadow">
-          <div className="flex items-center justify-between">
-            <div>
-              <p className="text-sm text-gray-600">Всего сделок</p>
-              <p className="text-2xl font-bold text-gray-900">
+      {/* Pipeline Stats - 2x2 grid on mobile, 4 columns on desktop */}
+      <div className="grid grid-cols-2 lg:grid-cols-4 gap-3 sm:gap-4">
+        <div className="bg-white p-3 sm:p-4 lg:p-6 rounded-lg shadow">
+          <div className="flex items-center justify-between gap-2">
+            <div className="min-w-0">
+              <p className="text-xs sm:text-sm text-gray-600 truncate">Всего сделок</p>
+              <p className="text-lg sm:text-2xl font-bold text-gray-900">
                 {Object.values(pipeline).reduce((sum, stage) => sum + stage.count, 0)}
               </p>
             </div>
-            <div className="p-3 bg-blue-100 rounded-lg">
-              <Building className="h-6 w-6 text-blue-600" />
+            <div className="p-2 sm:p-3 bg-blue-100 rounded-lg flex-shrink-0">
+              <Building className="h-5 w-5 sm:h-6 sm:w-6 text-blue-600" />
             </div>
           </div>
         </div>
-        <div className="bg-white p-6 rounded-lg shadow">
-          <div className="flex items-center justify-between">
-            <div>
-              <p className="text-sm text-gray-600">Общая стоимость</p>
-              <p className="text-2xl font-bold text-gray-900">
+        <div className="bg-white p-3 sm:p-4 lg:p-6 rounded-lg shadow">
+          <div className="flex items-center justify-between gap-2">
+            <div className="min-w-0">
+              <p className="text-xs sm:text-sm text-gray-600 truncate">Общая стоимость</p>
+              <p className="text-lg sm:text-2xl font-bold text-gray-900">
                 {formatCurrency(
                   Object.values(pipeline).reduce((sum, stage) => sum + stage.totalValue, 0),
                   'YE'
                 )}
               </p>
             </div>
-            <div className="p-3 bg-green-100 rounded-lg">
-              <DollarSign className="h-6 w-6 text-green-600" />
+            <div className="p-2 sm:p-3 bg-green-100 rounded-lg flex-shrink-0">
+              <DollarSign className="h-5 w-5 sm:h-6 sm:w-6 text-green-600" />
             </div>
           </div>
         </div>
-        <div className="bg-white p-6 rounded-lg shadow">
-          <div className="flex items-center justify-between">
-            <div>
-              <p className="text-sm text-gray-600">На просмотре</p>
-              <p className="text-2xl font-bold text-gray-900">
+        <div className="bg-white p-3 sm:p-4 lg:p-6 rounded-lg shadow">
+          <div className="flex items-center justify-between gap-2">
+            <div className="min-w-0">
+              <p className="text-xs sm:text-sm text-gray-600 truncate">На просмотре</p>
+              <p className="text-lg sm:text-2xl font-bold text-gray-900">
                 {(pipeline['VIEWING_SCHEDULED']?.count || 0) + (pipeline['VIEWING_COMPLETED']?.count || 0)}
               </p>
             </div>
-            <div className="p-3 bg-purple-100 rounded-lg">
-              <Calendar className="h-6 w-6 text-purple-600" />
+            <div className="p-2 sm:p-3 bg-purple-100 rounded-lg flex-shrink-0">
+              <Calendar className="h-5 w-5 sm:h-6 sm:w-6 text-purple-600" />
             </div>
           </div>
         </div>
-        <div className="bg-white p-6 rounded-lg shadow">
-          <div className="flex items-center justify-between">
-            <div>
-              <p className="text-sm text-gray-600">В переговорах</p>
-              <p className="text-2xl font-bold text-gray-900">
+        <div className="bg-white p-3 sm:p-4 lg:p-6 rounded-lg shadow">
+          <div className="flex items-center justify-between gap-2">
+            <div className="min-w-0">
+              <p className="text-xs sm:text-sm text-gray-600 truncate">В переговорах</p>
+              <p className="text-lg sm:text-2xl font-bold text-gray-900">
                 {pipeline['NEGOTIATION']?.count || 0}
               </p>
             </div>
-            <div className="p-3 bg-orange-100 rounded-lg">
-              <User className="h-6 w-6 text-orange-600" />
+            <div className="p-2 sm:p-3 bg-orange-100 rounded-lg flex-shrink-0">
+              <User className="h-5 w-5 sm:h-6 sm:w-6 text-orange-600" />
             </div>
           </div>
         </div>

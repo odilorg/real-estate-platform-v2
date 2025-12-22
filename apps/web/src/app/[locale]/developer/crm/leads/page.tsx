@@ -321,24 +321,22 @@ export default function AgencyCRMLeadsPage() {
         </div>
       </div>
 
-      {/* Stats Cards - Horizontal scroll on mobile */}
-      <div className="overflow-x-auto -mx-4 px-4 sm:mx-0 sm:px-0">
-        <div className="flex sm:grid sm:grid-cols-2 lg:grid-cols-4 gap-3 min-w-max sm:min-w-0">
-          {[
-            { label: t('stats.total'), value: total, icon: '📊', color: 'text-gray-900' },
-            { label: t('stats.new'), value: safeLeads.filter(l => l.status === 'NEW').length, icon: '🆕', color: 'text-blue-600' },
-            { label: t('stats.qualified'), value: safeLeads.filter(l => l.status === 'QUALIFIED').length, icon: '✅', color: 'text-green-600' },
-            { label: t('stats.urgent'), value: safeLeads.filter(l => l.priority === 'URGENT').length, icon: '🔥', color: 'text-red-600' },
-          ].map((stat, i) => (
-            <div key={i} className="bg-white p-4 lg:p-5 rounded-lg shadow-sm border border-gray-100 min-w-[160px] sm:min-w-0">
-              <div className="flex items-center justify-between">
-                <div className="text-xs sm:text-sm font-medium text-gray-600">{stat.label}</div>
-                <span className="text-lg">{stat.icon}</span>
-              </div>
-              <div className={`text-xl sm:text-2xl lg:text-3xl font-bold mt-2 ${stat.color}`}>{stat.value}</div>
+      {/* Stats Cards - 2x2 grid on mobile, 4 columns on desktop */}
+      <div className="grid grid-cols-2 lg:grid-cols-4 gap-3">
+        {[
+          { label: t('stats.total'), value: total, icon: '📊', color: 'text-gray-900' },
+          { label: t('stats.new'), value: safeLeads.filter(l => l.status === 'NEW').length, icon: '🆕', color: 'text-blue-600' },
+          { label: t('stats.qualified'), value: safeLeads.filter(l => l.status === 'QUALIFIED').length, icon: '✅', color: 'text-green-600' },
+          { label: t('stats.urgent'), value: safeLeads.filter(l => l.priority === 'URGENT').length, icon: '🔥', color: 'text-red-600' },
+        ].map((stat, i) => (
+          <div key={i} className="bg-white p-3 sm:p-4 lg:p-5 rounded-lg shadow-sm border border-gray-100">
+            <div className="flex items-center justify-between gap-1">
+              <div className="text-xs sm:text-sm font-medium text-gray-600 truncate">{stat.label}</div>
+              <span className="text-base sm:text-lg flex-shrink-0">{stat.icon}</span>
             </div>
-          ))}
-        </div>
+            <div className={`text-lg sm:text-2xl lg:text-3xl font-bold mt-1 sm:mt-2 ${stat.color}`}>{stat.value}</div>
+          </div>
+        ))}
       </div>
 
       {/* Follow-up Alert - Mobile optimized */}
