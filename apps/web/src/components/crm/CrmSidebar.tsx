@@ -11,6 +11,7 @@ import {
   ChevronLeft,
   ChevronRight,
   Settings,
+  CheckSquare,
 } from 'lucide-react';
 import { CrmNavItem } from './CrmNavItem';
 import { cn } from '@/lib/utils';
@@ -36,6 +37,7 @@ export function CrmSidebar({ className, title = 'CRM' }: CrmSidebarProps) {
         { href: '/developer/crm/analytics', icon: LayoutDashboard, label: t('dashboard') },
         { href: '/developer/crm/leads', icon: FileText, label: t('leads') },
         { href: '/developer/crm/deals', icon: Handshake, label: t('deals') },
+        { href: '/developer/crm/tasks', icon: CheckSquare, label: t('tasks') },
         { href: '/developer/crm/commissions', icon: DollarSign, label: t('commissions') },
       ],
     },

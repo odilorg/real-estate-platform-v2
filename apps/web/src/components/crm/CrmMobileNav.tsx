@@ -15,6 +15,7 @@ import {
   X,
   Menu,
   Globe,
+  CheckSquare,
 } from 'lucide-react';
 import { cn } from '@/lib/utils';
 import { useTranslations, useLocale } from 'next-intl';
@@ -46,6 +47,7 @@ export function CrmMobileNav({ className, title = 'CRM' }: CrmMobileNavProps) {
   ];
 
   const moreNavItems = [
+    { href: '/developer/crm/tasks', icon: CheckSquare, label: t('tasks') },
     { href: '/developer/crm/members', icon: Users, label: t('team') },
     { href: '/developer/crm/analytics/agents', icon: BarChart3, label: tMobile('agentPerformance') },
     { href: '/developer/crm/analytics/revenue', icon: BarChart3, label: tMobile('revenueAnalytics') },
