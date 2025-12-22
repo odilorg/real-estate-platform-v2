@@ -112,7 +112,8 @@
       "resendIn": "Qayta yuborish",
       "changePhone": "Raqamni o'zgartirish",
       "useEmail": "Email orqali kirish",
-      "usePhone": "Telefon orqali kirish"
+      "usePhone": "Telefon orqali kirish",
+      "forgotPassword": "Parolni unutdingizmi?"
     },
     "register": {
       "title": "Hisob yaratish",
@@ -145,6 +146,43 @@
     },
     "callback": {
       "completing": "Kirish yakunlanmoqda..."
+    },
+    "forgotPassword": {
+      "title": "Parolni tiklash",
+      "description": "Parolni tiklash havolasini olish uchun emailni kiriting",
+      "emailLabel": "Email",
+      "emailPlaceholder": "sizning@email.com",
+      "submit": "Havolani yuborish",
+      "submitting": "Yuborilmoqda...",
+      "backToLogin": "Kirishga qaytish",
+      "successTitle": "Pochtani tekshiring",
+      "successDescription": "Parolni tiklash havolasini yubordik",
+      "checkSpam": "Xat ko'rinmayaptimi? Spam papkasini tekshiring.",
+      "tryDifferentEmail": "Boshqa email sinab ko'rish",
+      "sendFailed": "Havolani yuborib bo'lmadi"
+    },
+    "resetPassword": {
+      "title": "Yangi parol yaratish",
+      "description": "Hisobingiz uchun yangi parol kiriting",
+      "passwordLabel": "Yangi parol",
+      "passwordPlaceholder": "Kamida 6 ta belgi",
+      "confirmPasswordLabel": "Parolni tasdiqlang",
+      "confirmPasswordPlaceholder": "Parolni qayta kiriting",
+      "submit": "Parolni saqlash",
+      "submitting": "Saqlanmoqda...",
+      "backToLogin": "Kirishga qaytish",
+      "successTitle": "Parol o'zgartirildi!",
+      "successDescription": "Parolingiz muvaffaqiyatli o'zgartirildi.",
+      "redirecting": "Kirish sahifasiga yo'naltirilmoqda...",
+      "goToLogin": "Hisobga kirish",
+      "invalidToken": "Noto'g'ri havola",
+      "invalidTokenDescription": "Parolni tiklash havolasi noto'g'ri yoki muddati tugagan.",
+      "requestNewLink": "Yangi havola so'rash",
+      "resetFailed": "Parolni tiklab bo'lmadi",
+      "passwordMismatch": "Parollar mos kelmadi",
+      "passwordTooShort": "Parol kamida 6 ta belgidan iborat bo'lishi kerak",
+      "requestNew": "Yangi havola so'rash",
+      "noToken": "Tiklash tokeni berilmagan"
     }
   },
   "property": {

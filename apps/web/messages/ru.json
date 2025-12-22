@@ -112,7 +112,8 @@
       "resendIn": "Повторно через",
       "changePhone": "Изменить номер",
       "useEmail": "Войти через Email",
-      "usePhone": "Войти через телефон"
+      "usePhone": "Войти через телефон",
+      "forgotPassword": "Забыли пароль?"
     },
     "register": {
       "title": "Создать аккаунт",
@@ -145,6 +146,43 @@
     },
     "callback": {
       "completing": "Завершение входа..."
+    },
+    "forgotPassword": {
+      "title": "Восстановление пароля",
+      "description": "Введите email для получения ссылки на сброс пароля",
+      "emailLabel": "Email",
+      "emailPlaceholder": "your@email.com",
+      "submit": "Отправить ссылку",
+      "submitting": "Отправка...",
+      "backToLogin": "Вернуться к входу",
+      "successTitle": "Проверьте почту",
+      "successDescription": "Мы отправили ссылку для сброса пароля на",
+      "checkSpam": "Не видите письмо? Проверьте папку спам.",
+      "tryDifferentEmail": "Попробовать другой email",
+      "sendFailed": "Не удалось отправить ссылку"
+    },
+    "resetPassword": {
+      "title": "Создание нового пароля",
+      "description": "Введите новый пароль для вашего аккаунта",
+      "passwordLabel": "Новый пароль",
+      "passwordPlaceholder": "Минимум 6 символов",
+      "confirmPasswordLabel": "Подтвердите пароль",
+      "confirmPasswordPlaceholder": "Введите пароль повторно",
+      "submit": "Сохранить пароль",
+      "submitting": "Сохранение...",
+      "backToLogin": "Вернуться к входу",
+      "successTitle": "Пароль изменён!",
+      "successDescription": "Ваш пароль успешно изменён.",
+      "redirecting": "Переход на страницу входа...",
+      "goToLogin": "Войти в аккаунт",
+      "invalidToken": "Недействительная ссылка",
+      "invalidTokenDescription": "Ссылка для сброса пароля недействительна или истекла.",
+      "requestNewLink": "Запросить новую ссылку",
+      "resetFailed": "Не удалось сбросить пароль",
+      "passwordMismatch": "Пароли не совпадают",
+      "passwordTooShort": "Пароль должен быть не менее 6 символов",
+      "requestNew": "Запросить новую ссылку",
+      "noToken": "Не предоставлен токен для сброса"
     }
   },
   "property": {
