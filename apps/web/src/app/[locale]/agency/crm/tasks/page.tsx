@@ -252,10 +252,12 @@ export default function TasksPage() {
                       {formatDate(task.dueDate)}
                     </span>
                   </div>
-                  <div className="flex items-center gap-1">
-                    <User className="w-4 h-4" />
-                    {task.assignedTo.user.firstName} {task.assignedTo.user.lastName}
-                  </div>
+                  {task.assignedTo?.user && (
+                    <div className="flex items-center gap-1">
+                      <User className="w-4 h-4" />
+                      {task.assignedTo.user.firstName} {task.assignedTo.user.lastName}
+                    </div>
+                  )}
                   <div className="flex items-center gap-1">
                     <Tag className="w-4 h-4" />
                     {task.type}
