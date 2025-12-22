@@ -4,6 +4,7 @@ import { useState, useEffect } from 'react';
 import { useRouter } from '@/i18n/routing';
 import { Link } from '@/i18n/routing';
 import { ArrowLeft, Building, Loader2, Upload } from 'lucide-react';
+import { useTranslations } from 'next-intl';
 import { api } from '@/lib/api';
 
 interface Agency {
@@ -20,6 +21,7 @@ interface Agency {
 
 export default function AgencySettingsPage() {
   const router = useRouter();
+  const t = useTranslations('agencySettingsPage');
   const [agency, setAgency] = useState<Agency | null>(null);
   const [role, setRole] = useState<string>('');
   const [loading, setLoading] = useState(true);
@@ -57,7 +59,7 @@ export default function AgencySettingsPage() {
       });
     } catch (error) {
       console.error('Error fetching agency:', error);
-      setError('Failed to load agency data');
+      setError(t('loadError'));
     } finally {
       setLoading(false);
     }
@@ -71,12 +73,12 @@ export default function AgencySettingsPage() {
 
     try {
       await api.put('/agency/profile', formData);
-      setSuccess('Agency profile updated successfully!');
+      setSuccess(t('updateSuccess'));
       setTimeout(() => {
         router.push('/agency/dashboard');
       }, 1500);
     } catch (err: any) {
-      setError(err.response?.data?.message || 'Failed to update agency profile');
+      setError(err.response?.data?.message || t('updateError'));
     } finally {
       setSaving(false);
     }
@@ -99,7 +101,7 @@ export default function AgencySettingsPage() {
       <div className="flex items-center justify-center h-screen">
         <div className="text-center">
           <Building className="mx-auto h-12 w-12 text-gray-400 mb-4" />
-          <p className="text-gray-600">You are not associated with any agency</p>
+          <p className="text-gray-600">{t('noAgency')}</p>
         </div>
       </div>
     );
@@ -114,10 +116,10 @@ export default function AgencySettingsPage() {
       <div className="mb-8">
         <Link href="/agency/dashboard" className="inline-flex items-center text-sm text-gray-500 hover:text-gray-700 mb-4">
           <ArrowLeft className="h-4 w-4 mr-1" />
-          Back to Dashboard
+          {t('backToDashboard')}
         </Link>
-        <h1 className="text-3xl font-bold text-gray-900">Agency Settings</h1>
-        <p className="mt-1 text-sm text-gray-500">Manage your agency profile and settings</p>
+        <h1 className="text-3xl font-bold text-gray-900">{t('title')}</h1>
+        <p className="mt-1 text-sm text-gray-500">{t('subtitle')}</p>
       </div>
 
       {error && (
@@ -134,7 +136,7 @@ export default function AgencySettingsPage() {
 
       {!canEdit && (
         <div className="mb-6 bg-yellow-50 border border-yellow-200 text-yellow-700 px-4 py-3 rounded-lg">
-          Only agency owners or admins can edit the agency profile.
+          {t('permissionWarning')}
         </div>
       )}
 
@@ -143,20 +145,20 @@ export default function AgencySettingsPage() {
         <div className="bg-white rounded-lg shadow p-6">
           <div className="flex items-center gap-2 mb-6">
             <Building className="h-5 w-5 text-gray-400" />
-            <h2 className="text-xl font-semibold text-gray-900">Profile Information</h2>
+            <h2 className="text-xl font-semibold text-gray-900">{t('profileInformation')}</h2>
           </div>
 
           <div className="grid grid-cols-1 gap-6">
             {/* Logo */}
             <div>
               <label className="block text-sm font-medium text-gray-700 mb-2">
-                Logo
+                {t('logo')}
               </label>
               <div className="flex items-center gap-4">
                 {formData.logo && (
                   <img
                     src={formData.logo}
-                    alt="Agency logo"
+                    alt={t('logo')}
                     className="h-16 w-16 rounded-lg object-cover border border-gray-200"
                   />
                 )}
@@ -166,16 +168,16 @@ export default function AgencySettingsPage() {
                   value={formData.logo}
                   onChange={(e) => handleChange('logo', e.target.value)}
                   className="flex-1 px-4 py-2 border border-gray-300 rounded-lg focus:ring-2 focus:ring-blue-500 focus:border-transparent disabled:bg-gray-100"
-                  placeholder="https://example.com/logo.png"
+                  placeholder={t('logoPlaceholder')}
                 />
               </div>
-              <p className="mt-1 text-xs text-gray-500">Enter the URL of your agency logo</p>
+              <p className="mt-1 text-xs text-gray-500">{t('logoHint')}</p>
             </div>
 
             {/* Agency Name */}
             <div>
               <label className="block text-sm font-medium text-gray-700 mb-2">
-                Agency Name <span className="text-red-500">*</span>
+                {t('agencyName')} <span className="text-red-500">*</span>
               </label>
               <input
                 type="text"
@@ -184,14 +186,14 @@ export default function AgencySettingsPage() {
                 value={formData.name}
                 onChange={(e) => handleChange('name', e.target.value)}
                 className="w-full px-4 py-2 border border-gray-300 rounded-lg focus:ring-2 focus:ring-blue-500 focus:border-transparent disabled:bg-gray-100"
-                placeholder="e.g., Premium Real Estate LLC"
+                placeholder={t('agencyNamePlaceholder')}
               />
             </div>
 
             {/* Description */}
             <div>
               <label className="block text-sm font-medium text-gray-700 mb-2">
-                Description
+                {t('description')}
               </label>
               <textarea
                 disabled={!canEdit}
@@ -199,7 +201,7 @@ export default function AgencySettingsPage() {
                 onChange={(e) => handleChange('description', e.target.value)}
                 rows={3}
                 className="w-full px-4 py-2 border border-gray-300 rounded-lg focus:ring-2 focus:ring-blue-500 focus:border-transparent disabled:bg-gray-100"
-                placeholder="Brief description of your agency"
+                placeholder={t('descriptionPlaceholder')}
               />
             </div>
 
@@ -207,7 +209,7 @@ export default function AgencySettingsPage() {
             <div className="grid grid-cols-1 md:grid-cols-2 gap-6">
               <div>
                 <label className="block text-sm font-medium text-gray-700 mb-2">
-                  Email
+                  {t('email')}
                 </label>
                 <input
                   type="email"
@@ -215,13 +217,13 @@ export default function AgencySettingsPage() {
                   value={formData.email}
                   onChange={(e) => handleChange('email', e.target.value)}
                   className="w-full px-4 py-2 border border-gray-300 rounded-lg focus:ring-2 focus:ring-blue-500 focus:border-transparent disabled:bg-gray-100"
-                  placeholder="info@agency.com"
+                  placeholder={t('emailPlaceholder')}
                 />
               </div>
 
               <div>
                 <label className="block text-sm font-medium text-gray-700 mb-2">
-                  Phone
+                  {t('phone')}
                 </label>
                 <input
                   type="tel"
@@ -229,7 +231,7 @@ export default function AgencySettingsPage() {
                   value={formData.phone}
                   onChange={(e) => handleChange('phone', e.target.value)}
                   className="w-full px-4 py-2 border border-gray-300 rounded-lg focus:ring-2 focus:ring-blue-500 focus:border-transparent disabled:bg-gray-100"
-                  placeholder="+998 90 123 45 67"
+                  placeholder={t('phonePlaceholder')}
                 />
               </div>
             </div>
@@ -237,7 +239,7 @@ export default function AgencySettingsPage() {
             {/* Website */}
             <div>
               <label className="block text-sm font-medium text-gray-700 mb-2">
-                Website
+                {t('website')}
               </label>
               <input
                 type="url"
@@ -245,14 +247,14 @@ export default function AgencySettingsPage() {
                 value={formData.website}
                 onChange={(e) => handleChange('website', e.target.value)}
                 className="w-full px-4 py-2 border border-gray-300 rounded-lg focus:ring-2 focus:ring-blue-500 focus:border-transparent disabled:bg-gray-100"
-                placeholder="https://www.agency.com"
+                placeholder={t('websitePlaceholder')}
               />
             </div>
 
             {/* Address */}
             <div>
               <label className="block text-sm font-medium text-gray-700 mb-2">
-                Address
+                {t('address')}
               </label>
               <input
                 type="text"
@@ -260,7 +262,7 @@ export default function AgencySettingsPage() {
                 value={formData.address}
                 onChange={(e) => handleChange('address', e.target.value)}
                 className="w-full px-4 py-2 border border-gray-300 rounded-lg focus:ring-2 focus:ring-blue-500 focus:border-transparent disabled:bg-gray-100"
-                placeholder="Street address, Tashkent, Uzbekistan"
+                placeholder={t('addressPlaceholder')}
               />
             </div>
           </div>
@@ -274,7 +276,7 @@ export default function AgencySettingsPage() {
                 type="button"
                 className="px-6 py-2 border border-gray-300 rounded-lg text-gray-700 hover:bg-gray-50"
               >
-                Cancel
+                {t('cancel')}
               </button>
             </Link>
             <button
@@ -283,7 +285,7 @@ export default function AgencySettingsPage() {
               className="px-6 py-2 bg-blue-600 text-white rounded-lg hover:bg-blue-700 disabled:opacity-50 disabled:cursor-not-allowed flex items-center gap-2"
             >
               {saving && <Loader2 className="h-4 w-4 animate-spin" />}
-              {saving ? 'Saving...' : 'Save Changes'}
+              {saving ? t('saving') : t('saveChanges')}
             </button>
           </div>
         )}
