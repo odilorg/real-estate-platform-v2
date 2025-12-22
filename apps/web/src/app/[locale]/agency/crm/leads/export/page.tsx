@@ -2,10 +2,11 @@
 
 import { useState } from 'react';
 import { useRouter } from '@/i18n/routing';
-import { ArrowLeft, Download, Filter, Loader2 } from 'lucide-react';
+import { ArrowLeft, Download, Filter, Loader2, CheckCircle, XCircle } from 'lucide-react';
 import { Link } from '@/i18n/routing';
 import { api } from '@/lib/api';
 import { useTranslations } from 'next-intl';
+import { toast } from 'sonner';
 
 export default function LeadsExportPage() {
   const router = useRouter();
@@ -44,11 +45,16 @@ export default function LeadsExportPage() {
       link.download = result.filename;
       link.click();
 
-      // Show success message
-      alert(t('exportSuccess'));
+      // Show success toast
+      toast.success(t('exportSuccess'), {
+        description: result.filename,
+        icon: <CheckCircle className="h-5 w-5 text-green-500" />,
+      });
     } catch (error) {
       console.error('Export error:', error);
-      alert(t('exportError'));
+      toast.error(t('exportError'), {
+        icon: <XCircle className="h-5 w-5 text-red-500" />,
+      });
     } finally {
       setExporting(false);
     }

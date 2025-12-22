@@ -6,6 +6,7 @@ import { ArrowLeft, Upload, FileSpreadsheet, AlertCircle, CheckCircle, XCircle, 
 import { Link } from '@/i18n/routing';
 import { api } from '@/lib/api';
 import { useTranslations } from 'next-intl';
+import { toast } from 'sonner';
 
 interface ImportResult {
   success: number;
@@ -46,7 +47,9 @@ export default function LeadsImportPage() {
 
   const handleImport = async () => {
     if (!csvData) {
-      alert(t('selectFileAlert'));
+      toast.warning(t('selectFileAlert'), {
+        icon: <AlertCircle className="h-5 w-5 text-yellow-500" />,
+      });
       return;
     }
 
@@ -57,9 +60,15 @@ export default function LeadsImportPage() {
         duplicateHandling,
       });
       setResult(importResult);
+      toast.success(t('importSuccess') || 'Import completed', {
+        description: `${importResult.success} leads imported`,
+        icon: <CheckCircle className="h-5 w-5 text-green-500" />,
+      });
     } catch (error) {
       console.error('Import error:', error);
-      alert(t('importError'));
+      toast.error(t('importError'), {
+        icon: <XCircle className="h-5 w-5 text-red-500" />,
+      });
     } finally {
       setImporting(false);
     }
