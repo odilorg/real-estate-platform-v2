@@ -29,7 +29,8 @@
       "home": "Bosh sahifa",
       "search": "Qidirish",
       "favorites": "Sevimlilar",
-      "profile": "Profil"
+      "profile": "Profil",
+      "selectLanguage": "Tilni tanlang"
     }
   },
   "home": {
@@ -1344,7 +1345,8 @@
       "more": "Yana",
       "moreOptions": "Qo'shimcha",
       "agentPerformance": "Agent samaradorligi",
-      "revenueAnalytics": "Daromad tahlili"
+      "revenueAnalytics": "Daromad tahlili",
+      "language": "Til"
     },
     "leads": {
       "title": "Lidlar",

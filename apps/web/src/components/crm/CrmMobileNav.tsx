@@ -2,7 +2,7 @@
 
 import { useState, useEffect } from 'react';
 import { Link } from '@/i18n/routing';
-import { usePathname } from '@/i18n/routing';
+import { usePathname, useRouter } from '@/i18n/routing';
 import {
   LayoutDashboard,
   FileText,
@@ -14,9 +14,11 @@ import {
   Settings,
   X,
   Menu,
+  Globe,
 } from 'lucide-react';
 import { cn } from '@/lib/utils';
-import { useTranslations } from 'next-intl';
+import { useTranslations, useLocale } from 'next-intl';
+import { locales, localeNames, type Locale } from '@/i18n/config';
 
 interface CrmMobileNavProps {
   className?: string;
@@ -25,10 +27,16 @@ interface CrmMobileNavProps {
 
 export function CrmMobileNav({ className, title = 'CRM' }: CrmMobileNavProps) {
   const pathname = usePathname();
+  const router = useRouter();
+  const locale = useLocale();
   const [drawerOpen, setDrawerOpen] = useState(false);
   const [menuOpen, setMenuOpen] = useState(false);
   const t = useTranslations('crm.sidebar');
   const tMobile = useTranslations('crm.mobileNav');
+
+  const handleLanguageChange = (newLocale: Locale) => {
+    router.replace(pathname, { locale: newLocale });
+  };
 
   const primaryNavItems = [
     { href: '/developer/crm/analytics', icon: LayoutDashboard, label: t('dashboard') },
@@ -186,6 +194,29 @@ export function CrmMobileNav({ className, title = 'CRM' }: CrmMobileNavProps) {
                     </Link>
                   );
                 })}
+              </div>
+              {/* Language Switcher */}
+              <div className="pt-4 mt-4 border-t border-gray-200">
+                <h3 className="px-3 mb-2 text-xs font-semibold text-gray-500 uppercase tracking-wider flex items-center gap-2">
+                  <Globe className="w-4 h-4" />
+                  {tMobile('language')}
+                </h3>
+                <div className="flex gap-2 px-3">
+                  {locales.map((loc) => (
+                    <button
+                      key={loc}
+                      onClick={() => handleLanguageChange(loc)}
+                      className={cn(
+                        'flex-1 py-2 px-3 rounded-lg text-sm font-medium transition-colors',
+                        locale === loc
+                          ? 'bg-blue-600 text-white'
+                          : 'bg-gray-100 text-gray-700 hover:bg-gray-200'
+                      )}
+                    >
+                      {localeNames[loc]}
+                    </button>
+                  ))}
+                </div>
               </div>
             </nav>
           </div>

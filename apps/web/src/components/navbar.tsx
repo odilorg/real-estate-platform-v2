@@ -7,7 +7,7 @@ import { ChevronDown, Menu, X, User, LogOut, Plus, MessageSquare, Scale, Buildin
 import { cn } from '@/lib/utils';
 import { useAuth } from '@/context/AuthContext';
 import { useComparison } from '@/context';
-import { LanguageSwitcher } from './language-switcher';
+import { LanguageSwitcher, LanguageSwitcherMobile } from './language-switcher';
 import { Button } from '@repo/ui';
 import { useTranslations } from 'next-intl';
 import { LoginModal } from './auth/LoginModal';
@@ -426,6 +426,11 @@ export function Navbar() {
       {/* Mobile Menu */}
       {mobileMenuOpen && (
         <div className="lg:hidden bg-white border-t border-gray-200 animate-in slide-in-from-top duration-200">
+          {/* Mobile Language Switcher */}
+          <div className="px-4 pt-3 pb-2">
+            <LanguageSwitcherMobile />
+          </div>
+
           <div className="px-2 pt-2 pb-3 space-y-1">
             {menuItems.map((item, index) => (
               <div key={index}>

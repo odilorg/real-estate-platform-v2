@@ -1,9 +1,9 @@
 import createMiddleware from 'next-intl/middleware';
-import { locales, defaultLocale } from './i18n/config';
 
+// Inline config to avoid edge runtime eval issues
 export default createMiddleware({
-  locales,
-  defaultLocale,
+  locales: ['ru', 'uz'],
+  defaultLocale: 'ru',
   localePrefix: 'as-needed',
 });
 

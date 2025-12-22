@@ -29,7 +29,8 @@
       "home": "Главная",
       "search": "Поиск",
       "favorites": "Избранное",
-      "profile": "Профиль"
+      "profile": "Профиль",
+      "selectLanguage": "Выберите язык"
     }
   },
   "home": {
@@ -1344,7 +1345,8 @@
       "more": "Ещё",
       "moreOptions": "Дополнительно",
       "agentPerformance": "Эффективность агентов",
-      "revenueAnalytics": "Аналитика доходов"
+      "revenueAnalytics": "Аналитика доходов",
+      "language": "Язык"
     },
     "leads": {
       "title": "Лиды",

@@ -55,3 +55,32 @@ export function LanguageSwitcherDropdown() {
     </select>
   );
 }
+
+// Mobile-optimized language switcher - full width with language names
+export function LanguageSwitcherMobile() {
+  const locale = useLocale();
+  const router = useRouter();
+  const pathname = usePathname();
+
+  const handleChange = (newLocale: Locale) => {
+    router.replace(pathname, { locale: newLocale });
+  };
+
+  return (
+    <div className="flex items-center gap-2 w-full">
+      {locales.map((loc) => (
+        <button
+          key={loc}
+          onClick={() => handleChange(loc)}
+          className={`flex-1 px-3 py-2 text-sm font-medium rounded-md transition-colors ${
+            locale === loc
+              ? 'bg-blue-600 text-white'
+              : 'bg-gray-100 text-gray-700 hover:bg-gray-200'
+          }`}
+        >
+          {localeNames[loc]}
+        </button>
+      ))}
+    </div>
+  );
+}
