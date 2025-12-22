@@ -44,11 +44,8 @@ export function Navbar() {
 
   const apiUrl = process.env.NEXT_PUBLIC_API_URL || 'http://localhost:3001/api';
 
-  // Hide on CRM pages (they have their own navigation)
+  // Check if on CRM pages (they have their own navigation)
   const isCrmPage = pathname.includes('/crm');
-  if (isCrmPage) {
-    return null;
-  }
 
   // Define menu structure with translation keys - Simplified structure (4 main items)
   const menuItems: MenuItem[] = [
@@ -169,6 +166,11 @@ export function Navbar() {
 
   const agencyCrmActive = pathname?.startsWith('/agency') || pathname?.startsWith('/developer/crm');
   const crmLabel = pathname?.startsWith('/developer/crm') ? t('developerCrm') : t('agencyCrm');
+
+  // Hide on CRM pages (they have their own navigation)
+  if (isCrmPage) {
+    return null;
+  }
 
   return (
     <nav className="bg-white border-b border-gray-200 sticky top-0 z-50">
