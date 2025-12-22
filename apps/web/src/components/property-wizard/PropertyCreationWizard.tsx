@@ -746,16 +746,16 @@ export default function PropertyCreationWizard() {
         </Card>
 
         {/* Navigation Buttons - Single Row Design */}
-        <div className="flex items-center gap-2 md:gap-3">
+        <div className="flex items-center gap-1.5 sm:gap-3">
           {/* Back Button */}
           <Button
             variant="outline"
             onClick={handleBack}
             disabled={currentStep === 1}
-            className="gap-2 px-3 md:px-4"
+            className="gap-1.5 sm:gap-2 px-2 sm:px-4"
           >
             <ArrowLeft className="h-4 w-4" />
-            <span>{t('nav.back')}</span>
+            <span className="hidden sm:inline">{t("nav.back")}</span>
           </Button>
 
           {/* Draft Actions Dropdown */}
@@ -763,7 +763,7 @@ export default function PropertyCreationWizard() {
             <button
               type="button"
               onClick={() => setShowDraftDropdown(!showDraftDropdown)}
-              className="inline-flex items-center justify-center gap-1.5 px-3 md:px-4 py-2 text-sm font-medium text-gray-700 border border-gray-300 hover:bg-gray-50 rounded-lg transition-colors"
+              className="inline-flex items-center justify-center gap-1 px-2 sm:px-3 py-2 text-sm font-medium text-gray-700 border border-gray-300 hover:bg-gray-50 rounded-lg transition-colors"
             >
               <Save className="h-4 w-4" />
               <span className="hidden xs:inline">
@@ -777,7 +777,7 @@ export default function PropertyCreationWizard() {
 
             {/* Dropdown Menu */}
             {showDraftDropdown && (
-              <div className="absolute left-0 mt-2 w-48 bg-white rounded-lg shadow-lg border border-gray-200 z-10 animate-in fade-in slide-in-from-top-1 duration-200">
+              <div className="absolute left-0 bottom-full mb-2 w-48 bg-white rounded-lg shadow-lg border border-gray-200 z-10 animate-in fade-in slide-in-from-bottom-1 duration-200">
                 <button
                   type="button"
                   onClick={() => {
@@ -811,7 +811,7 @@ export default function PropertyCreationWizard() {
 
           {/* Next/Submit Button */}
           {currentStep < STEPS.length ? (
-            <Button onClick={handleNext} className="flex-1 md:flex-auto gap-2 ml-auto">
+            <Button onClick={handleNext} className="flex-1 gap-1.5 sm:gap-2 ml-auto">
               <span>{t('nav.next')}</span>
               <ArrowRight className="h-4 w-4" />
             </Button>
