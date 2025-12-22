@@ -2085,6 +2085,7 @@
         "VIEWING": "Показ",
         "FOLLOW_UP": "Напоминание",
         "DOCUMENT": "Документ",
+        "SEND_LISTINGS": "Отправка объектов",
         "OTHER": "Другое"
       },
       "detail": {
