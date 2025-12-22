@@ -2123,7 +2123,8 @@
         "selectAssignee": "Ijrochi tanlang",
         "lead": "Lidga bog'lash",
         "selectLead": "Lid tanlang",
-        "noLead": "Lidsiz"
+        "noLead": "Lidsiz",
+        "reminder": "Eslatma vaqti"
       },
       "actions": {
         "create": "Yaratish",
@@ -2147,6 +2148,31 @@
       "alerts": {
         "deleteConfirm": "Rostdan ham bu vazifani o'chirmoqchimisiz?",
         "deleteError": "Vazifani o'chirishda xatolik"
+      },
+      "quickDates": {
+        "today": "Bugun",
+        "tomorrow": "Ertaga",
+        "in3Days": "3 kundan keyin",
+        "inWeek": "Bir haftadan keyin"
+      },
+      "reminder": {
+        "none": "Eslatmaslik",
+        "15min": "15 daqiqa",
+        "30min": "30 daqiqa",
+        "1hour": "1 soat",
+        "3hours": "3 soat",
+        "1day": "1 kun",
+        "3days": "3 kun"
+      },
+      "notifications": {
+        "created": "Vazifa muvaffaqiyatli yaratildi!",
+        "updated": "Vazifa yangilandi",
+        "deleted": "Vazifa o'chirildi"
+      },
+      "errors": {
+        "createFailed": "Vazifa yaratishda xatolik",
+        "updateFailed": "Vazifani yangilashda xatolik",
+        "deleteFailed": "Vazifani o'chirishda xatolik"
       }
     },
     "listings": {
