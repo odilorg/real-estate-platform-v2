@@ -163,51 +163,50 @@ export default function DeveloperDashboard() {
       <DeveloperStats stats={stats} />
 
       {/* Quick Actions */}
-      <div className="bg-white shadow rounded-lg p-6">
-        <h2 className="text-lg font-medium mb-4">Quick Actions</h2>
-        <div className="grid grid-cols-2 lg:grid-cols-4 gap-3 sm:gap-4">
-          <Link href="/properties" className="flex items-center gap-3 p-4 border border-gray-200 rounded-lg hover:bg-gray-50">
-            <div className="p-2 bg-emerald-100 rounded-lg">
-              <Search className="h-5 w-5 text-emerald-600" />
+      <div className="bg-white shadow rounded-lg p-4 sm:p-6">
+        <h2 className="text-base sm:text-lg font-medium mb-3 sm:mb-4">Quick Actions</h2>
+        <div className="grid grid-cols-2 lg:grid-cols-4 gap-2 sm:gap-4">
+          <Link href="/properties" className="flex flex-col sm:flex-row items-center sm:items-center gap-2 sm:gap-3 p-3 sm:p-4 border border-gray-200 rounded-lg hover:bg-gray-50 text-center sm:text-left">
+            <div className="p-2 bg-emerald-100 rounded-lg shrink-0">
+              <Search className="h-4 w-4 sm:h-5 sm:w-5 text-emerald-600" />
             </div>
             <div>
-              <p className="font-medium text-gray-900">Browse Properties</p>
-              <p className="text-sm text-gray-500">View all listings</p>
+              <p className="text-xs sm:text-sm font-medium text-gray-900 leading-tight">Browse Properties</p>
+              <p className="text-[10px] sm:text-xs text-gray-500 hidden sm:block">View all listings</p>
             </div>
           </Link>
 
-          <Link href="/developer/projects/new" className="flex items-center gap-3 p-4 border border-gray-200 rounded-lg hover:bg-gray-50">
-            <div className="p-2 bg-blue-100 rounded-lg">
-              <FolderPlus className="h-5 w-5 text-blue-600" />
+          <Link href="/developer/projects/new" className="flex flex-col sm:flex-row items-center sm:items-center gap-2 sm:gap-3 p-3 sm:p-4 border border-gray-200 rounded-lg hover:bg-gray-50 text-center sm:text-left">
+            <div className="p-2 bg-blue-100 rounded-lg shrink-0">
+              <FolderPlus className="h-4 w-4 sm:h-5 sm:w-5 text-blue-600" />
             </div>
             <div>
-              <p className="font-medium text-gray-900">New Project</p>
-              <p className="text-sm text-gray-500">Create a project</p>
+              <p className="text-xs sm:text-sm font-medium text-gray-900 leading-tight">New Project</p>
+              <p className="text-[10px] sm:text-xs text-gray-500 hidden sm:block">Create a project</p>
             </div>
           </Link>
 
-          <Link href="/developer/crm/leads" className="flex items-center gap-3 p-4 border border-gray-200 rounded-lg hover:bg-gray-50">
-            <div className="p-2 bg-green-100 rounded-lg">
-              <FileText className="h-5 w-5 text-green-600" />
+          <Link href="/developer/crm/leads" className="flex flex-col sm:flex-row items-center sm:items-center gap-2 sm:gap-3 p-3 sm:p-4 border border-gray-200 rounded-lg hover:bg-gray-50 text-center sm:text-left">
+            <div className="p-2 bg-green-100 rounded-lg shrink-0">
+              <FileText className="h-4 w-4 sm:h-5 sm:w-5 text-green-600" />
             </div>
             <div>
-              <p className="font-medium text-gray-900">View Leads</p>
-              <p className="text-sm text-gray-500">Manage leads</p>
+              <p className="text-xs sm:text-sm font-medium text-gray-900 leading-tight">View Leads</p>
+              <p className="text-[10px] sm:text-xs text-gray-500 hidden sm:block">Manage leads</p>
             </div>
           </Link>
 
-          <Link href="/developer/crm/members" className="flex items-center gap-3 p-4 border border-gray-200 rounded-lg hover:bg-gray-50">
-            <div className="p-2 bg-purple-100 rounded-lg">
-              <Users className="h-5 w-5 text-purple-600" />
+          <Link href="/developer/crm/members" className="flex flex-col sm:flex-row items-center sm:items-center gap-2 sm:gap-3 p-3 sm:p-4 border border-gray-200 rounded-lg hover:bg-gray-50 text-center sm:text-left">
+            <div className="p-2 bg-purple-100 rounded-lg shrink-0">
+              <Users className="h-4 w-4 sm:h-5 sm:w-5 text-purple-600" />
             </div>
             <div>
-              <p className="font-medium text-gray-900">Team Members</p>
-              <p className="text-sm text-gray-500">Manage team</p>
+              <p className="text-xs sm:text-sm font-medium text-gray-900 leading-tight">Team Members</p>
+              <p className="text-[10px] sm:text-xs text-gray-500 hidden sm:block">Manage team</p>
             </div>
           </Link>
         </div>
       </div>
-
       {/* My Properties Section */}
       <div className="bg-white shadow rounded-lg p-6">
         <div className="flex items-center justify-between mb-6">
