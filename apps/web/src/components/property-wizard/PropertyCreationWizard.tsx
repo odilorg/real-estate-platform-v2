@@ -1,6 +1,7 @@
 'use client';
 
 import { useState, useEffect, useRef } from 'react';
+import { toast } from 'sonner';
 import { useRouter } from '@/i18n/routing';
 import { Card, CardContent, Button } from '@repo/ui';
 import { ArrowLeft, ArrowRight, Save, Check, Trash2, ChevronDown } from 'lucide-react';
@@ -63,6 +64,7 @@ export interface WizardFormData {
 
   // Step 5: Photos & Description
   images: string[];
+  videoUrls: string[]; // YouTube video URLs
   title: string;
   description: string;
 }
@@ -86,6 +88,34 @@ const getUserIdFromToken = (): string | null => {
 const getDraftStorageKey = (): string | null => {
   const userId = getUserIdFromToken();
   return userId ? `property_creation_draft_${userId}` : null;
+};
+
+// Field name translations for error messages
+const fieldNameMap: Record<string, string> = {
+  title: "Заголовок",
+  description: "Описание",
+  price: "Цена",
+  address: "Адрес",
+  city: "Город",
+  area: "Площадь",
+  rooms: "Комнат",
+  floor: "Этаж",
+  totalFloors: "Всего этажей",
+  yearBuilt: "Год постройки",
+  bathrooms: "Санузлов",
+  bedrooms: "Спален",
+  propertyType: "Тип недвижимости",
+  listingType: "Тип объявления",
+};
+
+// Helper to translate field names in error messages
+const translateErrorMessage = (error: string): string => {
+  for (const [eng, rus] of Object.entries(fieldNameMap)) {
+    if (error.startsWith(eng + ":")) {
+      return error.replace(eng + ":", rus + ":");
+    }
+  }
+  return error;
 };
 
 export default function PropertyCreationWizard() {
@@ -145,6 +175,7 @@ export default function PropertyCreationWizard() {
     heatingType: '',
     hasGas: false,
     images: [],
+    videoUrls: [],
     title: '',
     description: '',
   });
@@ -528,14 +559,41 @@ export default function PropertyCreationWizard() {
 
         // Show specific validation errors if available
         if (errorData?.errors && Array.isArray(errorData.errors)) {
-          alert(`${t('errors.validationAlert')}\n${errorData.errors.join('\n')}`);
+          errorData.errors.forEach((error: string) => { toast.error(translateErrorMessage(error), { duration: 5000 }); });
         } else {
-          alert(t('errors.createFailed', { message: errorData?.message || t('errors.unknownError') }));
+          toast.error(t('errors.createFailed', { message: errorData?.message || t('errors.unknownError') }), { duration: 5000 });
         }
         throw new Error(errorData?.message || 'Failed to create property');
       }
 
       const property = await response.json();
+
+      // Save videos if any were added
+      if (formData.videoUrls.length > 0) {
+        const videoPromises = formData.videoUrls.map(async (videoUrl) => {
+          const videoId = videoUrl.match(/(?:youtube\.com\/watch\?v=|youtu\.be\/)([a-zA-Z0-9_-]{11})/)?.[1];
+          if (!videoId) return;
+          
+          try {
+            await fetch(`${apiUrl}/properties/${property.id}/media/videos`, {
+              method: 'POST',
+              headers: {
+                'Content-Type': 'application/json',
+                ...(token && { 'Authorization': `Bearer ${token}` }),
+              },
+              credentials: 'include',
+              body: JSON.stringify({
+                url: videoUrl,
+                thumbnailUrl: `https://img.youtube.com/vi/${videoId}/hqdefault.jpg`,
+                type: 'YOUTUBE',
+              }),
+            });
+          } catch (videoErr) {
+            console.error('Failed to save video:', videoErr);
+          }
+        });
+        await Promise.all(videoPromises);
+      }
 
       // Clear draft on success
       const draftKey = getDraftStorageKey();
@@ -547,7 +605,7 @@ export default function PropertyCreationWizard() {
       setCreatedPropertyId(property.id);
       setShowSuccessModal(true);
     } catch (error) {
-      alert(t('errors.tryAgain'));
+      toast.error(t('errors.tryAgain'), { duration: 5000 });
     } finally {
       setSaving(false);
     }

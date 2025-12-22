@@ -220,8 +220,8 @@ export default function Step2Location({
             longitude={formData.longitude}
             onLocationChange={(lat, lng, address) => {
               updateFormData({ latitude: lat, longitude: lng });
-              // Optionally auto-fill address if it's empty
-              if (address && !formData.address) {
+              // Auto-fill address from map pin location
+              if (address) { // Always update address from map pin
                 // Extract street address from full address
                 const parts = address.split(',');
                 if (parts.length > 0) {
@@ -229,11 +229,8 @@ export default function Step2Location({
                 }
               }
             }}
-            onAddressSelect={(address) => {
-              // Parse address to fill in city/district if possible
-              if (address.includes('Ташкент') || address.includes('Tashkent')) {
-                updateFormData({ city: 'Ташкент' });
-              }
+            onAddressSelect={(_address) => {
+              // City is selected manually by user - dont override it
             }}
           />
         )}
