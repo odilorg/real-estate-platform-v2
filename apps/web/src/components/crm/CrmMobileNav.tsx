@@ -81,8 +81,8 @@ export function CrmMobileNav({ className, title = 'CRM' }: CrmMobileNavProps) {
 
   return (
     <>
-      {/* Mobile Top Bar */}
-      <div className={cn('lg:hidden flex items-center justify-between h-14 px-4 bg-white border-b border-gray-200', className)}>
+      {/* Mobile Top Bar - Fixed at top */}
+      <div className={cn('lg:hidden fixed top-0 inset-x-0 flex items-center justify-between h-14 px-4 bg-white border-b border-gray-200 z-40', className)}>
         <button
           onClick={() => setMenuOpen(true)}
           className="p-2 -ml-2 rounded-md hover:bg-gray-100"

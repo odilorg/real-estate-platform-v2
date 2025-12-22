@@ -44,6 +44,12 @@ export function Navbar() {
 
   const apiUrl = process.env.NEXT_PUBLIC_API_URL || 'http://localhost:3001/api';
 
+  // Hide on CRM pages (they have their own navigation)
+  const isCrmPage = pathname.includes('/crm');
+  if (isCrmPage) {
+    return null;
+  }
+
   // Define menu structure with translation keys - Simplified structure (4 main items)
   const menuItems: MenuItem[] = [
     {

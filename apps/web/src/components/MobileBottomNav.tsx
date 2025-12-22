@@ -18,6 +18,12 @@ export function MobileBottomNav() {
   const router = useRouter();
   const [showLanguageMenu, setShowLanguageMenu] = useState(false);
 
+  // Hide on CRM pages (they have their own navigation)
+  const isCrmPage = pathname.includes('/crm');
+  if (isCrmPage) {
+    return null;
+  }
+
   const handleLanguageChange = (newLocale: Locale) => {
     router.replace(pathname, { locale: newLocale });
     setShowLanguageMenu(false);
