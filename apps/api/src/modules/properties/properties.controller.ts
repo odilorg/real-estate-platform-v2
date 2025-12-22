@@ -46,14 +46,12 @@ export class PropertiesController {
   ) {}
 
   @Post()
-  @Public() // TEMPORARY: Auth removed for testing
-  // @UseGuards(JwtAuthGuard) // TODO: Re-enable after testing
+  @UseGuards(JwtAuthGuard)
   async create(
-    @CurrentUser() user: User | null, // Allow null for testing
+    @CurrentUser() user: User,
     @Body(new ZodValidationPipe(CreatePropertyDto)) dto: CreatePropertyDto,
   ) {
-    // TEMPORARY: Use dummy user ID if not authenticated
-    const userId = user?.id || 'test-user-id-temporary';
+    const userId = user.id;
     return this.propertiesService.create(userId, dto);
   }
 

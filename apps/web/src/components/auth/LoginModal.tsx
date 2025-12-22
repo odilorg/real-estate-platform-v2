@@ -265,6 +265,15 @@ export function LoginModal({ open, onOpenChange, onSwitchToRegister }: LoginModa
                   required
                 />
               </div>
+              <div className="text-right -mt-1 mb-4">
+                <Link
+                  href="/auth/forgot-password"
+                  className="text-sm text-primary hover:underline"
+                  onClick={() => onOpenChange(false)}
+                >
+                  {t('forgotPassword')}
+                </Link>
+              </div>
               <Button type="submit" className="w-full" disabled={loading}>
                 {loading ? t('submitting') : t('submitButton')}
               </Button>

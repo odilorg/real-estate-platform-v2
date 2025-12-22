@@ -40,7 +40,7 @@ function ResetPasswordForm() {
       validateToken(tokenParam);
     } else {
       setValidating(false);
-      setError('No reset token provided');
+      setError(t('noToken'));
     }
   }, [searchParams]);
 
@@ -54,11 +54,11 @@ function ResetPasswordForm() {
       if (response.ok && data.valid) {
         setTokenValid(true);
       } else {
-        setError('Invalid or expired reset token');
+        setError(t('invalidTokenDescription'));
         setTokenValid(false);
       }
     } catch (err) {
-      setError('Failed to validate reset token');
+      setError(t('resetFailed'));
       setTokenValid(false);
     } finally {
       setValidating(false);
@@ -70,12 +70,12 @@ function ResetPasswordForm() {
     setError('');
 
     if (newPassword !== confirmPassword) {
-      setError('Passwords do not match');
+      setError(t('passwordMismatch'));
       return;
     }
 
     if (newPassword.length < 8) {
-      setError('Password must be at least 8 characters');
+      setError(t('passwordTooShort'));
       return;
     }
 

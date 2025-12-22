@@ -10,7 +10,7 @@ interface MortgageCalculatorCardProps {
 }
 
 export function MortgageCalculatorCard({ price, area, dealConditions }: MortgageCalculatorCardProps) {
-  const pricePerSqM = Math.round(price / area);
+  const pricePerSqM = (price / area).toFixed(1);
 
   return (
     <Card>
@@ -34,7 +34,7 @@ export function MortgageCalculatorCard({ price, area, dealConditions }: Mortgage
             <div className="flex justify-between items-center">
               <span className="text-gray-600">Цена за метр</span>
               <span className="font-semibold text-lg">
-                {pricePerSqM.toLocaleString('ru-RU')} у.е./м²
+                {pricePerSqM} у.е./м²
               </span>
             </div>
           </div>

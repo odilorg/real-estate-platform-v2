@@ -269,7 +269,7 @@ export function PropertyListItem({
                 </div>
                 {area && (
                   <div className="text-sm text-gray-500">
-                    {Math.round(price / area).toLocaleString('ru-RU')} {t('pricePerSqm')}
+                    {(price / area).toFixed(1)} {t('pricePerSqm')}
                   </div>
                 )}
               </div>

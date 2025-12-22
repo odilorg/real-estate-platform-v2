@@ -677,7 +677,7 @@ export default function PropertyDetailPage({
                   </div>
                   {property.area > 0 && (
                     <div className="text-sm text-gray-500">
-                      {Math.round(property.price / property.area).toLocaleString()} {t('currency')}/м²
+                      {(property.price / property.area).toFixed(1)} {t('currency')}/м²
                     </div>
                   )}
                 </div>

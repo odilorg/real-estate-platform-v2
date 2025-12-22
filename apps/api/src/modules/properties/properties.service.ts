@@ -63,21 +63,10 @@ export class PropertiesService {
 
   async create(userId: string, dto: CreatePropertyDto) {
     const { images, amenities, ...propertyData } = dto;
-
-    // TEMPORARY: If using test user ID, get first real user from database
-    let actualUserId = userId;
-    if (userId === 'test-user-id-temporary') {
-      const firstUser = await this.prisma.user.findFirst();
-      if (!firstUser) {
-        throw new NotFoundException('No users found in database. Please create a user first.');
-      }
-      actualUserId = firstUser.id;
-    }
-
     const property = await this.prisma.property.create({
       data: {
         ...propertyData,
-        userId: actualUserId,
+        userId: userId,
         priceUsd:
           propertyData.currency === Currency.UZS
             ? propertyData.price / EXCHANGE_RATE_UZS_TO_USD

@@ -108,7 +108,7 @@ export const CreatePropertyDto = z.object({
   rooms: z.number().int().min(0).optional(),
 
   // Building info
-  yearBuilt: z.number().int().min(1800).max(new Date().getFullYear()).optional(),
+  yearBuilt: z.number().int().min(1800).max(new Date().getFullYear() + 10).optional(),
   floor: z.number().int().min(0).optional(),
   totalFloors: z.number().int().min(1).optional(),
   ceilingHeight: z.number().positive().optional(),
