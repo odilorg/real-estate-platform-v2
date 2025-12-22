@@ -2,11 +2,12 @@
 
 import { useEffect, useState } from 'react';
 import { useRouter } from 'next/navigation';
-import { useTranslations } from 'next-intl';
+import { useTranslations, useLocale } from 'next-intl';
 import { api } from '@/lib/api';
+import { useAuth } from '@/context/AuthContext';
 import {
   CheckCircle, Clock, AlertCircle, Plus, Filter,
-  Calendar, User, Tag
+  Calendar, User, Tag, Loader2
 } from 'lucide-react';
 
 interface Task {
