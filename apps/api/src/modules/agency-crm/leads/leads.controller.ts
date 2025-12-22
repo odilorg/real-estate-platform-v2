@@ -30,6 +30,34 @@ export class LeadsController {
     private readonly smsService: SmsService,
   ) {}
 
+  // Static routes MUST come before dynamic :id routes
+  @Post('import')
+  async importLeads(
+    @Body() importLeadsDto: ImportLeadsDto,
+    @Request() req: any,
+  ) {
+    const agencyId = req.user.agencyId;
+    return this.leadsService.importFromCSV(agencyId, importLeadsDto);
+  }
+
+  @Get('export')
+  async exportLeads(@Query() query: QueryLeadsDto, @Request() req: any) {
+    const agencyId = req.user.agencyId;
+    return this.leadsService.exportToCSV(agencyId, query);
+  }
+
+  @Post('bulk-delete')
+  async bulkDelete(@Body() bulkDeleteDto: BulkDeleteDto, @Request() req: any) {
+    const agencyId = req.user.agencyId;
+    return this.leadsService.bulkDelete(agencyId, bulkDeleteDto);
+  }
+
+  @Post('bulk-assign')
+  async bulkAssign(@Body() bulkAssignDto: BulkAssignDto, @Request() req: any) {
+    const agencyId = req.user.agencyId;
+    return this.leadsService.bulkAssign(agencyId, bulkAssignDto);
+  }
+
   @Post()
   async create(@Body() createLeadDto: CreateLeadDto, @Request() req: any) {
     const agencyId = req.user.agencyId; // From AgencyOwnershipGuard
@@ -129,32 +157,5 @@ export class LeadsController {
     const sent = await this.smsService.sendCustomSms(lead.phone, body.message);
 
     return { success: sent, message: sent ? 'SMS sent successfully' : 'Failed to send SMS' };
-  }
-
-  @Post('import')
-  async importLeads(
-    @Body() importLeadsDto: ImportLeadsDto,
-    @Request() req: any,
-  ) {
-    const agencyId = req.user.agencyId;
-    return this.leadsService.importFromCSV(agencyId, importLeadsDto);
-  }
-
-  @Get('export')
-  async exportLeads(@Query() query: QueryLeadsDto, @Request() req: any) {
-    const agencyId = req.user.agencyId;
-    return this.leadsService.exportToCSV(agencyId, query);
-  }
-
-  @Post('bulk-delete')
-  async bulkDelete(@Body() bulkDeleteDto: BulkDeleteDto, @Request() req: any) {
-    const agencyId = req.user.agencyId;
-    return this.leadsService.bulkDelete(agencyId, bulkDeleteDto);
-  }
-
-  @Post('bulk-assign')
-  async bulkAssign(@Body() bulkAssignDto: BulkAssignDto, @Request() req: any) {
-    const agencyId = req.user.agencyId;
-    return this.leadsService.bulkAssign(agencyId, bulkAssignDto);
   }
 }
