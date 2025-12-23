@@ -1851,10 +1851,10 @@
       },
       "sources": {
         "WEBSITE": "Sayt",
-        "PHONE": "Telefon",
-        "EMAIL": "Email",
+        "PHONE_CALL": "Telefon",
+        "SOCIAL_MEDIA": "Ijtimoiy tarmoqlar",
         "REFERRAL": "Tavsiya",
-        "SOCIAL": "Ijtimoiy tarmoqlar",
+        "AGENT": "Agent",
         "WALK_IN": "Shaxsiy tashrif",
         "OTHER": "Boshqa"
       },

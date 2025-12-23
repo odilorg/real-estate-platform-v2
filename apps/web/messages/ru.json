@@ -1851,10 +1851,10 @@
       },
       "sources": {
         "WEBSITE": "Сайт",
-        "PHONE": "Телефон",
-        "EMAIL": "Email",
+        "PHONE_CALL": "Телефон",
+        "SOCIAL_MEDIA": "Соц. сети",
         "REFERRAL": "Рекомендация",
-        "SOCIAL": "Соц. сети",
+        "AGENT": "Агент",
         "WALK_IN": "Личный визит",
         "OTHER": "Другое"
       },
