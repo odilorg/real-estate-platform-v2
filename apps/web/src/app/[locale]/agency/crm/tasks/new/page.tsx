@@ -6,6 +6,7 @@ import { useLocale } from 'next-intl';
 import { api } from '@/lib/api';
 import { useAuth } from '@/context/AuthContext';
 import { ChevronLeft, Save, Loader2, Clock, Calendar, Bell } from 'lucide-react';
+import { toast } from 'sonner';
 
 interface Member {
   id: string;
