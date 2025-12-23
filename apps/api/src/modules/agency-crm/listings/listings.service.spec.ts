@@ -21,6 +21,9 @@ const mockPrismaService: any = {
     findUnique: jest.fn(),
     findFirst: jest.fn(),
   },
+  agencyActivity: {
+    create: jest.fn(),
+  },
   $transaction: jest.fn((callback) => callback(mockPrismaService)),
 };
 
@@ -31,6 +34,8 @@ describe('ListingsService', () => {
   const createMockProperty = (overrides = {}) => ({
     id: 'property-123',
     userId: 'user-123',
+    listingAgencyId: 'agency-123',
+    listedById: 'member-123',
     title: 'Modern Apartment in Tashkent',
     description: 'Beautiful 3-bedroom apartment',
     price: 150000,
