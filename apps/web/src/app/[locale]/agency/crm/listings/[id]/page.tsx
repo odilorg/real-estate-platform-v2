@@ -8,6 +8,7 @@ import {
 } from 'lucide-react';
 import { Link } from '@/i18n/routing';
 import { api } from '@/lib/api';
+import { toast } from 'sonner';
 
 interface Listing {
   id: string;
@@ -111,7 +112,7 @@ export default function ListingDetailPage() {
       router.push('/agency/crm/listings');
     } catch (error) {
       console.error('Error deleting listing:', error);
-      alert('Ошибка при удалении объекта');
+      toast.error('Ошибка при удалении объекта', { description: 'Попробуйте еще раз' });
     }
   };
 
@@ -122,7 +123,7 @@ export default function ListingDetailPage() {
       setShowStatusMenu(false);
     } catch (error) {
       console.error('Error updating status:', error);
-      alert('Ошибка при обновлении статуса');
+      toast.error('Ошибка при обновлении статуса', { description: 'Попробуйте еще раз' });
     }
   };
 
@@ -138,7 +139,7 @@ export default function ListingDetailPage() {
       setListing((prev) => (prev ? { ...prev, status: 'SOLD' } : null));
     } catch (error) {
       console.error('Error marking as sold:', error);
-      alert('Ошибка при обновлении статуса');
+      toast.error('Ошибка при обновлении статуса', { description: 'Попробуйте еще раз' });
     }
   };
 

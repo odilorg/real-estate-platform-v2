@@ -5,6 +5,7 @@ import { useParams, useRouter } from 'next/navigation';
 import { ChevronLeft, Building, MapPin, Info, User } from 'lucide-react';
 import { Link } from '@/i18n/routing';
 import { api } from '@/lib/api';
+import { toast } from 'sonner';
 
 export default function EditListingPage() {
   const params = useParams();
@@ -81,7 +82,7 @@ export default function EditListingPage() {
       });
     } catch (error) {
       console.error('Error fetching listing:', error);
-      alert('Ошибка загрузки данных');
+      toast.error('Ошибка загрузки данных', { description: 'Попробуйте еще раз' });
     } finally {
       setLoading(false);
     }
@@ -113,7 +114,7 @@ export default function EditListingPage() {
       }, 1500);
     } catch (error) {
       console.error('Error updating listing:', error);
-      alert('Ошибка при обновлении объекта');
+      toast.error('Ошибка при обновлении объекта', { description: 'Попробуйте еще раз' });
     } finally {
       setSaving(false);
     }

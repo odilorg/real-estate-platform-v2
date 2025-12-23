@@ -3,6 +3,7 @@
 import { useEffect, useState } from 'react';
 import { useRouter } from '@/i18n/routing';
 import { api } from '@/lib/api';
+import { toast } from 'sonner';
 
 interface DashboardData {
   period: {
@@ -53,7 +54,9 @@ export default function AnalyticsPage() {
       setData(response);
     } catch (error: any) {
       console.error('Failed to fetch dashboard:', error);
-      alert('Ошибка загрузки аналитики');
+      toast.error('Ошибка загрузки аналитики', {
+        description: 'Попробуйте обновить страницу',
+      });
     } finally {
       setLoading(false);
     }

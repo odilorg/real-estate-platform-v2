@@ -2,6 +2,7 @@
 
 import { useEffect, useState } from 'react';
 import { api } from '@/lib/api';
+import { toast } from 'sonner';
 
 interface AgentPerformance {
   memberId: string;
@@ -38,7 +39,9 @@ export default function AgentsAnalyticsPage() {
       setData(response);
     } catch (error: any) {
       console.error('Failed to fetch leaderboard:', error);
-      alert('Ошибка загрузки лидерборда');
+      toast.error('Ошибка загрузки лидерборда', {
+        description: 'Попробуйте обновить страницу',
+      });
     } finally {
       setLoading(false);
     }

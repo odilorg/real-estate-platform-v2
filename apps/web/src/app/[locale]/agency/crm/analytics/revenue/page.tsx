@@ -2,6 +2,7 @@
 
 import { useEffect, useState } from 'react';
 import { api } from '@/lib/api';
+import { toast } from 'sonner';
 
 interface RevenueTrend {
   month: string;
@@ -38,7 +39,9 @@ export default function RevenueAnalyticsPage() {
       setData(response);
     } catch (error: any) {
       console.error('Failed to fetch revenue:', error);
-      alert('Ошибка загрузки аналитики выручки');
+      toast.error('Ошибка загрузки аналитики выручки', {
+        description: 'Попробуйте обновить страницу',
+      });
     } finally {
       setLoading(false);
     }

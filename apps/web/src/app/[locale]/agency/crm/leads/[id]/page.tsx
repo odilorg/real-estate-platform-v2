@@ -6,6 +6,7 @@ import { ArrowLeft, Edit, Trash2, Phone, Mail, MessageSquare, Calendar, User, Bu
 import { Link } from '@/i18n/routing';
 import { api } from '@/lib/api';
 import ActivityTimeline from './ActivityTimeline';
+import { toast } from 'sonner';
 
 interface Lead {
   id: string;
@@ -70,7 +71,7 @@ export default function LeadDetailPage({ params }: PageProps) {
       router.push('/agency/crm/leads');
     } catch (error) {
       console.error('Error deleting lead:', error);
-      alert('Ошибка при удалении лида');
+      toast.error('Ошибка при удалении лида', { description: 'Попробуйте еще раз' });
     }
   };
 

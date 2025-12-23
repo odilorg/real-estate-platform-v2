@@ -111,7 +111,9 @@ export default function NewTaskPage() {
       }, 1500);
     } catch (error) {
       console.error('Error creating task:', error);
-      alert('Ошибка при создании задачи');
+      toast.error('Ошибка при создании задачи', {
+        description: 'Попробуйте еще раз',
+      });
     } finally {
       setLoading(false);
     }

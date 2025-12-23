@@ -3,6 +3,7 @@
 import { useState, useEffect } from 'react';
 import { Search, Filter, DollarSign, Check, X, Calendar, User, TrendingUp, Loader2 } from 'lucide-react';
 import { api } from '@/lib/api';
+import { toast } from 'sonner';
 
 interface Commission {
   id: string;
@@ -95,14 +96,14 @@ export default function CommissionsPage() {
       fetchSummary();
     } catch (error) {
       console.error('Error approving commission:', error);
-      alert('Ошибка при одобрении комиссии');
+      toast.error('Ошибка при одобрении комиссии', { description: 'Попробуйте еще раз' });
     }
   };
 
   const handleMarkAsPaid = async () => {
     if (!selectedCommission) return;
     if (!paymentMethod) {
-      alert('Пожалуйста, укажите способ оплаты');
+      toast.error('Пожалуйста, укажите способ оплаты', { description: 'Попробуйте еще раз' });
       return;
     }
 
@@ -121,7 +122,7 @@ export default function CommissionsPage() {
       fetchSummary();
     } catch (error) {
       console.error('Error marking as paid:', error);
-      alert('Ошибка при отметке выплаты');
+      toast.error('Ошибка при отметке выплаты', { description: 'Попробуйте еще раз' });
     } finally {
       setProcessing(false);
     }

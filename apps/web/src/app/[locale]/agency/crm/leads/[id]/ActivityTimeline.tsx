@@ -3,6 +3,7 @@
 import { useState } from 'react';
 import { Phone, Mail, MessageSquare, Calendar, User, FileText, TrendingUp, Video, Plus, X, Trash2 } from 'lucide-react';
 import { api } from '@/lib/api';
+import { toast } from 'sonner';
 
 interface Activity {
   id: string;
@@ -86,7 +87,7 @@ export default function ActivityTimeline({ leadId, activities, onActivityAdded }
       onActivityAdded();
     } catch (error) {
       console.error('Error creating activity:', error);
-      alert('Ошибка при создании активности');
+      toast.error('Ошибка при создании активности', { description: 'Попробуйте еще раз' });
     } finally {
       setLoading(false);
     }
@@ -100,7 +101,7 @@ export default function ActivityTimeline({ leadId, activities, onActivityAdded }
       onActivityAdded(); // Refresh activities
     } catch (error) {
       console.error('Error deleting activity:', error);
-      alert('Ошибка при удалении активности');
+      toast.error('Ошибка при удалении активности', { description: 'Попробуйте еще раз' });
     }
   };
 

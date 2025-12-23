@@ -5,6 +5,7 @@ import { useRouter } from 'next/navigation';
 import { ChevronLeft, Building, MapPin, Info, User } from 'lucide-react';
 import { Link } from '@/i18n/routing';
 import { api } from '@/lib/api';
+import { toast } from 'sonner';
 
 export default function NewListingPage() {
   const router = useRouter();
@@ -76,7 +77,7 @@ export default function NewListingPage() {
       }, 1500);
     } catch (error) {
       console.error('Error creating listing:', error);
-      alert('Ошибка при создании объекта');
+      toast.error('Ошибка при создании объекта', { description: 'Попробуйте еще раз' });
     } finally {
       setLoading(false);
     }

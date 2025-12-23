@@ -5,6 +5,7 @@ import { Link } from '@/i18n/routing';
 import { Search, Plus, Phone, Mail, User, Calendar, ChevronRight, AlertCircle, Loader2, UserPlus, X, LayoutList, LayoutGrid } from 'lucide-react';
 import { api } from '@/lib/api';
 import { useAuth } from '@/context/AuthContext';
+import { toast } from 'sonner';
 import KanbanBoard from './KanbanBoard';
 
 interface Lead {
@@ -117,12 +118,17 @@ export default function AgencyCRMLeadsPage() {
     setAssigning(true);
     try {
       await api.put(`/agency-crm/leads/${selectedLead.id}/assign`, { memberId });
+      toast.success('Лид успешно назначен', {
+        description: 'Агент получит уведомление',
+      });
       setShowAssignModal(false);
       setSelectedLead(null);
       fetchLeads();
     } catch (error) {
       console.error('Error assigning lead:', error);
-      alert('Ошибка при назначении лида');
+      toast.error('Ошибка при назначении лида', {
+        description: 'Попробуйте еще раз',
+      });
     } finally {
       setAssigning(false);
     }
@@ -136,10 +142,13 @@ export default function AgencyCRMLeadsPage() {
 
     try {
       await api.put(`/agency-crm/leads/${leadId}/assign`, { memberId: null });
+      toast.success('Назначение отменено');
       fetchLeads();
     } catch (error) {
       console.error('Error unassigning lead:', error);
-      alert('Ошибка при отмене назначения');
+      toast.error('Ошибка при отмене назначения', {
+        description: 'Попробуйте еще раз',
+      });
     }
   };
 
@@ -174,10 +183,13 @@ export default function AgencyCRMLeadsPage() {
   const handleStatusChange = async (leadId: string, newStatus: string) => {
     try {
       await api.put(`/agency-crm/leads/${leadId}`, { status: newStatus });
+      toast.success('Статус обновлен');
       fetchLeads(); // Refresh leads after status change
     } catch (error) {
       console.error('Error updating lead status:', error);
-      alert('Ошибка при обновлении статуса лида');
+      toast.error('Ошибка при обновлении статуса лида', {
+        description: 'Попробуйте еще раз',
+      });
     }
   };
 
@@ -510,12 +522,15 @@ export default function AgencyCRMLeadsPage() {
                   key={member.id}
                   onClick={() => handleAssign(member.id)}
                   disabled={assigning}
-                  className="w-full text-left p-3 rounded-lg border border-gray-200 hover:border-blue-500 hover:bg-blue-50 transition-colors disabled:opacity-50"
+                  className="w-full text-left p-3 rounded-lg border border-gray-200 hover:border-blue-500 hover:bg-blue-50 transition-colors disabled:opacity-50 flex items-center justify-between gap-2"
                 >
-                  <div className="font-medium text-gray-900">
-                    {member.user.firstName} {member.user.lastName}
+                  <div>
+                    <div className="font-medium text-gray-900">
+                      {member.user.firstName} {member.user.lastName}
+                    </div>
+                    <div className="text-sm text-gray-600">{member.role}</div>
                   </div>
-                  <div className="text-sm text-gray-600">{member.role}</div>
+                  {assigning && <Loader2 className="h-4 w-4 animate-spin text-blue-600 flex-shrink-0" />}
                 </button>
               ))}
             </div>

@@ -19,6 +19,7 @@ import {
 } from 'lucide-react';
 import { Link } from '@/i18n/routing';
 import { api } from '@/lib/api';
+import { toast } from 'sonner';
 
 interface Deal {
   id: string;
@@ -106,7 +107,7 @@ export default function DealDetailPage({ params }: PageProps) {
   const handleCloseDeal = async () => {
     if (!deal) return;
     if (closeStatus === 'LOST' && !closeReason) {
-      alert('Пожалуйста, укажите причину закрытия сделки');
+      toast.error('Пожалуйста, укажите причину закрытия сделки', { description: 'Попробуйте еще раз' });
       return;
     }
 
@@ -120,7 +121,7 @@ export default function DealDetailPage({ params }: PageProps) {
       fetchDeal();
     } catch (error) {
       console.error('Error closing deal:', error);
-      alert('Ошибка при закрытии сделки');
+      toast.error('Ошибка при закрытии сделки', { description: 'Попробуйте еще раз' });
     } finally {
       setClosing(false);
     }

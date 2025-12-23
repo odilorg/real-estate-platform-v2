@@ -4,6 +4,7 @@ import { useState, useEffect } from 'react';
 import { useParams, useRouter } from 'next/navigation';
 import { api } from '@/lib/api';
 import { ChevronLeft, Edit, Trash2, CheckCircle, XCircle, Clock } from 'lucide-react';
+import { toast } from 'sonner';
 
 interface Task {
   id: string;
@@ -56,7 +57,7 @@ export default function TaskDetailPage() {
       fetchTask();
     } catch (error) {
       console.error('Error updating status:', error);
-      alert('Ошибка при обновлении статуса');
+      toast.error('Ошибка при обновлении статуса', { description: 'Попробуйте еще раз' });
     }
   };
 
@@ -68,7 +69,7 @@ export default function TaskDetailPage() {
       router.push('/agency/crm/tasks');
     } catch (error) {
       console.error('Error deleting task:', error);
-      alert('Ошибка при удалении задачи');
+      toast.error('Ошибка при удалении задачи', { description: 'Попробуйте еще раз' });
     }
   };
 

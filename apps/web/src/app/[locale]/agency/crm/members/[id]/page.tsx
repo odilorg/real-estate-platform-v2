@@ -5,6 +5,7 @@ import { useRouter } from '@/i18n/routing';
 import { ArrowLeft, Edit, Trash2, Phone, Mail, MessageSquare, User, Shield, Loader2, Calendar } from 'lucide-react';
 import { Link } from '@/i18n/routing';
 import { api } from '@/lib/api';
+import { toast } from 'sonner';
 
 interface Member {
   id: string;
@@ -100,7 +101,7 @@ export default function MemberDetailPage({ params }: PageProps) {
       router.push('/agency/crm/members');
     } catch (error) {
       console.error('Error deleting member:', error);
-      alert('Ошибка при деактивации сотрудника');
+      toast.error('Ошибка при деактивации сотрудника', { description: 'Попробуйте еще раз' });
     }
   };
 
