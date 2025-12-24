@@ -126,6 +126,7 @@ export const mockPrismaService = {
     create: jest.fn(),
     findMany: jest.fn(),
     aggregate: jest.fn(),
+    upsert: jest.fn(),
   },
   $transaction: jest.fn(),
 };

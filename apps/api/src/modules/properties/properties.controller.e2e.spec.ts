@@ -177,10 +177,14 @@ describe('Properties Authentication & Authorization (E2E)', () => {
         .set('Authorization', `Bearer ${user1Token}`)
         .expect(200);
 
-      expect(Array.isArray(response.body)).toBe(true);
-      
+      // Check for paginated response structure
+      expect(response.body).toHaveProperty('items');
+      expect(response.body).toHaveProperty('total');
+      expect(response.body).toHaveProperty('page');
+      expect(Array.isArray(response.body.items)).toBe(true);
+
       // All properties should belong to user1
-      response.body.forEach((property: any) => {
+      response.body.items.forEach((property: any) => {
         expect(property.userId).toBe(user1Id);
         expect(property.userId).not.toBe(user2Id);
       });
@@ -193,7 +197,7 @@ describe('Properties Authentication & Authorization (E2E)', () => {
         .expect(200);
 
       // Verify none of the properties belong to user2
-      const hasUser2Properties = response.body.some(
+      const hasUser2Properties = response.body.items.some(
         (property: any) => property.userId === user2Id
       );
       expect(hasUser2Properties).toBe(false);

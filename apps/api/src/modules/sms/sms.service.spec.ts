@@ -48,10 +48,14 @@ describe('SmsService', () => {
 
       await service.sendOtp(phone, code);
 
-      // Verify sendSms was called with correct message format
+      // Verify sendSms was called with correct message format (Russian)
       expect(loggerSpy).toHaveBeenCalledWith(
         phone,
-        expect.stringContaining('verification code'),
+        expect.stringContaining(code), // Should contain the OTP code
+      );
+      expect(loggerSpy).toHaveBeenCalledWith(
+        phone,
+        expect.stringContaining('zilla.uz'), // Should contain the site name
       );
     });
 
@@ -76,6 +80,7 @@ describe('SmsService', () => {
             SMS_PROVIDER: 'eskiz',
             ESKIZ_EMAIL: 'test@example.com',
             ESKIZ_SECRET_KEY: 'test-secret-key',
+            ESKIZ_TEST_MODE: 'true', // Enable test mode for consistent test message
           };
           return config[key] || defaultValue;
         }),
