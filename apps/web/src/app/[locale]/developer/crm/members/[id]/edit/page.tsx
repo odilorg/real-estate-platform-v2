@@ -39,7 +39,7 @@ export default function EditMemberPage({ params }: PageProps) {
 
   const fetchMember = async (id: string) => {
     try {
-      const data = await api.get<any>(`/agency-crm/members/${id}`);
+      const data = await api.get<any>(`/developer-crm/members/${id}`);
       setFormData({
         role: data.role || 'AGENT',
         agentType: data.agentType || '',
@@ -92,7 +92,7 @@ export default function EditMemberPage({ params }: PageProps) {
         payload.languages = formData.languages.split(',').map(l => l.trim()).filter(Boolean);
       }
 
-      await api.put(`/agency-crm/members/${resolvedParams.id}`, payload);
+      await api.put(`/developer-crm/members/${resolvedParams.id}`, payload);
       router.push(`/developer/crm/members/${resolvedParams.id}`);
     } catch (err: any) {
       setError(err.message || 'Failed to update member');

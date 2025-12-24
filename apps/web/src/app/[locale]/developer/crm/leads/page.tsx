@@ -94,7 +94,7 @@ export default function AgencyCRMLeadsPage() {
 
   const fetchTeamMembers = async () => {
     try {
-      const data = await api.get<TeamMember[]>('/agency-crm/members');
+      const data = await api.get<TeamMember[]>('/developer-crm/members');
       setTeamMembers(data);
     } catch (error) {
       console.error('Error fetching team members:', error);
@@ -111,7 +111,7 @@ export default function AgencyCRMLeadsPage() {
       if (assignedFilter === 'unassigned') params.append('unassigned', 'true');
       else if (assignedFilter !== 'all') params.append('assignedTo', assignedFilter);
 
-      const data = await api.get<{leads: Lead[], total: number, skip?: number}>(`/agency-crm/leads?${params.toString()}`);
+      const data = await api.get<{leads: Lead[], total: number, skip?: number}>(`/developer-crm/leads?${params.toString()}`);
       setLeads(data.leads || []);
       setTotal(data.total || 0);
     } catch (error) {
@@ -126,7 +126,7 @@ export default function AgencyCRMLeadsPage() {
 
     setAssigning(true);
     try {
-      await api.put(`/agency-crm/leads/${selectedLead.id}/assign`, { memberId });
+      await api.put(`/developer-crm/leads/${selectedLead.id}/assign`, { memberId });
       setShowAssignModal(false);
       setSelectedLead(null);
       fetchLeads();
@@ -145,7 +145,7 @@ export default function AgencyCRMLeadsPage() {
     if (!confirm(t('alerts.unassignConfirm'))) return;
 
     try {
-      await api.put(`/agency-crm/leads/${leadId}/assign`, { memberId: null });
+      await api.put(`/developer-crm/leads/${leadId}/assign`, { memberId: null });
       fetchLeads();
     } catch (error) {
       console.error('Error unassigning lead:', error);
@@ -183,7 +183,7 @@ export default function AgencyCRMLeadsPage() {
 
   const handleStatusChange = async (leadId: string, newStatus: string) => {
     try {
-      await api.put(`/agency-crm/leads/${leadId}`, { status: newStatus });
+      await api.put(`/developer-crm/leads/${leadId}`, { status: newStatus });
       fetchLeads(); // Refresh leads after status change
     } catch (error) {
       console.error('Error updating lead status:', error);
@@ -214,7 +214,7 @@ export default function AgencyCRMLeadsPage() {
     setBulkOperating(true);
     try {
       const result = await api.post<{ success: number; failed: number; errors: any[] }>(
-        '/agency-crm/leads/bulk-delete',
+        '/developer-crm/leads/bulk-delete',
         { leadIds: selectedLeads }
       );
 
@@ -241,7 +241,7 @@ export default function AgencyCRMLeadsPage() {
     setBulkOperating(true);
     try {
       const result = await api.post<{ success: number; failed: number; errors: any[] }>(
-        '/agency-crm/leads/bulk-assign',
+        '/developer-crm/leads/bulk-assign',
         { leadIds: selectedLeads, memberId }
       );
 

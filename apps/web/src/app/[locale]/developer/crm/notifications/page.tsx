@@ -43,7 +43,7 @@ export default function NotificationsPage() {
       }
 
       const data = await api.get<{ notifications: Notification[] }>(
-        `/agency-crm/notifications?${params.toString()}`,
+        `/developer-crm/notifications?${params.toString()}`,
       );
       setNotifications(data.notifications);
     } catch (error) {
@@ -55,7 +55,7 @@ export default function NotificationsPage() {
 
   const markAsRead = async (id: string) => {
     try {
-      await api.patch(`/agency-crm/notifications/${id}/read`, {});
+      await api.patch(`/developer-crm/notifications/${id}/read`, {});
       setNotifications((prev) =>
         prev.map((n) => (n.id === id ? { ...n, isRead: true } : n)),
       );
@@ -66,7 +66,7 @@ export default function NotificationsPage() {
 
   const markAllAsRead = async () => {
     try {
-      await api.patch('/agency-crm/notifications/mark-all-read', {});
+      await api.patch('/developer-crm/notifications/mark-all-read', {});
       setNotifications((prev) => prev.map((n) => ({ ...n, isRead: true })));
     } catch (error) {
       console.error('Error marking all as read:', error);
@@ -75,7 +75,7 @@ export default function NotificationsPage() {
 
   const deleteNotification = async (id: string) => {
     try {
-      await api.delete(`/agency-crm/notifications/${id}`);
+      await api.delete(`/developer-crm/notifications/${id}`);
       setNotifications((prev) => prev.filter((n) => n.id !== id));
     } catch (error) {
       console.error('Error deleting notification:', error);

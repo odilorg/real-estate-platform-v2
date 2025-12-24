@@ -64,7 +64,7 @@ export default function ActivityTimeline({ leadId, activities, onActivityAdded }
     setLoading(true);
 
     try {
-      await api.post('/agency-crm/activities', {
+      await api.post('/developer-crm/activities', {
         leadId,
         type: formData.type,
         title: formData.title,
@@ -87,7 +87,7 @@ export default function ActivityTimeline({ leadId, activities, onActivityAdded }
     if (!confirm(t('deleteConfirm'))) return;
 
     try {
-      await api.delete(`/agency-crm/activities/${activityId}`);
+      await api.delete(`/developer-crm/activities/${activityId}`);
       onActivityAdded(); // Refresh activities
     } catch (error) {
       console.error('Error deleting activity:', error);

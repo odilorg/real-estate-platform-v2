@@ -61,7 +61,7 @@ export default function AnalyticsPage() {
     try {
       setLoading(true);
       const response = await api.get<DashboardData>(
-        `/agency-crm/analytics/dashboard?period=${period}`
+        `/developer-crm/analytics/dashboard?period=${period}`
       );
       setData(response);
     } catch (error: any) {

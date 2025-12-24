@@ -61,7 +61,7 @@ export default function NewTaskPage() {
   const fetchMembers = async () => {
     try {
       setLoadingMembers(true);
-      const data = await api.get<{ members: Member[] }>('/agency-crm/members');
+      const data = await api.get<{ members: Member[] }>('/developer-crm/members');
       setMembers(data.members || []);
     } catch (error) {
       console.error('Error fetching members:', error);
@@ -73,7 +73,7 @@ export default function NewTaskPage() {
   const fetchLeads = async () => {
     try {
       setLoadingLeads(true);
-      const data = await api.get<{ leads: Lead[] }>('/agency-crm/leads');
+      const data = await api.get<{ leads: Lead[] }>('/developer-crm/leads');
       setLeads(data.leads || []);
     } catch (error) {
       console.error('Error fetching leads:', error);
@@ -97,7 +97,7 @@ export default function NewTaskPage() {
     setLoading(true);
 
     try {
-      await api.post('/agency-crm/tasks', {
+      await api.post('/developer-crm/tasks', {
         ...formData,
         leadId: formData.leadId || undefined,
         reminderMinutesBefore: formData.reminderMinutesBefore || undefined,

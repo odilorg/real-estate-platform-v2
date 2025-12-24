@@ -57,7 +57,7 @@ export default function MembersPage() {
       if (roleFilter !== 'all') params.append('role', roleFilter);
       if (statusFilter !== 'all') params.append('isActive', statusFilter);
 
-      const response = await api.get<any>(`/agency-crm/members?${params}`);
+      const response = await api.get<any>(`/developer-crm/members?${params}`);
       setMembers(response.members || []);
       setTotal(response.total || 0);
     } catch (error) {

@@ -56,8 +56,8 @@ export default function LeadDetailPage({ params }: PageProps) {
   const fetchLead = async (id: string) => {
     try {
       const [leadData, activitiesData] = await Promise.all([
-        api.get<Lead>(`/agency-crm/leads/${id}`),
-        api.get<any[]>(`/agency-crm/activities/lead/${id}`),
+        api.get<Lead>(`/developer-crm/leads/${id}`),
+        api.get<any[]>(`/developer-crm/activities/lead/${id}`),
       ]);
       setLead({ ...leadData, activities: activitiesData || [] });
     } catch (error) {
@@ -71,7 +71,7 @@ export default function LeadDetailPage({ params }: PageProps) {
     if (!lead || !confirm(t('deleteConfirm'))) return;
 
     try {
-      await api.delete(`/agency-crm/leads/${lead.id}`);
+      await api.delete(`/developer-crm/leads/${lead.id}`);
       router.push('/developer/crm/leads');
     } catch (error) {
       console.error('Error deleting lead:', error);

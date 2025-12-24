@@ -71,7 +71,7 @@ export default function CommissionsPage() {
   const fetchCommissions = async () => {
     try {
       const queryParams = statusFilter ? `?status=${statusFilter}` : '';
-      const response = await api.get<{ data: Commission[] }>(`/agency-crm/commissions${queryParams}`);
+      const response = await api.get<{ data: Commission[] }>(`/developer-crm/commissions${queryParams}`);
       setCommissions(response.data);
     } catch (error) {
       console.error('Error fetching commissions:', error);
@@ -82,7 +82,7 @@ export default function CommissionsPage() {
 
   const fetchSummary = async () => {
     try {
-      const data = await api.get<Summary>('/agency-crm/commissions/summary');
+      const data = await api.get<Summary>('/developer-crm/commissions/summary');
       setSummary(data);
     } catch (error) {
       console.error('Error fetching summary:', error);
@@ -93,7 +93,7 @@ export default function CommissionsPage() {
     if (!confirm(t('alerts.approveConfirm'))) return;
 
     try {
-      await api.post(`/agency-crm/commissions/${id}/approve`, {});
+      await api.post(`/developer-crm/commissions/${id}/approve`, {});
       fetchCommissions();
       fetchSummary();
     } catch (error) {
@@ -111,7 +111,7 @@ export default function CommissionsPage() {
 
     setProcessing(true);
     try {
-      await api.post(`/agency-crm/commissions/${selectedCommission.id}/pay`, {
+      await api.post(`/developer-crm/commissions/${selectedCommission.id}/pay`, {
         paymentMethod,
         paymentNotes: paymentNotes || undefined,
         paidDate: new Date().toISOString(),

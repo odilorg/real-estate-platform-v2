@@ -35,7 +35,7 @@ export default function AgentsAnalyticsPage() {
     try {
       setLoading(true);
       const response = await api.get<LeaderboardData>(
-        `/agency-crm/analytics/agents?period=${period}`
+        `/developer-crm/analytics/agents?period=${period}`
       );
       setData(response);
     } catch (error: any) {

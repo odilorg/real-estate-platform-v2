@@ -55,7 +55,7 @@ export default function NewLeadPage() {
       if (formData.requirements) payload.requirements = formData.requirements;
       if (formData.notes) payload.notes = formData.notes;
 
-      await api.post('/agency-crm/leads', payload);
+      await api.post('/developer-crm/leads', payload);
       setSuccess(true);
       setTimeout(() => {
       router.push('/developer/crm/leads');

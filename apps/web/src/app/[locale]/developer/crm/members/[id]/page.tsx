@@ -71,7 +71,7 @@ export default function MemberDetailPage({ params }: PageProps) {
 
   const fetchMember = async (id: string) => {
     try {
-      const data = await api.get<Member>(`/agency-crm/members/${id}`);
+      const data = await api.get<Member>(`/developer-crm/members/${id}`);
       setMember(data);
     } catch (error) {
       console.error('Error fetching member:', error);
@@ -84,7 +84,7 @@ export default function MemberDetailPage({ params }: PageProps) {
     if (!member || !confirm(t('alerts.deactivateConfirm'))) return;
 
     try {
-      await api.delete(`/agency-crm/members/${member.id}`);
+      await api.delete(`/developer-crm/members/${member.id}`);
       router.push('/developer/crm/members');
     } catch (error) {
       console.error('Error deleting member:', error);

@@ -52,7 +52,7 @@ export default function NewMemberPage() {
       const timer = setTimeout(async () => {
         setSearching(true);
         try {
-          const results = await api.get<any[]>(`/agency-crm/members/search-users?q=${searchQuery}`);
+          const results = await api.get<any[]>(`/developer-crm/members/search-users?q=${searchQuery}`);
           setSearchResults(results);
         } catch (err) {
           console.error('Search failed:', err);
@@ -123,7 +123,7 @@ export default function NewMemberPage() {
         payload.userId = formData.userId;
       }
 
-      const result = await api.post<any>('/agency-crm/members', payload);
+      const result = await api.post<any>('/developer-crm/members', payload);
       router.push(`/developer/crm/members/${result.id}`);
     } catch (err: any) {
       setError(err.message || 'Failed to add member');

@@ -55,7 +55,7 @@ export default function LeadsImportPage() {
 
     setImporting(true);
     try {
-      const importResult = await api.post<ImportResult>('/agency-crm/leads/import', {
+      const importResult = await api.post<ImportResult>('/developer-crm/leads/import', {
         csvData,
         duplicateHandling,
       });

@@ -43,7 +43,7 @@ export default function TaskDetailPage() {
 
   const fetchTask = async () => {
     try {
-      const data = await api.get<Task>(`/agency-crm/tasks/${params.id}`);
+      const data = await api.get<Task>(`/developer-crm/tasks/${params.id}`);
       setTask(data);
     } catch (error) {
       console.error('Error fetching task:', error);
@@ -54,7 +54,7 @@ export default function TaskDetailPage() {
 
   const updateStatus = async (status: string) => {
     try {
-      await api.patch(`/agency-crm/tasks/${params.id}`, { status });
+      await api.patch(`/developer-crm/tasks/${params.id}`, { status });
       fetchTask();
     } catch (error) {
       console.error('Error updating status:', error);
@@ -66,7 +66,7 @@ export default function TaskDetailPage() {
     if (!confirm(t('alerts.deleteConfirm'))) return;
 
     try {
-      await api.delete(`/agency-crm/tasks/${params.id}`);
+      await api.delete(`/developer-crm/tasks/${params.id}`);
       router.push('/developer/crm/tasks');
     } catch (error) {
       console.error('Error deleting task:', error);

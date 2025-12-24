@@ -70,7 +70,7 @@ export default function NewListingPage() {
         yearBuilt: formData.yearBuilt ? parseInt(formData.yearBuilt) : undefined,
       };
 
-      await api.post('/agency-crm/listings', payload);
+      await api.post('/developer-crm/listings', payload);
       setSuccess(true);
 
       setTimeout(() => {

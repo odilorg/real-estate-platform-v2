@@ -35,7 +35,7 @@ export default function LeadsExportPage() {
       if (search) params.append('search', search);
 
       const result = await api.get<{ csv: string; filename: string }>(
-        `/agency-crm/leads/export?${params.toString()}`
+        `/developer-crm/leads/export?${params.toString()}`
       );
 
       // Download CSV file

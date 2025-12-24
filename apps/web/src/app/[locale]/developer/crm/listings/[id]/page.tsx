@@ -75,7 +75,7 @@ export default function ListingDetailPage() {
 
   const fetchListing = async () => {
     try {
-      const data = await api.get<Listing>(`/agency-crm/listings/${params.id}`);
+      const data = await api.get<Listing>(`/developer-crm/listings/${params.id}`);
       setListing(data);
     } catch (error) {
       console.error('Error fetching listing:', error);
@@ -86,7 +86,7 @@ export default function ListingDetailPage() {
 
   const handleDelete = async () => {
     try {
-      await api.delete(`/agency-crm/listings/${params.id}`);
+      await api.delete(`/developer-crm/listings/${params.id}`);
       router.push('/developer/crm/listings');
     } catch (error) {
       console.error('Error deleting listing:', error);
@@ -96,7 +96,7 @@ export default function ListingDetailPage() {
 
   const handleStatusChange = async (newStatus: string) => {
     try {
-      await api.patch(`/agency-crm/listings/${params.id}`, { status: newStatus });
+      await api.patch(`/developer-crm/listings/${params.id}`, { status: newStatus });
       setListing((prev) => (prev ? { ...prev, status: newStatus } : null));
       setShowStatusMenu(false);
     } catch (error) {
@@ -110,7 +110,7 @@ export default function ListingDetailPage() {
     if (!soldPrice) return;
 
     try {
-      await api.post(`/agency-crm/listings/${params.id}/mark-sold`, {
+      await api.post(`/developer-crm/listings/${params.id}/mark-sold`, {
         soldPrice: parseFloat(soldPrice),
         soldDate: new Date().toISOString(),
       });

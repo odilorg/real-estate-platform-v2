@@ -51,7 +51,7 @@ export default function EditListingPage() {
 
   const fetchListing = async () => {
     try {
-      const data = await api.get(`/agency-crm/listings/${params.id}`) as any;
+      const data = await api.get(`/developer-crm/listings/${params.id}`) as any;
       setFormData({
         title: data.title || '',
         description: data.description || '',
@@ -107,7 +107,7 @@ export default function EditListingPage() {
         yearBuilt: formData.yearBuilt ? parseInt(formData.yearBuilt) : undefined,
       };
 
-      await api.patch(`/agency-crm/listings/${params.id}`, payload);
+      await api.patch(`/developer-crm/listings/${params.id}`, payload);
       setSuccess(true);
 
       setTimeout(() => {

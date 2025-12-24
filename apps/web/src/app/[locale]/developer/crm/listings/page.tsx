@@ -66,7 +66,7 @@ export default function ListingsPage() {
 
   const fetchListings = async () => {
     try {
-      const data = await api.get<Listing[]>('/agency-crm/listings');
+      const data = await api.get<Listing[]>('/developer-crm/listings');
       setListings(data);
     } catch (error) {
       console.error('Error fetching listings:', error);

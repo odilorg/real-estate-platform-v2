@@ -34,7 +34,7 @@ export default function EditLeadPage({ params }: PageProps) {
 
   const fetchLead = async (id: string) => {
     try {
-      const data = await api.get<any>(`/agency-crm/leads/${id}`);
+      const data = await api.get<any>(`/developer-crm/leads/${id}`);
       setFormData({
         firstName: data.firstName || '',
         lastName: data.lastName || '',
@@ -58,7 +58,7 @@ export default function EditLeadPage({ params }: PageProps) {
     setError('');
 
     try {
-      await api.put(`/agency-crm/leads/${resolvedParams.id}`, formData);
+      await api.put(`/developer-crm/leads/${resolvedParams.id}`, formData);
       router.push(`/developer/crm/leads/${resolvedParams.id}`);
     } catch (err: any) {
       setError(err.message || 'Failed to update lead');

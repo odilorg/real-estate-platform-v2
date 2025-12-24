@@ -35,7 +35,7 @@ export default function RevenueAnalyticsPage() {
     try {
       setLoading(true);
       const response = await api.get<RevenueData>(
-        `/agency-crm/analytics/revenue?period=${period}`
+        `/developer-crm/analytics/revenue?period=${period}`
       );
       setData(response);
     } catch (error: any) {

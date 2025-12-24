@@ -99,7 +99,7 @@ export default function DealDetailPage({ params }: PageProps) {
 
   const fetchDeal = async () => {
     try {
-      const data = await api.get<Deal>(`/agency-crm/deals/${resolvedParams.id}`);
+      const data = await api.get<Deal>(`/developer-crm/deals/${resolvedParams.id}`);
       setDeal(data);
     } catch (error) {
       console.error('Error fetching deal:', error);
@@ -117,7 +117,7 @@ export default function DealDetailPage({ params }: PageProps) {
 
     setClosing(true);
     try {
-      await api.post(`/agency-crm/deals/${deal.id}/close`, {
+      await api.post(`/developer-crm/deals/${deal.id}/close`, {
         status: closeStatus,
         closeReason: closeReason || undefined,
       });

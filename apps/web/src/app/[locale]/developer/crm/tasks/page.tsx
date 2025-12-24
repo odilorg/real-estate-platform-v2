@@ -78,7 +78,7 @@ export default function TasksPage() {
       if (filterStatus) params.append('status', filterStatus);
       if (filterPriority) params.append('priority', filterPriority);
 
-      const response = await api.get<{ tasks: Task[]; total: number }>(`/agency-crm/tasks?${params.toString()}`);
+      const response = await api.get<{ tasks: Task[]; total: number }>(`/developer-crm/tasks?${params.toString()}`);
       // API returns { tasks, total, skip, take } - extract tasks array
       setTasks(response.tasks || []);
     } catch (error) {
@@ -91,7 +91,7 @@ export default function TasksPage() {
 
   const fetchStats = async () => {
     try {
-      const data = await api.get<TaskStats>('/agency-crm/tasks/stats');
+      const data = await api.get<TaskStats>('/developer-crm/tasks/stats');
       setStats(data);
     } catch (error) {
       console.error('Error fetching stats:', error);

@@ -75,7 +75,7 @@ export default function DealsPage() {
 
   const fetchPipeline = async () => {
     try {
-      const data = await api.get<Pipeline>('/agency-crm/deals/pipeline');
+      const data = await api.get<Pipeline>('/developer-crm/deals/pipeline');
       setPipeline(data);
     } catch (error) {
       console.error('Error fetching pipeline:', error);
@@ -115,7 +115,7 @@ export default function DealsPage() {
 
     // Update on server
     try {
-      await api.patch(`/agency-crm/deals/${draggableId}`, {
+      await api.patch(`/developer-crm/deals/${draggableId}`, {
         stage: destination.droppableId,
       });
     } catch (error) {
