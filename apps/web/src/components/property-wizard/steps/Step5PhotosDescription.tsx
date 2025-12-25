@@ -2,8 +2,10 @@
 
 import { useState } from 'react';
 import { ImageUploader } from '../../image-uploader';
-import { Image, FileText, AlignLeft, Video, Plus, Trash2, Youtube } from 'lucide-react';
+import { Image, FileText, AlignLeft, Video, Plus, Trash2, Youtube, Sparkles } from 'lucide-react';
 import { WizardFormData } from '../PropertyCreationWizard';
+import { AIContentHelper } from '../AIContentHelper';
+import { Button } from '@repo/ui';
 
 interface Step5PhotosDescriptionProps {
   formData: WizardFormData;
@@ -37,7 +39,8 @@ export default function Step5PhotosDescription({
 }: Step5PhotosDescriptionProps) {
   const [youtubeUrl, setYoutubeUrl] = useState('');
   const [youtubeError, setYoutubeError] = useState('');
-  
+  const [showAIHelper, setShowAIHelper] = useState(false);
+
   const titleLength = formData.title.length;
   const descriptionLength = formData.description.length;
 
@@ -78,6 +81,28 @@ export default function Step5PhotosDescription({
 
   return (
     <div className="space-y-8">
+      {/* AI Helper Toggle Button */}
+      <div className="flex justify-end">
+        <Button
+          type="button"
+          onClick={() => setShowAIHelper(!showAIHelper)}
+          variant={showAIHelper ? 'default' : 'outline'}
+          className="flex items-center gap-2"
+        >
+          <Sparkles className="h-4 w-4" />
+          {showAIHelper ? 'Скрыть помощника' : 'Умный помощник'}
+        </Button>
+      </div>
+
+      {/* AI Helper Panel */}
+      {showAIHelper && (
+        <AIContentHelper
+          formData={formData}
+          onTitleSelect={(title) => updateFormData({ title })}
+          onDescriptionSelect={(description) => updateFormData({ description })}
+        />
+      )}
+
       {/* Photos Section */}
       <div>
         <div className="flex items-start gap-2 mb-4">
