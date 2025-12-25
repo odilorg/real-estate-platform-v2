@@ -75,9 +75,9 @@ export function SocialShare({ url, title, description, image }: SocialShareProps
 
   return (
     <>
-      <Button variant="outline" size="sm" onClick={handleShare}>
-        <Share2 className="h-4 w-4 mr-2" />
-        Поделиться
+      <Button variant="outline" size="lg" onClick={handleShare} className="min-w-[44px]">
+        <Share2 className="h-5 w-5 sm:mr-2" />
+        <span className="hidden sm:inline">Поделиться</span>
       </Button>
 
       {/* Share Modal */}

@@ -569,17 +569,17 @@ export default function PropertyDetailPage({
     <div className="min-h-screen bg-gray-50">
       <main className="container mx-auto px-4 py-8">
         {/* Enhanced Action Bar - Better Mobile UX */}
-        <div className="flex items-center justify-between gap-4 mb-8 bg-white rounded-xl p-4 shadow-sm">
+        <div className="flex items-center justify-between gap-2 sm:gap-4 mb-8 bg-white rounded-xl p-3 sm:p-4 shadow-sm overflow-x-auto">
           <Button
             variant="ghost"
             onClick={() => router.back()}
             className="shrink-0 hover:bg-gray-50"
             size="lg"
           >
-            <ArrowLeft className="h-5 w-5 mr-2" />
-            <span className="font-medium">{t('actions.back')}</span>
+            <ArrowLeft className="h-5 w-5 sm:mr-2" />
+            <span className="hidden sm:inline font-medium">{t('actions.back')}</span>
           </Button>
-          <div className="flex items-center gap-3">
+          <div className="flex items-center gap-2 sm:gap-3 shrink-0">
             <Button
               variant="outline"
               size="lg"
@@ -600,7 +600,7 @@ export default function PropertyDetailPage({
             {isOwner && (
               <>
                 <Link href={`/properties/${id}/edit`}>
-                  <Button variant="outline" size="lg" className="hover:bg-blue-50 hover:border-blue-300">
+                  <Button variant="outline" size="lg" className="hover:bg-blue-50 hover:border-blue-300 min-w-[44px]">
                     <Edit className="h-5 w-5 sm:mr-2" />
                     <span className="hidden sm:inline font-medium">{t('actions.edit')}</span>
                   </Button>
@@ -610,7 +610,7 @@ export default function PropertyDetailPage({
                   size="lg"
                   onClick={handlePostToTelegram}
                   disabled={telegramLoading}
-                  className="bg-blue-50 hover:bg-blue-100 border-blue-300"
+                  className="bg-blue-50 hover:bg-blue-100 border-blue-300 min-w-[44px]"
                 >
                   {telegramLoading ? (
                     <Loader2 className="h-5 w-5 sm:mr-2 animate-spin" />
