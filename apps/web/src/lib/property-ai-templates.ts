@@ -5,7 +5,7 @@
  */
 
 // Types
-interface PropertyData {
+export interface PropertyData {
   propertyType: 'APARTMENT' | 'HOUSE' | 'LAND' | 'COMMERCIAL';
   listingType: 'SALE' | 'RENT_LONG' | 'RENT_DAILY';
   bedrooms?: number;
