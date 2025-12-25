@@ -1,6 +1,6 @@
 "use client";
 
-import { YandexMap } from "./yandex-map";
+import YandexMap from "./yandex-map";
 import { useEffect, useRef } from "react";
 
 interface Property {
@@ -44,71 +44,8 @@ export function PropertySearchMap({
 }: PropertySearchMapProps) {
   const markersRef = useRef<any[]>([]);
 
-  const handleMapLoad = (map: any) => {
-    const ymaps = (window as any).ymaps;
-    if (!ymaps) return;
-
-    // Clear existing markers
-    markersRef.current.forEach((marker) => map.geoObjects.remove(marker));
-    markersRef.current = [];
-
-    // Add property markers
-    properties.forEach((property) => {
-      if (!property.latitude || !property.longitude) return;
-
-      const placemark = new ymaps.Placemark(
-        [property.latitude, property.longitude],
-        {
-          balloonContentHeader: property.title,
-          balloonContentBody: `
-            <div style="max-width: 200px;">
-              ${property.images?.[0] ? `<img src="${property.images[0].url}" style="width: 100%; height: 120px; object-fit: cover; border-radius: 8px; margin-bottom: 8px;" />` : ""}
-              <p style="font-size: 16px; font-weight: bold; margin: 4px 0;">${property.price.toLocaleString()} UZS</p>
-              <a href="/properties/${property.id}" style="color: #3B82F6; text-decoration: none;">Подробнее →</a>
-            </div>
-          `,
-        },
-        {
-          preset: "islands#redDotIcon",
-          iconColor: "#EF4444",
-        }
-      );
-
-      if (onPropertyClick) {
-        placemark.events.add("click", () => onPropertyClick(property.id));
-      }
-
-      map.geoObjects.add(placemark);
-      markersRef.current.push(placemark);
-    });
-
-    // Add metro station markers
-    metroStations.forEach((station) => {
-      const isSelected = station.id === selectedMetroId;
-      const lineColor = LINE_COLORS[station.line as keyof typeof LINE_COLORS] || "#6B7280";
-
-      const placemark = new ymaps.Placemark(
-        [station.latitude, station.longitude],
-        {
-          balloonContentHeader: locale === "uz" ? station.nameUz : station.nameRu,
-          balloonContentBody: `<p style="color: ${lineColor}; font-weight: bold;">Станция метро</p>`,
-        },
-        {
-          preset: "islands#circleDotIcon",
-          iconColor: lineColor,
-          iconImageSize: isSelected ? [40, 40] : [30, 30],
-        }
-      );
-
-      map.geoObjects.add(placemark);
-      markersRef.current.push(placemark);
-    });
-
-    // Auto-fit bounds to show all markers
-    if (markersRef.current.length > 0) {
-      map.setBounds(map.geoObjects.getBounds(), { checkZoomRange: true, zoomMargin: 50 });
-    }
-  };
+  // Note: Custom marker handling for metro stations removed temporarily
+  // Will be added back when YandexMap component supports additional custom markers
 
   // Calculate map center
   const getMapCenter = (): [number, number] => {
@@ -132,12 +69,24 @@ export function PropertySearchMap({
   };
 
   return (
-    <YandexMap
-      center={getMapCenter()}
-      zoom={12}
-      height="600px"
-      className="rounded-lg shadow-lg"
-      onLoad={handleMapLoad}
-    />
+    <div style={{ height: '600px' }}>
+      <YandexMap
+        properties={properties
+          .filter((p) => p.latitude && p.longitude)
+          .map((p) => ({
+            id: p.id,
+            title: p.title,
+            price: p.price,
+            listingType: 'SALE' as const, // Default since not provided
+            latitude: p.latitude!,
+            longitude: p.longitude!,
+            imageUrl: p.images?.[0]?.url,
+          }))}
+        center={getMapCenter()}
+        zoom={12}
+        className="rounded-lg shadow-lg"
+        onMarkerClick={onPropertyClick}
+      />
+    </div>
   );
 }

@@ -21,6 +21,11 @@ export default defineConfig({
         '.next/',
       ],
     },
+    server: {
+      deps: {
+        inline: ['next-intl'],
+      },
+    },
   },
   resolve: {
     alias: {

@@ -1,0 +1,48 @@
+name: Test Map Button Navigation
+url: https://staging.jahongir-app.uz/ru
+viewport: mobile
+steps:
+  - action: wait
+    duration: 2000
+    description: Wait for page to load
+
+  - action: screenshot
+    filename: homepage-loaded.png
+    description: Capture initial homepage
+
+  - action: console
+    description: Capture initial console logs
+
+  - action: scroll
+    direction: down
+    amount: 200
+    description: Scroll down to see search form
+
+  - action: wait
+    duration: 1000
+    description: Wait for scroll
+
+  - action: click
+    selector: '.grid.grid-cols-3 button:first-child'
+    description: Click the map button (first button in 3-column grid)
+
+  - action: wait
+    duration: 3000
+    description: Wait for navigation to complete
+
+  - action: console
+    description: Capture console logs after navigation
+
+  - action: screenshot
+    filename: after-map-click.png
+    description: Capture page after map button click
+
+  - action: evaluate
+    script: |
+      return {
+        url: window.location.href,
+        viewModeFromDOM: document.querySelector('[data-viewmode]')?.dataset?.viewmode || 'not found',
+        mapVisible: !!document.querySelector('.leaflet-container'),
+        consoleErrors: window.__errors || []
+      }
+    description: Check map visibility and URL

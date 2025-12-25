@@ -40,6 +40,21 @@
     "createAccountButton": "Hisob yaratish",
     "searchPlaceholder": "Manzil, tuman...",
     "searchButton": "Qidirish",
+    "search": {
+      "rent": "Ijaraga olish",
+      "buy": "Sotib olish",
+      "propertyTypes": {
+        "apartment": "Kvartira",
+        "house": "Uy",
+        "commercial": "Tijorat",
+        "land": "Yer"
+      },
+      "rooms": "Xonalar soni",
+      "priceTo": "Narx gacha",
+      "location": "Toshkent",
+      "onMap": "Xaritada",
+      "find": "Qidirish"
+    },
     "cities": {
       "tashkent": "Toshkent",
       "samarkand": "Samarqand",

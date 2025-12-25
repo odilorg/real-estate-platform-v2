@@ -568,21 +568,27 @@ export default function PropertyDetailPage({
   return (
     <div className="min-h-screen bg-gray-50">
       <main className="container mx-auto px-4 py-8">
-        {/* Action Bar - Mobile Responsive */}
-        <div className="flex flex-wrap items-center justify-between gap-2 mb-6">
-          <Button variant="ghost" onClick={() => router.back()} className="shrink-0">
-            <ArrowLeft className="h-4 w-4 mr-2" />
-            {t('actions.back')}
+        {/* Enhanced Action Bar - Better Mobile UX */}
+        <div className="flex items-center justify-between gap-4 mb-8 bg-white rounded-xl p-4 shadow-sm">
+          <Button
+            variant="ghost"
+            onClick={() => router.back()}
+            className="shrink-0 hover:bg-gray-50"
+            size="lg"
+          >
+            <ArrowLeft className="h-5 w-5 mr-2" />
+            <span className="font-medium">{t('actions.back')}</span>
           </Button>
-          <div className="flex items-center gap-1 sm:gap-2 flex-wrap">
+          <div className="flex items-center gap-3">
             <Button
               variant="outline"
-              size="icon"
+              size="lg"
               onClick={handleToggleFavorite}
               disabled={favoriteLoading}
+              className="min-w-[44px] hover:bg-red-50 hover:border-red-300"
             >
               <Heart
-                className={`h-4 w-4 ${isFavorite ? 'fill-red-500 text-red-500' : ''}`}
+                className={`h-5 w-5 ${isFavorite ? 'fill-red-500 text-red-500' : 'text-gray-600'}`}
               />
             </Button>
             <SocialShare
@@ -594,24 +600,24 @@ export default function PropertyDetailPage({
             {isOwner && (
               <>
                 <Link href={`/properties/${id}/edit`}>
-                  <Button variant="outline" size="icon" className="sm:w-auto sm:px-3">
-                    <Edit className="h-4 w-4 sm:mr-2" />
-                    <span className="hidden sm:inline">{t('actions.edit')}</span>
+                  <Button variant="outline" size="lg" className="hover:bg-blue-50 hover:border-blue-300">
+                    <Edit className="h-5 w-5 sm:mr-2" />
+                    <span className="hidden sm:inline font-medium">{t('actions.edit')}</span>
                   </Button>
                 </Link>
                 <Button
                   variant="outline"
-                  size="icon"
+                  size="lg"
                   onClick={handlePostToTelegram}
                   disabled={telegramLoading}
-                  className="bg-blue-50 hover:bg-blue-100 border-blue-200 sm:w-auto sm:px-3"
+                  className="bg-blue-50 hover:bg-blue-100 border-blue-300"
                 >
                   {telegramLoading ? (
-                    <Loader2 className="h-4 w-4 sm:mr-2 animate-spin" />
+                    <Loader2 className="h-5 w-5 sm:mr-2 animate-spin" />
                   ) : (
-                    <Send className="h-4 w-4 sm:mr-2" />
+                    <Send className="h-5 w-5 sm:mr-2" />
                   )}
-                  <span className="hidden sm:inline">Telegram</span>
+                  <span className="hidden sm:inline font-medium">Telegram</span>
                 </Button>
               </>
             )}
@@ -645,81 +651,110 @@ export default function PropertyDetailPage({
               </div>
             )}
 
-            {/* Title & Price */}
-            <div>
-              <div className="flex items-start justify-between gap-4 mb-4">
-                <div>
-                  <div className="flex items-center gap-2 mb-2">
-                    <Badge variant={property.listingType === 'SALE' ? 'default' : 'secondary'}>
-                      {t(`listingTypes.${property.listingType}` as any)}
-                    </Badge>
-                    {property.verified && (
-                      <Badge variant="outline" className="text-green-600 border-green-600">
-                        {t('actions.verified')}
-                      </Badge>
-                    )}
-                    {property.featured && (
-                      <Badge variant="outline" className="text-amber-600 border-amber-600">
-                        {t('actions.featured')}
-                      </Badge>
-                    )}
-                  </div>
-                  <h1 className="text-2xl md:text-3xl font-bold">{property.title}</h1>
-                </div>
-                <div className="text-right">
-                  <div className="text-3xl font-bold text-blue-600">
-                    {property.price.toLocaleString()} {t('currency')}
-                    {property.listingType === 'RENT_LONG' && (
-                      <span className="text-lg font-normal text-gray-500">{t('perMonth')}</span>
-                    )}
-                    {property.listingType === 'RENT_DAILY' && (
-                      <span className="text-lg font-normal text-gray-500">{t('perDay')}</span>
-                    )}
+            {/* Enhanced Title & Price Section */}
+            <div className="bg-white rounded-xl p-6 shadow-sm">
+              {/* Badges */}
+              <div className="flex items-center gap-3 mb-4 flex-wrap">
+                <Badge
+                  variant={property.listingType === 'SALE' ? 'default' : 'secondary'}
+                  className="text-sm px-3 py-1.5 font-semibold"
+                >
+                  {t(`listingTypes.${property.listingType}` as any)}
+                </Badge>
+                {property.verified && (
+                  <Badge variant="outline" className="text-green-600 border-green-600 text-sm px-3 py-1.5">
+                    ✓ {t('actions.verified')}
+                  </Badge>
+                )}
+                {property.featured && (
+                  <Badge variant="outline" className="text-amber-600 border-amber-600 text-sm px-3 py-1.5">
+                    ⭐ {t('actions.featured')}
+                  </Badge>
+                )}
+              </div>
+
+              {/* Title */}
+              <h1 className="text-3xl md:text-4xl lg:text-5xl font-bold text-gray-900 mb-4 leading-tight">
+                {property.title}
+              </h1>
+
+              {/* Location */}
+              <div className="flex items-center text-gray-700 mb-6 text-lg">
+                <MapPin className="h-5 w-5 mr-2 text-blue-600 shrink-0" />
+                <span className="font-medium">
+                  {property.address}
+                  {property.district && `, ${property.district}`}
+                  {`, ${property.city}`}
+                </span>
+              </div>
+
+              {/* Price Section - More Prominent */}
+              <div className="bg-gradient-to-r from-blue-50 to-blue-100 rounded-lg p-5 mb-6">
+                <div className="flex items-baseline justify-between flex-wrap gap-4">
+                  <div>
+                    <div className="text-4xl md:text-5xl font-bold text-blue-600">
+                      {property.price.toLocaleString()} {t('currency')}
+                      {property.listingType === 'RENT_LONG' && (
+                        <span className="text-2xl font-normal text-blue-500 ml-2">{t('perMonth')}</span>
+                      )}
+                      {property.listingType === 'RENT_DAILY' && (
+                        <span className="text-2xl font-normal text-blue-500 ml-2">{t('perDay')}</span>
+                      )}
+                    </div>
                   </div>
                   {property.area > 0 && (
-                    <div className="text-sm text-gray-500">
-                      {(property.price / property.area).toFixed(1)} {t('currency')}/м²
+                    <div className="text-xl font-semibold text-gray-700">
+                      {Math.round(property.price / property.area).toLocaleString()} {t('currency')}/м²
                     </div>
                   )}
                 </div>
               </div>
 
-              <div className="flex items-center text-gray-600 mb-4">
-                <MapPin className="h-4 w-4 mr-1" />
-                {property.address}, {property.district && `${property.district}, `}
-                {property.city}
-              </div>
-
-              {/* Key Features */}
-              <div className="flex flex-wrap gap-4">
+              {/* Key Features - Card Style */}
+              <div className="grid grid-cols-2 sm:grid-cols-3 lg:grid-cols-5 gap-3">
                 {property.bedrooms !== null && (
-                  <div className="flex items-center gap-1 text-gray-600">
-                    <Bed className="h-5 w-5" />
-                    <span>{property.bedrooms} {t('detail.roomsShort')}</span>
+                  <div className="bg-gray-50 rounded-lg p-3 flex items-center gap-2">
+                    <Bed className="h-6 w-6 text-blue-600" />
+                    <div>
+                      <div className="text-lg font-bold text-gray-900">{property.bedrooms}</div>
+                      <div className="text-xs text-gray-500">{t('detail.roomsShort')}</div>
+                    </div>
                   </div>
                 )}
                 {property.bathrooms !== null && (
-                  <div className="flex items-center gap-1 text-gray-600">
-                    <Bath className="h-5 w-5" />
-                    <span>{property.bathrooms} {t('detail.bathroomsShort')}</span>
+                  <div className="bg-gray-50 rounded-lg p-3 flex items-center gap-2">
+                    <Bath className="h-6 w-6 text-blue-600" />
+                    <div>
+                      <div className="text-lg font-bold text-gray-900">{property.bathrooms}</div>
+                      <div className="text-xs text-gray-500">{t('detail.bathroomsShort')}</div>
+                    </div>
                   </div>
                 )}
-                <div className="flex items-center gap-1 text-gray-600">
-                  <Maximize className="h-5 w-5" />
-                  <span>{property.area} м²</span>
+                <div className="bg-gray-50 rounded-lg p-3 flex items-center gap-2">
+                  <Maximize className="h-6 w-6 text-blue-600" />
+                  <div>
+                    <div className="text-lg font-bold text-gray-900">{property.area}</div>
+                    <div className="text-xs text-gray-500">м²</div>
+                  </div>
                 </div>
                 {property.floor && property.totalFloors && (
-                  <div className="flex items-center gap-1 text-gray-600">
-                    <Building2 className="h-5 w-5" />
-                    <span>
-                      {property.floor}/{property.totalFloors} {t('detail.floorOf')}
-                    </span>
+                  <div className="bg-gray-50 rounded-lg p-3 flex items-center gap-2">
+                    <Building2 className="h-6 w-6 text-blue-600" />
+                    <div>
+                      <div className="text-lg font-bold text-gray-900">
+                        {property.floor}/{property.totalFloors}
+                      </div>
+                      <div className="text-xs text-gray-500">{t('detail.floorOf')}</div>
+                    </div>
                   </div>
                 )}
                 {property.yearBuilt && (
-                  <div className="flex items-center gap-1 text-gray-600">
-                    <Calendar className="h-5 w-5" />
-                    <span>{property.yearBuilt} {t('detail.yearShort')}</span>
+                  <div className="bg-gray-50 rounded-lg p-3 flex items-center gap-2">
+                    <Calendar className="h-6 w-6 text-blue-600" />
+                    <div>
+                      <div className="text-lg font-bold text-gray-900">{property.yearBuilt}</div>
+                      <div className="text-xs text-gray-500">{t('detail.yearShort')}</div>
+                    </div>
                   </div>
                 )}
               </div>
@@ -735,11 +770,13 @@ export default function PropertyDetailPage({
               renovation={property.renovation}
             />
 
-            {/* Description */}
-            <Card>
+            {/* Enhanced Description Section */}
+            <Card className="shadow-sm border-0">
               <CardContent className="p-6">
-                <h2 className="text-xl font-semibold mb-4">{t('detail.description')}</h2>
-                <p className="text-gray-700 whitespace-pre-line">{property.description}</p>
+                <h2 className="text-2xl font-bold text-gray-900 mb-4">{t('detail.description')}</h2>
+                <p className="text-gray-700 whitespace-pre-line text-lg leading-relaxed">
+                  {property.description}
+                </p>
               </CardContent>
             </Card>
 
@@ -793,20 +830,51 @@ export default function PropertyDetailPage({
           <div className="space-y-6">
             {/* Sticky Container */}
             <div className="sticky top-24 space-y-6">
-              {/* Contact Card */}
-              <Card>
+              {/* Enhanced Contact Card */}
+              <Card className="shadow-md border-2 border-blue-100 bg-gradient-to-br from-white to-blue-50" data-contact-card>
                 <CardContent className="p-6">
-                  <h3 className="text-lg font-semibold mb-4">{t('detail.contact')}</h3>
-                  <div className="mb-4">
-                    <div className="font-medium">
-                      {property.user.firstName} {property.user.lastName}
+                  <h3 className="text-xl font-bold text-gray-900 mb-5">{t('detail.contact')}</h3>
+
+                  {/* Seller Info */}
+                  <div className="bg-white rounded-lg p-4 mb-5 border border-gray-100">
+                    <div className="flex items-center gap-4">
+                      <div className="w-14 h-14 bg-blue-100 rounded-full flex items-center justify-center">
+                        <User className="h-7 w-7 text-blue-600" />
+                      </div>
+                      <div>
+                        <div className="font-semibold text-lg text-gray-900">
+                          {property.user.firstName} {property.user.lastName}
+                        </div>
+                        <div className="text-sm text-gray-600 font-medium">{t('detail.seller')}</div>
+                      </div>
                     </div>
-                    <div className="text-sm text-gray-500">{t('detail.seller')}</div>
+                    {property.user.agent && (
+                      <div className="mt-3 pt-3 border-t border-gray-100">
+                        <div className="flex items-center gap-2 text-sm">
+                          {property.user.agent.verified && (
+                            <span className="text-green-600 font-semibold">✓ Проверенный агент</span>
+                          )}
+                          {property.user.agent.superAgent && (
+                            <span className="text-amber-600 font-semibold">⭐ Супер агент</span>
+                          )}
+                        </div>
+                        {property.user.agent.rating > 0 && (
+                          <div className="flex items-center gap-1 mt-2">
+                            <Star className="h-4 w-4 fill-yellow-400 text-yellow-400" />
+                            <span className="font-semibold">{property.user.agent.rating}</span>
+                            <span className="text-sm text-gray-500">
+                              ({property.user.agent.reviewCount} отзывов)
+                            </span>
+                          </div>
+                        )}
+                      </div>
+                    )}
                   </div>
+
                   <div className="space-y-3">
                     {property.user.phone && (
-                      <Button className="w-full" size="lg">
-                        <Phone className="h-4 w-4 mr-2" />
+                      <Button className="w-full h-14 text-lg font-semibold bg-green-600 hover:bg-green-700" size="lg">
+                        <Phone className="h-5 w-5 mr-2" />
                         {property.user.phone}
                       </Button>
                     )}
@@ -815,8 +883,8 @@ export default function PropertyDetailPage({
                         {showMessageForm ? (
                           <div className="space-y-3">
                             {messageSent ? (
-                              <div className="p-3 text-sm text-green-600 bg-green-50 rounded-md text-center">
-                                {t('detail.messageSent')}
+                              <div className="p-4 text-green-700 bg-green-50 rounded-lg text-center font-semibold">
+                                ✓ {t('detail.messageSent')}
                               </div>
                             ) : (
                               <>
@@ -824,28 +892,28 @@ export default function PropertyDetailPage({
                                   value={message}
                                   onChange={(e) => setMessage(e.target.value)}
                                   placeholder={t('detail.messagePlaceholder')}
-                                  className="w-full p-3 border rounded-md resize-none h-24 text-sm focus:outline-none focus:ring-2 focus:ring-blue-500"
+                                  className="w-full p-4 border-2 border-gray-200 rounded-lg resize-none h-32 text-base focus:outline-none focus:ring-2 focus:ring-blue-500 focus:border-blue-500"
                                   disabled={sendingMessage}
                                 />
                                 <div className="flex gap-2">
                                   <Button
                                     variant="outline"
-                                    className="flex-1"
+                                    className="flex-1 h-12"
                                     onClick={() => setShowMessageForm(false)}
                                     disabled={sendingMessage}
                                   >
                                     {t('actions.cancel')}
                                   </Button>
                                   <Button
-                                    className="flex-1"
+                                    className="flex-1 h-12 bg-blue-600 hover:bg-blue-700"
                                     onClick={handleSendMessage}
                                     disabled={sendingMessage || !message.trim()}
                                   >
                                     {sendingMessage ? (
-                                      <Loader2 className="h-4 w-4 animate-spin" />
+                                      <Loader2 className="h-5 w-5 animate-spin" />
                                     ) : (
                                       <>
-                                        <Send className="h-4 w-4 mr-2" />
+                                        <Send className="h-5 w-5 mr-2" />
                                         {t('detail.send')}
                                       </>
                                     )}
@@ -857,7 +925,7 @@ export default function PropertyDetailPage({
                         ) : (
                           <Button
                             variant="outline"
-                            className="w-full"
+                            className="w-full h-14 text-lg font-semibold border-2 hover:bg-blue-50"
                             size="lg"
                             onClick={() => {
                               if (!isAuthenticated) {
@@ -867,7 +935,7 @@ export default function PropertyDetailPage({
                               }
                             }}
                           >
-                            <MessageSquare className="h-4 w-4 mr-2" />
+                            <MessageSquare className="h-5 w-5 mr-2" />
                             {t('detail.writeToSeller')}
                           </Button>
                         )}
@@ -881,18 +949,32 @@ export default function PropertyDetailPage({
               <MortgageCalculator propertyPrice={property.price} />
             </div>
 
-            {/* Stats */}
-            <Card>
+            {/* Enhanced Stats Card */}
+            <Card className="shadow-sm border-gray-200">
               <CardContent className="p-6">
-                <div className="text-sm text-gray-500 mb-1">{t('detail.views')}</div>
-                <div className="text-2xl font-bold">{property.views}</div>
-                <div className="text-xs text-gray-400 mt-2">
-                  {t('detail.publishedOn')}{' '}
-                  {new Date(property.createdAt).toLocaleDateString('ru-RU', {
-                    day: 'numeric',
-                    month: 'long',
-                    year: 'numeric',
-                  })}
+                <div className="flex items-center justify-between mb-4">
+                  <h4 className="text-lg font-semibold text-gray-900">Статистика</h4>
+                  <svg xmlns="http://www.w3.org/2000/svg" width="24" height="24" viewBox="0 0 24 24" fill="none" stroke="currentColor" strokeWidth="2" strokeLinecap="round" strokeLinejoin="round" className="h-5 w-5 text-blue-600">
+                    <path d="M22 12h-4l-3 9L9 3l-3 9H2" />
+                  </svg>
+                </div>
+                <div className="space-y-4">
+                  <div>
+                    <div className="text-sm text-gray-600 font-medium mb-1">{t('detail.views')}</div>
+                    <div className="text-3xl font-bold text-gray-900">{property.views.toLocaleString()}</div>
+                  </div>
+                  <div className="pt-3 border-t border-gray-100">
+                    <div className="text-sm text-gray-600 font-medium">
+                      {t('detail.publishedOn')}
+                    </div>
+                    <div className="text-base font-semibold text-gray-900 mt-1">
+                      {new Date(property.createdAt).toLocaleDateString('ru-RU', {
+                        day: 'numeric',
+                        month: 'long',
+                        year: 'numeric',
+                      })}
+                    </div>
+                  </div>
                 </div>
               </CardContent>
             </Card>
@@ -906,9 +988,55 @@ export default function PropertyDetailPage({
         onOpenChange={setShowLoginModal}
       />
 
+      {/* Mobile Floating Contact Bar */}
+      <div className="lg:hidden fixed bottom-0 left-0 right-0 z-40 bg-white border-t border-gray-200 shadow-lg">
+        <div className="p-4">
+          <div className="flex items-center justify-between mb-3">
+            <div>
+              <div className="text-2xl font-bold text-blue-600">
+                {property.price.toLocaleString()} {t('currency')}
+                {property.listingType === 'RENT_LONG' && (
+                  <span className="text-base font-normal text-gray-600 ml-1">{t('perMonth')}</span>
+                )}
+              </div>
+              <div className="text-sm text-gray-500">
+                {property.area} м² • {property.bedrooms ? `${property.bedrooms} комн.` : ''}
+              </div>
+            </div>
+          </div>
+          <div className="flex gap-3">
+            {property.user.phone && (
+              <Button className="flex-1 h-12 bg-green-600 hover:bg-green-700 text-base font-semibold">
+                <Phone className="h-5 w-5 mr-2" />
+                Позвонить
+              </Button>
+            )}
+            <Button
+              variant="outline"
+              className="flex-1 h-12 border-2 text-base font-semibold"
+              onClick={() => {
+                if (!isAuthenticated) {
+                  router.push('/auth/login');
+                } else {
+                  // Scroll to message form in contact card
+                  const contactCard = document.querySelector('[data-contact-card]');
+                  if (contactCard) {
+                    contactCard.scrollIntoView({ behavior: 'smooth', block: 'center' });
+                  }
+                  setShowMessageForm(true);
+                }
+              }}
+            >
+              <MessageSquare className="h-5 w-5 mr-2" />
+              Написать
+            </Button>
+          </div>
+        </div>
+      </div>
+
       {/* Toast Notification */}
       {toast && (
-        <div className="fixed bottom-6 right-6 z-50 animate-in slide-in-from-bottom-5 fade-in duration-300">
+        <div className="fixed bottom-20 lg:bottom-6 right-6 z-50 animate-in slide-in-from-bottom-5 fade-in duration-300">
           <div
             className={`flex items-center gap-3 px-4 py-3 rounded-lg shadow-lg ${
               toast.type === 'success'

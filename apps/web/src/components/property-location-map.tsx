@@ -3,26 +3,20 @@
 import { Card, CardContent } from '@repo/ui';
 import { MapPin, Bus, Expand } from 'lucide-react';
 import dynamic from 'next/dynamic';
-import { useState, useEffect } from 'react';
-import type { Icon as LeafletIcon } from 'leaflet';
+import { useState } from 'react';
 
-// Dynamically import the map to avoid SSR issues
-const MapContainer = dynamic(
-  () => import('react-leaflet').then((mod) => mod.MapContainer),
-  { ssr: false }
-);
-const TileLayer = dynamic(
-  () => import('react-leaflet').then((mod) => mod.TileLayer),
-  { ssr: false }
-);
-const Marker = dynamic(
-  () => import('react-leaflet').then((mod) => mod.Marker),
-  { ssr: false }
-);
-const Popup = dynamic(
-  () => import('react-leaflet').then((mod) => mod.Popup),
-  { ssr: false }
-);
+// Dynamically import YandexMap to avoid SSR issues
+const YandexMap = dynamic(() => import('./yandex-map'), {
+  ssr: false,
+  loading: () => (
+    <div className="h-[400px] bg-gray-100 flex items-center justify-center">
+      <div className="text-gray-500 text-center">
+        <div className="animate-spin rounded-full h-12 w-12 border-b-2 border-blue-500 mx-auto mb-2"></div>
+        <p>Загрузка карты...</p>
+      </div>
+    </div>
+  )
+});
 
 interface PropertyLocationMapProps {
   address: string;
@@ -44,28 +38,10 @@ export function PropertyLocationMap({
   metroDistance,
 }: PropertyLocationMapProps) {
   const [showAdditional, setShowAdditional] = useState(false);
-  const [customIcon, setCustomIcon] = useState<LeafletIcon | null>(null);
 
   // Default to a location if coordinates are not available
   const lat = latitude || 41.311081; // Default to Tashkent
   const lng = longitude || 69.240562;
-
-  // Create custom icon on client side only
-  useEffect(() => {
-    if (typeof window !== 'undefined') {
-      import('leaflet').then((L) => {
-        const icon = L.icon({
-          iconUrl: 'https://raw.githubusercontent.com/pointhi/leaflet-color-markers/master/img/marker-icon-2x-red.png',
-          shadowUrl: 'https://cdnjs.cloudflare.com/ajax/libs/leaflet/1.7.1/images/marker-shadow.png',
-          iconSize: [25, 41],
-          iconAnchor: [12, 41],
-          popupAnchor: [1, -34],
-          shadowSize: [41, 41],
-        });
-        setCustomIcon(icon);
-      });
-    }
-  }, []);
 
   return (
     <Card>
@@ -84,27 +60,19 @@ export function PropertyLocationMap({
 
         {/* Map */}
         <div className="relative h-96 w-full">
-          {typeof window !== 'undefined' && (
-            <MapContainer
-              center={[lat, lng]}
-              zoom={15}
-              scrollWheelZoom={false}
-              style={{ height: '100%', width: '100%' }}
-              className="z-0"
-            >
-              <TileLayer
-                attribution='&copy; <a href="https://www.openstreetmap.org/copyright">OpenStreetMap</a> contributors'
-                url="https://{s}.tile.openstreetmap.org/{z}/{x}/{y}.png"
-              />
-              {customIcon && (
-                <Marker position={[lat, lng]} icon={customIcon}>
-                  <Popup>
-                    {address}
-                  </Popup>
-                </Marker>
-              )}
-            </MapContainer>
-          )}
+          <YandexMap
+            properties={[{
+              id: 'property-location',
+              title: address,
+              price: 0, // Not showing price for location view
+              listingType: 'SALE' as const,
+              latitude: lat,
+              longitude: lng,
+            }]}
+            center={[lat, lng]}
+            zoom={15}
+            className="h-full w-full"
+          />
 
           {/* Expand button */}
           <button className="absolute top-4 right-4 z-[1000] bg-white hover:bg-gray-50 p-2 rounded-lg shadow-md transition-colors">

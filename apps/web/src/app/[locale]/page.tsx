@@ -6,6 +6,7 @@ import { useTranslations } from 'next-intl';
 import { Button, PropertyCard } from '@repo/ui';
 import { LanguageSwitcher } from '@/components/language-switcher';
 import { useAuth } from '@/context/AuthContext';
+import { CianSearchForm } from '@/components/search/CianSearchForm';
 import {
   Search,
   MapPin,
@@ -102,51 +103,27 @@ export default function Home() {
 
   return (
     <div className="min-h-screen bg-gray-50">
-      {/* Hero Section */}
-      <section className="bg-gradient-to-r from-blue-800 to-blue-900 text-white py-12 md:py-20">
+      {/* Hero Section - Compact Mobile Design */}
+      <section className="bg-gradient-to-r from-blue-800 to-blue-900 text-white py-6 md:py-10">
         <div className="container mx-auto px-4">
-          <div className="max-w-3xl mx-auto text-center">
-            <h1 className="text-3xl md:text-5xl font-bold mb-4">
+          <div className="max-w-3xl mx-auto">
+            <h1 className="text-2xl md:text-4xl font-bold mb-2 text-center">
               {t('title')}
             </h1>
-            <p className="text-lg md:text-xl text-blue-100 mb-6 md:mb-8">
+            <p className="text-sm md:text-lg text-blue-100 mb-4 md:mb-6 text-center">
               {t('description')}
             </p>
 
-            {/* Search Form */}
-            <form onSubmit={handleSearch} className="bg-white rounded-lg p-2 flex gap-2">
-              <div className="flex-1 relative">
-                <MapPin className="absolute left-3 top-1/2 -translate-y-1/2 h-5 w-5 text-gray-400" />
-                <input
-                  type="text"
-                  placeholder={t('searchPlaceholder')}
-                  value={searchQuery}
-                  onChange={(e) => setSearchQuery(e.target.value)}
-                  className="w-full pl-10 pr-4 py-3 min-h-[44px] rounded-lg text-sm md:text-base text-gray-800 focus:outline-none focus:ring-2 focus:ring-blue-500"
-                />
-              </div>
-              <Button type="submit" size="lg" className="min-h-[44px] px-6 md:px-8">
-                {t('searchButton')}
-              </Button>
-            </form>
+            {/* Cian-Style Search Form */}
+            <CianSearchForm />
 
-            {/* Post Listing CTA */}
-            <div className="mt-4">
-              <Link href={isAuthenticated ? '/properties/new' : '/auth/register'}>
-                <button className="w-full sm:w-auto px-8 py-4 bg-white text-blue-600 rounded-lg shadow-lg hover:shadow-xl hover:scale-105 transition-all duration-200 flex items-center justify-center gap-2 font-semibold text-lg">
-                  <Plus className="h-6 w-6" />
-                  {t('footer.postListing')}
-                </button>
-              </Link>
-            </div>
-
-            {/* Quick Links */}
-            <div className="mt-6 flex flex-wrap justify-center gap-2">
+            {/* Quick City Links */}
+            <div className="mt-4 flex flex-wrap justify-center gap-2">
               {CITY_KEYS.map((cityKey) => (
                 <Link
                   key={cityKey}
                   href={`/properties?city=${encodeURIComponent(CITY_NAME_MAP[cityKey])}`}
-                  className="px-4 py-2 min-h-[44px] flex items-center bg-white/20 hover:bg-white/30 border-2 border-white/30 hover:border-white/50 rounded-full text-sm md:text-base font-medium transition-all"
+                  className="px-3 py-1.5 min-h-[36px] flex items-center bg-white/20 hover:bg-white/30 border border-white/30 hover:border-white/50 rounded-full text-xs md:text-sm font-medium transition-all"
                 >
                   {t(`cities.${cityKey}` as any)}
                 </Link>
@@ -184,35 +161,60 @@ export default function Home() {
         </div>
       </section>
 
-      {/* Featured Properties */}
+      {/* Могут подойти - Cian Style Recommendations */}
       {featuredProperties.length > 0 && (
-        <section className="py-16">
+        <section className="py-6 md:py-12 bg-gray-50">
           <div className="container mx-auto px-4">
-            <div className="flex items-center justify-between mb-8">
-              <div>
-                <h2 className="text-2xl font-bold mb-1">{t('featuredTitle')}</h2>
-                <p className="text-gray-600">{t('featuredSubtitle')}</p>
-              </div>
-              <Link href="/properties?featured=true">
-                <Button variant="ghost">
-                  {t('viewAll')}
-                  <ChevronRight className="h-4 w-4 ml-1" />
-                </Button>
-              </Link>
-            </div>
-            <div className="grid grid-cols-1 md:grid-cols-2 lg:grid-cols-3 gap-6">
+            <h2 className="text-xl md:text-2xl font-bold mb-4">Могут подойти</h2>
+
+            {/* 2-column grid on mobile, 4-column on desktop */}
+            <div className="grid grid-cols-2 lg:grid-cols-4 gap-3 md:gap-4">
               {featuredProperties.map((property) => (
-                <Link key={property.id} href={`/properties/${property.id}`}>
-                  <PropertyCard
-                    title={property.title}
-                    price={property.price}
-                    listingType={property.listingType}
-                    address={`${property.address}, ${property.city}`}
-                    bedrooms={property.bedrooms ?? undefined}
-                    bathrooms={property.bathrooms ?? undefined}
-                    area={property.area}
-                    imageUrl={property.images?.[0]?.url}
-                  />
+                <Link key={property.id} href={`/properties/${property.id}`} className="block">
+                  <div className="bg-white rounded-lg overflow-hidden shadow-sm hover:shadow-md transition-shadow">
+                    {/* Property Image with Heart Icon */}
+                    <div className="relative aspect-[4/3] bg-gray-200">
+                      {property.images?.[0]?.url ? (
+                        <img
+                          src={property.images[0].url}
+                          alt={property.title}
+                          className="w-full h-full object-cover"
+                        />
+                      ) : (
+                        <div className="w-full h-full flex items-center justify-center">
+                          <Building2 className="h-12 w-12 text-gray-400" />
+                        </div>
+                      )}
+                      {/* Favorite Heart Icon */}
+                      <button
+                        onClick={(e) => { e.preventDefault(); /* TODO: Add to favorites */ }}
+                        className="absolute top-2 right-2 w-8 h-8 bg-white rounded-full flex items-center justify-center shadow-sm hover:bg-gray-50 transition-colors"
+                      >
+                        <svg className="h-5 w-5 text-gray-600" fill="none" viewBox="0 0 24 24" stroke="currentColor">
+                          <path strokeLinecap="round" strokeLinejoin="round" strokeWidth={2} d="M4.318 6.318a4.5 4.5 0 000 6.364L12 20.364l7.682-7.682a4.5 4.5 0 00-6.364-6.364L12 7.636l-1.318-1.318a4.5 4.5 0 00-6.364 0z" />
+                        </svg>
+                      </button>
+                    </div>
+
+                    {/* Property Info */}
+                    <div className="p-3">
+                      {/* Price - Large & Bold */}
+                      <div className="text-lg md:text-xl font-bold text-gray-900 mb-1">
+                        {property.price.toLocaleString('ru-RU')} {property.listingType === 'RENT_LONG' ? '₽/мес.' : '₽'}
+                      </div>
+
+                      {/* Property Specs - One Line */}
+                      <div className="text-xs md:text-sm text-gray-600 mb-1">
+                        {property.bedrooms && `${property.bedrooms}-комн. `}
+                        {property.propertyType === 'APARTMENT' ? 'кв.' : property.propertyType.toLowerCase()} · {property.area} m²
+                      </div>
+
+                      {/* Address */}
+                      <div className="text-xs text-gray-500 truncate">
+                        {property.address}
+                      </div>
+                    </div>
+                  </div>
                 </Link>
               ))}
             </div>
@@ -287,41 +289,15 @@ export default function Home() {
         </div>
       </section>
 
-      {/* Recent Properties */}
-      {recentProperties.length > 0 && (
-        <section className="py-16">
-          <div className="container mx-auto px-4">
-            <div className="flex items-center justify-between mb-8">
-              <div>
-                <h2 className="text-2xl font-bold mb-1">{t('recentTitle')}</h2>
-                <p className="text-gray-600">{t('recentSubtitle')}</p>
-              </div>
-              <Link href="/properties?sortBy=createdAt&sortOrder=desc">
-                <Button variant="ghost">
-                  {t('viewAllNew')}
-                  <ChevronRight className="h-4 w-4 ml-1" />
-                </Button>
-              </Link>
-            </div>
-            <div className="grid grid-cols-1 md:grid-cols-2 lg:grid-cols-4 gap-6">
-              {recentProperties.map((property) => (
-                <Link key={property.id} href={`/properties/${property.id}`}>
-                  <PropertyCard
-                    title={property.title}
-                    price={property.price}
-                    listingType={property.listingType}
-                    address={`${property.address}, ${property.city}`}
-                    bedrooms={property.bedrooms ?? undefined}
-                    bathrooms={property.bathrooms ?? undefined}
-                    area={property.area}
-                    imageUrl={property.images?.[0]?.url}
-                  />
-                </Link>
-              ))}
-            </div>
-          </div>
-        </section>
-      )}
+      {/* Post Listing CTA - Mobile Sticky */}
+      <div className="sticky bottom-4 z-10 md:hidden px-4">
+        <Link href={isAuthenticated ? '/properties/new' : '/auth/register'}>
+          <button className="w-full px-6 py-3.5 bg-green-600 text-white rounded-lg shadow-lg hover:shadow-xl hover:bg-green-700 transition-all duration-200 flex items-center justify-center gap-2 font-semibold">
+            <Plus className="h-5 w-5" />
+            {t('footer.postListing')}
+          </button>
+        </Link>
+      </div>
 
       {/* Features Section */}
       <section className="py-16 bg-white">

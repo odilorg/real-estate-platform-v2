@@ -6,7 +6,21 @@ import { useRouter } from '@/i18n/routing';
 import { useSearchParams } from 'next/navigation';
 import { useTranslations } from 'next-intl';
 import { PropertyCard, PropertyCardSkeletonGrid, Button, Select, SelectContent, SelectItem, SelectTrigger, SelectValue } from '@repo/ui';
-import { PropertyFiltersModern, PropertyFiltersExtended, type ModernFilterValues, type ExtendedFilterValues, PropertyMap, type PropertyMapMarker, PropertyListItem, PropertyQuickView, SaveSearchModal, SavedSearchesDropdown } from '@/components';
+import { PropertyFiltersModern, PropertyFiltersExtended, type ModernFilterValues, type ExtendedFilterValues, PropertyListItem, PropertyQuickView, SaveSearchModal, SavedSearchesDropdown } from '@/components';
+import dynamic from 'next/dynamic';
+
+// Dynamically import YandexMap to avoid SSR issues
+const YandexMap = dynamic(() => import('@/components/yandex-map'), {
+  ssr: false,
+  loading: () => (
+    <div className="h-[calc(100vh-300px)] min-h-[500px] rounded-lg overflow-hidden bg-gray-100 flex items-center justify-center">
+      <div className="text-gray-500 text-center">
+        <div className="animate-spin rounded-full h-12 w-12 border-b-2 border-blue-500 mx-auto mb-2"></div>
+        <p>Загрузка карты...</p>
+      </div>
+    </div>
+  )
+});
 import { Search, Plus, Loader2, User, LogOut, MapPin, ArrowUpDown, Grid3X3, Map as MapIcon, List, Bookmark, X, Eye, Save } from 'lucide-react';
 import { useAuth } from '@/context/AuthContext';
 
@@ -108,6 +122,24 @@ export default function PropertiesPage() {
   const router = useRouter();
 
   const apiUrl = process.env.NEXT_PUBLIC_API_URL || 'http://localhost:3001/api';
+
+  // Initialize view mode from URL
+  useEffect(() => {
+    const viewParam = searchParams?.get('view') as ViewMode;
+    console.log('[Properties] =========================');
+    console.log('[Properties] URL searchParams:', searchParams?.toString());
+    console.log('[Properties] View mode from URL:', viewParam);
+    console.log('[Properties] Current viewMode state before set:', viewMode);
+    if (viewParam && ['grid', 'list', 'map', 'split'].includes(viewParam)) {
+      console.log('[Properties] Setting view mode to:', viewParam);
+      setViewMode(viewParam);
+      // Force a re-render to ensure state is updated
+      setTimeout(() => {
+        console.log('[Properties] ViewMode after 100ms delay:', viewMode);
+      }, 100);
+    }
+    console.log('[Properties] =========================');
+  }, [searchParams]);
 
   // Initialize filters from URL query parameters
   useEffect(() => {
@@ -241,7 +273,8 @@ export default function PropertiesPage() {
       searchParams.get('minYearBuilt') ||
       searchParams.get('search');
 
-    if (hasActiveFilters && viewMode === 'grid') {
+    // Only auto-switch to list view if not explicitly set to map
+    if (hasActiveFilters && viewMode === 'grid' && searchParams?.get('view') !== 'map') {
       setViewMode('list');
     }
   }, [searchParams]);
@@ -487,10 +520,15 @@ export default function PropertiesPage() {
       params.set('page', currentPage.toString());
     }
 
+    // View mode (preserve view parameter)
+    if (viewMode && viewMode !== 'grid') {
+      params.set('view', viewMode);
+    }
+
     // Update URL without reloading
     const newURL = params.toString() ? `/properties?${params.toString()}` : '/properties';
     router.replace(newURL, { scroll: false });
-  }, [filters, searchQuery, sortBy, currentPage, router]);
+  }, [filters, searchQuery, sortBy, currentPage, viewMode, router]);
 
   const handleApplyFilters = () => {
     setCurrentPage(1);
@@ -923,9 +961,10 @@ export default function PropertiesPage() {
             )}
 
             {/* Map View */}
+            {console.log('[Properties] About to render map view. viewMode:', viewMode, 'properties length:', properties.length)}
             {viewMode === 'map' && (
               <div className="h-[calc(100vh-300px)] min-h-[500px] rounded-lg overflow-hidden">
-                <PropertyMap
+                <YandexMap
                   properties={properties
                     .filter((p) => p.latitude && p.longitude)
                     .map((p) => ({
@@ -994,7 +1033,7 @@ export default function PropertiesPage() {
 
                 {/* Map */}
                 <div className="w-1/2 rounded-lg overflow-hidden sticky top-0">
-                  <PropertyMap
+                  <YandexMap
                     properties={properties
                       .filter((p) => p.latitude && p.longitude)
                       .map((p) => ({

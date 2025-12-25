@@ -40,6 +40,21 @@
     "createAccountButton": "Создать аккаунт",
     "searchPlaceholder": "Адрес, район...",
     "searchButton": "Найти",
+    "search": {
+      "rent": "Снять",
+      "buy": "Купить",
+      "propertyTypes": {
+        "apartment": "Квартиру",
+        "house": "Дом",
+        "commercial": "Коммерцию",
+        "land": "Участок"
+      },
+      "rooms": "Кол-во комнат",
+      "priceTo": "Цена до",
+      "location": "Ташкент",
+      "onMap": "На карте",
+      "find": "Найти"
+    },
     "cities": {
       "tashkent": "Ташкент",
       "samarkand": "Самарканд",

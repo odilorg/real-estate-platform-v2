@@ -1,0 +1,820 @@
+import { Test, TestingModule } from '@nestjs/testing';
+import {
+  NotFoundException,
+  ForbiddenException,
+} from '@nestjs/common';
+import { TasksService } from './tasks.service';
+import { PrismaService } from '../../../common/prisma/prisma.service';
+import { TaskStatus, TaskPriority, TaskType, Currency } from '@repo/database';
+
+// Extended mock PrismaService with Developer CRM models
+const mockPrismaService = {
+  developerTask: {
+    create: jest.fn(),
+    findUnique: jest.fn(),
+    findFirst: jest.fn(),
+    findMany: jest.fn(),
+    update: jest.fn(),
+    delete: jest.fn(),
+    count: jest.fn(),
+  },
+  developerMember: {
+    findFirst: jest.fn(),
+    findUnique: jest.fn(),
+    findMany: jest.fn(),
+  },
+  developerLead: {
+    findFirst: jest.fn(),
+  },
+  developerDeal: {
+    findFirst: jest.fn(),
+  },
+};
+
+describe('TasksService', () => {
+  let service: TasksService;
+  let prisma: typeof mockPrismaService;
+
+  // Mock factory functions
+  const createMockTask = (overrides = {}) => ({
+    id: 'task-123',
+    developerId: 'agency-123',
+    title: 'Follow up call',
+    description: 'Call the client about property viewing',
+    type: 'CALL' as TaskType,
+    priority: 'MEDIUM' as TaskPriority,
+    status: 'PENDING' as TaskStatus,
+    assignedToId: 'member-123',
+    leadId: null,
+    dealId: null,
+    dueDate: new Date('2024-12-25'),
+    completedAt: null,
+    createdAt: new Date('2024-01-01'),
+    updatedAt: new Date('2024-01-01'),
+    ...overrides,
+  });
+
+  const createMockMember = (overrides = {}) => ({
+    id: 'member-123',
+    developerId: 'agency-123',
+    userId: 'user-123',
+    role: 'AGENT',
+    isActive: true,
+    joinedAt: new Date(),
+    createdAt: new Date(),
+    updatedAt: new Date(),
+    user: {
+      firstName: 'Agent',
+      lastName: 'Smith',
+      phone: '+998901234567',
+      email: 'agent@example.com',
+    },
+    ...overrides,
+  });
+
+  const createMockLead = (overrides = {}) => ({
+    id: 'lead-123',
+    developerId: 'agency-123',
+    firstName: 'John',
+    lastName: 'Doe',
+    phone: '+998909876543',
+    email: 'john@example.com',
+    ...overrides,
+  });
+
+  const createMockDeal = (overrides = {}) => ({
+    id: 'deal-123',
+    developerId: 'agency-123',
+    dealValue: 100000,
+    currency: Currency.YE,
+    stage: 'NEGOTIATION',
+    status: 'ACTIVE',
+    ...overrides,
+  });
+
+  beforeEach(async () => {
+    // Reset all mocks
+    Object.values(mockPrismaService).forEach((service) => {
+      Object.values(service).forEach((method) => {
+        if (jest.isMockFunction(method)) {
+          method.mockReset();
+        }
+      });
+    });
+
+    const module: TestingModule = await Test.createTestingModule({
+      providers: [
+        TasksService,
+        {
+          provide: PrismaService,
+          useValue: mockPrismaService,
+        },
+      ],
+    }).compile();
+
+    service = module.get<TasksService>(TasksService);
+    prisma = mockPrismaService;
+  });
+
+  describe('create', () => {
+    const developerId = 'agency-123';
+    const createDto = {
+      title: 'Call client',
+      description: 'Follow up on property inquiry',
+      type: 'CALL' as TaskType,
+      priority: 'HIGH' as TaskPriority,
+      assignedToId: 'member-123',
+      dueDate: '2024-12-25',
+    };
+
+    it('should create a task successfully', async () => {
+      const mockMember = createMockMember();
+      const mockTask = createMockTask({
+        title: createDto.title,
+        description: createDto.description,
+        assignedTo: mockMember,
+      });
+
+      prisma.developerMember.findFirst.mockResolvedValue(mockMember);
+      prisma.developerTask.create.mockResolvedValue(mockTask);
+
+      const result = await service.create(developerId, createDto);
+
+      expect(result).toEqual(mockTask);
+      expect(prisma.developerMember.findFirst).toHaveBeenCalledWith({
+        where: { id: createDto.assignedToId, developerId },
+      });
+      expect(prisma.developerTask.create).toHaveBeenCalledWith({
+        data: {
+          developerId,
+          title: createDto.title,
+          description: createDto.description,
+          type: createDto.type,
+          priority: createDto.priority,
+          assignedToId: createDto.assignedToId,
+          leadId: undefined,
+          dealId: undefined,
+          dueDate: new Date(createDto.dueDate),
+          status: 'PENDING',
+        },
+        include: expect.objectContaining({
+          assignedTo: expect.any(Object),
+          lead: expect.any(Object),
+          deal: expect.any(Object),
+        }),
+      });
+    });
+
+    it('should create task with default MEDIUM priority', async () => {
+      const dtoWithoutPriority = {
+        ...createDto,
+        priority: undefined,
+      };
+
+      prisma.developerMember.findFirst.mockResolvedValue(createMockMember());
+      prisma.developerTask.create.mockResolvedValue(createMockTask());
+
+      await service.create(developerId, dtoWithoutPriority as any);
+
+      expect(prisma.developerTask.create).toHaveBeenCalledWith(
+        expect.objectContaining({
+          data: expect.objectContaining({
+            priority: 'MEDIUM',
+          }),
+        }),
+      );
+    });
+
+    it('should throw ForbiddenException if assigned member not found', async () => {
+      prisma.developerMember.findFirst.mockResolvedValue(null);
+
+      await expect(service.create(developerId, createDto)).rejects.toThrow(
+        ForbiddenException,
+      );
+      await expect(service.create(developerId, createDto)).rejects.toThrow(
+        'Assigned member not found in this agency',
+      );
+      expect(prisma.developerTask.create).not.toHaveBeenCalled();
+    });
+
+    it('should create task with lead association', async () => {
+      const dtoWithLead = {
+        ...createDto,
+        leadId: 'lead-123',
+      };
+
+      prisma.developerMember.findFirst.mockResolvedValue(createMockMember());
+      prisma.developerLead.findFirst.mockResolvedValue(createMockLead());
+      prisma.developerTask.create.mockResolvedValue(
+        createMockTask({ leadId: 'lead-123' }),
+      );
+
+      await service.create(developerId, dtoWithLead);
+
+      expect(prisma.developerLead.findFirst).toHaveBeenCalledWith({
+        where: { id: dtoWithLead.leadId, developerId },
+      });
+      expect(prisma.developerTask.create).toHaveBeenCalledWith(
+        expect.objectContaining({
+          data: expect.objectContaining({
+            leadId: 'lead-123',
+          }),
+        }),
+      );
+    });
+
+    it('should throw ForbiddenException if lead not found in agency', async () => {
+      const dtoWithLead = {
+        ...createDto,
+        leadId: 'lead-123',
+      };
+
+      prisma.developerMember.findFirst.mockResolvedValue(createMockMember());
+      prisma.developerLead.findFirst.mockResolvedValue(null);
+
+      await expect(service.create(developerId, dtoWithLead)).rejects.toThrow(
+        ForbiddenException,
+      );
+      await expect(service.create(developerId, dtoWithLead)).rejects.toThrow(
+        'Lead not found in this agency',
+      );
+    });
+
+    it('should create task with deal association', async () => {
+      const dtoWithDeal = {
+        ...createDto,
+        dealId: 'deal-123',
+      };
+
+      prisma.developerMember.findFirst.mockResolvedValue(createMockMember());
+      prisma.developerDeal.findFirst.mockResolvedValue(createMockDeal());
+      prisma.developerTask.create.mockResolvedValue(
+        createMockTask({ dealId: 'deal-123' }),
+      );
+
+      await service.create(developerId, dtoWithDeal);
+
+      expect(prisma.developerDeal.findFirst).toHaveBeenCalledWith({
+        where: { id: dtoWithDeal.dealId, developerId },
+      });
+      expect(prisma.developerTask.create).toHaveBeenCalledWith(
+        expect.objectContaining({
+          data: expect.objectContaining({
+            dealId: 'deal-123',
+          }),
+        }),
+      );
+    });
+
+    it('should throw ForbiddenException if deal not found in agency', async () => {
+      const dtoWithDeal = {
+        ...createDto,
+        dealId: 'deal-123',
+      };
+
+      prisma.developerMember.findFirst.mockResolvedValue(createMockMember());
+      prisma.developerDeal.findFirst.mockResolvedValue(null);
+
+      await expect(service.create(developerId, dtoWithDeal)).rejects.toThrow(
+        ForbiddenException,
+      );
+      await expect(service.create(developerId, dtoWithDeal)).rejects.toThrow(
+        'Deal not found in this agency',
+      );
+    });
+
+    it('should set status to PENDING by default', async () => {
+      prisma.developerMember.findFirst.mockResolvedValue(createMockMember());
+      prisma.developerTask.create.mockResolvedValue(createMockTask());
+
+      await service.create(developerId, createDto);
+
+      expect(prisma.developerTask.create).toHaveBeenCalledWith(
+        expect.objectContaining({
+          data: expect.objectContaining({
+            status: 'PENDING',
+          }),
+        }),
+      );
+    });
+  });
+
+  describe('findAll', () => {
+    const developerId = 'agency-123';
+
+    it('should return paginated tasks with default values', async () => {
+      const mockTasks = Array.from({ length: 3 }, (_, i) =>
+        createMockTask({
+          id: `task-${i}`,
+          title: `Task ${i}`,
+        }),
+      );
+
+      prisma.developerTask.findMany.mockResolvedValue(mockTasks);
+      prisma.developerTask.count.mockResolvedValue(50);
+
+      const result = await service.findAll(developerId, {});
+
+      expect(result.tasks).toEqual(mockTasks);
+      expect(result.total).toBe(50);
+      expect(result.skip).toBe(0);
+      expect(result.take).toBe(20);
+      expect(prisma.developerTask.findMany).toHaveBeenCalledWith({
+        where: { developerId },
+        skip: 0,
+        take: 20,
+        orderBy: [{ priority: 'asc' }, { dueDate: 'asc' }],
+        include: expect.objectContaining({
+          assignedTo: expect.any(Object),
+          lead: expect.any(Object),
+          deal: expect.any(Object),
+        }),
+      });
+    });
+
+    it('should handle pagination correctly', async () => {
+      prisma.developerTask.findMany.mockResolvedValue([]);
+      prisma.developerTask.count.mockResolvedValue(100);
+
+      const result = await service.findAll(developerId, {
+        skip: 20,
+        take: 10,
+      });
+
+      expect(result.skip).toBe(20);
+      expect(result.take).toBe(10);
+      expect(prisma.developerTask.findMany).toHaveBeenCalledWith(
+        expect.objectContaining({
+          skip: 20,
+          take: 10,
+        }),
+      );
+    });
+
+    it('should filter by status', async () => {
+      prisma.developerTask.findMany.mockResolvedValue([]);
+      prisma.developerTask.count.mockResolvedValue(0);
+
+      await service.findAll(developerId, { status: 'COMPLETED' as TaskStatus });
+
+      expect(prisma.developerTask.findMany).toHaveBeenCalledWith(
+        expect.objectContaining({
+          where: expect.objectContaining({
+            developerId,
+            status: 'COMPLETED',
+          }),
+        }),
+      );
+    });
+
+    it('should filter by priority', async () => {
+      prisma.developerTask.findMany.mockResolvedValue([]);
+      prisma.developerTask.count.mockResolvedValue(0);
+
+      await service.findAll(developerId, { priority: 'URGENT' as TaskPriority });
+
+      expect(prisma.developerTask.findMany).toHaveBeenCalledWith(
+        expect.objectContaining({
+          where: expect.objectContaining({
+            developerId,
+            priority: 'URGENT',
+          }),
+        }),
+      );
+    });
+
+    it('should filter by type', async () => {
+      prisma.developerTask.findMany.mockResolvedValue([]);
+      prisma.developerTask.count.mockResolvedValue(0);
+
+      await service.findAll(developerId, { type: 'CALL' as TaskType });
+
+      expect(prisma.developerTask.findMany).toHaveBeenCalledWith(
+        expect.objectContaining({
+          where: expect.objectContaining({
+            developerId,
+            type: 'CALL',
+          }),
+        }),
+      );
+    });
+
+    it('should filter by assignedToId', async () => {
+      prisma.developerTask.findMany.mockResolvedValue([]);
+      prisma.developerTask.count.mockResolvedValue(0);
+
+      await service.findAll(developerId, { assignedToId: 'member-123' });
+
+      expect(prisma.developerTask.findMany).toHaveBeenCalledWith(
+        expect.objectContaining({
+          where: expect.objectContaining({
+            developerId,
+            assignedToId: 'member-123',
+          }),
+        }),
+      );
+    });
+
+    it('should filter by leadId', async () => {
+      prisma.developerTask.findMany.mockResolvedValue([]);
+      prisma.developerTask.count.mockResolvedValue(0);
+
+      await service.findAll(developerId, { leadId: 'lead-123' });
+
+      expect(prisma.developerTask.findMany).toHaveBeenCalledWith(
+        expect.objectContaining({
+          where: expect.objectContaining({
+            developerId,
+            leadId: 'lead-123',
+          }),
+        }),
+      );
+    });
+
+    it('should filter by dealId', async () => {
+      prisma.developerTask.findMany.mockResolvedValue([]);
+      prisma.developerTask.count.mockResolvedValue(0);
+
+      await service.findAll(developerId, { dealId: 'deal-123' });
+
+      expect(prisma.developerTask.findMany).toHaveBeenCalledWith(
+        expect.objectContaining({
+          where: expect.objectContaining({
+            developerId,
+            dealId: 'deal-123',
+          }),
+        }),
+      );
+    });
+
+    it('should search across title and description', async () => {
+      prisma.developerTask.findMany.mockResolvedValue([]);
+      prisma.developerTask.count.mockResolvedValue(0);
+
+      await service.findAll(developerId, { search: 'follow up' });
+
+      expect(prisma.developerTask.findMany).toHaveBeenCalledWith(
+        expect.objectContaining({
+          where: expect.objectContaining({
+            developerId,
+            OR: [
+              { title: { contains: 'follow up', mode: 'insensitive' } },
+              { description: { contains: 'follow up', mode: 'insensitive' } },
+            ],
+          }),
+        }),
+      );
+    });
+
+    it('should combine multiple filters', async () => {
+      prisma.developerTask.findMany.mockResolvedValue([]);
+      prisma.developerTask.count.mockResolvedValue(0);
+
+      await service.findAll(developerId, {
+        status: 'PENDING' as TaskStatus,
+        priority: 'HIGH' as TaskPriority,
+        type: 'CALL' as TaskType,
+        assignedToId: 'member-123',
+      });
+
+      expect(prisma.developerTask.findMany).toHaveBeenCalledWith(
+        expect.objectContaining({
+          where: expect.objectContaining({
+            developerId,
+            status: 'PENDING',
+            priority: 'HIGH',
+            type: 'CALL',
+            assignedToId: 'member-123',
+          }),
+        }),
+      );
+    });
+
+    it('should order by priority (asc) then dueDate (asc)', async () => {
+      prisma.developerTask.findMany.mockResolvedValue([]);
+      prisma.developerTask.count.mockResolvedValue(0);
+
+      await service.findAll(developerId, {});
+
+      expect(prisma.developerTask.findMany).toHaveBeenCalledWith(
+        expect.objectContaining({
+          orderBy: [{ priority: 'asc' }, { dueDate: 'asc' }],
+        }),
+      );
+    });
+
+    it('should return empty array when no tasks exist', async () => {
+      prisma.developerTask.findMany.mockResolvedValue([]);
+      prisma.developerTask.count.mockResolvedValue(0);
+
+      const result = await service.findAll(developerId, {});
+
+      expect(result.tasks).toEqual([]);
+      expect(result.total).toBe(0);
+    });
+  });
+
+  describe('findOne', () => {
+    const developerId = 'agency-123';
+    const taskId = 'task-123';
+
+    it('should return task with details', async () => {
+      const mockTask = createMockTask({
+        id: taskId,
+        developerId,
+        assignedTo: createMockMember(),
+        lead: createMockLead(),
+        deal: createMockDeal(),
+      });
+
+      prisma.developerTask.findUnique.mockResolvedValue(mockTask);
+
+      const result = await service.findOne(developerId, taskId);
+
+      expect(result).toEqual(mockTask);
+      expect(prisma.developerTask.findUnique).toHaveBeenCalledWith({
+        where: { id: taskId },
+        include: expect.objectContaining({
+          assignedTo: expect.any(Object),
+          lead: expect.any(Object),
+          deal: expect.any(Object),
+        }),
+      });
+    });
+
+    it('should throw NotFoundException if task does not exist', async () => {
+      prisma.developerTask.findUnique.mockResolvedValue(null);
+
+      await expect(service.findOne(developerId, taskId)).rejects.toThrow(
+        NotFoundException,
+      );
+      await expect(service.findOne(developerId, taskId)).rejects.toThrow(
+        'Task not found',
+      );
+    });
+
+    it('should throw ForbiddenException if task belongs to different agency', async () => {
+      const mockTask = createMockTask({
+        id: taskId,
+        developerId: 'different-agency',
+      });
+
+      prisma.developerTask.findUnique.mockResolvedValue(mockTask);
+
+      await expect(service.findOne(developerId, taskId)).rejects.toThrow(
+        ForbiddenException,
+      );
+      await expect(service.findOne(developerId, taskId)).rejects.toThrow(
+        'Task does not belong to this agency',
+      );
+    });
+  });
+
+  describe('update', () => {
+    const developerId = 'agency-123';
+    const taskId = 'task-123';
+    const updateDto = {
+      title: 'Updated task',
+      description: 'Updated description',
+      status: 'IN_PROGRESS' as TaskStatus,
+      priority: 'URGENT' as TaskPriority,
+    };
+
+    it('should update task successfully', async () => {
+      const existingTask = createMockTask({ id: taskId, developerId });
+      const updatedTask = createMockTask({
+        id: taskId,
+        developerId,
+        ...updateDto,
+      });
+
+      prisma.developerTask.findUnique.mockResolvedValue(existingTask);
+      prisma.developerTask.update.mockResolvedValue(updatedTask);
+
+      const result = await service.update(developerId, taskId, updateDto);
+
+      expect(result).toEqual(updatedTask);
+      expect(prisma.developerTask.update).toHaveBeenCalledWith({
+        where: { id: taskId },
+        data: expect.objectContaining(updateDto),
+        include: expect.objectContaining({
+          assignedTo: expect.any(Object),
+          lead: expect.any(Object),
+          deal: expect.any(Object),
+        }),
+      });
+    });
+
+    it('should set completedAt when status changes to COMPLETED', async () => {
+      const existingTask = createMockTask({
+        id: taskId,
+        developerId,
+        status: 'PENDING' as TaskStatus,
+      });
+
+      prisma.developerTask.findUnique.mockResolvedValue(existingTask);
+      prisma.developerTask.update.mockResolvedValue(createMockTask());
+
+      await service.update(developerId, taskId, {
+        status: 'COMPLETED' as TaskStatus,
+      });
+
+      expect(prisma.developerTask.update).toHaveBeenCalledWith(
+        expect.objectContaining({
+          data: expect.objectContaining({
+            status: 'COMPLETED',
+            completedAt: expect.any(Date),
+          }),
+        }),
+      );
+    });
+
+    it('should clear completedAt when status changes from COMPLETED', async () => {
+      const existingTask = createMockTask({
+        id: taskId,
+        developerId,
+        status: 'COMPLETED' as TaskStatus,
+        completedAt: new Date(),
+      });
+
+      prisma.developerTask.findUnique.mockResolvedValue(existingTask);
+      prisma.developerTask.update.mockResolvedValue(createMockTask());
+
+      await service.update(developerId, taskId, {
+        status: 'IN_PROGRESS' as TaskStatus,
+      });
+
+      expect(prisma.developerTask.update).toHaveBeenCalledWith(
+        expect.objectContaining({
+          data: expect.objectContaining({
+            status: 'IN_PROGRESS',
+            completedAt: null,
+          }),
+        }),
+      );
+    });
+
+    it('should convert dueDate string to Date', async () => {
+      const existingTask = createMockTask({ id: taskId, developerId });
+
+      prisma.developerTask.findUnique.mockResolvedValue(existingTask);
+      prisma.developerTask.update.mockResolvedValue(createMockTask());
+
+      await service.update(developerId, taskId, {
+        dueDate: '2024-12-31' as any,
+      });
+
+      expect(prisma.developerTask.update).toHaveBeenCalledWith(
+        expect.objectContaining({
+          data: expect.objectContaining({
+            dueDate: new Date('2024-12-31'),
+          }),
+        }),
+      );
+    });
+
+    it('should verify new assignee belongs to agency', async () => {
+      const existingTask = createMockTask({ id: taskId, developerId });
+      const newMember = createMockMember({ id: 'member-456' });
+
+      prisma.developerTask.findUnique.mockResolvedValue(existingTask);
+      prisma.developerMember.findFirst.mockResolvedValue(newMember);
+      prisma.developerTask.update.mockResolvedValue(createMockTask());
+
+      await service.update(developerId, taskId, {
+        assignedToId: 'member-456',
+      });
+
+      expect(prisma.developerMember.findFirst).toHaveBeenCalledWith({
+        where: { id: 'member-456', developerId },
+      });
+    });
+
+    it('should throw ForbiddenException if new assignee not found', async () => {
+      const existingTask = createMockTask({ id: taskId, developerId });
+
+      prisma.developerTask.findUnique.mockResolvedValue(existingTask);
+      prisma.developerMember.findFirst.mockResolvedValue(null);
+
+      await expect(
+        service.update(developerId, taskId, {
+          assignedToId: 'member-456',
+        }),
+      ).rejects.toThrow(ForbiddenException);
+      await expect(
+        service.update(developerId, taskId, {
+          assignedToId: 'member-456',
+        }),
+      ).rejects.toThrow('Assigned member not found in this agency');
+    });
+
+    it('should handle partial updates', async () => {
+      const existingTask = createMockTask({ id: taskId, developerId });
+
+      prisma.developerTask.findUnique.mockResolvedValue(existingTask);
+      prisma.developerTask.update.mockResolvedValue(createMockTask());
+
+      await service.update(developerId, taskId, { title: 'New title only' });
+
+      expect(prisma.developerTask.update).toHaveBeenCalledWith(
+        expect.objectContaining({
+          data: expect.objectContaining({
+            title: 'New title only',
+          }),
+        }),
+      );
+    });
+  });
+
+  describe('remove', () => {
+    const developerId = 'agency-123';
+    const taskId = 'task-123';
+
+    it('should delete task successfully', async () => {
+      const mockTask = createMockTask({ id: taskId, developerId });
+
+      prisma.developerTask.findUnique.mockResolvedValue(mockTask);
+      prisma.developerTask.delete.mockResolvedValue(mockTask);
+
+      const result = await service.remove(developerId, taskId);
+
+      expect(result).toEqual({ success: true });
+      expect(prisma.developerTask.delete).toHaveBeenCalledWith({
+        where: { id: taskId },
+      });
+    });
+
+    it('should verify task exists before deleting', async () => {
+      prisma.developerTask.findUnique.mockResolvedValue(null);
+
+      await expect(service.remove(developerId, taskId)).rejects.toThrow(
+        NotFoundException,
+      );
+      expect(prisma.developerTask.delete).not.toHaveBeenCalled();
+    });
+
+    it('should verify task belongs to agency before deleting', async () => {
+      const mockTask = createMockTask({
+        id: taskId,
+        developerId: 'different-agency',
+      });
+
+      prisma.developerTask.findUnique.mockResolvedValue(mockTask);
+
+      await expect(service.remove(developerId, taskId)).rejects.toThrow(
+        ForbiddenException,
+      );
+      expect(prisma.developerTask.delete).not.toHaveBeenCalled();
+    });
+  });
+
+  describe('getStats', () => {
+    const developerId = 'agency-123';
+
+    it('should return task statistics', async () => {
+      prisma.developerTask.count.mockResolvedValueOnce(100); // total
+      prisma.developerTask.count.mockResolvedValueOnce(30); // pending
+      prisma.developerTask.count.mockResolvedValueOnce(20); // in progress
+      prisma.developerTask.count.mockResolvedValueOnce(50); // completed
+      prisma.developerTask.count.mockResolvedValueOnce(10); // overdue
+
+      const result = await service.getStats(developerId);
+
+      expect(result).toEqual({
+        totalTasks: 100,
+        pendingTasks: 30,
+        inProgressTasks: 20,
+        completedTasks: 50,
+        overdueTasks: 10,
+      });
+    });
+
+    it('should count overdue tasks correctly', async () => {
+      prisma.developerTask.count.mockResolvedValue(0);
+
+      await service.getStats(developerId);
+
+      // Last call should be for overdue tasks
+      const lastCall = prisma.developerTask.count.mock.calls[4][0];
+      expect(lastCall.where).toMatchObject({
+        developerId,
+        status: { in: ['PENDING', 'IN_PROGRESS'] },
+        dueDate: { lt: expect.any(Date) },
+      });
+    });
+
+    it('should return zero stats when no tasks exist', async () => {
+      prisma.developerTask.count.mockResolvedValue(0);
+
+      const result = await service.getStats(developerId);
+
+      expect(result).toEqual({
+        totalTasks: 0,
+        pendingTasks: 0,
+        inProgressTasks: 0,
+        completedTasks: 0,
+        overdueTasks: 0,
+      });
+    });
+  });
+});

@@ -1,0 +1,43 @@
+<!DOCTYPE html>
+<html>
+<head>
+    <title>Test Yandex Maps API</title>
+    <meta charset="utf-8">
+    <script src="https://api-maps.yandex.ru/2.1/?apikey=c225f9dd-d250-475a-9053-2e02e1ccf546&lang=en_US" type="text/javascript"></script>
+    <style>
+        #map {
+            width: 600px;
+            height: 400px;
+        }
+    </style>
+</head>
+<body>
+    <h1>Yandex Maps API Test</h1>
+    <div id="map"></div>
+    <div id="status">Loading...</div>
+
+    <script type="text/javascript">
+        ymaps.ready(function() {
+            try {
+                var myMap = new ymaps.Map("map", {
+                    center: [41.2995, 69.2401], // Tashkent coordinates
+                    zoom: 10
+                });
+
+                var placemark = new ymaps.Placemark([41.2995, 69.2401], {
+                    hintContent: 'Tashkent',
+                    balloonContent: 'Capital of Uzbekistan'
+                });
+
+                myMap.geoObjects.add(placemark);
+
+                document.getElementById('status').innerHTML = '✅ API key is working! Map loaded successfully.';
+                console.log('Yandex Maps API key is valid and working');
+            } catch (error) {
+                document.getElementById('status').innerHTML = '❌ Error: ' + error.message;
+                console.error('Yandex Maps API error:', error);
+            }
+        });
+    </script>
+</body>
+</html>

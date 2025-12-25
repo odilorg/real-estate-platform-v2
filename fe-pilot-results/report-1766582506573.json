@@ -1,0 +1,304 @@
+{
+  "scenario": "Test Property Detail Page Map",
+  "status": "passed",
+  "duration": 5342,
+  "startTime": 1766582501231,
+  "endTime": 1766582506573,
+  "steps": [
+    {
+      "step": 1,
+      "action": {
+        "action": "wait",
+        "duration": 3000,
+        "description": "Wait for page to load"
+      },
+      "status": "success",
+      "observations": {
+        "timestamp": 1766582504419,
+        "stepNumber": 1,
+        "action": {
+          "action": "wait",
+          "duration": 3000,
+          "description": "Wait for page to load"
+        },
+        "consoleLogs": [],
+        "newConsoleLogs": [],
+        "networkRequests": [],
+        "newNetworkRequests": [],
+        "domState": {
+          "url": "about:blank",
+          "title": "",
+          "visibleText": [],
+          "buttons": [],
+          "inputs": [],
+          "links": [],
+          "interactiveElementsSummary": {
+            "totalButtons": 0,
+            "totalInputs": 0,
+            "totalLinks": 0,
+            "keyActions": [],
+            "formStatus": "no-form"
+          },
+          "dropdowns": [],
+          "forms": [],
+          "datePickers": [],
+          "modals": [],
+          "loadingIndicators": []
+        },
+        "errors": [],
+        "performance": {
+          "pageLoadTime": 44,
+          "domContentLoaded": 41
+        },
+        "urlBefore": "about:blank",
+        "urlAfter": "about:blank",
+        "urlChanged": false
+      },
+      "duration": 3020,
+      "retryCount": 0
+    },
+    {
+      "step": 2,
+      "action": {
+        "action": "scroll",
+        "direction": "down",
+        "amount": 800,
+        "description": "Scroll to map section"
+      },
+      "status": "success",
+      "observations": {
+        "timestamp": 1766582504440,
+        "stepNumber": 2,
+        "action": {
+          "action": "scroll",
+          "direction": "down",
+          "amount": 800,
+          "description": "Scroll to map section"
+        },
+        "consoleLogs": [],
+        "newConsoleLogs": [],
+        "networkRequests": [],
+        "newNetworkRequests": [],
+        "domState": {
+          "url": "about:blank",
+          "title": "",
+          "visibleText": [],
+          "buttons": [],
+          "inputs": [],
+          "links": [],
+          "interactiveElementsSummary": {
+            "totalButtons": 0,
+            "totalInputs": 0,
+            "totalLinks": 0,
+            "keyActions": [],
+            "formStatus": "no-form"
+          },
+          "dropdowns": [],
+          "forms": [],
+          "datePickers": [],
+          "modals": [],
+          "loadingIndicators": []
+        },
+        "errors": [],
+        "performance": {
+          "pageLoadTime": 44,
+          "domContentLoaded": 41
+        },
+        "urlBefore": "about:blank",
+        "urlAfter": "about:blank",
+        "urlChanged": false
+      },
+      "duration": 15,
+      "retryCount": 0
+    },
+    {
+      "step": 3,
+      "action": {
+        "action": "wait",
+        "duration": 2000,
+        "description": "Wait for map to load"
+      },
+      "status": "success",
+      "observations": {
+        "timestamp": 1766582506453,
+        "stepNumber": 3,
+        "action": {
+          "action": "wait",
+          "duration": 2000,
+          "description": "Wait for map to load"
+        },
+        "consoleLogs": [],
+        "newConsoleLogs": [],
+        "networkRequests": [],
+        "newNetworkRequests": [],
+        "domState": {
+          "url": "about:blank",
+          "title": "",
+          "visibleText": [],
+          "buttons": [],
+          "inputs": [],
+          "links": [],
+          "interactiveElementsSummary": {
+            "totalButtons": 0,
+            "totalInputs": 0,
+            "totalLinks": 0,
+            "keyActions": [],
+            "formStatus": "no-form"
+          },
+          "dropdowns": [],
+          "forms": [],
+          "datePickers": [],
+          "modals": [],
+          "loadingIndicators": []
+        },
+        "errors": [],
+        "performance": {
+          "pageLoadTime": 44,
+          "domContentLoaded": 41
+        },
+        "urlBefore": "about:blank",
+        "urlAfter": "about:blank",
+        "urlChanged": false
+      },
+      "duration": 2006,
+      "retryCount": 0
+    },
+    {
+      "step": 4,
+      "action": {
+        "action": "screenshot",
+        "filename": "property-detail-map.png",
+        "description": "Capture map section"
+      },
+      "status": "success",
+      "observations": {
+        "timestamp": 1766582506458,
+        "stepNumber": 4,
+        "action": {
+          "action": "screenshot",
+          "filename": "property-detail-map.png",
+          "description": "Capture map section"
+        },
+        "screenshot": "/var/www/realestate-staging/fe-pilot-results/screenshots/step-4-1766582506458.png",
+        "consoleLogs": [],
+        "newConsoleLogs": [],
+        "networkRequests": [],
+        "newNetworkRequests": [],
+        "domState": {
+          "url": "about:blank",
+          "title": "",
+          "visibleText": [],
+          "buttons": [],
+          "inputs": [],
+          "links": [],
+          "interactiveElementsSummary": {
+            "totalButtons": 0,
+            "totalInputs": 0,
+            "totalLinks": 0,
+            "keyActions": [],
+            "formStatus": "no-form"
+          },
+          "dropdowns": [],
+          "forms": [],
+          "datePickers": [],
+          "modals": [],
+          "loadingIndicators": []
+        },
+        "errors": [],
+        "performance": {
+          "pageLoadTime": 44,
+          "domContentLoaded": 41
+        },
+        "urlBefore": "about:blank",
+        "urlAfter": "about:blank",
+        "urlChanged": false
+      },
+      "duration": 55,
+      "retryCount": 0
+    },
+    {
+      "step": 5,
+      "action": {
+        "action": "evaluate",
+        "script": "return {\n  mapVisible: !!document.querySelector('.ymaps-2-1-79-map'),\n  yandexLoaded: !!window.ymaps,\n  propertyTitle: document.querySelector('h1')?.textContent || 'Not found'\n}\n",
+        "description": "Check if Yandex Map is loaded"
+      },
+      "status": "success",
+      "observations": {
+        "timestamp": 1766582506513,
+        "stepNumber": 5,
+        "action": {
+          "action": "evaluate",
+          "script": "return {\n  mapVisible: !!document.querySelector('.ymaps-2-1-79-map'),\n  yandexLoaded: !!window.ymaps,\n  propertyTitle: document.querySelector('h1')?.textContent || 'Not found'\n}\n",
+          "description": "Check if Yandex Map is loaded"
+        },
+        "consoleLogs": [],
+        "newConsoleLogs": [],
+        "networkRequests": [],
+        "newNetworkRequests": [],
+        "domState": {
+          "url": "about:blank",
+          "title": "",
+          "visibleText": [],
+          "buttons": [],
+          "inputs": [],
+          "links": [],
+          "interactiveElementsSummary": {
+            "totalButtons": 0,
+            "totalInputs": 0,
+            "totalLinks": 0,
+            "keyActions": [],
+            "formStatus": "no-form"
+          },
+          "dropdowns": [],
+          "forms": [],
+          "datePickers": [],
+          "modals": [],
+          "loadingIndicators": []
+        },
+        "errors": [],
+        "performance": {
+          "pageLoadTime": 44,
+          "domContentLoaded": 41
+        },
+        "urlBefore": "about:blank",
+        "urlAfter": "about:blank",
+        "urlChanged": false
+      },
+      "duration": 6,
+      "retryCount": 0
+    }
+  ],
+  "summary": {
+    "totalSteps": 5,
+    "passed": 5,
+    "failed": 0,
+    "warnings": 0,
+    "skipped": 0,
+    "bugsFound": 0,
+    "bugsFixed": 0,
+    "screenshots": [
+      "/var/www/realestate-staging/fe-pilot-results/screenshots/step-4-1766582506458.png"
+    ],
+    "consoleErrors": 0,
+    "networkErrors": 0,
+    "validationErrors": 0,
+    "assertionsPassed": 0,
+    "assertionsFailed": 0,
+    "retriedSteps": 0
+  },
+  "errorSummary": {
+    "critical": {
+      "count": 0,
+      "items": []
+    },
+    "warning": {
+      "count": 0,
+      "items": []
+    },
+    "info": {
+      "count": 0,
+      "items": []
+    }
+  }
+}

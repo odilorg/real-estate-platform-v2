@@ -1,6 +1,6 @@
 "use client";
 
-import { YandexMap } from "./yandex-map";
+import YandexMap from "./yandex-map";
 import { useEffect, useState } from "react";
 
 interface PropertyDetailMapProps {
@@ -42,76 +42,26 @@ export function PropertyDetailMap({
       .catch((err) => console.error("Error fetching nearby metro:", err));
   }, [latitude, longitude]);
 
-  const handleMapLoad = (map: any) => {
-    const ymaps = (window as any).ymaps;
-    if (!ymaps) return;
-
-    // Add property marker
-    const propertyMarker = new ymaps.Placemark(
-      [latitude, longitude],
-      {
-        balloonContentHeader: title,
-        balloonContentBody: "<p>Расположение объекта</p>",
-      },
-      {
-        preset: "islands#redHomeIcon",
-      }
-    );
-    map.geoObjects.add(propertyMarker);
-
-    // Add nearby metro markers
-    nearbyMetro.forEach((station) => {
-      const lineColor = LINE_COLORS[station.line as keyof typeof LINE_COLORS] || "#6B7280";
-      const distanceKm = (station.distance / 1000).toFixed(1);
-
-      const placemark = new ymaps.Placemark(
-        [station.latitude, station.longitude],
-        {
-          balloonContentHeader: locale === "uz" ? station.nameUz : station.nameRu,
-          balloonContentBody: `
-            <div>
-              <p style="color: ${lineColor}; font-weight: bold; margin: 4px 0;">Станция метро</p>
-              <p style="font-size: 14px; color: #666; margin: 4px 0;">Расстояние: ~${distanceKm} км</p>
-            </div>
-          `,
-        },
-        {
-          preset: "islands#circleDotIcon",
-          iconColor: lineColor,
-        }
-      );
-
-      map.geoObjects.add(placemark);
-
-      // Draw line from property to metro
-      const polyline = new ymaps.Polyline(
-        [[latitude, longitude], [station.latitude, station.longitude]],
-        {},
-        {
-          strokeColor: lineColor,
-          strokeWidth: 2,
-          strokeOpacity: 0.5,
-          strokeStyle: "dash",
-        }
-      );
-      map.geoObjects.add(polyline);
-    });
-
-    // Fit bounds to show all markers
-    if (nearbyMetro.length > 0) {
-      map.setBounds(map.geoObjects.getBounds(), { checkZoomRange: true, zoomMargin: 100 });
-    }
-  };
+  // Note: Metro station markers functionality removed temporarily
+  // Will be added back when YandexMap component supports custom markers
 
   return (
     <div className="space-y-4">
-      <YandexMap
-        center={[latitude, longitude]}
-        zoom={14}
-        height="450px"
-        className="rounded-lg shadow-lg"
-        onLoad={handleMapLoad}
-      />
+      <div style={{ height: '450px' }}>
+        <YandexMap
+          properties={[{
+            id: 'main',
+            title,
+            price: 0,
+            listingType: 'SALE' as const,
+            latitude,
+            longitude,
+          }]}
+          center={[latitude, longitude]}
+          zoom={14}
+          className="rounded-lg shadow-lg"
+        />
+      </div>
 
       {nearbyMetro.length > 0 && (
         <div className="bg-white dark:bg-gray-800 rounded-lg p-4 shadow">

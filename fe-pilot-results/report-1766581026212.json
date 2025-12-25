@@ -1,0 +1,398 @@
+{
+  "scenario": "Test Map Button Navigation",
+  "status": "failed",
+  "duration": 13337,
+  "startTime": 1766581012875,
+  "endTime": 1766581026212,
+  "steps": [
+    {
+      "step": 1,
+      "action": {
+        "action": "wait",
+        "duration": 2000,
+        "description": "Wait for page to load"
+      },
+      "status": "success",
+      "observations": {
+        "timestamp": 1766581015049,
+        "stepNumber": 1,
+        "action": {
+          "action": "wait",
+          "duration": 2000,
+          "description": "Wait for page to load"
+        },
+        "consoleLogs": [],
+        "newConsoleLogs": [],
+        "networkRequests": [],
+        "newNetworkRequests": [],
+        "domState": {
+          "url": "about:blank",
+          "title": "",
+          "visibleText": [],
+          "buttons": [],
+          "inputs": [],
+          "links": [],
+          "interactiveElementsSummary": {
+            "totalButtons": 0,
+            "totalInputs": 0,
+            "totalLinks": 0,
+            "keyActions": [],
+            "formStatus": "no-form"
+          },
+          "dropdowns": [],
+          "forms": [],
+          "datePickers": [],
+          "modals": [],
+          "loadingIndicators": []
+        },
+        "errors": [],
+        "performance": {
+          "pageLoadTime": 39,
+          "domContentLoaded": 37
+        },
+        "urlBefore": "about:blank",
+        "urlAfter": "about:blank",
+        "urlChanged": false
+      },
+      "duration": 2018,
+      "retryCount": 0
+    },
+    {
+      "step": 2,
+      "action": {
+        "action": "screenshot",
+        "filename": "homepage-loaded.png",
+        "description": "Capture initial homepage"
+      },
+      "status": "success",
+      "observations": {
+        "timestamp": 1766581015064,
+        "stepNumber": 2,
+        "action": {
+          "action": "screenshot",
+          "filename": "homepage-loaded.png",
+          "description": "Capture initial homepage"
+        },
+        "screenshot": "/var/www/realestate-staging/fe-pilot-results/screenshots/step-2-1766581015064.png",
+        "consoleLogs": [],
+        "newConsoleLogs": [],
+        "networkRequests": [],
+        "newNetworkRequests": [],
+        "domState": {
+          "url": "about:blank",
+          "title": "",
+          "visibleText": [],
+          "buttons": [],
+          "inputs": [],
+          "links": [],
+          "interactiveElementsSummary": {
+            "totalButtons": 0,
+            "totalInputs": 0,
+            "totalLinks": 0,
+            "keyActions": [],
+            "formStatus": "no-form"
+          },
+          "dropdowns": [],
+          "forms": [],
+          "datePickers": [],
+          "modals": [],
+          "loadingIndicators": []
+        },
+        "errors": [],
+        "performance": {
+          "pageLoadTime": 39,
+          "domContentLoaded": 37
+        },
+        "urlBefore": "about:blank",
+        "urlAfter": "about:blank",
+        "urlChanged": false
+      },
+      "duration": 40,
+      "retryCount": 0
+    },
+    {
+      "step": 3,
+      "action": {
+        "action": "console",
+        "description": "Capture initial console logs"
+      },
+      "status": "success",
+      "observations": {
+        "timestamp": 1766581015104,
+        "stepNumber": 3,
+        "action": {
+          "action": "console",
+          "description": "Capture initial console logs"
+        },
+        "consoleLogs": [],
+        "newConsoleLogs": [],
+        "networkRequests": [],
+        "newNetworkRequests": [],
+        "domState": {
+          "url": "about:blank",
+          "title": "",
+          "visibleText": [],
+          "buttons": [],
+          "inputs": [],
+          "links": [],
+          "interactiveElementsSummary": {
+            "totalButtons": 0,
+            "totalInputs": 0,
+            "totalLinks": 0,
+            "keyActions": [],
+            "formStatus": "no-form"
+          },
+          "dropdowns": [],
+          "forms": [],
+          "datePickers": [],
+          "modals": [],
+          "loadingIndicators": []
+        },
+        "errors": [],
+        "performance": {
+          "pageLoadTime": 39,
+          "domContentLoaded": 37
+        },
+        "urlBefore": "about:blank",
+        "urlAfter": "about:blank",
+        "urlChanged": false
+      },
+      "duration": 6,
+      "retryCount": 0
+    },
+    {
+      "step": 4,
+      "action": {
+        "action": "scroll",
+        "direction": "down",
+        "amount": 200,
+        "description": "Scroll down to see search form"
+      },
+      "status": "success",
+      "observations": {
+        "timestamp": 1766581015114,
+        "stepNumber": 4,
+        "action": {
+          "action": "scroll",
+          "direction": "down",
+          "amount": 200,
+          "description": "Scroll down to see search form"
+        },
+        "consoleLogs": [],
+        "newConsoleLogs": [],
+        "networkRequests": [],
+        "newNetworkRequests": [],
+        "domState": {
+          "url": "about:blank",
+          "title": "",
+          "visibleText": [],
+          "buttons": [],
+          "inputs": [],
+          "links": [],
+          "interactiveElementsSummary": {
+            "totalButtons": 0,
+            "totalInputs": 0,
+            "totalLinks": 0,
+            "keyActions": [],
+            "formStatus": "no-form"
+          },
+          "dropdowns": [],
+          "forms": [],
+          "datePickers": [],
+          "modals": [],
+          "loadingIndicators": []
+        },
+        "errors": [],
+        "performance": {
+          "pageLoadTime": 39,
+          "domContentLoaded": 37
+        },
+        "urlBefore": "about:blank",
+        "urlAfter": "about:blank",
+        "urlChanged": false
+      },
+      "duration": 7,
+      "retryCount": 0
+    },
+    {
+      "step": 5,
+      "action": {
+        "action": "wait",
+        "duration": 1000,
+        "description": "Wait for scroll"
+      },
+      "status": "success",
+      "observations": {
+        "timestamp": 1766581016117,
+        "stepNumber": 5,
+        "action": {
+          "action": "wait",
+          "duration": 1000,
+          "description": "Wait for scroll"
+        },
+        "consoleLogs": [],
+        "newConsoleLogs": [],
+        "networkRequests": [],
+        "newNetworkRequests": [],
+        "domState": {
+          "url": "about:blank",
+          "title": "",
+          "visibleText": [],
+          "buttons": [],
+          "inputs": [],
+          "links": [],
+          "interactiveElementsSummary": {
+            "totalButtons": 0,
+            "totalInputs": 0,
+            "totalLinks": 0,
+            "keyActions": [],
+            "formStatus": "no-form"
+          },
+          "dropdowns": [],
+          "forms": [],
+          "datePickers": [],
+          "modals": [],
+          "loadingIndicators": []
+        },
+        "errors": [],
+        "performance": {
+          "pageLoadTime": 39,
+          "domContentLoaded": 37
+        },
+        "urlBefore": "about:blank",
+        "urlAfter": "about:blank",
+        "urlChanged": false
+      },
+      "duration": 1006,
+      "retryCount": 0
+    },
+    {
+      "step": 6,
+      "action": {
+        "action": "click",
+        "selector": ".grid.grid-cols-3 button:first-child",
+        "description": "Click the map button (first button in 3-column grid)"
+      },
+      "status": "failed",
+      "observations": {
+        "timestamp": 1766581026161,
+        "stepNumber": 6,
+        "action": {
+          "action": "click",
+          "selector": ".grid.grid-cols-3 button:first-child",
+          "description": "Click the map button (first button in 3-column grid)"
+        },
+        "consoleLogs": [],
+        "newConsoleLogs": [],
+        "networkRequests": [],
+        "newNetworkRequests": [],
+        "domState": {
+          "url": "about:blank",
+          "title": "",
+          "visibleText": [],
+          "buttons": [],
+          "inputs": [],
+          "links": [],
+          "interactiveElementsSummary": {
+            "totalButtons": 0,
+            "totalInputs": 0,
+            "totalLinks": 0,
+            "keyActions": [],
+            "formStatus": "no-form"
+          },
+          "dropdowns": [],
+          "forms": [],
+          "datePickers": [],
+          "modals": [],
+          "loadingIndicators": []
+        },
+        "errors": [],
+        "performance": {
+          "pageLoadTime": 39,
+          "domContentLoaded": 37
+        },
+        "urlBefore": "about:blank",
+        "urlAfter": "about:blank",
+        "urlChanged": false
+      },
+      "duration": 10040,
+      "error": "Action failed after 1 attempts: locator.waitFor: Timeout 10000ms exceeded.\nCall log:\n  - waiting for locator('.grid.grid-cols-3 button:first-child').first() to be visible\n",
+      "retryCount": 0
+    },
+    {
+      "step": 7,
+      "action": {
+        "action": "wait",
+        "duration": 3000,
+        "description": "Wait for navigation to complete"
+      },
+      "status": "skipped",
+      "observations": {},
+      "duration": 0
+    },
+    {
+      "step": 8,
+      "action": {
+        "action": "console",
+        "description": "Capture console logs after navigation"
+      },
+      "status": "skipped",
+      "observations": {},
+      "duration": 0
+    },
+    {
+      "step": 9,
+      "action": {
+        "action": "screenshot",
+        "filename": "after-map-click.png",
+        "description": "Capture page after map button click"
+      },
+      "status": "skipped",
+      "observations": {},
+      "duration": 0
+    },
+    {
+      "step": 10,
+      "action": {
+        "action": "evaluate",
+        "script": "return {\n  url: window.location.href,\n  viewModeFromDOM: document.querySelector('[data-viewmode]')?.dataset?.viewmode || 'not found',\n  mapVisible: !!document.querySelector('.leaflet-container'),\n  consoleErrors: window.__errors || []\n}\n",
+        "description": "Check map visibility and URL"
+      },
+      "status": "skipped",
+      "observations": {},
+      "duration": 0
+    }
+  ],
+  "summary": {
+    "totalSteps": 10,
+    "passed": 5,
+    "failed": 1,
+    "warnings": 0,
+    "skipped": 4,
+    "bugsFound": 0,
+    "bugsFixed": 0,
+    "screenshots": [
+      "/var/www/realestate-staging/fe-pilot-results/screenshots/step-2-1766581015064.png"
+    ],
+    "consoleErrors": 0,
+    "networkErrors": 0,
+    "validationErrors": 0,
+    "assertionsPassed": 0,
+    "assertionsFailed": 0,
+    "retriedSteps": 0
+  },
+  "errorSummary": {
+    "critical": {
+      "count": 0,
+      "items": []
+    },
+    "warning": {
+      "count": 0,
+      "items": []
+    },
+    "info": {
+      "count": 0,
+      "items": []
+    }
+  }
+}

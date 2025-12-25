@@ -1,17 +1,26 @@
 import { describe, it, expect, vi, beforeEach, afterEach } from 'vitest';
 import { render, screen, fireEvent, waitFor } from '@testing-library/react';
 import userEvent from '@testing-library/user-event';
-import { Property360Viewer } from '../Property360Viewer';
 
-// Mock next/dynamic to return a simple component
+// IMPORTANT: Mock next/dynamic and next/image BEFORE importing Property360Viewer
+// Otherwise the component will try to use the real implementations
 vi.mock('next/dynamic', () => ({
-  default: () => {
-    // Return a mock PannellumViewer component
-    return function MockPannellumViewer({ imageUrl, onLoad }: { imageUrl: string; onLoad?: () => void }) {
-      // Simulate load after mount
-      setTimeout(() => onLoad?.(), 0);
-      return <div data-testid="pannellum-viewer" data-image-url={imageUrl}>Mock Pannellum Viewer</div>;
+  default: (fn: any, options: any) => {
+    // Return a mock component that renders immediately
+    const MockComponent = ({ imageUrl, onLoad, ...props }: any) => {
+      // Simulate load after mount using useEffect pattern
+      const React = require('react');
+      React.useEffect(() => {
+        if (onLoad) {
+          // Call onLoad asynchronously to simulate real behavior
+          const timer = setTimeout(() => onLoad(), 10);
+          return () => clearTimeout(timer);
+        }
+      }, [onLoad]);
+
+      return <div data-testid="pannellum-viewer" data-image-url={imageUrl} {...props}>Mock Pannellum Viewer</div>;
     };
+    return MockComponent;
   },
 }));
 
@@ -21,6 +30,12 @@ vi.mock('next/image', () => ({
     <img src={src} alt={alt} className={className} {...props} data-testid="next-image" />
   ),
 }));
+
+import { Property360Viewer } from '../Property360Viewer';
+import * as React from 'react';
+
+console.log('Property360Viewer import:', Property360Viewer);
+console.log('Property360Viewer type:', typeof Property360Viewer);
 
 describe('Property360Viewer', () => {
   const mockTours = [
@@ -49,7 +64,33 @@ describe('Property360Viewer', () => {
 
   describe('Empty State', () => {
     it('should display empty state when tours array is empty', () => {
-      render(<Property360Viewer tours={[]} />);
+      // Add error boundary to catch any rendering errors
+      class ErrorBoundary extends React.Component<{ children: React.ReactNode }, { hasError: boolean; error: any }> {
+        constructor(props: any) {
+          super(props);
+          this.state = { hasError: false, error: null };
+        }
+        static getDerivedStateFromError(error: any) {
+          return { hasError: true, error };
+        }
+        componentDidCatch(error: any, errorInfo: any) {
+          console.error('Error boundary caught:', error, errorInfo);
+        }
+        render() {
+          if (this.state.hasError) {
+            return <div>Error: {this.state.error?.message || 'Unknown error'}</div>;
+          }
+          return this.props.children;
+        }
+      }
+
+      const { container, debug } = render(
+        <ErrorBoundary>
+          <Property360Viewer tours={[]} />
+        </ErrorBoundary>
+      );
+      console.log('Empty state HTML:', container.innerHTML);
+      debug();
 
       expect(screen.getByText('No 360° tours available')).toBeInTheDocument();
     });

@@ -1,0 +1,29 @@
+name: Test Property Detail Page Map
+url: https://staging.jahongir-app.uz/properties/cmjgss54s0006jl8g07vhscy3
+viewport: desktop
+steps:
+  - action: wait
+    duration: 3000
+    description: Wait for page to load
+
+  - action: scroll
+    direction: down
+    amount: 800
+    description: Scroll to map section
+
+  - action: wait
+    duration: 2000
+    description: Wait for map to load
+
+  - action: screenshot
+    filename: property-detail-map.png
+    description: Capture map section
+
+  - action: evaluate
+    script: |
+      return {
+        mapVisible: !!document.querySelector('.ymaps-2-1-79-map'),
+        yandexLoaded: !!window.ymaps,
+        propertyTitle: document.querySelector('h1')?.textContent || 'Not found'
+      }
+    description: Check if Yandex Map is loaded

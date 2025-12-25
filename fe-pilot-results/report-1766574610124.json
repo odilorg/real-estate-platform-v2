@@ -1,0 +1,2358 @@
+{
+  "scenario": "Quick Test",
+  "status": "passed",
+  "duration": 3889,
+  "startTime": 1766574606234,
+  "endTime": 1766574610123,
+  "steps": [
+    {
+      "step": 1,
+      "action": {
+        "action": "navigate",
+        "url": "https://staging.jahongir-app.uz/ru",
+        "observe": true
+      },
+      "status": "success",
+      "observations": {
+        "timestamp": 1766574607822,
+        "stepNumber": 1,
+        "action": {
+          "action": "navigate",
+          "url": "https://staging.jahongir-app.uz/ru",
+          "observe": true
+        },
+        "screenshot": "/var/www/realestate-staging/fe-pilot-results/screenshots/step-1-1766574607822.png",
+        "consoleLogs": [
+          {
+            "type": "warning",
+            "text": "ApiClient: No token found for request /auth/me",
+            "timestamp": 1766574606920,
+            "location": "https://staging.jahongir-app.uz/_next/static/chunks/app/%5Blocale%5D/page-ff02974529796f23.js:0",
+            "category": "info",
+            "source": "javascript"
+          },
+          {
+            "type": "error",
+            "text": "Failed to load resource: the server responded with a status of 401 ()",
+            "timestamp": 1766574606937,
+            "location": "https://staging.jahongir-app.uz/api/auth/me:0",
+            "category": "critical",
+            "source": "javascript"
+          },
+          {
+            "type": "error",
+            "text": "AuthContext: Unexpected error Error: Unauthorized\n    at r.request (https://staging.jahongir-app.uz/_next/static/chunks/app/%5Blocale%5D/page-ff02974529796f23.js:1:18642)\n    at async https://staging.jahongir-app.uz/_next/static/chunks/app/%5Blocale%5D/page-ff02974529796f23.js:1:19638",
+            "timestamp": 1766574606945,
+            "location": "https://staging.jahongir-app.uz/_next/static/chunks/app/%5Blocale%5D/page-ff02974529796f23.js:0",
+            "category": "critical",
+            "source": "framework"
+          }
+        ],
+        "newConsoleLogs": [
+          {
+            "type": "warning",
+            "text": "ApiClient: No token found for request /auth/me",
+            "timestamp": 1766574606920,
+            "location": "https://staging.jahongir-app.uz/_next/static/chunks/app/%5Blocale%5D/page-ff02974529796f23.js:0",
+            "category": "info",
+            "source": "javascript"
+          },
+          {
+            "type": "error",
+            "text": "Failed to load resource: the server responded with a status of 401 ()",
+            "timestamp": 1766574606937,
+            "location": "https://staging.jahongir-app.uz/api/auth/me:0",
+            "category": "critical",
+            "source": "javascript"
+          },
+          {
+            "type": "error",
+            "text": "AuthContext: Unexpected error Error: Unauthorized\n    at r.request (https://staging.jahongir-app.uz/_next/static/chunks/app/%5Blocale%5D/page-ff02974529796f23.js:1:18642)\n    at async https://staging.jahongir-app.uz/_next/static/chunks/app/%5Blocale%5D/page-ff02974529796f23.js:1:19638",
+            "timestamp": 1766574606945,
+            "location": "https://staging.jahongir-app.uz/_next/static/chunks/app/%5Blocale%5D/page-ff02974529796f23.js:0",
+            "category": "critical",
+            "source": "framework"
+          }
+        ],
+        "networkRequests": [
+          {
+            "url": "https://staging.jahongir-app.uz/ru",
+            "method": "GET",
+            "status": 307,
+            "statusText": "",
+            "duration": -10.902,
+            "resourceType": "document",
+            "timestamp": 1766574606477
+          },
+          {
+            "url": "https://staging.jahongir-app.uz/",
+            "method": "GET",
+            "status": 200,
+            "statusText": "",
+            "duration": -1.658,
+            "resourceType": "document",
+            "timestamp": 1766574606531
+          },
+          {
+            "url": "https://staging.jahongir-app.uz/_next/static/media/21350d82a1f187e9-s.p.woff2",
+            "method": "GET",
+            "status": 200,
+            "statusText": "",
+            "duration": -1.646,
+            "resourceType": "font",
+            "timestamp": 1766574606611
+          },
+          {
+            "url": "https://staging.jahongir-app.uz/_next/static/css/617dbd189cae90a5.css",
+            "method": "GET",
+            "status": 200,
+            "statusText": "",
+            "duration": -1.552,
+            "resourceType": "stylesheet",
+            "timestamp": 1766574606621
+          },
+          {
+            "url": "https://staging.jahongir-app.uz/_next/static/css/55693049b062c6a3.css",
+            "method": "GET",
+            "status": 200,
+            "statusText": "",
+            "duration": -1.279,
+            "resourceType": "stylesheet",
+            "timestamp": 1766574606630
+          },
+          {
+            "url": "https://staging.jahongir-app.uz/_next/static/media/e4af272ccee01ff0-s.p.woff2",
+            "method": "GET",
+            "status": 200,
+            "statusText": "",
+            "duration": -1.3479999999999999,
+            "resourceType": "font",
+            "timestamp": 1766574606630
+          },
+          {
+            "url": "https://staging.jahongir-app.uz/_next/static/chunks/webpack-2611ca6a2e49e950.js",
+            "method": "GET",
+            "status": 200,
+            "statusText": "",
+            "duration": -8.6,
+            "resourceType": "script",
+            "timestamp": 1766574606709
+          },
+          {
+            "url": "https://staging.jahongir-app.uz/_next/static/chunks/main-app-d9d1ee5bddca147f.js",
+            "method": "GET",
+            "status": 200,
+            "statusText": "",
+            "duration": -25.575,
+            "resourceType": "script",
+            "timestamp": 1766574606709
+          },
+          {
+            "url": "https://staging.jahongir-app.uz/_next/static/chunks/6472-56de742ddb9822dc.js",
+            "method": "GET",
+            "status": 200,
+            "statusText": "",
+            "duration": -25.489,
+            "resourceType": "script",
+            "timestamp": 1766574606709
+          },
+          {
+            "url": "https://staging.jahongir-app.uz/_next/static/chunks/5770-d459f969509decbc.js",
+            "method": "GET",
+            "status": 200,
+            "statusText": "",
+            "duration": -25.385,
+            "resourceType": "script",
+            "timestamp": 1766574606712
+          },
+          {
+            "url": "https://staging.jahongir-app.uz/_next/static/chunks/100-2864c9f5b7e88872.js",
+            "method": "GET",
+            "status": 200,
+            "statusText": "",
+            "duration": -25.639,
+            "resourceType": "script",
+            "timestamp": 1766574606741
+          },
+          {
+            "url": "https://staging.jahongir-app.uz/_next/static/chunks/7282-05bb6cc42c5670df.js",
+            "method": "GET",
+            "status": 200,
+            "statusText": "",
+            "duration": -25.277,
+            "resourceType": "script",
+            "timestamp": 1766574606741
+          },
+          {
+            "url": "https://staging.jahongir-app.uz/_next/static/chunks/ebdb7cc3-5f26106dcae66cdd.js",
+            "method": "GET",
+            "status": 200,
+            "statusText": "",
+            "duration": -25.663,
+            "resourceType": "script",
+            "timestamp": 1766574606742
+          },
+          {
+            "url": "https://staging.jahongir-app.uz/_next/static/chunks/135-738b3002663a3c60.js",
+            "method": "GET",
+            "status": 200,
+            "statusText": "",
+            "duration": -22.176,
+            "resourceType": "script",
+            "timestamp": 1766574606806
+          },
+          {
+            "url": "https://staging.jahongir-app.uz/_next/static/chunks/6742-436af152176d2976.js",
+            "method": "GET",
+            "status": 200,
+            "statusText": "",
+            "duration": -25.141,
+            "resourceType": "script",
+            "timestamp": 1766574606806
+          },
+          {
+            "url": "https://staging.jahongir-app.uz/_next/static/chunks/app/%5Blocale%5D/page-ff02974529796f23.js",
+            "method": "GET",
+            "status": 200,
+            "statusText": "",
+            "duration": -24.699,
+            "resourceType": "script",
+            "timestamp": 1766574606806
+          },
+          {
+            "url": "https://staging.jahongir-app.uz/_next/static/chunks/2-e6a0ec470955461e.js",
+            "method": "GET",
+            "status": 200,
+            "statusText": "",
+            "duration": -24.589,
+            "resourceType": "script",
+            "timestamp": 1766574606806
+          },
+          {
+            "url": "https://staging.jahongir-app.uz/_next/static/chunks/948-eb9975e1cd99d2bb.js",
+            "method": "GET",
+            "status": 200,
+            "statusText": "",
+            "duration": -24.501,
+            "resourceType": "script",
+            "timestamp": 1766574606831
+          },
+          {
+            "url": "https://staging.jahongir-app.uz/_next/static/chunks/2519-cbfd4e19fad8a352.js",
+            "method": "GET",
+            "status": 200,
+            "statusText": "",
+            "duration": -22.337,
+            "resourceType": "script",
+            "timestamp": 1766574606850
+          },
+          {
+            "url": "https://staging.jahongir-app.uz/_next/static/chunks/1882-16530e667c25824f.js",
+            "method": "GET",
+            "status": 200,
+            "statusText": "",
+            "duration": -22.289,
+            "resourceType": "script",
+            "timestamp": 1766574606850
+          },
+          {
+            "url": "https://staging.jahongir-app.uz/_next/static/chunks/fe69a73d-9ec660416ea9aee9.js",
+            "method": "GET",
+            "status": 200,
+            "statusText": "",
+            "duration": -24.658,
+            "resourceType": "script",
+            "timestamp": 1766574606850
+          },
+          {
+            "url": "https://staging.jahongir-app.uz/_next/static/chunks/3543-56dab92bf60fa9c4.js",
+            "method": "GET",
+            "status": 200,
+            "statusText": "",
+            "duration": -25.17,
+            "resourceType": "script",
+            "timestamp": 1766574606850
+          },
+          {
+            "url": "https://staging.jahongir-app.uz/_next/static/chunks/app/%5Blocale%5D/layout-6379bdd531dc37da.js",
+            "method": "GET",
+            "status": 200,
+            "statusText": "",
+            "duration": -23.672,
+            "resourceType": "script",
+            "timestamp": 1766574606860
+          },
+          {
+            "url": "https://staging.jahongir-app.uz/_next/static/media/8e9860b6e62d6359-s.woff2",
+            "method": "GET",
+            "status": 200,
+            "statusText": "",
+            "duration": -1.52,
+            "resourceType": "font",
+            "timestamp": 1766574606867
+          },
+          {
+            "url": "https://staging.jahongir-app.uz/_next/static/chunks/4691-065fea34a8200f80.js",
+            "method": "GET",
+            "status": 200,
+            "statusText": "",
+            "duration": -23.15,
+            "resourceType": "script",
+            "timestamp": 1766574606868
+          },
+          {
+            "url": "https://staging.jahongir-app.uz/_next/static/chunks/5116-0e28c48661d99fd0.js",
+            "method": "GET",
+            "status": 200,
+            "statusText": "",
+            "duration": -23.77,
+            "resourceType": "script",
+            "timestamp": 1766574606873
+          },
+          {
+            "url": "https://staging.jahongir-app.uz/api/auth/me",
+            "method": "GET",
+            "status": 401,
+            "statusText": "",
+            "duration": -1.196,
+            "resourceType": "fetch",
+            "timestamp": 1766574606937,
+            "errorType": "client_error"
+          },
+          {
+            "url": "https://staging.jahongir-app.uz/api/properties/featured?limit=6",
+            "method": "GET",
+            "status": 200,
+            "statusText": "",
+            "duration": -1.267,
+            "resourceType": "fetch",
+            "timestamp": 1766574606948
+          },
+          {
+            "url": "https://staging.jahongir-app.uz/agents?_rsc=1c6ry",
+            "method": "GET",
+            "status": 200,
+            "statusText": "",
+            "duration": -1.776,
+            "resourceType": "fetch",
+            "timestamp": 1766574606965
+          },
+          {
+            "url": "https://staging.jahongir-app.uz/api/properties/recent?limit=8",
+            "method": "GET",
+            "status": 200,
+            "statusText": "",
+            "duration": -1.4020000000000001,
+            "resourceType": "fetch",
+            "timestamp": 1766574606965
+          },
+          {
+            "url": "https://staging.jahongir-app.uz/developers?_rsc=1c6ry",
+            "method": "GET",
+            "status": 200,
+            "statusText": "",
+            "duration": -1.371,
+            "resourceType": "fetch",
+            "timestamp": 1766574606984
+          },
+          {
+            "url": "https://staging.jahongir-app.uz/properties?city=Tashkent&_rsc=1c6ry",
+            "method": "GET",
+            "status": 200,
+            "statusText": "",
+            "duration": -1.264,
+            "resourceType": "fetch",
+            "timestamp": 1766574606989
+          },
+          {
+            "url": "https://staging.jahongir-app.uz/properties/cmj8svze8008pjlcr8m89dg9f?_rsc=1c6ry",
+            "method": "GET",
+            "status": 200,
+            "statusText": "",
+            "duration": -2.666,
+            "resourceType": "fetch",
+            "timestamp": 1766574607013
+          },
+          {
+            "url": "https://staging.jahongir-app.uz/properties/cmj8svzd3006ljlcrdysjvx01?_rsc=1c6ry",
+            "method": "GET",
+            "status": 200,
+            "statusText": "",
+            "duration": -2.427,
+            "resourceType": "fetch",
+            "timestamp": 1766574607022
+          },
+          {
+            "url": "https://staging.jahongir-app.uz/properties/cmj8svzc1004fjlcr5hp11j4t?_rsc=1c6ry",
+            "method": "GET",
+            "status": 200,
+            "statusText": "",
+            "duration": -2.221,
+            "resourceType": "fetch",
+            "timestamp": 1766574607028
+          },
+          {
+            "url": "https://staging.jahongir-app.uz/properties/cmj8svzbv0046jlcrbrnecsr1?_rsc=1c6ry",
+            "method": "GET",
+            "status": 200,
+            "statusText": "",
+            "duration": -2.0540000000000003,
+            "resourceType": "fetch",
+            "timestamp": 1766574607041
+          },
+          {
+            "url": "https://picsum.photos/seed/111/800/600",
+            "method": "GET",
+            "status": 302,
+            "statusText": "",
+            "duration": -23.784,
+            "resourceType": "image",
+            "timestamp": 1766574607136
+          },
+          {
+            "url": "https://picsum.photos/seed/191/800/600",
+            "method": "GET",
+            "status": 302,
+            "statusText": "",
+            "duration": -27.308,
+            "resourceType": "image",
+            "timestamp": 1766574607138
+          },
+          {
+            "url": "https://picsum.photos/seed/101/800/600",
+            "method": "GET",
+            "status": 302,
+            "statusText": "",
+            "duration": -22.182,
+            "resourceType": "image",
+            "timestamp": 1766574607139
+          },
+          {
+            "url": "https://picsum.photos/seed/91/800/600",
+            "method": "GET",
+            "status": 302,
+            "statusText": "",
+            "duration": -23.1,
+            "resourceType": "image",
+            "timestamp": 1766574607143
+          },
+          {
+            "url": "https://picsum.photos/seed/121/800/600",
+            "method": "GET",
+            "status": 302,
+            "statusText": "",
+            "duration": -27.165,
+            "resourceType": "image",
+            "timestamp": 1766574607146
+          },
+          {
+            "url": "https://picsum.photos/seed/261/800/600",
+            "method": "GET",
+            "status": 302,
+            "statusText": "",
+            "duration": -23.383,
+            "resourceType": "image",
+            "timestamp": 1766574607148
+          },
+          {
+            "url": "https://fastly.picsum.photos/id/29/800/600.jpg?hmac=KbDC2qhBvoFM4XpOZrAnybO4JNiXS9mox0PORy6NCJA",
+            "method": "GET",
+            "status": 200,
+            "statusText": "",
+            "duration": -80.565,
+            "resourceType": "image",
+            "timestamp": 1766574607247
+          },
+          {
+            "url": "https://fastly.picsum.photos/id/527/800/600.jpg?hmac=fHq2At4BpRVwACnQnT5Q9NhRtxVsAYVlz0a46FjogTI",
+            "method": "GET",
+            "status": 200,
+            "statusText": "",
+            "duration": -80.163,
+            "resourceType": "image",
+            "timestamp": 1766574607273
+          },
+          {
+            "url": "https://fastly.picsum.photos/id/702/800/600.jpg?hmac=-GXBix1tgI3NsUUutxiC5FIBUfsUxVmrMOmFP7zldL8",
+            "method": "GET",
+            "status": 200,
+            "statusText": "",
+            "duration": -80.099,
+            "resourceType": "image",
+            "timestamp": 1766574607276
+          },
+          {
+            "url": "https://fastly.picsum.photos/id/284/800/600.jpg?hmac=3IBpmvGIeUc141nhmJNE1ZKOZqZ-1ismKTS4iv7mUkQ",
+            "method": "GET",
+            "status": 200,
+            "statusText": "",
+            "duration": -73.724,
+            "resourceType": "image",
+            "timestamp": 1766574607293
+          },
+          {
+            "url": "https://fastly.picsum.photos/id/639/800/600.jpg?hmac=FuA9sdfpzSQp3d-XpAHKV7T54bQsdGginsc2YcIdcGI",
+            "method": "GET",
+            "status": 200,
+            "statusText": "",
+            "duration": -70.378,
+            "resourceType": "image",
+            "timestamp": 1766574607293
+          },
+          {
+            "url": "https://fastly.picsum.photos/id/157/800/600.jpg?hmac=GWnz2Ys-Uow73xEUhw0Ez6Gswy-eWsOKWnYS-qEdMU8",
+            "method": "GET",
+            "status": 200,
+            "statusText": "",
+            "duration": -67.848,
+            "resourceType": "image",
+            "timestamp": 1766574607316
+          }
+        ],
+        "newNetworkRequests": [
+          {
+            "url": "https://staging.jahongir-app.uz/ru",
+            "method": "GET",
+            "status": 307,
+            "statusText": "",
+            "duration": -10.902,
+            "resourceType": "document",
+            "timestamp": 1766574606477
+          },
+          {
+            "url": "https://staging.jahongir-app.uz/",
+            "method": "GET",
+            "status": 200,
+            "statusText": "",
+            "duration": -1.658,
+            "resourceType": "document",
+            "timestamp": 1766574606531
+          },
+          {
+            "url": "https://staging.jahongir-app.uz/_next/static/media/21350d82a1f187e9-s.p.woff2",
+            "method": "GET",
+            "status": 200,
+            "statusText": "",
+            "duration": -1.646,
+            "resourceType": "font",
+            "timestamp": 1766574606611
+          },
+          {
+            "url": "https://staging.jahongir-app.uz/_next/static/css/617dbd189cae90a5.css",
+            "method": "GET",
+            "status": 200,
+            "statusText": "",
+            "duration": -1.552,
+            "resourceType": "stylesheet",
+            "timestamp": 1766574606621
+          },
+          {
+            "url": "https://staging.jahongir-app.uz/_next/static/css/55693049b062c6a3.css",
+            "method": "GET",
+            "status": 200,
+            "statusText": "",
+            "duration": -1.279,
+            "resourceType": "stylesheet",
+            "timestamp": 1766574606630
+          },
+          {
+            "url": "https://staging.jahongir-app.uz/_next/static/media/e4af272ccee01ff0-s.p.woff2",
+            "method": "GET",
+            "status": 200,
+            "statusText": "",
+            "duration": -1.3479999999999999,
+            "resourceType": "font",
+            "timestamp": 1766574606630
+          },
+          {
+            "url": "https://staging.jahongir-app.uz/_next/static/chunks/webpack-2611ca6a2e49e950.js",
+            "method": "GET",
+            "status": 200,
+            "statusText": "",
+            "duration": -8.6,
+            "resourceType": "script",
+            "timestamp": 1766574606709
+          },
+          {
+            "url": "https://staging.jahongir-app.uz/_next/static/chunks/main-app-d9d1ee5bddca147f.js",
+            "method": "GET",
+            "status": 200,
+            "statusText": "",
+            "duration": -25.575,
+            "resourceType": "script",
+            "timestamp": 1766574606709
+          },
+          {
+            "url": "https://staging.jahongir-app.uz/_next/static/chunks/6472-56de742ddb9822dc.js",
+            "method": "GET",
+            "status": 200,
+            "statusText": "",
+            "duration": -25.489,
+            "resourceType": "script",
+            "timestamp": 1766574606709
+          },
+          {
+            "url": "https://staging.jahongir-app.uz/_next/static/chunks/5770-d459f969509decbc.js",
+            "method": "GET",
+            "status": 200,
+            "statusText": "",
+            "duration": -25.385,
+            "resourceType": "script",
+            "timestamp": 1766574606712
+          },
+          {
+            "url": "https://staging.jahongir-app.uz/_next/static/chunks/100-2864c9f5b7e88872.js",
+            "method": "GET",
+            "status": 200,
+            "statusText": "",
+            "duration": -25.639,
+            "resourceType": "script",
+            "timestamp": 1766574606741
+          },
+          {
+            "url": "https://staging.jahongir-app.uz/_next/static/chunks/7282-05bb6cc42c5670df.js",
+            "method": "GET",
+            "status": 200,
+            "statusText": "",
+            "duration": -25.277,
+            "resourceType": "script",
+            "timestamp": 1766574606741
+          },
+          {
+            "url": "https://staging.jahongir-app.uz/_next/static/chunks/ebdb7cc3-5f26106dcae66cdd.js",
+            "method": "GET",
+            "status": 200,
+            "statusText": "",
+            "duration": -25.663,
+            "resourceType": "script",
+            "timestamp": 1766574606742
+          },
+          {
+            "url": "https://staging.jahongir-app.uz/_next/static/chunks/135-738b3002663a3c60.js",
+            "method": "GET",
+            "status": 200,
+            "statusText": "",
+            "duration": -22.176,
+            "resourceType": "script",
+            "timestamp": 1766574606806
+          },
+          {
+            "url": "https://staging.jahongir-app.uz/_next/static/chunks/6742-436af152176d2976.js",
+            "method": "GET",
+            "status": 200,
+            "statusText": "",
+            "duration": -25.141,
+            "resourceType": "script",
+            "timestamp": 1766574606806
+          },
+          {
+            "url": "https://staging.jahongir-app.uz/_next/static/chunks/app/%5Blocale%5D/page-ff02974529796f23.js",
+            "method": "GET",
+            "status": 200,
+            "statusText": "",
+            "duration": -24.699,
+            "resourceType": "script",
+            "timestamp": 1766574606806
+          },
+          {
+            "url": "https://staging.jahongir-app.uz/_next/static/chunks/2-e6a0ec470955461e.js",
+            "method": "GET",
+            "status": 200,
+            "statusText": "",
+            "duration": -24.589,
+            "resourceType": "script",
+            "timestamp": 1766574606806
+          },
+          {
+            "url": "https://staging.jahongir-app.uz/_next/static/chunks/948-eb9975e1cd99d2bb.js",
+            "method": "GET",
+            "status": 200,
+            "statusText": "",
+            "duration": -24.501,
+            "resourceType": "script",
+            "timestamp": 1766574606831
+          },
+          {
+            "url": "https://staging.jahongir-app.uz/_next/static/chunks/2519-cbfd4e19fad8a352.js",
+            "method": "GET",
+            "status": 200,
+            "statusText": "",
+            "duration": -22.337,
+            "resourceType": "script",
+            "timestamp": 1766574606850
+          },
+          {
+            "url": "https://staging.jahongir-app.uz/_next/static/chunks/1882-16530e667c25824f.js",
+            "method": "GET",
+            "status": 200,
+            "statusText": "",
+            "duration": -22.289,
+            "resourceType": "script",
+            "timestamp": 1766574606850
+          },
+          {
+            "url": "https://staging.jahongir-app.uz/_next/static/chunks/fe69a73d-9ec660416ea9aee9.js",
+            "method": "GET",
+            "status": 200,
+            "statusText": "",
+            "duration": -24.658,
+            "resourceType": "script",
+            "timestamp": 1766574606850
+          },
+          {
+            "url": "https://staging.jahongir-app.uz/_next/static/chunks/3543-56dab92bf60fa9c4.js",
+            "method": "GET",
+            "status": 200,
+            "statusText": "",
+            "duration": -25.17,
+            "resourceType": "script",
+            "timestamp": 1766574606850
+          },
+          {
+            "url": "https://staging.jahongir-app.uz/_next/static/chunks/app/%5Blocale%5D/layout-6379bdd531dc37da.js",
+            "method": "GET",
+            "status": 200,
+            "statusText": "",
+            "duration": -23.672,
+            "resourceType": "script",
+            "timestamp": 1766574606860
+          },
+          {
+            "url": "https://staging.jahongir-app.uz/_next/static/media/8e9860b6e62d6359-s.woff2",
+            "method": "GET",
+            "status": 200,
+            "statusText": "",
+            "duration": -1.52,
+            "resourceType": "font",
+            "timestamp": 1766574606867
+          },
+          {
+            "url": "https://staging.jahongir-app.uz/_next/static/chunks/4691-065fea34a8200f80.js",
+            "method": "GET",
+            "status": 200,
+            "statusText": "",
+            "duration": -23.15,
+            "resourceType": "script",
+            "timestamp": 1766574606868
+          },
+          {
+            "url": "https://staging.jahongir-app.uz/_next/static/chunks/5116-0e28c48661d99fd0.js",
+            "method": "GET",
+            "status": 200,
+            "statusText": "",
+            "duration": -23.77,
+            "resourceType": "script",
+            "timestamp": 1766574606873
+          },
+          {
+            "url": "https://staging.jahongir-app.uz/api/auth/me",
+            "method": "GET",
+            "status": 401,
+            "statusText": "",
+            "duration": -1.196,
+            "resourceType": "fetch",
+            "timestamp": 1766574606937,
+            "errorType": "client_error"
+          },
+          {
+            "url": "https://staging.jahongir-app.uz/api/properties/featured?limit=6",
+            "method": "GET",
+            "status": 200,
+            "statusText": "",
+            "duration": -1.267,
+            "resourceType": "fetch",
+            "timestamp": 1766574606948
+          },
+          {
+            "url": "https://staging.jahongir-app.uz/agents?_rsc=1c6ry",
+            "method": "GET",
+            "status": 200,
+            "statusText": "",
+            "duration": -1.776,
+            "resourceType": "fetch",
+            "timestamp": 1766574606965
+          },
+          {
+            "url": "https://staging.jahongir-app.uz/api/properties/recent?limit=8",
+            "method": "GET",
+            "status": 200,
+            "statusText": "",
+            "duration": -1.4020000000000001,
+            "resourceType": "fetch",
+            "timestamp": 1766574606965
+          },
+          {
+            "url": "https://staging.jahongir-app.uz/developers?_rsc=1c6ry",
+            "method": "GET",
+            "status": 200,
+            "statusText": "",
+            "duration": -1.371,
+            "resourceType": "fetch",
+            "timestamp": 1766574606984
+          },
+          {
+            "url": "https://staging.jahongir-app.uz/properties?city=Tashkent&_rsc=1c6ry",
+            "method": "GET",
+            "status": 200,
+            "statusText": "",
+            "duration": -1.264,
+            "resourceType": "fetch",
+            "timestamp": 1766574606989
+          },
+          {
+            "url": "https://staging.jahongir-app.uz/properties/cmj8svze8008pjlcr8m89dg9f?_rsc=1c6ry",
+            "method": "GET",
+            "status": 200,
+            "statusText": "",
+            "duration": -2.666,
+            "resourceType": "fetch",
+            "timestamp": 1766574607013
+          },
+          {
+            "url": "https://staging.jahongir-app.uz/properties/cmj8svzd3006ljlcrdysjvx01?_rsc=1c6ry",
+            "method": "GET",
+            "status": 200,
+            "statusText": "",
+            "duration": -2.427,
+            "resourceType": "fetch",
+            "timestamp": 1766574607022
+          },
+          {
+            "url": "https://staging.jahongir-app.uz/properties/cmj8svzc1004fjlcr5hp11j4t?_rsc=1c6ry",
+            "method": "GET",
+            "status": 200,
+            "statusText": "",
+            "duration": -2.221,
+            "resourceType": "fetch",
+            "timestamp": 1766574607028
+          },
+          {
+            "url": "https://staging.jahongir-app.uz/properties/cmj8svzbv0046jlcrbrnecsr1?_rsc=1c6ry",
+            "method": "GET",
+            "status": 200,
+            "statusText": "",
+            "duration": -2.0540000000000003,
+            "resourceType": "fetch",
+            "timestamp": 1766574607041
+          },
+          {
+            "url": "https://picsum.photos/seed/111/800/600",
+            "method": "GET",
+            "status": 302,
+            "statusText": "",
+            "duration": -23.784,
+            "resourceType": "image",
+            "timestamp": 1766574607136
+          },
+          {
+            "url": "https://picsum.photos/seed/191/800/600",
+            "method": "GET",
+            "status": 302,
+            "statusText": "",
+            "duration": -27.308,
+            "resourceType": "image",
+            "timestamp": 1766574607138
+          },
+          {
+            "url": "https://picsum.photos/seed/101/800/600",
+            "method": "GET",
+            "status": 302,
+            "statusText": "",
+            "duration": -22.182,
+            "resourceType": "image",
+            "timestamp": 1766574607139
+          },
+          {
+            "url": "https://picsum.photos/seed/91/800/600",
+            "method": "GET",
+            "status": 302,
+            "statusText": "",
+            "duration": -23.1,
+            "resourceType": "image",
+            "timestamp": 1766574607143
+          },
+          {
+            "url": "https://picsum.photos/seed/121/800/600",
+            "method": "GET",
+            "status": 302,
+            "statusText": "",
+            "duration": -27.165,
+            "resourceType": "image",
+            "timestamp": 1766574607146
+          },
+          {
+            "url": "https://picsum.photos/seed/261/800/600",
+            "method": "GET",
+            "status": 302,
+            "statusText": "",
+            "duration": -23.383,
+            "resourceType": "image",
+            "timestamp": 1766574607148
+          },
+          {
+            "url": "https://fastly.picsum.photos/id/29/800/600.jpg?hmac=KbDC2qhBvoFM4XpOZrAnybO4JNiXS9mox0PORy6NCJA",
+            "method": "GET",
+            "status": 200,
+            "statusText": "",
+            "duration": -80.565,
+            "resourceType": "image",
+            "timestamp": 1766574607247
+          },
+          {
+            "url": "https://fastly.picsum.photos/id/527/800/600.jpg?hmac=fHq2At4BpRVwACnQnT5Q9NhRtxVsAYVlz0a46FjogTI",
+            "method": "GET",
+            "status": 200,
+            "statusText": "",
+            "duration": -80.163,
+            "resourceType": "image",
+            "timestamp": 1766574607273
+          },
+          {
+            "url": "https://fastly.picsum.photos/id/702/800/600.jpg?hmac=-GXBix1tgI3NsUUutxiC5FIBUfsUxVmrMOmFP7zldL8",
+            "method": "GET",
+            "status": 200,
+            "statusText": "",
+            "duration": -80.099,
+            "resourceType": "image",
+            "timestamp": 1766574607276
+          },
+          {
+            "url": "https://fastly.picsum.photos/id/284/800/600.jpg?hmac=3IBpmvGIeUc141nhmJNE1ZKOZqZ-1ismKTS4iv7mUkQ",
+            "method": "GET",
+            "status": 200,
+            "statusText": "",
+            "duration": -73.724,
+            "resourceType": "image",
+            "timestamp": 1766574607293
+          },
+          {
+            "url": "https://fastly.picsum.photos/id/639/800/600.jpg?hmac=FuA9sdfpzSQp3d-XpAHKV7T54bQsdGginsc2YcIdcGI",
+            "method": "GET",
+            "status": 200,
+            "statusText": "",
+            "duration": -70.378,
+            "resourceType": "image",
+            "timestamp": 1766574607293
+          },
+          {
+            "url": "https://fastly.picsum.photos/id/157/800/600.jpg?hmac=GWnz2Ys-Uow73xEUhw0Ez6Gswy-eWsOKWnYS-qEdMU8",
+            "method": "GET",
+            "status": 200,
+            "statusText": "",
+            "duration": -67.848,
+            "resourceType": "image",
+            "timestamp": 1766574607316
+          }
+        ],
+        "domState": {
+          "url": "https://staging.jahongir-app.uz/",
+          "title": "Real Estate Platform",
+          "visibleText": [
+            "RealEstateНедвижимостьУслугиАгентыЗастройщикиRUUZВойтиРегистрация",
+            "RealEstate",
+            "НедвижимостьУслугиАгентыЗастройщики",
+            "Недвижимость",
+            "Услуги",
+            "Агенты",
+            "Застройщики",
+            "RUUZВойтиРегистрация",
+            "RUUZ",
+            "RU",
+            "UZ",
+            "Войти",
+            "Регистрация",
+            "Недвижимость УзбекистанаНайдите идеальную недвижимость в УзбекистанеСнятьКвартируДомКоммерциюУчастокКол-во комнат1234+₽На картеНайтиТашкентСамаркандБухараНавоиАндижанФергана100+Объектов50+Агентов20+ЗастройщиковПроверенныхМогут подойти190 000 ₽3-комн. кв. · 130 m²Shaykhontohur Street 114120 000 ₽4-комн. commercial · 95 m²Almazar Street 107500 000 000 ₽/мес.1-комн. кв. · 60 m²Yunusabad Street 100450 000 ₽8-комн. commercial · 600 m²Tashkent Street 234150 000 ₽4-комн. house · 200 m²Registan Street 8925 000 000 ₽/мес.3-комн. кв. · 180 m²Amir Temur Avenue 150Найдите идеальную недвижимостьКвартирыВсе квартирыДомаЧастные домаКоммерческаяОфисы, складыУчасткиЗемельные участкиРазместить объявлениеПочему выбирают насПроверенные объявленияВсе объявления проходят модерацию для вашей безопасностиАктуальные ценыРеальные цены от собственников без накрутокБыстрый откликСвязывайтесь с продавцами напрямую через платформуГотовы разместить объявление?Разместите свою недвижимость бесплатно и найдите покупателя или арендатора уже сегодняНачать бесплатноRealEstateВедущая платформа для поиска и продажи недвижимости в УзбекистанеДля покупателейКупить квартируСнять квартируДомаДля продавцовРазместить объявлениеАгентыЛичный кабинетКонтактыsupport@realestate.uz+998 71 123 45 67© 2024 RealEstate. Все права защищены.",
+            "Недвижимость УзбекистанаНайдите идеальную недвижимость в УзбекистанеСнятьКвартируДомКоммерциюУчастокКол-во комнат1234+₽На картеНайтиТашкентСамаркандБухараНавоиАндижанФергана",
+            "Недвижимость Узбекистана",
+            "Найдите идеальную недвижимость в Узбекистане",
+            "СнятьКвартируДомКоммерциюУчастокКол-во комнат1234+₽На картеНайти",
+            "Снять",
+            "КвартируДомКоммерциюУчасток",
+            "Квартиру",
+            "Дом",
+            "Коммерцию",
+            "Участок",
+            "Кол-во комнат1234+₽",
+            "Кол-во комнат1234+",
+            "Кол-во комнат",
+            "1",
+            "2",
+            "3",
+            "4+",
+            "₽",
+            "На картеНайти",
+            "На карте",
+            "Найти",
+            "ТашкентСамаркандБухараНавоиАндижанФергана"
+          ],
+          "buttons": [
+            "Недвижимость",
+            "Услуги",
+            "RU",
+            "UZ",
+            "Войти",
+            "Регистрация",
+            "Снять",
+            "На карте",
+            "Найти",
+            "Разместить объявление",
+            "Начать бесплатно"
+          ],
+          "inputs": [
+            "Цена до",
+            "Ташкент"
+          ],
+          "links": [
+            "RealEstate",
+            "Агенты",
+            "Застройщики",
+            "Ташкент",
+            "Самарканд",
+            "Бухара",
+            "Навои",
+            "Андижан",
+            "Фергана",
+            "190 000 ₽3-комн. кв. · 130 m²Shaykhontohur Street 114",
+            "120 000 ₽4-комн. commercial · 95 m²Almazar Street 107",
+            "500 000 000 ₽/мес.1-комн. кв. · 60 m²Yunusabad Street 100",
+            "450 000 ₽8-комн. commercial · 600 m²Tashkent Street 234",
+            "150 000 ₽4-комн. house · 200 m²Registan Street 89",
+            "25 000 000 ₽/мес.3-комн. кв. · 180 m²Amir Temur Avenue 150",
+            "КвартирыВсе квартиры",
+            "ДомаЧастные дома",
+            "КоммерческаяОфисы, склады",
+            "УчасткиЗемельные участки",
+            "Разместить объявление"
+          ],
+          "interactiveElementsSummary": {
+            "totalButtons": 12,
+            "totalInputs": 2,
+            "totalLinks": 20,
+            "keyActions": [],
+            "formStatus": "empty"
+          },
+          "dropdowns": [
+            {
+              "trigger": "select[name=\"\"]",
+              "isOpen": false,
+              "options": [
+                "Квартиру",
+                "Дом",
+                "Коммерцию",
+                "Участок"
+              ],
+              "selectedValue": "APARTMENT",
+              "type": "native"
+            },
+            {
+              "trigger": "select[name=\"\"]",
+              "isOpen": false,
+              "options": [
+                "Кол-во комнат",
+                "1",
+                "2",
+                "3",
+                "4+"
+              ],
+              "selectedValue": "",
+              "type": "native"
+            }
+          ],
+          "forms": [],
+          "datePickers": [],
+          "modals": [],
+          "loadingIndicators": []
+        },
+        "errors": [],
+        "performance": {
+          "pageLoadTime": 441,
+          "domContentLoaded": 378,
+          "firstContentfulPaint": 324
+        },
+        "urlBefore": "https://staging.jahongir-app.uz/",
+        "urlAfter": "https://staging.jahongir-app.uz/",
+        "urlChanged": false
+      },
+      "duration": 1507,
+      "retryCount": 0
+    },
+    {
+      "step": 2,
+      "action": {
+        "action": "screenshot",
+        "description": "Initial page state"
+      },
+      "status": "success",
+      "observations": {
+        "timestamp": 1766574607952,
+        "stepNumber": 2,
+        "action": {
+          "action": "screenshot",
+          "description": "Initial page state"
+        },
+        "screenshot": "/var/www/realestate-staging/fe-pilot-results/screenshots/step-2-1766574607952.png",
+        "consoleLogs": [
+          {
+            "type": "warning",
+            "text": "ApiClient: No token found for request /auth/me",
+            "timestamp": 1766574606920,
+            "location": "https://staging.jahongir-app.uz/_next/static/chunks/app/%5Blocale%5D/page-ff02974529796f23.js:0",
+            "category": "info",
+            "source": "javascript"
+          },
+          {
+            "type": "error",
+            "text": "Failed to load resource: the server responded with a status of 401 ()",
+            "timestamp": 1766574606937,
+            "location": "https://staging.jahongir-app.uz/api/auth/me:0",
+            "category": "critical",
+            "source": "javascript"
+          },
+          {
+            "type": "error",
+            "text": "AuthContext: Unexpected error Error: Unauthorized\n    at r.request (https://staging.jahongir-app.uz/_next/static/chunks/app/%5Blocale%5D/page-ff02974529796f23.js:1:18642)\n    at async https://staging.jahongir-app.uz/_next/static/chunks/app/%5Blocale%5D/page-ff02974529796f23.js:1:19638",
+            "timestamp": 1766574606945,
+            "location": "https://staging.jahongir-app.uz/_next/static/chunks/app/%5Blocale%5D/page-ff02974529796f23.js:0",
+            "category": "critical",
+            "source": "framework"
+          }
+        ],
+        "newConsoleLogs": [],
+        "networkRequests": [
+          {
+            "url": "https://staging.jahongir-app.uz/ru",
+            "method": "GET",
+            "status": 307,
+            "statusText": "",
+            "duration": -10.902,
+            "resourceType": "document",
+            "timestamp": 1766574606477
+          },
+          {
+            "url": "https://staging.jahongir-app.uz/",
+            "method": "GET",
+            "status": 200,
+            "statusText": "",
+            "duration": -1.658,
+            "resourceType": "document",
+            "timestamp": 1766574606531
+          },
+          {
+            "url": "https://staging.jahongir-app.uz/_next/static/media/21350d82a1f187e9-s.p.woff2",
+            "method": "GET",
+            "status": 200,
+            "statusText": "",
+            "duration": -1.646,
+            "resourceType": "font",
+            "timestamp": 1766574606611
+          },
+          {
+            "url": "https://staging.jahongir-app.uz/_next/static/css/617dbd189cae90a5.css",
+            "method": "GET",
+            "status": 200,
+            "statusText": "",
+            "duration": -1.552,
+            "resourceType": "stylesheet",
+            "timestamp": 1766574606621
+          },
+          {
+            "url": "https://staging.jahongir-app.uz/_next/static/css/55693049b062c6a3.css",
+            "method": "GET",
+            "status": 200,
+            "statusText": "",
+            "duration": -1.279,
+            "resourceType": "stylesheet",
+            "timestamp": 1766574606630
+          },
+          {
+            "url": "https://staging.jahongir-app.uz/_next/static/media/e4af272ccee01ff0-s.p.woff2",
+            "method": "GET",
+            "status": 200,
+            "statusText": "",
+            "duration": -1.3479999999999999,
+            "resourceType": "font",
+            "timestamp": 1766574606630
+          },
+          {
+            "url": "https://staging.jahongir-app.uz/_next/static/chunks/webpack-2611ca6a2e49e950.js",
+            "method": "GET",
+            "status": 200,
+            "statusText": "",
+            "duration": -8.6,
+            "resourceType": "script",
+            "timestamp": 1766574606709
+          },
+          {
+            "url": "https://staging.jahongir-app.uz/_next/static/chunks/main-app-d9d1ee5bddca147f.js",
+            "method": "GET",
+            "status": 200,
+            "statusText": "",
+            "duration": -25.575,
+            "resourceType": "script",
+            "timestamp": 1766574606709
+          },
+          {
+            "url": "https://staging.jahongir-app.uz/_next/static/chunks/6472-56de742ddb9822dc.js",
+            "method": "GET",
+            "status": 200,
+            "statusText": "",
+            "duration": -25.489,
+            "resourceType": "script",
+            "timestamp": 1766574606709
+          },
+          {
+            "url": "https://staging.jahongir-app.uz/_next/static/chunks/5770-d459f969509decbc.js",
+            "method": "GET",
+            "status": 200,
+            "statusText": "",
+            "duration": -25.385,
+            "resourceType": "script",
+            "timestamp": 1766574606712
+          },
+          {
+            "url": "https://staging.jahongir-app.uz/_next/static/chunks/100-2864c9f5b7e88872.js",
+            "method": "GET",
+            "status": 200,
+            "statusText": "",
+            "duration": -25.639,
+            "resourceType": "script",
+            "timestamp": 1766574606741
+          },
+          {
+            "url": "https://staging.jahongir-app.uz/_next/static/chunks/7282-05bb6cc42c5670df.js",
+            "method": "GET",
+            "status": 200,
+            "statusText": "",
+            "duration": -25.277,
+            "resourceType": "script",
+            "timestamp": 1766574606741
+          },
+          {
+            "url": "https://staging.jahongir-app.uz/_next/static/chunks/ebdb7cc3-5f26106dcae66cdd.js",
+            "method": "GET",
+            "status": 200,
+            "statusText": "",
+            "duration": -25.663,
+            "resourceType": "script",
+            "timestamp": 1766574606742
+          },
+          {
+            "url": "https://staging.jahongir-app.uz/_next/static/chunks/135-738b3002663a3c60.js",
+            "method": "GET",
+            "status": 200,
+            "statusText": "",
+            "duration": -22.176,
+            "resourceType": "script",
+            "timestamp": 1766574606806
+          },
+          {
+            "url": "https://staging.jahongir-app.uz/_next/static/chunks/6742-436af152176d2976.js",
+            "method": "GET",
+            "status": 200,
+            "statusText": "",
+            "duration": -25.141,
+            "resourceType": "script",
+            "timestamp": 1766574606806
+          },
+          {
+            "url": "https://staging.jahongir-app.uz/_next/static/chunks/app/%5Blocale%5D/page-ff02974529796f23.js",
+            "method": "GET",
+            "status": 200,
+            "statusText": "",
+            "duration": -24.699,
+            "resourceType": "script",
+            "timestamp": 1766574606806
+          },
+          {
+            "url": "https://staging.jahongir-app.uz/_next/static/chunks/2-e6a0ec470955461e.js",
+            "method": "GET",
+            "status": 200,
+            "statusText": "",
+            "duration": -24.589,
+            "resourceType": "script",
+            "timestamp": 1766574606806
+          },
+          {
+            "url": "https://staging.jahongir-app.uz/_next/static/chunks/948-eb9975e1cd99d2bb.js",
+            "method": "GET",
+            "status": 200,
+            "statusText": "",
+            "duration": -24.501,
+            "resourceType": "script",
+            "timestamp": 1766574606831
+          },
+          {
+            "url": "https://staging.jahongir-app.uz/_next/static/chunks/2519-cbfd4e19fad8a352.js",
+            "method": "GET",
+            "status": 200,
+            "statusText": "",
+            "duration": -22.337,
+            "resourceType": "script",
+            "timestamp": 1766574606850
+          },
+          {
+            "url": "https://staging.jahongir-app.uz/_next/static/chunks/1882-16530e667c25824f.js",
+            "method": "GET",
+            "status": 200,
+            "statusText": "",
+            "duration": -22.289,
+            "resourceType": "script",
+            "timestamp": 1766574606850
+          },
+          {
+            "url": "https://staging.jahongir-app.uz/_next/static/chunks/fe69a73d-9ec660416ea9aee9.js",
+            "method": "GET",
+            "status": 200,
+            "statusText": "",
+            "duration": -24.658,
+            "resourceType": "script",
+            "timestamp": 1766574606850
+          },
+          {
+            "url": "https://staging.jahongir-app.uz/_next/static/chunks/3543-56dab92bf60fa9c4.js",
+            "method": "GET",
+            "status": 200,
+            "statusText": "",
+            "duration": -25.17,
+            "resourceType": "script",
+            "timestamp": 1766574606850
+          },
+          {
+            "url": "https://staging.jahongir-app.uz/_next/static/chunks/app/%5Blocale%5D/layout-6379bdd531dc37da.js",
+            "method": "GET",
+            "status": 200,
+            "statusText": "",
+            "duration": -23.672,
+            "resourceType": "script",
+            "timestamp": 1766574606860
+          },
+          {
+            "url": "https://staging.jahongir-app.uz/_next/static/media/8e9860b6e62d6359-s.woff2",
+            "method": "GET",
+            "status": 200,
+            "statusText": "",
+            "duration": -1.52,
+            "resourceType": "font",
+            "timestamp": 1766574606867
+          },
+          {
+            "url": "https://staging.jahongir-app.uz/_next/static/chunks/4691-065fea34a8200f80.js",
+            "method": "GET",
+            "status": 200,
+            "statusText": "",
+            "duration": -23.15,
+            "resourceType": "script",
+            "timestamp": 1766574606868
+          },
+          {
+            "url": "https://staging.jahongir-app.uz/_next/static/chunks/5116-0e28c48661d99fd0.js",
+            "method": "GET",
+            "status": 200,
+            "statusText": "",
+            "duration": -23.77,
+            "resourceType": "script",
+            "timestamp": 1766574606873
+          },
+          {
+            "url": "https://staging.jahongir-app.uz/api/auth/me",
+            "method": "GET",
+            "status": 401,
+            "statusText": "",
+            "duration": -1.196,
+            "resourceType": "fetch",
+            "timestamp": 1766574606937,
+            "errorType": "client_error"
+          },
+          {
+            "url": "https://staging.jahongir-app.uz/api/properties/featured?limit=6",
+            "method": "GET",
+            "status": 200,
+            "statusText": "",
+            "duration": -1.267,
+            "resourceType": "fetch",
+            "timestamp": 1766574606948
+          },
+          {
+            "url": "https://staging.jahongir-app.uz/agents?_rsc=1c6ry",
+            "method": "GET",
+            "status": 200,
+            "statusText": "",
+            "duration": -1.776,
+            "resourceType": "fetch",
+            "timestamp": 1766574606965
+          },
+          {
+            "url": "https://staging.jahongir-app.uz/api/properties/recent?limit=8",
+            "method": "GET",
+            "status": 200,
+            "statusText": "",
+            "duration": -1.4020000000000001,
+            "resourceType": "fetch",
+            "timestamp": 1766574606965
+          },
+          {
+            "url": "https://staging.jahongir-app.uz/developers?_rsc=1c6ry",
+            "method": "GET",
+            "status": 200,
+            "statusText": "",
+            "duration": -1.371,
+            "resourceType": "fetch",
+            "timestamp": 1766574606984
+          },
+          {
+            "url": "https://staging.jahongir-app.uz/properties?city=Tashkent&_rsc=1c6ry",
+            "method": "GET",
+            "status": 200,
+            "statusText": "",
+            "duration": -1.264,
+            "resourceType": "fetch",
+            "timestamp": 1766574606989
+          },
+          {
+            "url": "https://staging.jahongir-app.uz/properties/cmj8svze8008pjlcr8m89dg9f?_rsc=1c6ry",
+            "method": "GET",
+            "status": 200,
+            "statusText": "",
+            "duration": -2.666,
+            "resourceType": "fetch",
+            "timestamp": 1766574607013
+          },
+          {
+            "url": "https://staging.jahongir-app.uz/properties/cmj8svzd3006ljlcrdysjvx01?_rsc=1c6ry",
+            "method": "GET",
+            "status": 200,
+            "statusText": "",
+            "duration": -2.427,
+            "resourceType": "fetch",
+            "timestamp": 1766574607022
+          },
+          {
+            "url": "https://staging.jahongir-app.uz/properties/cmj8svzc1004fjlcr5hp11j4t?_rsc=1c6ry",
+            "method": "GET",
+            "status": 200,
+            "statusText": "",
+            "duration": -2.221,
+            "resourceType": "fetch",
+            "timestamp": 1766574607028
+          },
+          {
+            "url": "https://staging.jahongir-app.uz/properties/cmj8svzbv0046jlcrbrnecsr1?_rsc=1c6ry",
+            "method": "GET",
+            "status": 200,
+            "statusText": "",
+            "duration": -2.0540000000000003,
+            "resourceType": "fetch",
+            "timestamp": 1766574607041
+          },
+          {
+            "url": "https://picsum.photos/seed/111/800/600",
+            "method": "GET",
+            "status": 302,
+            "statusText": "",
+            "duration": -23.784,
+            "resourceType": "image",
+            "timestamp": 1766574607136
+          },
+          {
+            "url": "https://picsum.photos/seed/191/800/600",
+            "method": "GET",
+            "status": 302,
+            "statusText": "",
+            "duration": -27.308,
+            "resourceType": "image",
+            "timestamp": 1766574607138
+          },
+          {
+            "url": "https://picsum.photos/seed/101/800/600",
+            "method": "GET",
+            "status": 302,
+            "statusText": "",
+            "duration": -22.182,
+            "resourceType": "image",
+            "timestamp": 1766574607139
+          },
+          {
+            "url": "https://picsum.photos/seed/91/800/600",
+            "method": "GET",
+            "status": 302,
+            "statusText": "",
+            "duration": -23.1,
+            "resourceType": "image",
+            "timestamp": 1766574607143
+          },
+          {
+            "url": "https://picsum.photos/seed/121/800/600",
+            "method": "GET",
+            "status": 302,
+            "statusText": "",
+            "duration": -27.165,
+            "resourceType": "image",
+            "timestamp": 1766574607146
+          },
+          {
+            "url": "https://picsum.photos/seed/261/800/600",
+            "method": "GET",
+            "status": 302,
+            "statusText": "",
+            "duration": -23.383,
+            "resourceType": "image",
+            "timestamp": 1766574607148
+          },
+          {
+            "url": "https://fastly.picsum.photos/id/29/800/600.jpg?hmac=KbDC2qhBvoFM4XpOZrAnybO4JNiXS9mox0PORy6NCJA",
+            "method": "GET",
+            "status": 200,
+            "statusText": "",
+            "duration": -80.565,
+            "resourceType": "image",
+            "timestamp": 1766574607247
+          },
+          {
+            "url": "https://fastly.picsum.photos/id/527/800/600.jpg?hmac=fHq2At4BpRVwACnQnT5Q9NhRtxVsAYVlz0a46FjogTI",
+            "method": "GET",
+            "status": 200,
+            "statusText": "",
+            "duration": -80.163,
+            "resourceType": "image",
+            "timestamp": 1766574607273
+          },
+          {
+            "url": "https://fastly.picsum.photos/id/702/800/600.jpg?hmac=-GXBix1tgI3NsUUutxiC5FIBUfsUxVmrMOmFP7zldL8",
+            "method": "GET",
+            "status": 200,
+            "statusText": "",
+            "duration": -80.099,
+            "resourceType": "image",
+            "timestamp": 1766574607276
+          },
+          {
+            "url": "https://fastly.picsum.photos/id/284/800/600.jpg?hmac=3IBpmvGIeUc141nhmJNE1ZKOZqZ-1ismKTS4iv7mUkQ",
+            "method": "GET",
+            "status": 200,
+            "statusText": "",
+            "duration": -73.724,
+            "resourceType": "image",
+            "timestamp": 1766574607293
+          },
+          {
+            "url": "https://fastly.picsum.photos/id/639/800/600.jpg?hmac=FuA9sdfpzSQp3d-XpAHKV7T54bQsdGginsc2YcIdcGI",
+            "method": "GET",
+            "status": 200,
+            "statusText": "",
+            "duration": -70.378,
+            "resourceType": "image",
+            "timestamp": 1766574607293
+          },
+          {
+            "url": "https://fastly.picsum.photos/id/157/800/600.jpg?hmac=GWnz2Ys-Uow73xEUhw0Ez6Gswy-eWsOKWnYS-qEdMU8",
+            "method": "GET",
+            "status": 200,
+            "statusText": "",
+            "duration": -67.848,
+            "resourceType": "image",
+            "timestamp": 1766574607316
+          }
+        ],
+        "newNetworkRequests": [],
+        "domState": {
+          "url": "https://staging.jahongir-app.uz/",
+          "title": "Real Estate Platform",
+          "visibleText": [
+            "RealEstateНедвижимостьУслугиАгентыЗастройщикиRUUZВойтиРегистрация",
+            "RealEstate",
+            "НедвижимостьУслугиАгентыЗастройщики",
+            "Недвижимость",
+            "Услуги",
+            "Агенты",
+            "Застройщики",
+            "RUUZВойтиРегистрация",
+            "RUUZ",
+            "RU",
+            "UZ",
+            "Войти",
+            "Регистрация",
+            "Недвижимость УзбекистанаНайдите идеальную недвижимость в УзбекистанеСнятьКвартируДомКоммерциюУчастокКол-во комнат1234+₽На картеНайтиТашкентСамаркандБухараНавоиАндижанФергана100+Объектов50+Агентов20+ЗастройщиковПроверенныхМогут подойти190 000 ₽3-комн. кв. · 130 m²Shaykhontohur Street 114120 000 ₽4-комн. commercial · 95 m²Almazar Street 107500 000 000 ₽/мес.1-комн. кв. · 60 m²Yunusabad Street 100450 000 ₽8-комн. commercial · 600 m²Tashkent Street 234150 000 ₽4-комн. house · 200 m²Registan Street 8925 000 000 ₽/мес.3-комн. кв. · 180 m²Amir Temur Avenue 150Найдите идеальную недвижимостьКвартирыВсе квартирыДомаЧастные домаКоммерческаяОфисы, складыУчасткиЗемельные участкиРазместить объявлениеПочему выбирают насПроверенные объявленияВсе объявления проходят модерацию для вашей безопасностиАктуальные ценыРеальные цены от собственников без накрутокБыстрый откликСвязывайтесь с продавцами напрямую через платформуГотовы разместить объявление?Разместите свою недвижимость бесплатно и найдите покупателя или арендатора уже сегодняНачать бесплатноRealEstateВедущая платформа для поиска и продажи недвижимости в УзбекистанеДля покупателейКупить квартируСнять квартируДомаДля продавцовРазместить объявлениеАгентыЛичный кабинетКонтактыsupport@realestate.uz+998 71 123 45 67© 2024 RealEstate. Все права защищены.",
+            "Недвижимость УзбекистанаНайдите идеальную недвижимость в УзбекистанеСнятьКвартируДомКоммерциюУчастокКол-во комнат1234+₽На картеНайтиТашкентСамаркандБухараНавоиАндижанФергана",
+            "Недвижимость Узбекистана",
+            "Найдите идеальную недвижимость в Узбекистане",
+            "СнятьКвартируДомКоммерциюУчастокКол-во комнат1234+₽На картеНайти",
+            "Снять",
+            "КвартируДомКоммерциюУчасток",
+            "Квартиру",
+            "Дом",
+            "Коммерцию",
+            "Участок",
+            "Кол-во комнат1234+₽",
+            "Кол-во комнат1234+",
+            "Кол-во комнат",
+            "1",
+            "2",
+            "3",
+            "4+",
+            "₽",
+            "На картеНайти",
+            "На карте",
+            "Найти",
+            "ТашкентСамаркандБухараНавоиАндижанФергана"
+          ],
+          "buttons": [
+            "Недвижимость",
+            "Услуги",
+            "RU",
+            "UZ",
+            "Войти",
+            "Регистрация",
+            "Снять",
+            "На карте",
+            "Найти",
+            "Разместить объявление",
+            "Начать бесплатно"
+          ],
+          "inputs": [
+            "Цена до",
+            "Ташкент"
+          ],
+          "links": [
+            "RealEstate",
+            "Агенты",
+            "Застройщики",
+            "Ташкент",
+            "Самарканд",
+            "Бухара",
+            "Навои",
+            "Андижан",
+            "Фергана",
+            "190 000 ₽3-комн. кв. · 130 m²Shaykhontohur Street 114",
+            "120 000 ₽4-комн. commercial · 95 m²Almazar Street 107",
+            "500 000 000 ₽/мес.1-комн. кв. · 60 m²Yunusabad Street 100",
+            "450 000 ₽8-комн. commercial · 600 m²Tashkent Street 234",
+            "150 000 ₽4-комн. house · 200 m²Registan Street 89",
+            "25 000 000 ₽/мес.3-комн. кв. · 180 m²Amir Temur Avenue 150",
+            "КвартирыВсе квартиры",
+            "ДомаЧастные дома",
+            "КоммерческаяОфисы, склады",
+            "УчасткиЗемельные участки",
+            "Разместить объявление"
+          ],
+          "interactiveElementsSummary": {
+            "totalButtons": 12,
+            "totalInputs": 2,
+            "totalLinks": 20,
+            "keyActions": [],
+            "formStatus": "empty"
+          },
+          "dropdowns": [
+            {
+              "trigger": "select[name=\"\"]",
+              "isOpen": false,
+              "options": [
+                "Квартиру",
+                "Дом",
+                "Коммерцию",
+                "Участок"
+              ],
+              "selectedValue": "APARTMENT",
+              "type": "native"
+            },
+            {
+              "trigger": "select[name=\"\"]",
+              "isOpen": false,
+              "options": [
+                "Кол-во комнат",
+                "1",
+                "2",
+                "3",
+                "4+"
+              ],
+              "selectedValue": "",
+              "type": "native"
+            }
+          ],
+          "forms": [],
+          "datePickers": [],
+          "modals": [],
+          "loadingIndicators": []
+        },
+        "errors": [],
+        "performance": {
+          "pageLoadTime": 441,
+          "domContentLoaded": 378,
+          "firstContentfulPaint": 324
+        },
+        "urlBefore": "https://staging.jahongir-app.uz/",
+        "urlAfter": "https://staging.jahongir-app.uz/",
+        "urlChanged": false
+      },
+      "duration": 103,
+      "retryCount": 0
+    },
+    {
+      "step": 3,
+      "action": {
+        "action": "wait",
+        "duration": 2000
+      },
+      "status": "success",
+      "observations": {
+        "timestamp": 1766574610055,
+        "stepNumber": 3,
+        "action": {
+          "action": "wait",
+          "duration": 2000
+        },
+        "consoleLogs": [
+          {
+            "type": "warning",
+            "text": "ApiClient: No token found for request /auth/me",
+            "timestamp": 1766574606920,
+            "location": "https://staging.jahongir-app.uz/_next/static/chunks/app/%5Blocale%5D/page-ff02974529796f23.js:0",
+            "category": "info",
+            "source": "javascript"
+          },
+          {
+            "type": "error",
+            "text": "Failed to load resource: the server responded with a status of 401 ()",
+            "timestamp": 1766574606937,
+            "location": "https://staging.jahongir-app.uz/api/auth/me:0",
+            "category": "critical",
+            "source": "javascript"
+          },
+          {
+            "type": "error",
+            "text": "AuthContext: Unexpected error Error: Unauthorized\n    at r.request (https://staging.jahongir-app.uz/_next/static/chunks/app/%5Blocale%5D/page-ff02974529796f23.js:1:18642)\n    at async https://staging.jahongir-app.uz/_next/static/chunks/app/%5Blocale%5D/page-ff02974529796f23.js:1:19638",
+            "timestamp": 1766574606945,
+            "location": "https://staging.jahongir-app.uz/_next/static/chunks/app/%5Blocale%5D/page-ff02974529796f23.js:0",
+            "category": "critical",
+            "source": "framework"
+          }
+        ],
+        "newConsoleLogs": [],
+        "networkRequests": [
+          {
+            "url": "https://staging.jahongir-app.uz/ru",
+            "method": "GET",
+            "status": 307,
+            "statusText": "",
+            "duration": -10.902,
+            "resourceType": "document",
+            "timestamp": 1766574606477
+          },
+          {
+            "url": "https://staging.jahongir-app.uz/",
+            "method": "GET",
+            "status": 200,
+            "statusText": "",
+            "duration": -1.658,
+            "resourceType": "document",
+            "timestamp": 1766574606531
+          },
+          {
+            "url": "https://staging.jahongir-app.uz/_next/static/media/21350d82a1f187e9-s.p.woff2",
+            "method": "GET",
+            "status": 200,
+            "statusText": "",
+            "duration": -1.646,
+            "resourceType": "font",
+            "timestamp": 1766574606611
+          },
+          {
+            "url": "https://staging.jahongir-app.uz/_next/static/css/617dbd189cae90a5.css",
+            "method": "GET",
+            "status": 200,
+            "statusText": "",
+            "duration": -1.552,
+            "resourceType": "stylesheet",
+            "timestamp": 1766574606621
+          },
+          {
+            "url": "https://staging.jahongir-app.uz/_next/static/css/55693049b062c6a3.css",
+            "method": "GET",
+            "status": 200,
+            "statusText": "",
+            "duration": -1.279,
+            "resourceType": "stylesheet",
+            "timestamp": 1766574606630
+          },
+          {
+            "url": "https://staging.jahongir-app.uz/_next/static/media/e4af272ccee01ff0-s.p.woff2",
+            "method": "GET",
+            "status": 200,
+            "statusText": "",
+            "duration": -1.3479999999999999,
+            "resourceType": "font",
+            "timestamp": 1766574606630
+          },
+          {
+            "url": "https://staging.jahongir-app.uz/_next/static/chunks/webpack-2611ca6a2e49e950.js",
+            "method": "GET",
+            "status": 200,
+            "statusText": "",
+            "duration": -8.6,
+            "resourceType": "script",
+            "timestamp": 1766574606709
+          },
+          {
+            "url": "https://staging.jahongir-app.uz/_next/static/chunks/main-app-d9d1ee5bddca147f.js",
+            "method": "GET",
+            "status": 200,
+            "statusText": "",
+            "duration": -25.575,
+            "resourceType": "script",
+            "timestamp": 1766574606709
+          },
+          {
+            "url": "https://staging.jahongir-app.uz/_next/static/chunks/6472-56de742ddb9822dc.js",
+            "method": "GET",
+            "status": 200,
+            "statusText": "",
+            "duration": -25.489,
+            "resourceType": "script",
+            "timestamp": 1766574606709
+          },
+          {
+            "url": "https://staging.jahongir-app.uz/_next/static/chunks/5770-d459f969509decbc.js",
+            "method": "GET",
+            "status": 200,
+            "statusText": "",
+            "duration": -25.385,
+            "resourceType": "script",
+            "timestamp": 1766574606712
+          },
+          {
+            "url": "https://staging.jahongir-app.uz/_next/static/chunks/100-2864c9f5b7e88872.js",
+            "method": "GET",
+            "status": 200,
+            "statusText": "",
+            "duration": -25.639,
+            "resourceType": "script",
+            "timestamp": 1766574606741
+          },
+          {
+            "url": "https://staging.jahongir-app.uz/_next/static/chunks/7282-05bb6cc42c5670df.js",
+            "method": "GET",
+            "status": 200,
+            "statusText": "",
+            "duration": -25.277,
+            "resourceType": "script",
+            "timestamp": 1766574606741
+          },
+          {
+            "url": "https://staging.jahongir-app.uz/_next/static/chunks/ebdb7cc3-5f26106dcae66cdd.js",
+            "method": "GET",
+            "status": 200,
+            "statusText": "",
+            "duration": -25.663,
+            "resourceType": "script",
+            "timestamp": 1766574606742
+          },
+          {
+            "url": "https://staging.jahongir-app.uz/_next/static/chunks/135-738b3002663a3c60.js",
+            "method": "GET",
+            "status": 200,
+            "statusText": "",
+            "duration": -22.176,
+            "resourceType": "script",
+            "timestamp": 1766574606806
+          },
+          {
+            "url": "https://staging.jahongir-app.uz/_next/static/chunks/6742-436af152176d2976.js",
+            "method": "GET",
+            "status": 200,
+            "statusText": "",
+            "duration": -25.141,
+            "resourceType": "script",
+            "timestamp": 1766574606806
+          },
+          {
+            "url": "https://staging.jahongir-app.uz/_next/static/chunks/app/%5Blocale%5D/page-ff02974529796f23.js",
+            "method": "GET",
+            "status": 200,
+            "statusText": "",
+            "duration": -24.699,
+            "resourceType": "script",
+            "timestamp": 1766574606806
+          },
+          {
+            "url": "https://staging.jahongir-app.uz/_next/static/chunks/2-e6a0ec470955461e.js",
+            "method": "GET",
+            "status": 200,
+            "statusText": "",
+            "duration": -24.589,
+            "resourceType": "script",
+            "timestamp": 1766574606806
+          },
+          {
+            "url": "https://staging.jahongir-app.uz/_next/static/chunks/948-eb9975e1cd99d2bb.js",
+            "method": "GET",
+            "status": 200,
+            "statusText": "",
+            "duration": -24.501,
+            "resourceType": "script",
+            "timestamp": 1766574606831
+          },
+          {
+            "url": "https://staging.jahongir-app.uz/_next/static/chunks/2519-cbfd4e19fad8a352.js",
+            "method": "GET",
+            "status": 200,
+            "statusText": "",
+            "duration": -22.337,
+            "resourceType": "script",
+            "timestamp": 1766574606850
+          },
+          {
+            "url": "https://staging.jahongir-app.uz/_next/static/chunks/1882-16530e667c25824f.js",
+            "method": "GET",
+            "status": 200,
+            "statusText": "",
+            "duration": -22.289,
+            "resourceType": "script",
+            "timestamp": 1766574606850
+          },
+          {
+            "url": "https://staging.jahongir-app.uz/_next/static/chunks/fe69a73d-9ec660416ea9aee9.js",
+            "method": "GET",
+            "status": 200,
+            "statusText": "",
+            "duration": -24.658,
+            "resourceType": "script",
+            "timestamp": 1766574606850
+          },
+          {
+            "url": "https://staging.jahongir-app.uz/_next/static/chunks/3543-56dab92bf60fa9c4.js",
+            "method": "GET",
+            "status": 200,
+            "statusText": "",
+            "duration": -25.17,
+            "resourceType": "script",
+            "timestamp": 1766574606850
+          },
+          {
+            "url": "https://staging.jahongir-app.uz/_next/static/chunks/app/%5Blocale%5D/layout-6379bdd531dc37da.js",
+            "method": "GET",
+            "status": 200,
+            "statusText": "",
+            "duration": -23.672,
+            "resourceType": "script",
+            "timestamp": 1766574606860
+          },
+          {
+            "url": "https://staging.jahongir-app.uz/_next/static/media/8e9860b6e62d6359-s.woff2",
+            "method": "GET",
+            "status": 200,
+            "statusText": "",
+            "duration": -1.52,
+            "resourceType": "font",
+            "timestamp": 1766574606867
+          },
+          {
+            "url": "https://staging.jahongir-app.uz/_next/static/chunks/4691-065fea34a8200f80.js",
+            "method": "GET",
+            "status": 200,
+            "statusText": "",
+            "duration": -23.15,
+            "resourceType": "script",
+            "timestamp": 1766574606868
+          },
+          {
+            "url": "https://staging.jahongir-app.uz/_next/static/chunks/5116-0e28c48661d99fd0.js",
+            "method": "GET",
+            "status": 200,
+            "statusText": "",
+            "duration": -23.77,
+            "resourceType": "script",
+            "timestamp": 1766574606873
+          },
+          {
+            "url": "https://staging.jahongir-app.uz/api/auth/me",
+            "method": "GET",
+            "status": 401,
+            "statusText": "",
+            "duration": -1.196,
+            "resourceType": "fetch",
+            "timestamp": 1766574606937,
+            "errorType": "client_error"
+          },
+          {
+            "url": "https://staging.jahongir-app.uz/api/properties/featured?limit=6",
+            "method": "GET",
+            "status": 200,
+            "statusText": "",
+            "duration": -1.267,
+            "resourceType": "fetch",
+            "timestamp": 1766574606948
+          },
+          {
+            "url": "https://staging.jahongir-app.uz/agents?_rsc=1c6ry",
+            "method": "GET",
+            "status": 200,
+            "statusText": "",
+            "duration": -1.776,
+            "resourceType": "fetch",
+            "timestamp": 1766574606965
+          },
+          {
+            "url": "https://staging.jahongir-app.uz/api/properties/recent?limit=8",
+            "method": "GET",
+            "status": 200,
+            "statusText": "",
+            "duration": -1.4020000000000001,
+            "resourceType": "fetch",
+            "timestamp": 1766574606965
+          },
+          {
+            "url": "https://staging.jahongir-app.uz/developers?_rsc=1c6ry",
+            "method": "GET",
+            "status": 200,
+            "statusText": "",
+            "duration": -1.371,
+            "resourceType": "fetch",
+            "timestamp": 1766574606984
+          },
+          {
+            "url": "https://staging.jahongir-app.uz/properties?city=Tashkent&_rsc=1c6ry",
+            "method": "GET",
+            "status": 200,
+            "statusText": "",
+            "duration": -1.264,
+            "resourceType": "fetch",
+            "timestamp": 1766574606989
+          },
+          {
+            "url": "https://staging.jahongir-app.uz/properties/cmj8svze8008pjlcr8m89dg9f?_rsc=1c6ry",
+            "method": "GET",
+            "status": 200,
+            "statusText": "",
+            "duration": -2.666,
+            "resourceType": "fetch",
+            "timestamp": 1766574607013
+          },
+          {
+            "url": "https://staging.jahongir-app.uz/properties/cmj8svzd3006ljlcrdysjvx01?_rsc=1c6ry",
+            "method": "GET",
+            "status": 200,
+            "statusText": "",
+            "duration": -2.427,
+            "resourceType": "fetch",
+            "timestamp": 1766574607022
+          },
+          {
+            "url": "https://staging.jahongir-app.uz/properties/cmj8svzc1004fjlcr5hp11j4t?_rsc=1c6ry",
+            "method": "GET",
+            "status": 200,
+            "statusText": "",
+            "duration": -2.221,
+            "resourceType": "fetch",
+            "timestamp": 1766574607028
+          },
+          {
+            "url": "https://staging.jahongir-app.uz/properties/cmj8svzbv0046jlcrbrnecsr1?_rsc=1c6ry",
+            "method": "GET",
+            "status": 200,
+            "statusText": "",
+            "duration": -2.0540000000000003,
+            "resourceType": "fetch",
+            "timestamp": 1766574607041
+          },
+          {
+            "url": "https://picsum.photos/seed/111/800/600",
+            "method": "GET",
+            "status": 302,
+            "statusText": "",
+            "duration": -23.784,
+            "resourceType": "image",
+            "timestamp": 1766574607136
+          },
+          {
+            "url": "https://picsum.photos/seed/191/800/600",
+            "method": "GET",
+            "status": 302,
+            "statusText": "",
+            "duration": -27.308,
+            "resourceType": "image",
+            "timestamp": 1766574607138
+          },
+          {
+            "url": "https://picsum.photos/seed/101/800/600",
+            "method": "GET",
+            "status": 302,
+            "statusText": "",
+            "duration": -22.182,
+            "resourceType": "image",
+            "timestamp": 1766574607139
+          },
+          {
+            "url": "https://picsum.photos/seed/91/800/600",
+            "method": "GET",
+            "status": 302,
+            "statusText": "",
+            "duration": -23.1,
+            "resourceType": "image",
+            "timestamp": 1766574607143
+          },
+          {
+            "url": "https://picsum.photos/seed/121/800/600",
+            "method": "GET",
+            "status": 302,
+            "statusText": "",
+            "duration": -27.165,
+            "resourceType": "image",
+            "timestamp": 1766574607146
+          },
+          {
+            "url": "https://picsum.photos/seed/261/800/600",
+            "method": "GET",
+            "status": 302,
+            "statusText": "",
+            "duration": -23.383,
+            "resourceType": "image",
+            "timestamp": 1766574607148
+          },
+          {
+            "url": "https://fastly.picsum.photos/id/29/800/600.jpg?hmac=KbDC2qhBvoFM4XpOZrAnybO4JNiXS9mox0PORy6NCJA",
+            "method": "GET",
+            "status": 200,
+            "statusText": "",
+            "duration": -80.565,
+            "resourceType": "image",
+            "timestamp": 1766574607247
+          },
+          {
+            "url": "https://fastly.picsum.photos/id/527/800/600.jpg?hmac=fHq2At4BpRVwACnQnT5Q9NhRtxVsAYVlz0a46FjogTI",
+            "method": "GET",
+            "status": 200,
+            "statusText": "",
+            "duration": -80.163,
+            "resourceType": "image",
+            "timestamp": 1766574607273
+          },
+          {
+            "url": "https://fastly.picsum.photos/id/702/800/600.jpg?hmac=-GXBix1tgI3NsUUutxiC5FIBUfsUxVmrMOmFP7zldL8",
+            "method": "GET",
+            "status": 200,
+            "statusText": "",
+            "duration": -80.099,
+            "resourceType": "image",
+            "timestamp": 1766574607276
+          },
+          {
+            "url": "https://fastly.picsum.photos/id/284/800/600.jpg?hmac=3IBpmvGIeUc141nhmJNE1ZKOZqZ-1ismKTS4iv7mUkQ",
+            "method": "GET",
+            "status": 200,
+            "statusText": "",
+            "duration": -73.724,
+            "resourceType": "image",
+            "timestamp": 1766574607293
+          },
+          {
+            "url": "https://fastly.picsum.photos/id/639/800/600.jpg?hmac=FuA9sdfpzSQp3d-XpAHKV7T54bQsdGginsc2YcIdcGI",
+            "method": "GET",
+            "status": 200,
+            "statusText": "",
+            "duration": -70.378,
+            "resourceType": "image",
+            "timestamp": 1766574607293
+          },
+          {
+            "url": "https://fastly.picsum.photos/id/157/800/600.jpg?hmac=GWnz2Ys-Uow73xEUhw0Ez6Gswy-eWsOKWnYS-qEdMU8",
+            "method": "GET",
+            "status": 200,
+            "statusText": "",
+            "duration": -67.848,
+            "resourceType": "image",
+            "timestamp": 1766574607316
+          }
+        ],
+        "newNetworkRequests": [],
+        "domState": {
+          "url": "https://staging.jahongir-app.uz/",
+          "title": "Real Estate Platform",
+          "visibleText": [
+            "RealEstateНедвижимостьУслугиАгентыЗастройщикиRUUZВойтиРегистрация",
+            "RealEstate",
+            "НедвижимостьУслугиАгентыЗастройщики",
+            "Недвижимость",
+            "Услуги",
+            "Агенты",
+            "Застройщики",
+            "RUUZВойтиРегистрация",
+            "RUUZ",
+            "RU",
+            "UZ",
+            "Войти",
+            "Регистрация",
+            "Недвижимость УзбекистанаНайдите идеальную недвижимость в УзбекистанеСнятьКвартируДомКоммерциюУчастокКол-во комнат1234+₽На картеНайтиТашкентСамаркандБухараНавоиАндижанФергана100+Объектов50+Агентов20+ЗастройщиковПроверенныхМогут подойти190 000 ₽3-комн. кв. · 130 m²Shaykhontohur Street 114120 000 ₽4-комн. commercial · 95 m²Almazar Street 107500 000 000 ₽/мес.1-комн. кв. · 60 m²Yunusabad Street 100450 000 ₽8-комн. commercial · 600 m²Tashkent Street 234150 000 ₽4-комн. house · 200 m²Registan Street 8925 000 000 ₽/мес.3-комн. кв. · 180 m²Amir Temur Avenue 150Найдите идеальную недвижимостьКвартирыВсе квартирыДомаЧастные домаКоммерческаяОфисы, складыУчасткиЗемельные участкиРазместить объявлениеПочему выбирают насПроверенные объявленияВсе объявления проходят модерацию для вашей безопасностиАктуальные ценыРеальные цены от собственников без накрутокБыстрый откликСвязывайтесь с продавцами напрямую через платформуГотовы разместить объявление?Разместите свою недвижимость бесплатно и найдите покупателя или арендатора уже сегодняНачать бесплатноRealEstateВедущая платформа для поиска и продажи недвижимости в УзбекистанеДля покупателейКупить квартируСнять квартируДомаДля продавцовРазместить объявлениеАгентыЛичный кабинетКонтактыsupport@realestate.uz+998 71 123 45 67© 2024 RealEstate. Все права защищены.",
+            "Недвижимость УзбекистанаНайдите идеальную недвижимость в УзбекистанеСнятьКвартируДомКоммерциюУчастокКол-во комнат1234+₽На картеНайтиТашкентСамаркандБухараНавоиАндижанФергана",
+            "Недвижимость Узбекистана",
+            "Найдите идеальную недвижимость в Узбекистане",
+            "СнятьКвартируДомКоммерциюУчастокКол-во комнат1234+₽На картеНайти",
+            "Снять",
+            "КвартируДомКоммерциюУчасток",
+            "Квартиру",
+            "Дом",
+            "Коммерцию",
+            "Участок",
+            "Кол-во комнат1234+₽",
+            "Кол-во комнат1234+",
+            "Кол-во комнат",
+            "1",
+            "2",
+            "3",
+            "4+",
+            "₽",
+            "На картеНайти",
+            "На карте",
+            "Найти",
+            "ТашкентСамаркандБухараНавоиАндижанФергана"
+          ],
+          "buttons": [
+            "Недвижимость",
+            "Услуги",
+            "RU",
+            "UZ",
+            "Войти",
+            "Регистрация",
+            "Снять",
+            "На карте",
+            "Найти",
+            "Разместить объявление",
+            "Начать бесплатно"
+          ],
+          "inputs": [
+            "Цена до",
+            "Ташкент"
+          ],
+          "links": [
+            "RealEstate",
+            "Агенты",
+            "Застройщики",
+            "Ташкент",
+            "Самарканд",
+            "Бухара",
+            "Навои",
+            "Андижан",
+            "Фергана",
+            "190 000 ₽3-комн. кв. · 130 m²Shaykhontohur Street 114",
+            "120 000 ₽4-комн. commercial · 95 m²Almazar Street 107",
+            "500 000 000 ₽/мес.1-комн. кв. · 60 m²Yunusabad Street 100",
+            "450 000 ₽8-комн. commercial · 600 m²Tashkent Street 234",
+            "150 000 ₽4-комн. house · 200 m²Registan Street 89",
+            "25 000 000 ₽/мес.3-комн. кв. · 180 m²Amir Temur Avenue 150",
+            "КвартирыВсе квартиры",
+            "ДомаЧастные дома",
+            "КоммерческаяОфисы, склады",
+            "УчасткиЗемельные участки",
+            "Разместить объявление"
+          ],
+          "interactiveElementsSummary": {
+            "totalButtons": 12,
+            "totalInputs": 2,
+            "totalLinks": 20,
+            "keyActions": [],
+            "formStatus": "empty"
+          },
+          "dropdowns": [
+            {
+              "trigger": "select[name=\"\"]",
+              "isOpen": false,
+              "options": [
+                "Квартиру",
+                "Дом",
+                "Коммерцию",
+                "Участок"
+              ],
+              "selectedValue": "APARTMENT",
+              "type": "native"
+            },
+            {
+              "trigger": "select[name=\"\"]",
+              "isOpen": false,
+              "options": [
+                "Кол-во комнат",
+                "1",
+                "2",
+                "3",
+                "4+"
+              ],
+              "selectedValue": "",
+              "type": "native"
+            }
+          ],
+          "forms": [],
+          "datePickers": [],
+          "modals": [],
+          "loadingIndicators": []
+        },
+        "errors": [],
+        "performance": {
+          "pageLoadTime": 441,
+          "domContentLoaded": 378,
+          "firstContentfulPaint": 324
+        },
+        "urlBefore": "https://staging.jahongir-app.uz/",
+        "urlAfter": "https://staging.jahongir-app.uz/",
+        "urlChanged": false
+      },
+      "duration": 2009,
+      "retryCount": 0
+    }
+  ],
+  "summary": {
+    "totalSteps": 3,
+    "passed": 3,
+    "failed": 0,
+    "warnings": 0,
+    "skipped": 0,
+    "bugsFound": 0,
+    "bugsFixed": 0,
+    "screenshots": [
+      "/var/www/realestate-staging/fe-pilot-results/screenshots/step-1-1766574607822.png",
+      "/var/www/realestate-staging/fe-pilot-results/screenshots/step-2-1766574607952.png"
+    ],
+    "consoleErrors": 2,
+    "networkErrors": 1,
+    "validationErrors": 0,
+    "assertionsPassed": 0,
+    "assertionsFailed": 0,
+    "retriedSteps": 0
+  },
+  "errorSummary": {
+    "critical": {
+      "count": 2,
+      "items": [
+        {
+          "type": "error",
+          "message": "Failed to load resource: the server responded with a status of 401 ()",
+          "source": "javascript",
+          "count": 1,
+          "firstSeen": 1766574606937,
+          "lastSeen": 1766574606937
+        },
+        {
+          "type": "error",
+          "message": "AuthContext: Unexpected error Error: Unauthorized\n    at r.request (https://staging.jahongir-app.uz/_next/static/chunks/app/%5Blocale%5D/page-ff02974529796f23.js:1:18642)\n    at async https://staging.jahongir-app.uz/_next/static/chunks/app/%5Blocale%5D/page-ff02974529796f23.js:1:19638",
+          "source": "framework",
+          "count": 1,
+          "firstSeen": 1766574606945,
+          "lastSeen": 1766574606945
+        }
+      ]
+    },
+    "warning": {
+      "count": 0,
+      "items": []
+    },
+    "info": {
+      "count": 1,
+      "items": [
+        {
+          "type": "warning",
+          "message": "ApiClient: No token found for request /auth/me",
+          "source": "javascript",
+          "count": 1,
+          "firstSeen": 1766574606920,
+          "lastSeen": 1766574606920
+        }
+      ]
+    }
+  }
+}

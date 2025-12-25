@@ -3,6 +3,30 @@ import { render, screen, fireEvent, waitFor } from '@testing-library/react';
 import { ImageUploader } from '../image-uploader';
 import '@testing-library/jest-dom';
 
+// Mock react-dropzone
+vi.mock('react-dropzone', () => ({
+  useDropzone: ({ onDrop, accept, maxFiles }: any) => ({
+    getRootProps: () => ({
+      role: 'presentation',
+      tabIndex: 0,
+    }),
+    getInputProps: () => ({
+      type: 'file',
+      accept,
+      multiple: maxFiles !== 1,
+      style: { display: 'none' },
+    }),
+    isDragActive: false,
+    open: vi.fn(),
+  }),
+}));
+
+// Mock @repo/ui components
+vi.mock('@repo/ui', () => ({
+  Button: ({ children, ...props }: any) => <button {...props}>{children}</button>,
+  Card: ({ children, ...props }: any) => <div {...props}>{children}</div>,
+}));
+
 // Mock localStorage
 const localStorageMock = (() => {
   let store: Record<string, string> = {};
